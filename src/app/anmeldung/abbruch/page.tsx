@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "Anmeldung abgebrochen",
+    description: "Die Zahlung wurde abgebrochen. Du kannst den Vorgang jederzeit erneut starten.",
+    path: "/anmeldung/abbruch",
+  }),
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function RegistrationCancelPage() {
   return (

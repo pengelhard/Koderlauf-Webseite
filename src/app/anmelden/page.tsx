@@ -3,11 +3,13 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RegistrationForm } from "@/components/forms/registration-form";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Anmeldung 2027",
   description: "Melde dich für den Koderlauf 2027 an – schnell, professionell und DSGVO-konform.",
-};
+  path: "/anmelden",
+});
 
 export default function RegistrationPage() {
   return (

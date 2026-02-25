@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "Anmeldung erfolgreich",
+    description: "Deine Anmeldung zum Koderlauf wurde erfolgreich abgeschlossen.",
+    path: "/anmeldung/erfolg",
+  }),
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function RegistrationSuccessPage() {
   return (

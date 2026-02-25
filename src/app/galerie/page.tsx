@@ -3,13 +3,18 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MasonryGrid } from "@/components/gallery/masonry-grid";
+import { createPageMetadata } from "@/lib/seo";
+import { getGalleryEntries } from "@/lib/supabase/queries";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Galerie",
   description: "Bilder und Highlights vom Koderlauf in Obermögersheim.",
-};
+  path: "/galerie",
+});
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const galleryItems = await getGalleryEntries();
+
   return (
     <>
       <SiteHeader />
@@ -23,7 +28,7 @@ export default function GalleryPage() {
                 Die besten Szenen aus dem Wald – als dynamisches Masonry-Grid mit smoothen Hover-Effekten.
               </p>
             </div>
-            <MasonryGrid />
+            <MasonryGrid items={galleryItems} />
           </div>
         </section>
       </main>
