@@ -1,12 +1,17 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { CountdownTimer } from "@/components/sections/countdown";
 
+const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4";
+const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1502904550040-7534597429ae?w=1920&q=80";
+
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const [videoError, setVideoError] = useState(false);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -14,22 +19,49 @@ export function Hero() {
 
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
     <section ref={ref} className="relative h-screen w-full overflow-hidden">
-      {/* Background with parallax */}
+      {/* Video / Fallback Image with parallax */}
       <motion.div
         style={{ y: bgY, scale: bgScale }}
         className="absolute inset-0 z-0"
       >
-        <div
-          className="h-full w-full bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1502904550040-7534597429ae?w=1920&q=80')",
-          }}
-        />
+        {!videoError ? (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            onError={() => setVideoError(true)}
+            className="h-full w-full object-cover"
+            poster={HERO_FALLBACK_IMG}
+          >
+            <source src={HERO_VIDEO_SRC} type="video/mp4" />
+          </video>
+        ) : (
+          <motion.div
+            animate={{
+              scale: [1, 1.08, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="h-full w-full"
+          >
+            <Image
+              src={HERO_FALLBACK_IMG}
+              alt="Waldlauf bei Sonnenuntergang"
+              fill
+              priority
+              className="object-cover"
+              unoptimized
+            />
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Forest gradient overlay */}
@@ -37,7 +69,7 @@ export function Hero() {
 
       {/* Content */}
       <motion.div
-        style={{ opacity }}
+        style={{ opacity: contentOpacity }}
         className="relative z-20 flex h-full flex-col items-center justify-center px-4 text-center"
       >
         <motion.p

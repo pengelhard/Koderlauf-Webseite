@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/ui/logo";
 
 const navLinks = [
   { href: "/", label: "Start" },
@@ -36,11 +37,7 @@ export function Navbar() {
       )}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl font-extrabold tracking-tight text-white">
-            KODER<span className="text-koder-orange">LAUF</span>
-          </span>
-        </Link>
+        <Logo size="md" />
 
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
