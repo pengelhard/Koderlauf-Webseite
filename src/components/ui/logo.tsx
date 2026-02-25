@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -9,16 +11,16 @@ interface LogoProps {
   linked?: boolean;
 }
 
-const fullDimensions = {
-  sm: { width: 160, height: 28 },
-  md: { width: 200, height: 36 },
-  lg: { width: 280, height: 50 },
+const mascotSizes = {
+  sm: { width: 32, height: 36 },
+  md: { width: 40, height: 44 },
+  lg: { width: 64, height: 70 },
 };
 
-const mascotDimensions = {
-  sm: { width: 36, height: 40 },
-  md: { width: 48, height: 52 },
-  lg: { width: 80, height: 88 },
+const textSizes = {
+  sm: "text-lg",
+  md: "text-2xl",
+  lg: "text-4xl",
 };
 
 export function Logo({
@@ -27,23 +29,30 @@ export function Logo({
   className,
   linked = true,
 }: LogoProps) {
-  const isMascot = variant === "mascot";
-  const { width, height } = isMascot
-    ? mascotDimensions[size]
-    : fullDimensions[size];
+  const { width, height } = mascotSizes[size];
 
   const content = (
-    <Image
-      src={isMascot ? "/mascot-koderlauf.svg" : "/logo-koderlauf.svg"}
-      alt="Koderlauf"
-      width={width}
-      height={height}
-      className={cn(
-        "drop-shadow-[0_2px_10px_rgba(255,107,0,0.3)]",
-        className
+    <span className={cn("inline-flex items-center gap-1.5", className)}>
+      <Image
+        src="/mascot-koderlauf.svg"
+        alt=""
+        width={width}
+        height={height}
+        className="drop-shadow-[0_2px_10px_rgba(255,107,0,0.3)]"
+        priority
+      />
+      {variant === "full" && (
+        <span
+          className={cn(
+            "font-black tracking-tight leading-none",
+            textSizes[size]
+          )}
+        >
+          <span className="text-white dark:text-white">Koder</span>
+          <span className="text-koder-orange">lauf</span>
+        </span>
       )}
-      priority
-    />
+    </span>
   );
 
   if (linked) {

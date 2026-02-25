@@ -16,8 +16,9 @@ export function Footer() {
                 height={62}
                 className="drop-shadow-[0_2px_10px_rgba(255,107,0,0.3)]"
               />
-              <span className="text-3xl font-black tracking-tight text-koder-orange drop-shadow-[0_2px_8px_rgba(255,107,0,0.35)]">
-                Koderlauf
+              <span className="text-3xl font-black tracking-tight">
+                <span className="text-white">Koder</span>
+                <span className="text-koder-orange">lauf</span>
               </span>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
