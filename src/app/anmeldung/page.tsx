@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +18,7 @@ import {
   Shirt,
   Phone,
   Users,
+  AlertCircle,
 } from "lucide-react";
 import {
   type Distance,
@@ -32,6 +33,8 @@ import {
   getCurrentTier,
   isKidsAgeValid,
 } from "@/lib/pricing";
+import { registerParticipant } from "@/lib/data/registration";
+import { getCurrentEvent, getParticipantCounts } from "@/lib/data/events";
 
 interface FormData {
   firstName: string;
@@ -80,8 +83,26 @@ export default function AnmeldungPage() {
   const [direction, setDirection] = useState(1);
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [eventId, setEventId] = useState<string | null>(null);
+  const [spotCounts, setSpotCounts] = useState<Record<string, number>>({});
+  const [maxSpots, setMaxSpots] = useState<Record<string, number | null>>({});
 
   const currentTier = getCurrentTier();
+
+  useEffect(() => {
+    getCurrentEvent().then((event) => {
+      setEventId(event.id);
+      setMaxSpots({
+        "5km": event.max_participants_5km,
+        "10km": event.max_participants_10km,
+        kids: event.max_participants_kids,
+      });
+    });
+    getParticipantCounts().then((counts) => {
+      setSpotCounts({ "5km": counts["5km"], "10km": counts["10km"], kids: counts.kids });
+    });
+  }, []);
 
   const currentPrice = useMemo(() => {
     if (!form.distance) return null;
@@ -114,7 +135,33 @@ export default function AnmeldungPage() {
   async function handleSubmit() {
     if (!canSubmit || !form.distance) return;
     setSubmitting(true);
+    setSubmitError("");
+
     try {
+      // 1. Save to Supabase
+      if (eventId && eventId !== "demo-2027") {
+        const result = await registerParticipant(eventId, {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          birthDate: form.birthDate,
+          gender: form.gender as Gender,
+          distance: form.distance as Distance,
+          club: form.club || null,
+          tshirtSize: form.tshirtSize as TShirtSize,
+          emergencyName: form.emergencyName,
+          emergencyPhone: form.emergencyPhone,
+          photoConsent: form.photoConsent,
+        });
+
+        if (!result.success) {
+          setSubmitError(result.error || "Fehler bei der Registrierung.");
+          setSubmitting(false);
+          return;
+        }
+      }
+
+      // 2. Create Stripe checkout session
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -123,24 +170,17 @@ export default function AnmeldungPage() {
           lastName: form.lastName,
           email: form.email,
           distance: form.distance,
-          birthDate: form.birthDate,
-          gender: form.gender,
-          club: form.club || null,
-          tshirtSize: form.tshirtSize,
-          emergencyName: form.emergencyName,
-          emergencyPhone: form.emergencyPhone,
-          photoConsent: form.photoConsent,
         }),
       });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "Ein Fehler ist aufgetreten.");
+        setSubmitError(data.error || "Checkout konnte nicht erstellt werden.");
         setSubmitting(false);
       }
     } catch {
-      alert("Verbindungsfehler. Bitte versuche es erneut.");
+      setSubmitError("Verbindungsfehler. Bitte versuche es erneut.");
       setSubmitting(false);
     }
   }
@@ -387,6 +427,11 @@ export default function AnmeldungPage() {
                                     : currentTier === "normal"
                                       ? `War ${formatPrice(allPrices.early_bird)} (Early Bird vorbei)`
                                       : "Nachmeldung vor Ort"}
+                                  {maxSpots[key] != null && (
+                                    <span className="ml-2 text-forest-light">
+                                      · Noch {maxSpots[key]! - (spotCounts[key] || 0)} Plätze frei
+                                    </span>
+                                  )}
                                 </p>
                               </div>
                               <span
@@ -624,6 +669,13 @@ export default function AnmeldungPage() {
                           </span>
                         </div>
                       </div>
+                    </div>
+                  )}
+
+                  {submitError && (
+                    <div className="flex items-start gap-3 rounded-2xl border-2 border-error/30 bg-error/5 p-4 text-sm text-error">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                      {submitError}
                     </div>
                   )}
 

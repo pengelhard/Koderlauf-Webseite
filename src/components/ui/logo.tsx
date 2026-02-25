@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -7,24 +8,24 @@ interface LogoProps {
   linked?: boolean;
 }
 
-const sizes = {
-  sm: "text-xl",
-  md: "text-2xl",
-  lg: "text-4xl sm:text-5xl",
+const dimensions = {
+  sm: { width: 140, height: 28 },
+  md: { width: 180, height: 36 },
+  lg: { width: 240, height: 48 },
 };
 
 export function Logo({ size = "md", className, linked = true }: LogoProps) {
+  const { width, height } = dimensions[size];
+
   const content = (
-    <span
-      className={cn(
-        "font-black tracking-tight text-koder-orange",
-        "drop-shadow-[0_2px_8px_rgba(255,107,0,0.35)]",
-        sizes[size],
-        className
-      )}
-    >
-      Koderlauf
-    </span>
+    <Image
+      src="/logo-koderlauf.svg"
+      alt="Koderlauf"
+      width={width}
+      height={height}
+      className={cn("drop-shadow-[0_2px_8px_rgba(255,107,0,0.35)]", className)}
+      priority
+    />
   );
 
   if (linked) {

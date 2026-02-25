@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -11,19 +12,34 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Trophy } from "lucide-react";
+import { getResults, type ResultRow } from "@/lib/data/results";
 
-const demoResults = [
-  { rank: 1, bib: 42, name: "Max Waldläufer", category: "Herren", time: "00:18:34", pace: "3:43/km" },
-  { rank: 2, bib: 17, name: "Leon Förster", category: "Herren", time: "00:19:02", pace: "3:48/km" },
-  { rank: 3, bib: 5, name: "Anna Bergmann", category: "Damen", time: "00:19:45", pace: "3:57/km" },
-  { rank: 4, bib: 88, name: "Tom Eichner", category: "Herren", time: "00:20:11", pace: "4:02/km" },
-  { rank: 5, bib: 23, name: "Sophie Grünwald", category: "Damen", time: "00:20:33", pace: "4:07/km" },
-  { rank: 6, bib: 61, name: "Felix Tannenbaum", category: "Jugend", time: "00:21:05", pace: "4:13/km" },
-  { rank: 7, bib: 34, name: "Laura Moosbach", category: "Damen", time: "00:21:22", pace: "4:16/km" },
-  { rank: 8, bib: 99, name: "Niklas Steinweg", category: "Herren", time: "00:21:48", pace: "4:22/km" },
+const DISTANCE_TABS = [
+  { key: "", label: "Alle" },
+  { key: "10km", label: "10 km" },
+  { key: "5km", label: "5 km" },
+  { key: "kids", label: "Kids" },
 ];
 
 export default function ErgebnissePage() {
+  const [filter, setFilter] = useState("");
+  const [results, setResults] = useState<ResultRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    requestAnimationFrame(() => {
+      if (!cancelled) setLoading(true);
+    });
+    getResults("koderlauf-2026", filter || undefined).then((data) => {
+      if (!cancelled) {
+        setResults(data);
+        setLoading(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [filter]);
+
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -43,86 +59,117 @@ export default function ErgebnissePage() {
           </p>
         </motion.div>
 
+        {/* Distance filter tabs */}
+        <div className="mt-8 flex flex-wrap gap-2">
+          {DISTANCE_TABS.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setFilter(tab.key)}
+              className={`rounded-2xl px-5 py-2 text-sm font-semibold uppercase tracking-wider transition-all ${
+                filter === tab.key
+                  ? "bg-koder-orange text-white shadow-md shadow-koder-orange/20"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-12 overflow-hidden rounded-3xl border border-border bg-card"
+          className="mt-8 overflow-hidden rounded-3xl border border-border bg-card"
         >
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border bg-forest-deep/5 hover:bg-forest-deep/5 dark:bg-forest-deep/30">
-                <TableHead className="w-16 font-semibold uppercase tracking-wider">
-                  Platz
-                </TableHead>
-                <TableHead className="w-20 font-semibold uppercase tracking-wider">
-                  Nr.
-                </TableHead>
-                <TableHead className="font-semibold uppercase tracking-wider">
-                  Name
-                </TableHead>
-                <TableHead className="font-semibold uppercase tracking-wider">
-                  Kategorie
-                </TableHead>
-                <TableHead className="font-semibold uppercase tracking-wider">
-                  Zeit
-                </TableHead>
-                <TableHead className="font-semibold uppercase tracking-wider">
-                  Pace
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {demoResults.map((r) => (
-                <TableRow
-                  key={r.bib}
-                  className={
-                    r.rank <= 3
-                      ? "bg-koder-orange/5 hover:bg-koder-orange/10"
-                      : "hover:bg-koder-orange/5"
-                  }
-                >
-                  <TableCell className="font-bold">
-                    <div className="flex items-center gap-2">
-                      {r.rank <= 3 && (
-                        <Trophy
-                          size={14}
-                          className={
-                            r.rank === 1
-                              ? "text-yellow-500"
-                              : r.rank === 2
-                                ? "text-gray-400"
-                                : "text-amber-700"
-                          }
-                        />
-                      )}
-                      {r.rank}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="rounded-lg bg-koder-orange/10 px-2 py-1 text-sm font-bold text-koder-orange">
-                      {r.bib}
-                    </span>
-                  </TableCell>
-                  <TableCell className="font-medium">{r.name}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className="text-xs uppercase tracking-wider"
-                    >
-                      {r.category}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-mono font-semibold">
-                    {r.time}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {r.pace}
-                  </TableCell>
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border bg-forest-deep/5 hover:bg-forest-deep/5 dark:bg-forest-deep/30">
+                  <TableHead className="w-16 font-semibold uppercase tracking-wider">
+                    Platz
+                  </TableHead>
+                  <TableHead className="w-20 font-semibold uppercase tracking-wider">
+                    Nr.
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    Name
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    Distanz
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    AK
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    Zeit
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    Pace
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {results.map((r) => (
+                  <TableRow
+                    key={`${r.distance}-${r.rank}-${r.bib}`}
+                    className={
+                      r.rank <= 3
+                        ? "bg-koder-orange/5 hover:bg-koder-orange/10"
+                        : "hover:bg-koder-orange/5"
+                    }
+                  >
+                    <TableCell className="font-bold">
+                      <div className="flex items-center gap-2">
+                        {r.rank <= 3 && (
+                          <Trophy
+                            size={14}
+                            className={
+                              r.rank === 1
+                                ? "text-yellow-500"
+                                : r.rank === 2
+                                  ? "text-gray-400"
+                                  : "text-amber-700"
+                            }
+                          />
+                        )}
+                        {r.rank}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="rounded-lg bg-koder-orange/10 px-2 py-1 text-sm font-bold text-koder-orange">
+                        {r.bib}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {r.first_name} {r.last_name}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className="text-xs uppercase tracking-wider"
+                      >
+                        {r.distance}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {r.age_class}
+                    </TableCell>
+                    <TableCell className="font-mono font-semibold">
+                      {r.finish_time}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {r.pace}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </motion.div>
       </div>
     </div>
