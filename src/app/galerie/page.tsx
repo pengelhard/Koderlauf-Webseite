@@ -56,11 +56,11 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, scale: 0.95 },
-  show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 200, damping: 20 } },
+  show: { opacity: 1, scale: 1, transition: { type: "spring" as const, stiffness: 200, damping: 20 } },
 };
 
 export default function GaleriePage() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [, setSelectedImage] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen pt-24 pb-16">

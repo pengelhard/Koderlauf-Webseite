@@ -73,7 +73,7 @@ export default function ErgebnissePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {demoResults.map((r, i) => (
+              {demoResults.map((r) => (
                 <TableRow
                   key={r.bib}
                   className={
