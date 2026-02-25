@@ -36,9 +36,18 @@ export default async function OGImage() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "12px",
+            gap: "8px",
           }}
         >
+          {/* Cat emoji as mascot placeholder in OG */}
+          <div
+            style={{
+              fontSize: "72px",
+              marginBottom: "8px",
+            }}
+          >
+            🐈‍⬛
+          </div>
           <div
             style={{
               fontSize: "28px",

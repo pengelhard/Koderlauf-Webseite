@@ -1,6 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Instagram } from "lucide-react";
-import { Logo } from "@/components/ui/logo";
 
 export function Footer() {
   return (
@@ -8,7 +8,18 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-12 md:grid-cols-3">
           <div>
-            <Logo size="lg" linked={false} />
+            <div className="flex items-center gap-3">
+              <Image
+                src="/mascot-koderlauf.svg"
+                alt="Koderlauf Maskottchen"
+                width={56}
+                height={62}
+                className="drop-shadow-[0_2px_10px_rgba(255,107,0,0.3)]"
+              />
+              <span className="text-3xl font-black tracking-tight text-koder-orange drop-shadow-[0_2px_8px_rgba(255,107,0,0.35)]">
+                Koderlauf
+              </span>
+            </div>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               Der jährliche Waldlauf in Obermögersheim. Lauf mit Herz durch den
               Wald – seit 2024.

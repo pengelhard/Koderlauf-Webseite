@@ -72,6 +72,23 @@ export function Hero() {
         style={{ opacity: contentOpacity }}
         className="relative z-20 flex h-full flex-col items-center justify-center px-4 text-center"
       >
+        {/* Mascot above heading */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.7, type: "spring" as const, stiffness: 150 }}
+          className="mb-4"
+        >
+          <Image
+            src="/mascot-koderlauf.svg"
+            alt="Koderlauf Maskottchen"
+            width={100}
+            height={110}
+            className="drop-shadow-[0_4px_20px_rgba(255,107,0,0.4)]"
+            priority
+          />
+        </motion.div>
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -106,7 +123,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-10"
+          className="mt-8"
         >
           <CountdownTimer targetDate="2027-06-15T09:00:00" />
         </motion.div>
@@ -116,7 +133,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-10 flex flex-col gap-4 sm:flex-row"
+          className="mt-8 flex flex-col gap-4 sm:flex-row"
         >
           <Link
             href="/ergebnisse"

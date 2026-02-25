@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" fill="none">
+  <defs>
+    <linearGradient id="eyeGreen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4ADE80"/>
+      <stop offset="100%" stop-color="#16A34A"/>
+    </linearGradient>
+  </defs>
+  <!-- Shadow on ground -->
+  <ellipse cx="100" cy="215" rx="55" ry="5" fill="#000" opacity="0.2"/>
+  <!-- Tail -->
+  <path d="M42 95 Q15 60 30 35 Q38 22 48 30 Q55 38 45 55 Q38 70 52 88" stroke="#111" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <path d="M42 95 Q15 60 30 35 Q38 22 48 30 Q55 38 45 55 Q38 70 52 88" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <!-- Back leg (behind) -->
+  <path d="M85 150 L70 175 L65 195 Q63 205 72 205 L80 203" stroke="#111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="#111"/>
+  <!-- Back arm (behind) -->
+  <path d="M90 100 L105 120 L115 128" stroke="#111" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Body -->
+  <ellipse cx="95" cy="115" rx="32" ry="42" fill="#111" transform="rotate(-10, 95, 115)"/>
+  <!-- Chest highlight -->
+  <ellipse cx="100" cy="108" rx="14" ry="22" fill="#1a1a1a" transform="rotate(-8, 100, 108)"/>
+  <!-- Front leg -->
+  <path d="M110 148 L130 178 L140 198 Q143 207 134 206 L126 203" stroke="#111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="#111"/>
+  <!-- Shoe on front foot -->
+  <path d="M140 198 Q143 207 134 206 L124 204 Q118 202 120 196" fill="#222" stroke="#333" stroke-width="1"/>
+  <path d="M128 199 Q132 196 136 198" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+  <!-- Shoe on back foot -->
+  <path d="M65 195 Q63 205 72 205 L82 203 Q88 201 86 195" fill="#222" stroke="#333" stroke-width="1"/>
+  <path d="M72 199 Q76 196 80 198" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+  <!-- Front arm -->
+  <path d="M105 95 L130 80 L142 72" stroke="#111" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Fist -->
+  <circle cx="144" cy="70" r="7" fill="#111"/>
+  <path d="M140 67 Q144 63 148 67" stroke="#333" stroke-width="1" fill="none"/>
+  <!-- Neck -->
+  <ellipse cx="100" cy="78" rx="15" ry="10" fill="#111"/>
+  <!-- Head -->
+  <ellipse cx="105" cy="55" rx="30" ry="28" fill="#111"/>
+  <!-- Left ear -->
+  <path d="M82 32 L75 5 L95 22 Z" fill="#111"/>
+  <path d="M84 28 L79 10 L92 23 Z" fill="#1a1a1a"/>
+  <!-- Right ear -->
+  <path d="M122 28 L130 2 L110 20 Z" fill="#111"/>
+  <path d="M120 25 L126 8 L113 21 Z" fill="#1a1a1a"/>
+  <!-- Left eye -->
+  <ellipse cx="92" cy="50" rx="9" ry="10" fill="url(#eyeGreen)"/>
+  <ellipse cx="92" cy="50" rx="4" ry="5.5" fill="#000"/>
+  <circle cx="90" cy="47" r="2" fill="#fff" opacity="0.8"/>
+  <!-- Right eye -->
+  <ellipse cx="118" cy="48" rx="9" ry="10" fill="url(#eyeGreen)"/>
+  <ellipse cx="118" cy="48" rx="4" ry="5.5" fill="#000"/>
+  <circle cx="116" cy="45" r="2" fill="#fff" opacity="0.8"/>
+  <!-- Nose -->
+  <ellipse cx="106" cy="60" rx="3" ry="2" fill="#333"/>
+  <!-- Mouth / smile -->
+  <path d="M95 65 Q105 76 118 64" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Teeth -->
+  <path d="M100 68 L102 72 L104 68" fill="#fff"/>
+  <path d="M108 67 L110 71 L112 67" fill="#fff"/>
+  <!-- Whiskers left -->
+  <line x1="80" y1="56" x2="60" y2="52" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="80" y1="60" x2="58" y2="62" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Whiskers right -->
+  <line x1="130" y1="54" x2="150" y2="48" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="130" y1="58" x2="152" y2="58" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+</svg>
