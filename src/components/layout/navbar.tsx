@@ -11,6 +11,7 @@ import { Logo } from "@/components/ui/logo";
 
 const navLinks = [
   { href: "/", label: "Start" },
+  { href: "/strecken", label: "Strecken" },
   { href: "/ergebnisse", label: "Ergebnisse" },
   { href: "/galerie", label: "Galerie" },
   { href: "/anmeldung", label: "Anmeldung" },
