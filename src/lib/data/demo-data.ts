@@ -30,12 +30,12 @@ export const DEMO_RESULTS = [
 ];
 
 export const DEMO_GALLERY = [
-  { id: "g1", url: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80", caption: "Der Start des Koderlauf 2026", photographer: "Foto-Team" },
-  { id: "g2", url: "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=600&q=80", caption: "Durch die Wälder von Obermögersheim", photographer: "Foto-Team" },
-  { id: "g3", url: "https://images.unsplash.com/photo-1461897104016-0b3b00b1ea56?w=600&q=80", caption: "Zieleinlauf mit Bestzeit", photographer: "Foto-Team" },
-  { id: "g4", url: "https://images.unsplash.com/photo-1486218119243-13883505764c?w=600&q=80", caption: "Die Siegerehrung", photographer: "Foto-Team" },
-  { id: "g5", url: "https://images.unsplash.com/photo-1513593771513-7b58b6c4af38?w=600&q=80", caption: "Die wunderschöne Strecke", photographer: "Foto-Team" },
-  { id: "g6", url: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=600&q=80", caption: "Gemeinsam ans Ziel", photographer: "Foto-Team" },
+  { id: "g1", url: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80", beschreibung: "Der Start des Koderlauf 2026", distanz: "10km" },
+  { id: "g2", url: "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=600&q=80", beschreibung: "Durch die Wälder von Obermögersheim", distanz: null },
+  { id: "g3", url: "https://images.unsplash.com/photo-1461897104016-0b3b00b1ea56?w=600&q=80", beschreibung: "Zieleinlauf mit Bestzeit", distanz: "5km" },
+  { id: "g4", url: "https://images.unsplash.com/photo-1486218119243-13883505764c?w=600&q=80", beschreibung: "Die Siegerehrung", distanz: null },
+  { id: "g5", url: "https://images.unsplash.com/photo-1513593771513-7b58b6c4af38?w=600&q=80", beschreibung: "Die wunderschöne Strecke", distanz: null },
+  { id: "g6", url: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=600&q=80", beschreibung: "Gemeinsam ans Ziel", distanz: "10km" },
 ];
 
 export const DEMO_PARTICIPANT_COUNTS = {

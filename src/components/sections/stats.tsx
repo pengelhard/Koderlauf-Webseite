@@ -2,7 +2,7 @@
 
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { getParticipantCounts } from "@/lib/data/events";
+import { getTotalParticipants } from "@/lib/data/events";
 
 function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -40,14 +40,14 @@ function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string
 }
 
 export function Stats() {
-  const [counts, setCounts] = useState({ "5km": 0, "10km": 0, kids: 0, total: 0 });
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    getParticipantCounts().then(setCounts);
+    getTotalParticipants().then(setTotal);
   }, []);
 
   const stats = [
-    { value: counts.total, label: "Läufer 2026", suffix: "" },
+    { value: total, label: "Läufer gesamt", suffix: "" },
     { value: 5, label: "Kilometer (kurz)", suffix: "km" },
     { value: 10, label: "Kilometer (lang)", suffix: "km" },
     { value: 3, label: "Distanzen", suffix: "" },

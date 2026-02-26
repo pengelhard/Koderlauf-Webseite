@@ -31,7 +31,7 @@ export default function ErgebnissePage() {
     requestAnimationFrame(() => {
       if (!cancelled) setLoading(true);
     });
-    getResults("koderlauf-2026", filter || undefined).then((data) => {
+    getResults(2026, filter || undefined).then((data) => {
       if (!cancelled) {
         setResults(data);
         setLoading(false);
@@ -59,7 +59,6 @@ export default function ErgebnissePage() {
           </p>
         </motion.div>
 
-        {/* Distance filter tabs */}
         <div className="mt-8 flex flex-wrap gap-2">
           {DISTANCE_TABS.map((tab) => (
             <button
@@ -90,81 +89,52 @@ export default function ErgebnissePage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-border bg-forest-deep/5 hover:bg-forest-deep/5 dark:bg-forest-deep/30">
-                  <TableHead className="w-16 font-semibold uppercase tracking-wider">
-                    Platz
-                  </TableHead>
-                  <TableHead className="w-20 font-semibold uppercase tracking-wider">
-                    Nr.
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    Name
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    Distanz
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    AK
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    Zeit
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    Pace
-                  </TableHead>
+                  <TableHead className="w-16 font-semibold uppercase tracking-wider">Platz</TableHead>
+                  <TableHead className="w-20 font-semibold uppercase tracking-wider">Nr.</TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">Name</TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">Distanz</TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">Zeit</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {results.map((r) => (
                   <TableRow
-                    key={`${r.distance}-${r.rank}-${r.bib}`}
+                    key={`${r.distanz}-${r.platz_gesamt}-${r.startnummer}`}
                     className={
-                      r.rank <= 3
+                      r.platz_gesamt <= 3
                         ? "bg-koder-orange/5 hover:bg-koder-orange/10"
                         : "hover:bg-koder-orange/5"
                     }
                   >
                     <TableCell className="font-bold">
                       <div className="flex items-center gap-2">
-                        {r.rank <= 3 && (
+                        {r.platz_gesamt <= 3 && (
                           <Trophy
                             size={14}
                             className={
-                              r.rank === 1
-                                ? "text-yellow-500"
-                                : r.rank === 2
-                                  ? "text-gray-400"
+                              r.platz_gesamt === 1 ? "text-yellow-500"
+                                : r.platz_gesamt === 2 ? "text-gray-400"
                                   : "text-amber-700"
                             }
                           />
                         )}
-                        {r.rank}
+                        {r.platz_gesamt}
                       </div>
                     </TableCell>
                     <TableCell>
                       <span className="rounded-lg bg-koder-orange/10 px-2 py-1 text-sm font-bold text-koder-orange">
-                        {r.bib}
+                        {r.startnummer}
                       </span>
                     </TableCell>
                     <TableCell className="font-medium">
-                      {r.first_name} {r.last_name}
+                      {r.vorname} {r.nachname}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className="text-xs uppercase tracking-wider"
-                      >
-                        {r.distance}
+                      <Badge variant="secondary" className="text-xs uppercase tracking-wider">
+                        {r.distanz}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {r.age_class}
-                    </TableCell>
-                    <TableCell className="font-mono font-semibold">
-                      {r.finish_time}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {r.pace}
-                    </TableCell>
+                    <TableCell className="font-mono font-semibold">{r.zeit}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

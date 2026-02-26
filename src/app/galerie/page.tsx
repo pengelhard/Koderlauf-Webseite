@@ -79,7 +79,7 @@ export default function GaleriePage() {
                 <div className={`relative ${ASPECT_CLASSES[i % ASPECT_CLASSES.length]}`}>
                   <Image
                     src={img.url}
-                    alt={img.caption || "Koderlauf Foto"}
+                    alt={img.beschreibung || "Koderlauf Foto"}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                     unoptimized
@@ -88,12 +88,10 @@ export default function GaleriePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                   <div className="absolute bottom-0 left-0 right-0 p-6">
                     <p className="text-sm font-semibold text-white">
-                      {img.caption}
+                      {img.beschreibung}
                     </p>
-                    {img.photographer && (
-                      <p className="mt-1 text-xs text-white/60">
-                        Foto: {img.photographer}
-                      </p>
+                    {img.distanz && (
+                      <p className="mt-1 text-xs text-white/60">{img.distanz}</p>
                     )}
                   </div>
                 </div>
