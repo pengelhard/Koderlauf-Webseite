@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CountdownTimer } from "@/components/sections/countdown";
 
-const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/2711092/2711092-uhd_2560_1440_24fps.mp4";
+const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/2711092/2711092-hd_1920_1080_24fps.mp4";
 const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80";
 
 export function Hero() {
