@@ -80,7 +80,7 @@ export function Hero() {
           className="mb-4"
         >
           <Image
-            src="/mascot-koderlauf.svg"
+            src="/mascot-koderlauf.png"
             alt="Koderlauf Maskottchen"
             width={100}
             height={110}

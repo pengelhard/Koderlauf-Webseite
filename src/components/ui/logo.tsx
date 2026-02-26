@@ -13,8 +13,8 @@ interface LogoProps {
 
 const mascotSizes = {
   sm: { width: 32, height: 36 },
-  md: { width: 40, height: 44 },
-  lg: { width: 64, height: 70 },
+  md: { width: 40, height: 45 },
+  lg: { width: 64, height: 72 },
 };
 
 const textSizes = {
@@ -34,7 +34,7 @@ export function Logo({
   const content = (
     <span className={cn("inline-flex items-center gap-1.5", className)}>
       <Image
-        src="/mascot-koderlauf.svg"
+        src="/mascot-koderlauf.png"
         alt=""
         width={width}
         height={height}
@@ -48,7 +48,7 @@ export function Logo({
             textSizes[size]
           )}
         >
-          <span className="text-white dark:text-white">Koder</span>
+          <span className="text-white">Koder</span>
           <span className="text-koder-orange">lauf</span>
         </span>
       )}

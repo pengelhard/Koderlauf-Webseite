@@ -10,7 +10,7 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-3">
               <Image
-                src="/mascot-koderlauf.svg"
+                src="/mascot-koderlauf.png"
                 alt="Koderlauf Maskottchen"
                 width={56}
                 height={62}
