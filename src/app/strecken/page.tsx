@@ -179,17 +179,28 @@ function StreckenContent() {
           })}
         </div>
 
-        {/* Active route detail */}
+        {/* Description between cards and map */}
+        <motion.div
+          key={`desc-${selected}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="mt-6 rounded-2xl border border-border bg-card px-4 py-3 sm:px-6 sm:py-4"
+        >
+          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{activeStrecke.description}</p>
+        </motion.div>
+
+        {/* Map + Profile + Stats */}
         <motion.div
           key={selected}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mt-10"
+          className="mt-4"
         >
           <Card className="overflow-hidden rounded-3xl border-border">
             <CardContent className="p-0">
-              <div className="relative">
+              <div className="relative [&_.maplibregl-ctrl-attrib]:!hidden">
                 {loading ? (
                   <div className="flex h-[500px] items-center justify-center bg-muted">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />
@@ -206,8 +217,6 @@ function StreckenContent() {
                     <p className="mt-4 text-lg font-semibold text-muted-foreground">Laden...</p>
                   </div>
                 )}
-
-                {/* Route info removed — shown in cards above */}
               </div>
 
               {/* Elevation profile directly under map */}
@@ -217,9 +226,8 @@ function StreckenContent() {
                 </div>
               )}
 
-              {/* Description + Stats below */}
+              {/* Stats below */}
               <div className="p-4 sm:p-6">
-                <p className="text-sm text-muted-foreground sm:text-base">{activeStrecke.description}</p>
 
                 {gpxTrack && (
                   <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-5 sm:gap-3">

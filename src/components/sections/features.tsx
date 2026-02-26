@@ -11,15 +11,8 @@ const strecken = [
   { id: "trailrun", name: "Trailrun", dist: "11,25 km", zeit: "15:20", icon: Mountain, color: "#EF4444" },
 ];
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
 export function Features() {
   return (
@@ -62,11 +55,9 @@ export function Features() {
                   </div>
                   <h3 className="truncate text-sm font-bold sm:text-base">{s.name}</h3>
                 </div>
-                <div className="mt-3 flex items-end justify-between">
-                  <span className="text-xl font-extrabold text-koder-orange sm:text-2xl">{s.dist}</span>
-                  <span className="rounded-lg bg-muted px-2 py-1 text-xs font-semibold tabular-nums text-muted-foreground">
-                    {s.zeit} Uhr
-                  </span>
+                <div className="mt-3 space-y-1">
+                  <p className="text-xl font-extrabold text-koder-orange sm:text-2xl">{s.dist}</p>
+                  <p className="text-xs text-muted-foreground">Start {s.zeit} Uhr</p>
                 </div>
               </Link>
             </motion.div>
