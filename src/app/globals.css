@@ -175,3 +175,26 @@
 .maplibregl-ctrl-attrib {
   display: none !important;
 }
+
+.koder-popup .maplibregl-popup-content {
+  background: rgba(10, 10, 10, 0.85) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 107, 0, 0.25) !important;
+  border-radius: 12px !important;
+  padding: 8px 14px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+  color: #fff !important;
+}
+
+.koder-popup .maplibregl-popup-tip {
+  border-top-color: rgba(10, 10, 10, 0.85) !important;
+  border-bottom-color: rgba(10, 10, 10, 0.85) !important;
+}
+
+.koder-popup .maplibregl-popup-close-button {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.koder-popup strong {
+  color: #FF6B00;
+}

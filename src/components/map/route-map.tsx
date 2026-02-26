@@ -113,12 +113,12 @@ export function RouteMap({ points, highlightPoint, className = "" }: RouteMapPro
 
       new maplibregl.Marker({ color: "#22C55E" })
         .setLngLat([startPt.lon, startPt.lat])
-        .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML("<strong>Start</strong>"))
+        .setPopup(new maplibregl.Popup({ offset: 25, className: "koder-popup" }).setHTML("<strong>Start</strong>"))
         .addTo(map);
 
       new maplibregl.Marker({ color: "#EF4444" })
         .setLngLat([endPt.lon, endPt.lat])
-        .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML("<strong>Ziel</strong>"))
+        .setPopup(new maplibregl.Popup({ offset: 25, className: "koder-popup" }).setHTML("<strong>Ziel</strong>"))
         .addTo(map);
 
       map.fitBounds(
@@ -138,6 +138,10 @@ export function RouteMap({ points, highlightPoint, className = "" }: RouteMapPro
       popupRef.current = null;
     };
   }, [points]);
+
+  function popupHTML(pt: { ele: number; distance: number }) {
+    return `<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:14px;font-weight:800;color:#FF6B00">${Math.round(pt.ele)} m</span><span style="font-size:11px;color:rgba(255,255,255,0.7)">${pt.distance.toFixed(1)} km</span></div>`;
+  }
 
   const updateHighlight = useCallback((pt: { lat: number; lon: number; ele: number; distance: number } | null | undefined) => {
     const map = mapRef.current;
@@ -161,14 +165,13 @@ export function RouteMap({ points, highlightPoint, className = "" }: RouteMapPro
       el.style.boxShadow = "0 0 12px rgba(255,107,0,0.6)";
 
       markerRef.current = new maplibregl.Marker({ element: el }).setLngLat([pt.lon, pt.lat]).addTo(map);
-      popupRef.current = new maplibregl.Popup({ offset: 18, closeButton: false, closeOnClick: false })
+      popupRef.current = new maplibregl.Popup({ offset: 18, closeButton: false, closeOnClick: false, className: "koder-popup" })
         .setLngLat([pt.lon, pt.lat])
-        .setHTML(`<div style="font-size:12px;font-weight:700;color:#FF6B00">${Math.round(pt.ele)} m</div><div style="font-size:11px;color:#666">${pt.distance.toFixed(1)} km</div>`)
+        .setHTML(popupHTML(pt))
         .addTo(map);
     } else {
       markerRef.current.setLngLat([pt.lon, pt.lat]);
-      popupRef.current?.setLngLat([pt.lon, pt.lat])
-        .setHTML(`<div style="font-size:12px;font-weight:700;color:#FF6B00">${Math.round(pt.ele)} m</div><div style="font-size:11px;color:#666">${pt.distance.toFixed(1)} km</div>`);
+      popupRef.current?.setLngLat([pt.lon, pt.lat]).setHTML(popupHTML(pt));
     }
   }, []);
 
