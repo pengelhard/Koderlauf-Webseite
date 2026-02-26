@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 
-const SHEET_ID = "1A7vdAiOWQ0ZP1VnStvOD3YAlgR_xYN70A0eTPvZXaa4";
-const GID = "769374861";
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbyijfSKONmV-NM333bv-C_X0BrFYCQyijF3XGVvZsBINLAEsHvVLp-GPoRhzZJ3VME/exec";
 
 export interface Teilnehmer {
   vorname: string;
@@ -13,50 +12,11 @@ export interface Teilnehmer {
   strecke: string;
 }
 
-function parseCSV(csv: string): string[][] {
-  const rows: string[][] = [];
-  let current = "";
-  let inQuotes = false;
-  let row: string[] = [];
-
-  for (let i = 0; i < csv.length; i++) {
-    const ch = csv[i];
-    if (ch === '"') {
-      if (inQuotes && csv[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (ch === "," && !inQuotes) {
-      row.push(current.trim());
-      current = "";
-    } else if (ch === "\n" && !inQuotes) {
-      row.push(current.trim());
-      rows.push(row);
-      row = [];
-      current = "";
-    } else {
-      current += ch;
-    }
-  }
-  if (current || row.length > 0) {
-    row.push(current.trim());
-    rows.push(row);
-  }
-  return rows;
-}
-
 function berechneAltersklasse(geburtsdatumStr: string, geschlecht: string): string {
   if (!geburtsdatumStr) return "–";
 
-  const parts = geburtsdatumStr.split(".");
-  if (parts.length !== 3) return "–";
-
-  const day = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) - 1;
-  const year = parseInt(parts[2], 10);
-  const birthDate = new Date(year, month, day);
+  const birthDate = new Date(geburtsdatumStr);
+  if (isNaN(birthDate.getTime())) return "–";
 
   const eventDate = new Date(2026, 3, 4);
   let age = eventDate.getFullYear() - birthDate.getFullYear();
@@ -94,44 +54,30 @@ function parseStrecke(raw: string): string {
 
 export async function GET() {
   try {
-    const res = await fetch(CSV_URL, {
+    const res = await fetch(APPS_SCRIPT_URL, {
       next: { revalidate: 300 },
     });
 
     if (!res.ok) {
-      return NextResponse.json({ error: "Sheet nicht erreichbar" }, { status: 502 });
+      return NextResponse.json({ error: "Daten nicht erreichbar" }, { status: 502 });
     }
 
-    const csv = await res.text();
-    const rows = parseCSV(csv);
+    const raw = await res.json();
 
-    if (rows.length < 2) {
+    if (!Array.isArray(raw)) {
       return NextResponse.json({ teilnehmer: [], count: 0 });
     }
 
-    const teilnehmer: Teilnehmer[] = [];
-
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (!row || row.length < 10) continue;
-
-      const vorname = row[2]?.trim();
-      const nachname = row[3]?.trim();
-      const geschlecht = row[8]?.trim();
-      const geburtsdatum = row[9]?.trim();
-      const streckeRaw = row[10]?.trim();
-
-      if (!vorname || !nachname) continue;
-
-      teilnehmer.push({
-        vorname,
-        nachname,
-        geschlecht: geschlecht === "weiblich" ? "W" : geschlecht === "männlich" ? "M" : geschlecht,
-        geburtsdatum,
-        altersklasse: berechneAltersklasse(geburtsdatum, geschlecht),
-        strecke: parseStrecke(streckeRaw),
-      });
-    }
+    const teilnehmer: Teilnehmer[] = raw
+      .filter((r: Record<string, string>) => r.vorname && r.nachname)
+      .map((r: Record<string, string>) => ({
+        vorname: r.vorname?.trim(),
+        nachname: r.nachname?.trim(),
+        geschlecht: r.geschlecht === "weiblich" ? "W" : r.geschlecht === "männlich" ? "M" : r.geschlecht || "–",
+        geburtsdatum: r.geburtsdatum || "",
+        altersklasse: berechneAltersklasse(r.geburtsdatum, r.geschlecht),
+        strecke: parseStrecke(r.strecke),
+      }));
 
     return NextResponse.json({
       teilnehmer,
@@ -139,7 +85,7 @@ export async function GET() {
       lastUpdated: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Google Sheets fetch error:", error);
+    console.error("Apps Script fetch error:", error);
     return NextResponse.json({ error: "Fehler beim Laden" }, { status: 500 });
   }
 }
