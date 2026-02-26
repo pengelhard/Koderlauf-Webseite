@@ -50,7 +50,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
       {blocks.map((block) => (
         <div
           key={block.label}
-          className="flex flex-col items-center rounded-xl border border-koder-orange/20 bg-koder-orange/10 px-3 py-2 backdrop-blur-sm sm:rounded-2xl sm:px-6 sm:py-4"
+          className="flex w-16 flex-col items-center rounded-xl border border-koder-orange/20 bg-koder-orange/10 py-2 backdrop-blur-sm sm:w-24 sm:rounded-2xl sm:py-4"
         >
           <AnimatePresence mode="popLayout">
             <motion.span

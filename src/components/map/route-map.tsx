@@ -79,7 +79,10 @@ export function RouteMap({ points, highlightPoint, className = "" }: RouteMapPro
       pitch: 60,
       bearing: -20,
       maxPitch: 85,
+      attributionControl: false,
     });
+
+    map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "© OSM | Esri" }), "bottom-right");
 
     map.addControl(new maplibregl.NavigationControl(), "top-right");
     map.addControl(new maplibregl.TerrainControl({ source: "terrain", exaggeration: 1.5 }), "top-right");

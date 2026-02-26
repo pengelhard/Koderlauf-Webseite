@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -81,8 +83,10 @@ const DIFFICULTY_COLORS = {
 
 type HoverPoint = { lat: number; lon: number; ele: number; distance: number } | null;
 
-export default function StreckenPage() {
-  const [selected, setSelected] = useState<string>("trailrun");
+function StreckenContent() {
+  const searchParams = useSearchParams();
+  const initialRoute = searchParams.get("route") || "trailrun";
+  const [selected, setSelected] = useState<string>(initialRoute);
   const [gpxTracks, setGpxTracks] = useState<Record<string, GpxTrack>>({});
   const [loading, setLoading] = useState(false);
   const [hoverPoint, setHoverPoint] = useState<HoverPoint>(null);
@@ -203,21 +207,7 @@ export default function StreckenPage() {
                   </div>
                 )}
 
-                <div className="absolute top-4 left-4 z-10">
-                  <div className="glass rounded-2xl px-5 py-3">
-                    <h2 className="text-lg font-bold text-white">{activeStrecke.name}</h2>
-                    <div className="mt-1 flex gap-4 text-sm text-white/70">
-                      <span className="flex items-center gap-1">
-                        <Route size={14} />
-                        {gpxTrack ? `${gpxTrack.distance.toFixed(1)} km` : "..."}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <TrendingUp size={14} />
-                        {gpxTrack ? `${gpxTrack.elevationGain} Hm` : "..."}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                {/* Route info removed — shown in cards above */}
               </div>
 
               {/* Elevation profile directly under map */}
@@ -266,5 +256,13 @@ export default function StreckenPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function StreckenPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center pt-24"><div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" /></div>}>
+      <StreckenContent />
+    </Suspense>
   );
 }

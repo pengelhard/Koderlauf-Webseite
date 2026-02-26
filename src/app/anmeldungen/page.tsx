@@ -303,9 +303,7 @@ export default function AnmeldungenPage() {
           )}
         </motion.div>
 
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          Wird automatisch alle 5 Minuten aktualisiert. Daten aus Google Sheets.
-        </p>
+        {/* Refresh hint removed */}
       </div>
     </div>
   );

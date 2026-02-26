@@ -2,7 +2,6 @@
 
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { getTotalParticipants } from "@/lib/data/events";
 
 function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -14,9 +13,7 @@ function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string
     const el = ref.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setInView(true);
-      },
+      ([entry]) => { if (entry.isIntersecting) setInView(true); },
       { threshold: 0.5 }
     );
     observer.observe(el);
@@ -24,38 +21,46 @@ function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string
   }, []);
 
   useEffect(() => {
-    if (inView) {
-      animate(motionVal, value, { duration: 1.5, ease: "easeOut" });
-    }
+    if (inView) animate(motionVal, value, { duration: 1.5, ease: "easeOut" });
   }, [inView, motionVal, value]);
 
   useEffect(() => {
-    const unsubscribe = rounded.on("change", (v) => {
+    const unsub = rounded.on("change", (v) => {
       if (ref.current) ref.current.textContent = `${v}${suffix}`;
     });
-    return unsubscribe;
+    return unsub;
   }, [rounded, suffix]);
 
   return <span ref={ref}>0{suffix}</span>;
 }
 
+interface CountData {
+  total: number;
+  strecken: number;
+}
+
 export function Stats() {
-  const [total, setTotal] = useState(0);
+  const [counts, setCounts] = useState<CountData>({ total: 0, strecken: 4 });
 
   useEffect(() => {
-    getTotalParticipants().then(setTotal);
+    fetch("/api/anmeldungen")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.count) setCounts({ total: d.count, strecken: 4 });
+      })
+      .catch(() => {});
   }, []);
 
   const stats = [
-    { value: total, label: "Läufer gesamt", suffix: "" },
-    { value: 5, label: "Kilometer (kurz)", suffix: "km" },
-    { value: 10, label: "Kilometer (lang)", suffix: "km" },
-    { value: 3, label: "Distanzen", suffix: "" },
+    { value: counts.total, label: "Anmeldungen", suffix: "" },
+    { value: counts.strecken, label: "Strecken", suffix: "" },
+    { value: 37, label: "Tage bis zum Start", suffix: "" },
+    { value: 1, label: "Koderlauf", suffix: "." },
   ];
 
   return (
-    <section className="border-y border-border bg-forest-deep py-16 text-white">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+    <section className="border-y border-border bg-forest-deep py-12 text-white sm:py-16">
+      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 px-4 sm:grid-cols-4 sm:px-6">
         {stats.map((stat) => (
           <motion.div
             key={stat.label}
@@ -64,10 +69,10 @@ export function Stats() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <p className="text-4xl font-extrabold text-koder-orange sm:text-5xl">
+            <p className="text-3xl font-extrabold text-koder-orange sm:text-5xl">
               <AnimatedNumber value={stat.value} suffix={stat.suffix} />
             </p>
-            <p className="mt-2 text-sm font-medium uppercase tracking-widest text-white/60">
+            <p className="mt-2 text-xs font-medium uppercase tracking-widest text-white/60 sm:text-sm">
               {stat.label}
             </p>
           </motion.div>

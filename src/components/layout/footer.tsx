@@ -23,7 +23,7 @@ export function Footer() {
             </div>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               Der jährliche Koderlauf in Obermögersheim. Gemeinsam laufen,
-              lachen, anfeuern – seit 2024.
+              lachen, anfeuern – seit 2026.
             </p>
           </div>
 

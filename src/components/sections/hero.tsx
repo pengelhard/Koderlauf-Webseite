@@ -67,13 +67,13 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.7, type: "spring" as const, stiffness: 150 }}
-          className="mb-4"
+          className="mb-2"
         >
           <Image
             src="/mascot-koderlauf.png"
             alt="Koderlauf Maskottchen"
-            width={100}
-            height={110}
+            width={72}
+            height={79}
             className="drop-shadow-[0_4px_20px_rgba(255,107,0,0.4)]"
             priority
           />
@@ -144,7 +144,7 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-[15] h-16 bg-gradient-to-t from-background to-transparent" />
+      {/* No bottom fade — avoids flicker line at video-to-content transition */}
     </section>
   );
 }
