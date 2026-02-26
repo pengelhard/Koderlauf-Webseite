@@ -1,15 +1,99 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, ExternalLink } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Users, RefreshCw, Filter } from "lucide-react";
 
-const SHEETS_EMBED_URL =
-  "https://docs.google.com/spreadsheets/d/1A7vdAiOWQ0ZP1VnStvOD3YAlgR_xYN70A0eTPvZXaa4/pubhtml?gid=769374861&single=true&widget=true&headers=false";
+interface Teilnehmer {
+  vorname: string;
+  nachname: string;
+  geschlecht: string;
+  altersklasse: string;
+  strecke: string;
+}
 
-const SHEETS_FULL_URL =
-  "https://docs.google.com/spreadsheets/d/1A7vdAiOWQ0ZP1VnStvOD3YAlgR_xYN70A0eTPvZXaa4/edit?gid=769374861#gid=769374861";
+const STRECKE_COLORS: Record<string, string> = {
+  Kinderlauf: "bg-green-500/10 text-green-600 border-green-500/20",
+  "Kurz und knackig": "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  Koderrunde: "bg-koder-orange/10 text-koder-orange border-koder-orange/20",
+  Trailrun: "bg-red-500/10 text-red-600 border-red-500/20",
+};
+
+const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 export default function AnmeldungenPage() {
+  const [data, setData] = useState<Teilnehmer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [filterStrecke, setFilterStrecke] = useState("");
+  const [filterGeschlecht, setFilterGeschlecht] = useState("");
+  const [filterAK, setFilterAK] = useState("");
+
+  const fetchData = async () => {
+    try {
+      const res = await fetch("/api/anmeldungen");
+      const json = await res.json();
+      if (json.teilnehmer) {
+        setData(json.teilnehmer);
+        setLastUpdated(json.lastUpdated);
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, REFRESH_INTERVAL);
+    return () => clearInterval(interval);
+  }, []);
+
+  const strecken = useMemo(
+    () => [...new Set(data.map((t) => t.strecke))].sort(),
+    [data]
+  );
+  const geschlechter = useMemo(
+    () => [...new Set(data.map((t) => t.geschlecht))].sort(),
+    [data]
+  );
+  const altersklassen = useMemo(
+    () =>
+      [...new Set(data.map((t) => t.altersklasse))]
+        .filter((a) => a !== "–")
+        .sort(),
+    [data]
+  );
+
+  const filtered = useMemo(() => {
+    return data.filter((t) => {
+      if (filterStrecke && t.strecke !== filterStrecke) return false;
+      if (filterGeschlecht && t.geschlecht !== filterGeschlecht) return false;
+      if (filterAK && t.altersklasse !== filterAK) return false;
+      return true;
+    });
+  }, [data, filterStrecke, filterGeschlecht, filterAK]);
+
+  const streckeCounts = useMemo(() => {
+    const c: Record<string, number> = {};
+    data.forEach((t) => {
+      c[t.strecke] = (c[t.strecke] || 0) + 1;
+    });
+    return c;
+  }, [data]);
+
+  const hasActiveFilter = filterStrecke || filterGeschlecht || filterAK;
+
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -25,51 +109,200 @@ export default function AnmeldungenPage() {
             Anmeldungen
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Alle bisherigen Anmeldungen für den Koderlauf 2026. Bist du schon
-            dabei?
+            Alle bisherigen Anmeldungen für den Koderlauf 2026.
           </p>
         </motion.div>
 
-        {/* Stats bar */}
+        {/* Stats cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-8 flex flex-wrap items-center gap-4"
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-5"
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-koder-orange/10 px-4 py-2 text-sm font-medium text-koder-orange">
-            <Users size={16} />
-            Live-Teilnehmerliste
+          <div className="rounded-2xl border border-border bg-card p-4 text-center">
+            <p className="text-3xl font-extrabold text-koder-orange">
+              {data.length}
+            </p>
+            <p className="text-xs text-muted-foreground">Gesamt</p>
           </div>
-          <a
-            href={SHEETS_FULL_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-koder-orange/30 hover:text-koder-orange"
-          >
-            <ExternalLink size={14} />
-            In Google Sheets öffnen
-          </a>
+          {["Kinderlauf", "Kurz und knackig", "Koderrunde", "Trailrun"].map(
+            (s) => (
+              <div
+                key={s}
+                className="rounded-2xl border border-border bg-card p-4 text-center"
+              >
+                <p className="text-3xl font-extrabold">
+                  {streckeCounts[s] || 0}
+                </p>
+                <p className="text-xs text-muted-foreground">{s}</p>
+              </div>
+            )
+          )}
         </motion.div>
 
-        {/* Google Sheets embed */}
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mt-8 flex flex-wrap items-center gap-3"
+        >
+          <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+            <Filter size={14} />
+            Filter:
+          </span>
+
+          {/* Strecke filter */}
+          <select
+            value={filterStrecke}
+            onChange={(e) => setFilterStrecke(e.target.value)}
+            className="rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-koder-orange focus:outline-none focus:ring-1 focus:ring-koder-orange"
+          >
+            <option value="">Alle Strecken</option>
+            {strecken.map((s) => (
+              <option key={s} value={s}>
+                {s} ({streckeCounts[s] || 0})
+              </option>
+            ))}
+          </select>
+
+          {/* Geschlecht filter */}
+          <select
+            value={filterGeschlecht}
+            onChange={(e) => setFilterGeschlecht(e.target.value)}
+            className="rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-koder-orange focus:outline-none focus:ring-1 focus:ring-koder-orange"
+          >
+            <option value="">Alle Geschlechter</option>
+            {geschlechter.map((g) => (
+              <option key={g} value={g}>
+                {g === "M" ? "Männlich" : g === "W" ? "Weiblich" : g}
+              </option>
+            ))}
+          </select>
+
+          {/* Altersklasse filter */}
+          <select
+            value={filterAK}
+            onChange={(e) => setFilterAK(e.target.value)}
+            className="rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-koder-orange focus:outline-none focus:ring-1 focus:ring-koder-orange"
+          >
+            <option value="">Alle Altersklassen</option>
+            {altersklassen.map((ak) => (
+              <option key={ak} value={ak}>
+                {ak}
+              </option>
+            ))}
+          </select>
+
+          {hasActiveFilter && (
+            <button
+              onClick={() => {
+                setFilterStrecke("");
+                setFilterGeschlecht("");
+                setFilterAK("");
+              }}
+              className="rounded-xl px-3 py-2 text-sm font-medium text-koder-orange hover:bg-koder-orange/10"
+            >
+              Zurücksetzen
+            </button>
+          )}
+
+          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+            <RefreshCw size={12} />
+            {lastUpdated
+              ? `Aktualisiert ${new Date(lastUpdated).toLocaleTimeString("de-DE")}`
+              : "Laden..."}
+          </div>
+        </motion.div>
+
+        {/* Result count */}
+        {hasActiveFilter && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            {filtered.length} von {data.length} Teilnehmern
+          </p>
+        )}
+
+        {/* Table */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-8 overflow-hidden rounded-3xl border border-border bg-white"
+          className="mt-6 overflow-hidden rounded-3xl border border-border bg-card"
         >
-          <iframe
-            src={SHEETS_EMBED_URL}
-            title="Anmeldungen Koderlauf 2026"
-            className="h-[600px] w-full sm:h-[700px] lg:h-[800px]"
-            style={{ border: "none" }}
-          />
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border bg-forest-deep/5 hover:bg-forest-deep/5 dark:bg-forest-deep/30">
+                  <TableHead className="w-12 text-center font-semibold uppercase tracking-wider">
+                    #
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    Name
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    Strecke
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    Geschlecht
+                  </TableHead>
+                  <TableHead className="font-semibold uppercase tracking-wider">
+                    Altersklasse
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((t, i) => (
+                  <TableRow key={`${t.vorname}-${t.nachname}-${i}`} className="hover:bg-koder-orange/5">
+                    <TableCell className="text-center text-sm text-muted-foreground">
+                      {i + 1}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {t.vorname} {t.nachname}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${STRECKE_COLORS[t.strecke] || ""}`}
+                      >
+                        {t.strecke}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {t.geschlecht === "M"
+                          ? "♂ Männlich"
+                          : t.geschlecht === "W"
+                            ? "♀ Weiblich"
+                            : t.geschlecht}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="text-xs">
+                        {t.altersklasse}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filtered.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="py-12 text-center text-muted-foreground">
+                      <Users className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
+                      Keine Teilnehmer gefunden.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
         </motion.div>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          Die Liste wird automatisch aktualisiert wenn neue Anmeldungen über
-          Google Forms eingehen.
+          Wird automatisch alle 5 Minuten aktualisiert. Daten aus Google Sheets.
         </p>
       </div>
     </div>
