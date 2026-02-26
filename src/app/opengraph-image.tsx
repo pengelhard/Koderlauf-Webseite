@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Koderlauf 2027 – Lauf mit Herz durch den Wald";
+export const alt = "Koderlauf 2026 – Lauf mit Herz durch den Wald";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -81,7 +81,7 @@ export default async function OGImage() {
               color: "transparent",
             }}
           >
-            2027
+            2026
           </div>
           <div
             style={{
@@ -107,9 +107,9 @@ export default async function OGImage() {
             textTransform: "uppercase" as const,
           }}
         >
-          <span>15. Juni 2027</span>
+          <span>04. April 2026</span>
           <span>·</span>
-          <span>5 km & 10 km</span>
+          <span>800m · 4km · 8,5km · 11,25km</span>
           <span>·</span>
           <span>koderlauf.de</span>
         </div>

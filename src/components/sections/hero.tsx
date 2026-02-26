@@ -6,8 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { CountdownTimer } from "@/components/sections/countdown";
 
-const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4";
-const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1502904550040-7534597429ae?w=1920&q=80";
+const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/5319381/5319381-uhd_2560_1440_25fps.mp4";
+const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1920&q=80";
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -23,7 +23,6 @@ export function Hero() {
 
   return (
     <section ref={ref} className="relative h-screen w-full overflow-hidden">
-      {/* Video / Fallback Image with parallax */}
       <motion.div
         style={{ y: bgY, scale: bgScale }}
         className="absolute inset-0 z-0"
@@ -42,19 +41,13 @@ export function Hero() {
           </video>
         ) : (
           <motion.div
-            animate={{
-              scale: [1, 1.08, 1],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
             className="h-full w-full"
           >
             <Image
               src={HERO_FALLBACK_IMG}
-              alt="Waldlauf bei Sonnenuntergang"
+              alt="Waldlauf"
               fill
               priority
               className="object-cover"
@@ -64,15 +57,12 @@ export function Hero() {
         )}
       </motion.div>
 
-      {/* Forest gradient overlay */}
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-forest-deep/90 via-forest-deep/50 to-forest-deep/30" />
 
-      {/* Content */}
       <motion.div
         style={{ opacity: contentOpacity }}
         className="relative z-20 flex h-full flex-col items-center justify-center px-4 text-center"
       >
-        {/* Mascot above heading */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -95,7 +85,7 @@ export function Hero() {
           transition={{ duration: 0.6 }}
           className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange"
         >
-          Obermögersheim &middot; Waldlauf
+          04. April 2026 &middot; Obermögersheim
         </motion.p>
 
         <motion.h1
@@ -106,7 +96,7 @@ export function Hero() {
         >
           KODERLAUF
           <br />
-          <span className="text-gradient-orange">2027</span>
+          <span className="text-gradient-orange">2026</span>
         </motion.h1>
 
         <motion.p
@@ -118,17 +108,15 @@ export function Hero() {
           Lauf mit Herz durch den Wald
         </motion.p>
 
-        {/* Countdown */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-8"
         >
-          <CountdownTimer targetDate="2027-06-15T09:00:00" />
+          <CountdownTimer targetDate="2026-04-04T14:00:00" />
         </motion.div>
 
-        {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -136,10 +124,10 @@ export function Hero() {
           className="mt-8 flex flex-col gap-4 sm:flex-row"
         >
           <Link
-            href="/ergebnisse"
+            href="/strecken"
             className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/20"
           >
-            Ergebnisse 2026
+            Strecken
           </Link>
           <Link
             href="/galerie"
@@ -156,7 +144,6 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 z-20 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );

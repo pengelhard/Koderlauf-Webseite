@@ -18,22 +18,20 @@ export const metadata: Metadata = {
     template: "%s | Koderlauf",
   },
   description:
-    "Der jährliche Waldlauf in Obermögersheim. Ergebnisse, Galerie und Anmeldung für den Koderlauf 2027.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://koderlauf.de"
-  ),
+    "Der jährliche Waldlauf in Obermögersheim. Strecken, Galerie und Anmeldung für den Koderlauf 2026.",
+  metadataBase: new URL("https://koderlauf.de"),
   openGraph: {
-    title: "Koderlauf 2027 – Lauf mit Herz durch den Wald",
+    title: "Koderlauf 2026 – Lauf mit Herz durch den Wald",
     description:
-      "5 km & 10 km Waldlauf in Obermögersheim. Ergebnisse, Galerie und Online-Anmeldung.",
+      "Waldlauf in Obermögersheim am 04. April 2026. Kinderlauf, 4 km, 8,5 km und Trailrun.",
     type: "website",
     locale: "de_DE",
     siteName: "Koderlauf",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Koderlauf 2027",
-    description: "Lauf mit Herz durch den Wald – Obermögersheim",
+    title: "Koderlauf 2026",
+    description: "Waldlauf am 04. April 2026 in Obermögersheim",
   },
 };
 

@@ -48,7 +48,7 @@ export function Logo({
             textSizes[size]
           )}
         >
-          <span className="text-white">Koder</span>
+          <span className="text-white dark:text-white">Koder</span>
           <span className="text-koder-orange">lauf</span>
         </span>
       )}

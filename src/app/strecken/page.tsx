@@ -35,7 +35,7 @@ const STRECKEN: Strecke[] = [
     name: "Kinderlauf",
     difficulty: "leicht",
     description:
-      "Flache, sichere Runde für die Kleinsten. Perfekt für den ersten Lauf-Wettkampf! Durch offenes Gelände mit Zuschauer-Zugang.",
+      "Vom Start am Sportheim geht\u2019s über den Sportplatz auf asphaltierten Weg bis zum Wendepunkt, Ziel ist wieder am Sportplatz.",
     icon: Baby,
     color: "#22C55E",
     gpxFile: "/kinderlauf.gpx",
@@ -45,7 +45,7 @@ const STRECKEN: Strecke[] = [
     name: "Kurz und knackig",
     difficulty: "mittel",
     description:
-      "Die kurze Power-Runde durch den Wald. Knackige Anstiege, schnelle Trails und ein Sprint-Finish auf der Wiese.",
+      "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der \u201eEbene\u201c weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",
     icon: Zap,
     color: "#FF9F1C",
     gpxFile: "/kurz-knackig.gpx",
@@ -55,7 +55,7 @@ const STRECKEN: Strecke[] = [
     name: "Koderrunde",
     difficulty: "mittel",
     description:
-      "Die klassische Koderlauf-Distanz. Abwechslungsreiche Strecke durch Wald und Feld mit moderaten Höhenmetern.",
+      "Diese Runde ist prädestiniert für alle, die gerne in traumhafter Umgebung walken oder laufen. Die abwechslungsreiche Strecke führt über den Sportplatz, dann am Rande der Ortschaft entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene entlang zurück zum Sportheim und damit direkt ins Ziel.",
     icon: TreePine,
     color: "#FF6B00",
     gpxFile: "/koderrunde.gpx",
@@ -65,7 +65,7 @@ const STRECKEN: Strecke[] = [
     name: "Trailrun",
     difficulty: "schwer",
     description:
-      "Die Königsdisziplin. Technische Trails, steile Anstiege, Single-Tracks durch dichten Wald. Nur für erfahrene Läufer!",
+      "Dieser besondere Teil des Koderlaufs macht ihn einzigartig \u2013 die Wegführung geht in Teilen ähnlich wie die Koderrunde, allerdings mit größeren Offroad-Anteilen. Die Wachtlerspitze auf 587\u00a0m inmitten unseres wunderschönen Wachtlerwaldes bildet wortwörtlich den Höhepunkt des Trailruns. Es geht steil bergauf und bergab quer durch den Wald, weshalb hier ganz besonders auf passende Laufausstattung geachtet werden sollte.",
     icon: Mountain,
     color: "#EF4444",
     gpxFile: "/trailrun.gpx",
@@ -122,14 +122,14 @@ export default function StreckenPage() {
           transition={{ duration: 0.6 }}
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
-            Koderlauf 2027
+            Koderlauf 2026
           </p>
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
             Strecken
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
             Vier Distanzen durch die Wälder rund um Obermögersheim – von
-            kinderleicht bis Trailrun-Abenteuer.
+            kinderleicht bis Trailrun-Abenteuer. Start am Sportheim.
           </p>
         </motion.div>
 
