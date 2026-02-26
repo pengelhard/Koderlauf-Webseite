@@ -12,9 +12,9 @@ interface LogoProps {
 }
 
 const mascotSizes = {
-  sm: { width: 32, height: 36 },
-  md: { width: 40, height: 45 },
-  lg: { width: 64, height: 72 },
+  sm: { width: 28, height: 31 },
+  md: { width: 36, height: 40 },
+  lg: { width: 56, height: 62 },
 };
 
 const textSizes = {

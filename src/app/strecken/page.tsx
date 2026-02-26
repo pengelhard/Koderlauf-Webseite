@@ -134,38 +134,39 @@ export default function StreckenPage() {
         </motion.div>
 
         {/* Route selector cards */}
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
           {STRECKEN.map((strecke) => {
             const track = gpxTracks[strecke.id];
             return (
               <motion.button
                 key={strecke.id}
+                id={strecke.id}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => { setSelected(strecke.id); setHoverPoint(null); }}
-                className={`group rounded-3xl border-2 p-5 text-left transition-all ${
+                className={`group rounded-2xl border-2 p-3 text-left transition-all sm:p-4 ${
                   selected === strecke.id
                     ? "border-koder-orange bg-koder-orange/10 shadow-lg shadow-koder-orange/10"
                     : "border-border hover:border-koder-orange/30"
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div
-                    className="flex h-10 w-10 items-center justify-center rounded-xl"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-9 sm:w-9"
                     style={{ backgroundColor: `${strecke.color}15`, color: strecke.color }}
                   >
-                    <strecke.icon size={20} />
+                    <strecke.icon size={16} />
                   </div>
-                  <div>
-                    <h3 className="font-bold">{strecke.name}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {track ? `${track.distance.toFixed(1)} km · ${track.elevationGain} Hm` : "Laden..."}
+                  <div className="min-w-0">
+                    <h3 className="truncate text-sm font-bold">{strecke.name}</h3>
+                    <p className="text-[10px] text-muted-foreground sm:text-xs">
+                      {track ? `${track.distance.toFixed(1)} km · ${track.elevationGain} Hm` : "..."}
                     </p>
                   </div>
                 </div>
                 <Badge
                   variant="outline"
-                  className={`mt-3 text-xs uppercase tracking-wider ${DIFFICULTY_COLORS[strecke.difficulty]}`}
+                  className={`mt-2 text-[10px] uppercase tracking-wider sm:text-xs ${DIFFICULTY_COLORS[strecke.difficulty]}`}
                 >
                   {strecke.difficulty}
                 </Badge>
@@ -219,52 +220,45 @@ export default function StreckenPage() {
                 </div>
               </div>
 
-              <div className="p-6">
-                <p className="text-muted-foreground">{activeStrecke.description}</p>
+              {/* Elevation profile directly under map */}
+              {gpxTrack && (
+                <div className="border-t border-border px-4 py-3 sm:px-6">
+                  <ElevationProfile points={gpxTrack.points} onHover={handleProfileHover} />
+                </div>
+              )}
+
+              {/* Description + Stats below */}
+              <div className="p-4 sm:p-6">
+                <p className="text-sm text-muted-foreground sm:text-base">{activeStrecke.description}</p>
 
                 {gpxTrack && (
-                  <>
-                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-5">
-                      <div className="rounded-2xl bg-muted p-4 text-center">
-                        <Route size={18} className="mx-auto text-koder-orange" />
-                        <p className="mt-2 text-2xl font-extrabold">{gpxTrack.distance.toFixed(1)}</p>
-                        <p className="text-xs text-muted-foreground">Kilometer</p>
-                      </div>
-                      <div className="rounded-2xl bg-muted p-4 text-center">
-                        <TrendingUp size={18} className="mx-auto text-success" />
-                        <p className="mt-2 text-2xl font-extrabold">{gpxTrack.elevationGain}</p>
-                        <p className="text-xs text-muted-foreground">Hm Aufstieg</p>
-                      </div>
-                      <div className="rounded-2xl bg-muted p-4 text-center">
-                        <TrendingDown size={18} className="mx-auto text-error" />
-                        <p className="mt-2 text-2xl font-extrabold">{gpxTrack.elevationLoss}</p>
-                        <p className="text-xs text-muted-foreground">Hm Abstieg</p>
-                      </div>
-                      <div className="rounded-2xl bg-muted p-4 text-center">
-                        <Mountain size={18} className="mx-auto text-forest-light" />
-                        <p className="mt-2 text-2xl font-extrabold">{gpxTrack.maxEle}</p>
-                        <p className="text-xs text-muted-foreground">Höchster Punkt (m)</p>
-                      </div>
-                      <div className="rounded-2xl bg-muted p-4 text-center">
-                        <Timer size={18} className="mx-auto text-koder-orange-bright" />
-                        <p className="mt-2 text-2xl font-extrabold">{gpxTrack.minEle}</p>
-                        <p className="text-xs text-muted-foreground">Tiefster Punkt (m)</p>
-                      </div>
+                  <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-5 sm:gap-3">
+                    <div className="rounded-xl bg-muted p-3 text-center">
+                      <Route size={16} className="mx-auto text-koder-orange" />
+                      <p className="mt-1 text-lg font-extrabold sm:text-xl">{gpxTrack.distance.toFixed(1)}</p>
+                      <p className="text-[10px] text-muted-foreground">km</p>
                     </div>
-
-                    <div className="mt-6">
-                      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
-                        Höhenprofil
-                        <span className="text-[10px] font-normal normal-case tracking-normal text-muted-foreground">
-                          – mit der Maus über das Profil fahren
-                        </span>
-                      </h3>
-                      <ElevationProfile
-                        points={gpxTrack.points}
-                        onHover={handleProfileHover}
-                      />
+                    <div className="rounded-xl bg-muted p-3 text-center">
+                      <TrendingUp size={16} className="mx-auto text-success" />
+                      <p className="mt-1 text-lg font-extrabold sm:text-xl">{gpxTrack.elevationGain}</p>
+                      <p className="text-[10px] text-muted-foreground">Hm ↑</p>
                     </div>
-                  </>
+                    <div className="rounded-xl bg-muted p-3 text-center">
+                      <TrendingDown size={16} className="mx-auto text-error" />
+                      <p className="mt-1 text-lg font-extrabold sm:text-xl">{gpxTrack.elevationLoss}</p>
+                      <p className="text-[10px] text-muted-foreground">Hm ↓</p>
+                    </div>
+                    <div className="rounded-xl bg-muted p-3 text-center">
+                      <Mountain size={16} className="mx-auto text-forest-light" />
+                      <p className="mt-1 text-lg font-extrabold sm:text-xl">{gpxTrack.maxEle}</p>
+                      <p className="text-[10px] text-muted-foreground">Max (m)</p>
+                    </div>
+                    <div className="rounded-xl bg-muted p-3 text-center">
+                      <Timer size={16} className="mx-auto text-koder-orange-bright" />
+                      <p className="mt-1 text-lg font-extrabold sm:text-xl">{gpxTrack.minEle}</p>
+                      <p className="text-[10px] text-muted-foreground">Min (m)</p>
+                    </div>
+                  </div>
                 )}
               </div>
             </CardContent>

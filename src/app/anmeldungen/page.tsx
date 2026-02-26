@@ -118,24 +118,24 @@ export default function AnmeldungenPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.15 }}
-          className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-5"
+          className="mt-6 flex flex-wrap gap-2 sm:mt-8 sm:grid sm:grid-cols-5 sm:gap-3"
         >
-          <div className="rounded-2xl border border-border bg-card p-4 text-center">
-            <p className="text-3xl font-extrabold text-koder-orange">
+          <div className="rounded-xl border border-border bg-card px-3 py-2 text-center sm:rounded-2xl sm:p-4">
+            <p className="text-xl font-extrabold text-koder-orange sm:text-3xl">
               {data.length}
             </p>
-            <p className="text-xs text-muted-foreground">Gesamt</p>
+            <p className="text-[10px] text-muted-foreground sm:text-xs">Gesamt</p>
           </div>
           {["Kinderlauf", "Kurz und knackig", "Koderrunde", "Trailrun"].map(
             (s) => (
               <div
                 key={s}
-                className="rounded-2xl border border-border bg-card p-4 text-center"
+                className="rounded-xl border border-border bg-card px-3 py-2 text-center sm:rounded-2xl sm:p-4"
               >
-                <p className="text-3xl font-extrabold">
+                <p className="text-xl font-extrabold sm:text-3xl">
                   {streckeCounts[s] || 0}
                 </p>
-                <p className="text-xs text-muted-foreground">{s}</p>
+                <p className="text-[10px] text-muted-foreground sm:text-xs">{s}</p>
               </div>
             )
           )}
@@ -146,12 +146,13 @@ export default function AnmeldungenPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25 }}
-          className="mt-8 flex flex-wrap items-center gap-3"
+          className="mt-6 space-y-2 sm:mt-8"
         >
           <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
             <Filter size={14} />
-            Filter:
+            Filter
           </span>
+          <div className="flex flex-wrap items-center gap-2">
 
           {/* Strecke filter */}
           <select
@@ -208,11 +209,12 @@ export default function AnmeldungenPage() {
             </button>
           )}
 
-          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-            <RefreshCw size={12} />
-            {lastUpdated
-              ? `Aktualisiert ${new Date(lastUpdated).toLocaleTimeString("de-DE")}`
-              : "Laden..."}
+            <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+              <RefreshCw size={12} />
+              {lastUpdated
+                ? `${new Date(lastUpdated).toLocaleTimeString("de-DE")}`
+                : "..."}
+            </div>
           </div>
         </motion.div>
 

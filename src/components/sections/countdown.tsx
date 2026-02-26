@@ -46,11 +46,11 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
   ];
 
   return (
-    <div className="flex gap-3 sm:gap-4">
+    <div className="flex gap-2 sm:gap-4">
       {blocks.map((block) => (
         <div
           key={block.label}
-          className="flex flex-col items-center rounded-2xl border border-koder-orange/20 bg-koder-orange/10 px-4 py-3 backdrop-blur-sm sm:px-6 sm:py-4"
+          className="flex flex-col items-center rounded-xl border border-koder-orange/20 bg-koder-orange/10 px-3 py-2 backdrop-blur-sm sm:rounded-2xl sm:px-6 sm:py-4"
         >
           <AnimatePresence mode="popLayout">
             <motion.span

@@ -38,7 +38,7 @@ export function Navbar() {
           : "bg-forest-deep/70 backdrop-blur-sm"
       )}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
         <Logo size="md" />
 
         <div className="hidden items-center gap-8 md:flex">
