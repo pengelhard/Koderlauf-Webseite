@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { GpxPoint } from "@/lib/gpx";
@@ -8,12 +8,15 @@ import { toGeoJson } from "@/lib/gpx";
 
 interface RouteMapProps {
   points: GpxPoint[];
+  highlightPoint?: { lat: number; lon: number; ele: number; distance: number } | null;
   className?: string;
 }
 
-export function RouteMap({ points, className = "" }: RouteMapProps) {
+export function RouteMap({ points, highlightPoint, className = "" }: RouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const markerRef = useRef<maplibregl.Marker | null>(null);
+  const popupRef = useRef<maplibregl.Popup | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || points.length === 0) return;
@@ -58,32 +61,17 @@ export function RouteMap({ points, className = "" }: RouteMapProps) {
           },
           labels: {
             type: "raster",
-            tiles: [
-              "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-            ],
+            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
             tileSize: 256,
-            attribution: "© OpenStreetMap contributors",
+            attribution: "\u00a9 OpenStreetMap contributors",
             maxzoom: 19,
           },
         },
         layers: [
-          {
-            id: "satellite-layer",
-            type: "raster",
-            source: "satellite",
-            paint: { "raster-opacity": 1 },
-          },
-          {
-            id: "labels-layer",
-            type: "raster",
-            source: "labels",
-            paint: { "raster-opacity": 0.3 },
-          },
+          { id: "satellite-layer", type: "raster", source: "satellite", paint: { "raster-opacity": 1 } },
+          { id: "labels-layer", type: "raster", source: "labels", paint: { "raster-opacity": 0.3 } },
         ],
-        terrain: {
-          source: "terrain",
-          exaggeration: 1.5,
-        },
+        terrain: { source: "terrain", exaggeration: 1.5 },
         sky: {},
       },
       center: [centerLon, centerLat],
@@ -94,30 +82,19 @@ export function RouteMap({ points, className = "" }: RouteMapProps) {
     });
 
     map.addControl(new maplibregl.NavigationControl(), "top-right");
-    map.addControl(
-      new maplibregl.TerrainControl({ source: "terrain", exaggeration: 1.5 }),
-      "top-right"
-    );
+    map.addControl(new maplibregl.TerrainControl({ source: "terrain", exaggeration: 1.5 }), "top-right");
 
     map.on("load", () => {
       const geojson = toGeoJson(points);
 
-      map.addSource("route", {
-        type: "geojson",
-        data: geojson as GeoJSON.Feature,
-      });
+      map.addSource("route", { type: "geojson", data: geojson as GeoJSON.Feature });
 
       map.addLayer({
         id: "route-glow",
         type: "line",
         source: "route",
         layout: { "line-join": "round", "line-cap": "round" },
-        paint: {
-          "line-color": "#FF6B00",
-          "line-width": 8,
-          "line-opacity": 0.3,
-          "line-blur": 4,
-        },
+        paint: { "line-color": "#FF6B00", "line-width": 8, "line-opacity": 0.3, "line-blur": 4 },
       });
 
       map.addLayer({
@@ -125,11 +102,7 @@ export function RouteMap({ points, className = "" }: RouteMapProps) {
         type: "line",
         source: "route",
         layout: { "line-join": "round", "line-cap": "round" },
-        paint: {
-          "line-color": "#FF6B00",
-          "line-width": 4,
-          "line-opacity": 0.9,
-        },
+        paint: { "line-color": "#FF6B00", "line-width": 4, "line-opacity": 0.9 },
       });
 
       const startPt = points[0];
@@ -137,19 +110,16 @@ export function RouteMap({ points, className = "" }: RouteMapProps) {
 
       new maplibregl.Marker({ color: "#22C55E" })
         .setLngLat([startPt.lon, startPt.lat])
-        .setPopup(new maplibregl.Popup().setHTML("<strong>Start</strong>"))
+        .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML("<strong>Start</strong>"))
         .addTo(map);
 
       new maplibregl.Marker({ color: "#EF4444" })
         .setLngLat([endPt.lon, endPt.lat])
-        .setPopup(new maplibregl.Popup().setHTML("<strong>Ziel</strong>"))
+        .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML("<strong>Ziel</strong>"))
         .addTo(map);
 
       map.fitBounds(
-        [
-          [bounds.minLon - 0.005, bounds.minLat - 0.005],
-          [bounds.maxLon + 0.005, bounds.maxLat + 0.005],
-        ],
+        [[bounds.minLon - 0.005, bounds.minLat - 0.005], [bounds.maxLon + 0.005, bounds.maxLat + 0.005]],
         { padding: 60, pitch: 60, bearing: -20, duration: 1000 }
       );
     });
@@ -157,10 +127,51 @@ export function RouteMap({ points, className = "" }: RouteMapProps) {
     mapRef.current = map;
 
     return () => {
+      markerRef.current?.remove();
+      popupRef.current?.remove();
       map.remove();
       mapRef.current = null;
+      markerRef.current = null;
+      popupRef.current = null;
     };
   }, [points]);
+
+  const updateHighlight = useCallback((pt: { lat: number; lon: number; ele: number; distance: number } | null | undefined) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (!pt) {
+      markerRef.current?.remove();
+      markerRef.current = null;
+      popupRef.current?.remove();
+      popupRef.current = null;
+      return;
+    }
+
+    if (!markerRef.current) {
+      const el = document.createElement("div");
+      el.style.width = "18px";
+      el.style.height = "18px";
+      el.style.borderRadius = "50%";
+      el.style.background = "#FF6B00";
+      el.style.border = "3px solid #fff";
+      el.style.boxShadow = "0 0 12px rgba(255,107,0,0.6)";
+
+      markerRef.current = new maplibregl.Marker({ element: el }).setLngLat([pt.lon, pt.lat]).addTo(map);
+      popupRef.current = new maplibregl.Popup({ offset: 18, closeButton: false, closeOnClick: false })
+        .setLngLat([pt.lon, pt.lat])
+        .setHTML(`<div style="font-size:12px;font-weight:700;color:#FF6B00">${Math.round(pt.ele)} m</div><div style="font-size:11px;color:#666">${pt.distance.toFixed(1)} km</div>`)
+        .addTo(map);
+    } else {
+      markerRef.current.setLngLat([pt.lon, pt.lat]);
+      popupRef.current?.setLngLat([pt.lon, pt.lat])
+        .setHTML(`<div style="font-size:12px;font-weight:700;color:#FF6B00">${Math.round(pt.ele)} m</div><div style="font-size:11px;color:#666">${pt.distance.toFixed(1)} km</div>`);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateHighlight(highlightPoint);
+  }, [highlightPoint, updateHighlight]);
 
   return (
     <div
