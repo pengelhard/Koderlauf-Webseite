@@ -57,7 +57,7 @@ export default async function OGImage() {
               color: "#FF6B00",
             }}
           >
-            Obermögersheim · Waldlauf
+            Obermögersheim · Koderlauf
           </div>
           <div
             style={{

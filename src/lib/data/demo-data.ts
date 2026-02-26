@@ -4,7 +4,7 @@ export const DEMO_EVENT_2027 = {
   slug: "koderlauf-2027",
   date: "2027-06-15T09:00:00+02:00",
   location: "Obermögersheim",
-  description: "Der jährliche Waldlauf in Obermögersheim. 5 km, 10 km und Kids-Lauf durch den Wald.",
+  description: "Der jährliche Koderlauf in Obermögersheim.",
   max_participants_5km: 200,
   max_participants_10km: 150,
   max_participants_kids: 100,

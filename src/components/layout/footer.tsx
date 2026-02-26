@@ -22,8 +22,8 @@ export function Footer() {
               </span>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
-              Der jährliche Waldlauf in Obermögersheim. Lauf mit Herz durch den
-              Wald – seit 2024.
+              Der jährliche Koderlauf in Obermögersheim. Gemeinsam laufen,
+              lachen, anfeuern – seit 2024.
             </p>
           </div>
 

@@ -47,7 +47,7 @@ export function Hero() {
           >
             <Image
               src={HERO_FALLBACK_IMG}
-              alt="Waldlauf"
+              alt="Koderlauf"
               fill
               priority
               className="object-cover"

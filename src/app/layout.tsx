@@ -14,16 +14,16 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Koderlauf – Waldlauf in Obermögersheim",
+    default: "Koderlauf 2026 – Der jährliche Koderlauf in Obermögersheim",
     template: "%s | Koderlauf",
   },
   description:
-    "Der jährliche Waldlauf in Obermögersheim. Strecken, Galerie und Anmeldung für den Koderlauf 2026.",
+    "Der jährliche Koderlauf in Obermögersheim. Strecken, Galerie und Anmeldung für den Koderlauf 2026.",
   metadataBase: new URL("https://koderlauf.de"),
   openGraph: {
     title: "Koderlauf 2026 – Lauf mit Herz durch den Wald",
     description:
-      "Waldlauf in Obermögersheim am 04. April 2026. Kinderlauf, 4 km, 8,5 km und Trailrun.",
+      "Koderlauf in Obermögersheim am 04. April 2026. Kinderlauf, 4 km, 8,5 km und Trailrun.",
     type: "website",
     locale: "de_DE",
     siteName: "Koderlauf",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Koderlauf 2026",
-    description: "Waldlauf am 04. April 2026 in Obermögersheim",
+    description: "Koderlauf am 04. April 2026 in Obermögersheim",
   },
 };
 
