@@ -84,22 +84,13 @@ export function Footer() {
             </h4>
             <div className="mt-4 flex gap-4">
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/koderlauf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-koder-orange"
-                aria-label="Instagram"
+                aria-label="Instagram @koderlauf"
               >
                 <Instagram size={18} />
-              </a>
-              <a
-                href="https://strava.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xs font-bold transition-colors hover:bg-koder-orange"
-                aria-label="Strava"
-              >
-                S
               </a>
             </div>
             <p className="mt-6 text-xs text-white/40">
