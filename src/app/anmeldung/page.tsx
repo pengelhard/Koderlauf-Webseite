@@ -2,11 +2,10 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
-import { ExternalLink, CalendarDays, MapPin, Clock, Navigation } from "lucide-react";
+import { CalendarDays, MapPin, Clock, Navigation } from "lucide-react";
 
-const GOOGLE_FORMS_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSfAkm13x6Nml-SNe6isACTMN2SYOtutCgVNdmwrw9pbIFHhnQ/viewform";
+const GOOGLE_FORMS_EMBED =
+  "https://docs.google.com/forms/d/e/1FAIpQLSfAkm13x6Nml-SNe6isACTMN2SYOtutCgVNdmwrw9pbIFHhnQ/viewform?embedded=true";
 
 const MAPS_URL =
   "https://maps.google.com/?q=Sportheim+Obermögersheim+91717+Wassertrüdingen";
@@ -68,46 +67,26 @@ export default function AnmeldungPage() {
           </a>
         </motion.div>
 
-        {/* Google Forms CTA */}
+        {/* Google Forms Embed */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-8"
         >
-          <div className="overflow-hidden rounded-3xl border-2 border-koder-orange/30 bg-gradient-to-br from-koder-orange/15 via-koder-orange/10 to-forest-deep/10 p-8 text-center sm:p-12">
-            <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-koder-orange/20">
-              <Image
-                src="/mascot-koderlauf.png"
-                alt="Koderlauf Maskottchen"
-                width={90}
-                height={99}
-                className="drop-shadow-[0_4px_20px_rgba(255,107,0,0.4)]"
-              />
-            </div>
-            <h2 className="mt-6 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Jetzt für 2026 anmelden!
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-muted-foreground">
-              Die Anmeldung für den Koderlauf 2026 läuft über Google Forms.
-              Klicke auf den Button und sichere dir deinen Startplatz.
-            </p>
-            <a
-              href={GOOGLE_FORMS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glow-orange mt-8 inline-flex items-center gap-3 rounded-2xl bg-koder-orange px-10 py-5 text-lg font-bold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright hover:shadow-xl hover:shadow-koder-orange/25"
+          <div className="overflow-hidden rounded-3xl border border-border bg-white">
+            <iframe
+              src={GOOGLE_FORMS_EMBED}
+              title="Koderlauf 2026 Anmeldung"
+              className="w-full"
+              style={{ height: "1400px", border: "none" }}
             >
-              <ExternalLink className="h-5 w-5" />
-              Zur Anmeldung
-            </a>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Du wirst zu Google Forms weitergeleitet
-            </p>
+              Wird geladen…
+            </iframe>
           </div>
         </motion.div>
 
-        {/* Strecken-Überblick mit Links */}
+        {/* Strecken-Überblick */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -126,7 +105,7 @@ export default function AnmeldungPage() {
             ].map((s) => (
               <Link
                 key={s.id}
-                href={`/strecken?route=${s.id}#${s.id}`}
+                href={`/strecken?route=${s.id}`}
                 className="flex items-center justify-between rounded-2xl border border-border bg-card px-5 py-3 transition-all hover:border-koder-orange/30 hover:bg-koder-orange/5"
               >
                 <span className="font-semibold">{s.name}</span>
