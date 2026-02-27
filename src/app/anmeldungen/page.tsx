@@ -179,38 +179,7 @@ export default function AnmeldungenPage() {
           </div>
         </motion.div>
 
-        {/* Per-Strecke Altersklassen breakdown */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-8 grid gap-4 sm:grid-cols-2">
-          {STRECKEN_ORDER.map((name) => {
-            const color = STRECKEN_COLORS[name] || "#FF6B00";
-            const streckeData = data.filter((t) => t.strecke === name);
-            const akBreakdown: Record<string, number> = {};
-            streckeData.forEach((t) => {
-              if (t.altersklasse && t.altersklasse !== "–")
-                akBreakdown[t.altersklasse] = (akBreakdown[t.altersklasse] || 0) + 1;
-            });
-            const sorted = Object.entries(akBreakdown).sort((a, b) => b[1] - a[1]);
-
-            return (
-              <div key={name} className="rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
-                  <h3 className="font-bold">{name}</h3>
-                  <span className="ml-auto text-lg font-black" style={{ color }}>{streckeData.length}</span>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {sorted.map(([ak, count]) => (
-                    <span key={ak} className="rounded-lg bg-muted px-2 py-1 text-[11px]">
-                      {ak} <span className="font-bold" style={{ color }}>{count}</span>
-                    </span>
-                  ))}
-                  {sorted.length === 0 && <span className="text-xs text-muted-foreground">Keine AK</span>}
-                </div>
-              </div>
-            );
-          })}
-        </motion.div>
+        {/* Per-strecke breakdown removed — AK badges above are sufficient */}
       </div>
     </div>
   );
