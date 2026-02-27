@@ -51,9 +51,9 @@ export function TShirtPromo() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <div className="inline-flex items-center gap-2 rounded-full border border-purple-400/30 bg-purple-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-purple-300">
+                <div className="inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-green-300">
                   <Shirt size={14} />
-                  Special Edition 2026
+                  Bestellschluss verlängert!
                 </div>
 
                 <h2 className="mt-6 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
@@ -69,11 +69,11 @@ export function TShirtPromo() {
                   mitbestellen. Ausgabe zusammen mit den Startunterlagen.
                 </p>
 
-                <div className="mt-6 inline-flex items-center gap-3 rounded-2xl border border-red-400/30 bg-red-500/10 px-5 py-3">
-                  <Clock size={18} className="shrink-0 text-red-400" />
+                <div className="mt-6 inline-flex items-center gap-3 rounded-2xl border border-green-400/30 bg-green-500/10 px-5 py-3">
+                  <Clock size={18} className="shrink-0 text-green-400" />
                   <div>
-                    <p className="text-sm font-bold text-red-300">Bestellschluss: 07. März 2026</p>
-                    <p className="text-xs text-white/50">Danach keine Bestellung mehr möglich!</p>
+                    <p className="text-sm font-bold text-green-300">Verlängert bis 07. März 2026!</p>
+                    <p className="text-xs text-white/50">Letzte Chance — jetzt noch T-Shirt mitbestellen!</p>
                   </div>
                 </div>
 
