@@ -39,7 +39,7 @@ const STRECKEN: Strecke[] = [
     description:
       "Vom Start am Sportheim geht\u2019s über den Sportplatz auf asphaltierten Weg bis zum Wendepunkt, Ziel ist wieder am Sportplatz.",
     icon: Baby,
-    color: "#22C55E",
+    color: "#FF6B00",
     gpxFile: "/kinderlauf.gpx",
   },
   {
@@ -49,7 +49,7 @@ const STRECKEN: Strecke[] = [
     description:
       "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der \u201eEbene\u201c weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",
     icon: Zap,
-    color: "#FF9F1C",
+    color: "#22C55E",
     gpxFile: "/kurz-knackig.gpx",
   },
   {
@@ -59,7 +59,7 @@ const STRECKEN: Strecke[] = [
     description:
       "Diese Runde ist prädestiniert für alle, die gerne in traumhafter Umgebung walken oder laufen. Die abwechslungsreiche Strecke führt über den Sportplatz, dann am Rande der Ortschaft entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene entlang zurück zum Sportheim und damit direkt ins Ziel.",
     icon: TreePine,
-    color: "#FF6B00",
+    color: "#EAB308",
     gpxFile: "/koderrunde.gpx",
   },
   {
@@ -69,7 +69,7 @@ const STRECKEN: Strecke[] = [
     description:
       "Dieser besondere Teil des Koderlaufs macht ihn einzigartig \u2013 die Wegführung geht in Teilen ähnlich wie die Koderrunde, allerdings mit größeren Offroad-Anteilen. Die Wachtlerspitze auf 587\u00a0m inmitten unseres wunderschönen Wachtlerwaldes bildet wortwörtlich den Höhepunkt des Trailruns. Es geht steil bergauf und bergab quer durch den Wald, weshalb hier ganz besonders auf passende Laufausstattung geachtet werden sollte.",
     icon: Mountain,
-    color: "#EF4444",
+    color: "#3B82F6",
     gpxFile: "/trailrun.gpx",
   },
 ];
@@ -209,6 +209,7 @@ function StreckenContent() {
                   <RouteMap
                     points={gpxTrack.points}
                     highlightPoint={hoverPoint}
+                    routeColor={activeStrecke.color}
                     className="rounded-none border-0"
                   />
                 ) : (

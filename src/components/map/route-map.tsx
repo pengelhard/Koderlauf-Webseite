@@ -9,10 +9,11 @@ import { toGeoJson } from "@/lib/gpx";
 interface RouteMapProps {
   points: GpxPoint[];
   highlightPoint?: { lat: number; lon: number; ele: number; distance: number } | null;
+  routeColor?: string;
   className?: string;
 }
 
-export function RouteMap({ points, highlightPoint, className = "" }: RouteMapProps) {
+export function RouteMap({ points, highlightPoint, routeColor = "#FF6B00", className = "" }: RouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
@@ -97,7 +98,7 @@ export function RouteMap({ points, highlightPoint, className = "" }: RouteMapPro
         type: "line",
         source: "route",
         layout: { "line-join": "round", "line-cap": "round" },
-        paint: { "line-color": "#FF6B00", "line-width": 8, "line-opacity": 0.3, "line-blur": 4 },
+        paint: { "line-color": routeColor, "line-width": 8, "line-opacity": 0.3, "line-blur": 4 },
       });
 
       map.addLayer({
@@ -105,7 +106,7 @@ export function RouteMap({ points, highlightPoint, className = "" }: RouteMapPro
         type: "line",
         source: "route",
         layout: { "line-join": "round", "line-cap": "round" },
-        paint: { "line-color": "#FF6B00", "line-width": 4, "line-opacity": 0.9 },
+        paint: { "line-color": routeColor, "line-width": 4, "line-opacity": 0.9 },
       });
 
       const startPt = points[0];
@@ -139,10 +140,6 @@ export function RouteMap({ points, highlightPoint, className = "" }: RouteMapPro
     };
   }, [points]);
 
-  function popupHTML(pt: { ele: number; distance: number }) {
-    return `<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:14px;font-weight:800;color:#FF6B00">${Math.round(pt.ele)} m</span><span style="font-size:11px;color:rgba(255,255,255,0.7)">${pt.distance.toFixed(1)} km</span></div>`;
-  }
-
   const updateHighlight = useCallback((pt: { lat: number; lon: number; ele: number; distance: number } | null | undefined) => {
     const map = mapRef.current;
     if (!map) return;
@@ -160,20 +157,20 @@ export function RouteMap({ points, highlightPoint, className = "" }: RouteMapPro
       el.style.width = "18px";
       el.style.height = "18px";
       el.style.borderRadius = "50%";
-      el.style.background = "#FF6B00";
+      el.style.background = routeColor;
       el.style.border = "3px solid #fff";
-      el.style.boxShadow = "0 0 12px rgba(255,107,0,0.6)";
+      el.style.boxShadow = `0 0 12px ${routeColor}99`;
 
       markerRef.current = new maplibregl.Marker({ element: el }).setLngLat([pt.lon, pt.lat]).addTo(map);
       popupRef.current = new maplibregl.Popup({ offset: 18, closeButton: false, closeOnClick: false, className: "koder-popup" })
         .setLngLat([pt.lon, pt.lat])
-        .setHTML(popupHTML(pt))
+        .setHTML(`<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:14px;font-weight:800;color:${routeColor}">${Math.round(pt.ele)} m</span><span style="font-size:11px;color:rgba(255,255,255,0.7)">${pt.distance.toFixed(1)} km</span></div>`)
         .addTo(map);
     } else {
       markerRef.current.setLngLat([pt.lon, pt.lat]);
-      popupRef.current?.setLngLat([pt.lon, pt.lat]).setHTML(popupHTML(pt));
+      popupRef.current?.setLngLat([pt.lon, pt.lat]).setHTML(`<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:14px;font-weight:800;color:${routeColor}">${Math.round(pt.ele)} m</span><span style="font-size:11px;color:rgba(255,255,255,0.7)">${pt.distance.toFixed(1)} km</span></div>`);
     }
-  }, []);
+  }, [routeColor]);
 
   useEffect(() => {
     updateHighlight(highlightPoint);

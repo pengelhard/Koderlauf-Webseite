@@ -12,35 +12,53 @@ export interface Teilnehmer {
   strecke: string;
 }
 
-function berechneAltersklasse(geburtsdatumStr: string, geschlecht: string): string {
-  if (!geburtsdatumStr) return "–";
+function getJahrgang(geburtsdatumStr: string): number | null {
+  if (!geburtsdatumStr) return null;
+  const d = new Date(geburtsdatumStr);
+  if (isNaN(d.getTime())) return null;
+  return d.getFullYear();
+}
 
-  const birthDate = new Date(geburtsdatumStr);
-  if (isNaN(birthDate.getTime())) return "–";
+function berechneAltersklasse(geburtsdatumStr: string, geschlecht: string, strecke: string): string {
+  const jg = getJahrgang(geburtsdatumStr);
+  if (!jg) return "–";
 
-  const eventDate = new Date(2026, 3, 4);
-  let age = eventDate.getFullYear() - birthDate.getFullYear();
-  const m = eventDate.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && eventDate.getDate() < birthDate.getDate())) age--;
+  const prefix = geschlecht === "weiblich" ? "W " : "M ";
+  const s = strecke.toLowerCase();
 
-  const prefix = geschlecht === "weiblich" ? "W" : "M";
+  if (s.includes("kinderlauf")) {
+    return "Kinderlauf";
+  }
 
-  if (age < 10) return `${prefix}U10`;
-  if (age < 14) return `${prefix}U14`;
-  if (age < 16) return `${prefix}U16`;
-  if (age < 18) return `${prefix}U18`;
-  if (age < 20) return `${prefix}U20`;
-  if (age < 30) return `${prefix}20`;
-  if (age < 35) return `${prefix}30`;
-  if (age < 40) return `${prefix}35`;
-  if (age < 45) return `${prefix}40`;
-  if (age < 50) return `${prefix}45`;
-  if (age < 55) return `${prefix}50`;
-  if (age < 60) return `${prefix}55`;
-  if (age < 65) return `${prefix}60`;
-  if (age < 70) return `${prefix}65`;
-  if (age < 75) return `${prefix}70`;
-  return `${prefix}75+`;
+  if (s.includes("kurz und knackig") || s.includes("kurz")) {
+    if (jg >= 2015 && jg <= 2018) return `${prefix}AK 8-11`;
+    if (jg >= 2011 && jg <= 2014) return `${prefix}AK 12-15`;
+    if (jg >= 1997 && jg <= 2010) return `${prefix}AK 16-29`;
+    if (jg >= 1977 && jg <= 1996) return `${prefix}AK 30-49`;
+    if (jg >= 1967 && jg <= 1976) return `${prefix}AK 50-59`;
+    if (jg <= 1966) return `${prefix}AK 60+`;
+    return "–";
+  }
+
+  if (s.includes("koderrunde")) {
+    if (jg >= 2011 && jg <= 2014) return `${prefix}AK 12-15`;
+    if (jg >= 1997 && jg <= 2010) return `${prefix}AK 16-29`;
+    if (jg >= 1977 && jg <= 1996) return `${prefix}AK 30-49`;
+    if (jg >= 1967 && jg <= 1976) return `${prefix}AK 50-59`;
+    if (jg <= 1966) return `${prefix}AK 60+`;
+    return "–";
+  }
+
+  if (s.includes("trailrun")) {
+    if (jg >= 2009 && jg <= 2011) return `${prefix}U18`;
+    if (jg >= 1997 && jg <= 2008) return `${prefix}AK 18-29`;
+    if (jg >= 1977 && jg <= 1996) return `${prefix}AK 30-49`;
+    if (jg >= 1967 && jg <= 1976) return `${prefix}AK 50-59`;
+    if (jg <= 1966) return `${prefix}AK 60+`;
+    return "–";
+  }
+
+  return "–";
 }
 
 function parseStrecke(raw: string): string {
@@ -70,14 +88,17 @@ export async function GET() {
 
     const teilnehmer: Teilnehmer[] = raw
       .filter((r: Record<string, string>) => r.vorname && r.nachname)
-      .map((r: Record<string, string>) => ({
-        vorname: r.vorname?.trim(),
-        nachname: r.nachname?.trim(),
-        geschlecht: r.geschlecht === "weiblich" ? "W" : r.geschlecht === "männlich" ? "M" : r.geschlecht || "–",
-        geburtsdatum: r.geburtsdatum || "",
-        altersklasse: berechneAltersklasse(r.geburtsdatum, r.geschlecht),
-        strecke: parseStrecke(r.strecke),
-      }));
+      .map((r: Record<string, string>) => {
+        const strecke = parseStrecke(r.strecke);
+        return {
+          vorname: r.vorname?.trim(),
+          nachname: r.nachname?.trim(),
+          geschlecht: r.geschlecht === "weiblich" ? "W" : r.geschlecht === "männlich" ? "M" : r.geschlecht || "–",
+          geburtsdatum: r.geburtsdatum || "",
+          altersklasse: berechneAltersklasse(r.geburtsdatum, r.geschlecht, strecke),
+          strecke,
+        };
+      });
 
     return NextResponse.json({
       teilnehmer,

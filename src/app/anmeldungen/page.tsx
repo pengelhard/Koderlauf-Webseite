@@ -22,10 +22,10 @@ interface Teilnehmer {
 }
 
 const STRECKE_COLORS: Record<string, string> = {
-  Kinderlauf: "bg-green-500/10 text-green-600 border-green-500/20",
-  "Kurz und knackig": "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  Koderrunde: "bg-koder-orange/10 text-koder-orange border-koder-orange/20",
-  Trailrun: "bg-red-500/10 text-red-600 border-red-500/20",
+  Kinderlauf: "bg-koder-orange/10 text-koder-orange border-koder-orange/20",
+  "Kurz und knackig": "bg-green-500/10 text-green-600 border-green-500/20",
+  Koderrunde: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+  Trailrun: "bg-blue-500/10 text-blue-600 border-blue-500/20",
 };
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
