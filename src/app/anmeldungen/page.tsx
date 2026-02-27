@@ -163,21 +163,7 @@ export default function AnmeldungenPage() {
           </div>
         </motion.div>
 
-        {/* Altersklassen grid */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
-          className="mt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">Altersklassen</h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {akStats.map(([ak, count]) => (
-              <div key={ak} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
-                <span className="text-sm font-semibold">{ak}</span>
-                <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-koder-orange/10 px-1.5 text-xs font-bold text-koder-orange">
-                  {count}
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+        {/* Altersklassen removed */}
 
         {/* Per-strecke breakdown removed — AK badges above are sufficient */}
       </div>
