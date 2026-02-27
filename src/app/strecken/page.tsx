@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+// Badge removed — difficulty labels removed per user request
 import {
   Mountain,
   Timer,
@@ -74,12 +74,7 @@ const STRECKEN: Strecke[] = [
   },
 ];
 
-const DIFFICULTY_COLORS = {
-  leicht: "bg-green-500/10 text-green-500 border-green-500/20",
-  mittel: "bg-koder-orange/10 text-koder-orange border-koder-orange/20",
-  schwer: "bg-red-500/10 text-red-500 border-red-500/20",
-  extrem: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-};
+// Difficulty labels removed per user request
 
 type HoverPoint = { lat: number; lon: number; ele: number; distance: number } | null;
 
@@ -150,9 +145,10 @@ function StreckenContent() {
                 onClick={() => { setSelected(strecke.id); setHoverPoint(null); }}
                 className={`group rounded-2xl border-2 p-3 text-left transition-all sm:p-4 ${
                   selected === strecke.id
-                    ? "border-koder-orange bg-koder-orange/10 shadow-lg shadow-koder-orange/10"
+                    ? "bg-koder-orange/10 shadow-lg shadow-koder-orange/10"
                     : "border-border hover:border-koder-orange/30"
                 }`}
+                style={selected === strecke.id ? { borderColor: strecke.color } : {}}
               >
                 <div className="flex items-center gap-2">
                   <div
@@ -161,19 +157,18 @@ function StreckenContent() {
                   >
                     <strecke.icon size={16} />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="truncate text-sm font-bold">{strecke.name}</h3>
-                    <p className="text-[10px] text-muted-foreground sm:text-xs">
-                      {track ? `${track.distance.toFixed(1)} km · ${track.elevationGain} Hm` : "..."}
-                    </p>
-                  </div>
+                  <h3 className="truncate text-sm font-bold">{strecke.name}</h3>
                 </div>
-                <Badge
-                  variant="outline"
-                  className={`mt-2 text-[10px] uppercase tracking-wider sm:text-xs ${DIFFICULTY_COLORS[strecke.difficulty]}`}
-                >
-                  {strecke.difficulty}
-                </Badge>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-lg font-extrabold sm:text-xl" style={{ color: strecke.color }}>
+                    {track ? `${track.distance.toFixed(1)} km` : "..."}
+                  </span>
+                  {track && (
+                    <span className="text-[10px] text-muted-foreground sm:text-xs">
+                      ↑ {track.elevationGain} Hm
+                    </span>
+                  )}
+                </div>
               </motion.button>
             );
           })}

@@ -2,308 +2,215 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Users, RefreshCw, Filter } from "lucide-react";
+import { Users, TrendingUp } from "lucide-react";
+import { STRECKEN_COLORS } from "@/lib/strecken-config";
 
 interface Teilnehmer {
-  vorname: string;
-  nachname: string;
   geschlecht: string;
   altersklasse: string;
   strecke: string;
 }
 
-const STRECKE_COLORS: Record<string, string> = {
-  Kinderlauf: "bg-koder-orange/10 text-koder-orange border-koder-orange/20",
-  "Kurz und knackig": "bg-green-500/10 text-green-600 border-green-500/20",
-  Koderrunde: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
-  Trailrun: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-};
-
+const STRECKEN_ORDER = ["Kinderlauf", "Kurz und knackig", "Koderrunde", "Trailrun"];
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 export default function AnmeldungenPage() {
   const [data, setData] = useState<Teilnehmer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [filterStrecke, setFilterStrecke] = useState("");
-  const [filterGeschlecht, setFilterGeschlecht] = useState("");
-  const [filterAK, setFilterAK] = useState("");
-
-  const fetchData = async () => {
-    try {
-      const res = await fetch("/api/anmeldungen");
-      const json = await res.json();
-      if (json.teilnehmer) {
-        setData(json.teilnehmer);
-        setLastUpdated(json.lastUpdated);
-      }
-    } catch {
-      /* ignore */
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/anmeldungen");
+        const json = await res.json();
+        if (json.teilnehmer) setData(json.teilnehmer);
+      } catch { /* ignore */ } finally { setLoading(false); }
+    };
     fetchData();
     const interval = setInterval(fetchData, REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, []);
 
-  const strecken = useMemo(
-    () => [...new Set(data.map((t) => t.strecke))].sort(),
-    [data]
-  );
-  const geschlechter = useMemo(
-    () => [...new Set(data.map((t) => t.geschlecht))].sort(),
-    [data]
-  );
-  const altersklassen = useMemo(
-    () =>
-      [...new Set(data.map((t) => t.altersklasse))]
-        .filter((a) => a !== "–")
-        .sort(),
-    [data]
-  );
-
-  const filtered = useMemo(() => {
-    return data.filter((t) => {
-      if (filterStrecke && t.strecke !== filterStrecke) return false;
-      if (filterGeschlecht && t.geschlecht !== filterGeschlecht) return false;
-      if (filterAK && t.altersklasse !== filterAK) return false;
-      return true;
-    });
-  }, [data, filterStrecke, filterGeschlecht, filterAK]);
-
-  const streckeCounts = useMemo(() => {
-    const c: Record<string, number> = {};
+  const streckenStats = useMemo(() => {
+    const stats: Record<string, { total: number; m: number; w: number }> = {};
+    STRECKEN_ORDER.forEach((s) => (stats[s] = { total: 0, m: 0, w: 0 }));
     data.forEach((t) => {
-      c[t.strecke] = (c[t.strecke] || 0) + 1;
+      if (!stats[t.strecke]) stats[t.strecke] = { total: 0, m: 0, w: 0 };
+      stats[t.strecke].total++;
+      if (t.geschlecht === "M") stats[t.strecke].m++;
+      if (t.geschlecht === "W") stats[t.strecke].w++;
     });
-    return c;
+    return stats;
   }, [data]);
 
-  const hasActiveFilter = filterStrecke || filterGeschlecht || filterAK;
+  const akStats = useMemo(() => {
+    const stats: Record<string, number> = {};
+    data.forEach((t) => {
+      if (t.altersklasse && t.altersklasse !== "–") {
+        stats[t.altersklasse] = (stats[t.altersklasse] || 0) + 1;
+      }
+    });
+    return Object.entries(stats).sort((a, b) => b[1] - a[1]);
+  }, [data]);
+
+  const genderTotal = useMemo(() => {
+    const m = data.filter((t) => t.geschlecht === "M").length;
+    const w = data.filter((t) => t.geschlecht === "W").length;
+    return { m, w };
+  }, [data]);
+
+  const maxStrecke = useMemo(() => {
+    return Math.max(...Object.values(streckenStats).map((s) => s.total), 1);
+  }, [streckenStats]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center pt-24">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
-            Koderlauf 2026
-          </p>
-          <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
-            Anmeldungen
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Alle bisherigen Anmeldungen für den Koderlauf 2026.
-          </p>
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf 2026</p>
+          <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Anmeldungen</h1>
         </motion.div>
 
-        {/* Stats cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="mt-6 flex flex-wrap gap-2 sm:mt-8 sm:grid sm:grid-cols-5 sm:gap-3"
-        >
-          <div className="rounded-xl border border-border bg-card px-3 py-2 text-center sm:rounded-2xl sm:p-4">
-            <p className="text-xl font-extrabold text-koder-orange sm:text-3xl">
-              {data.length}
-            </p>
-            <p className="text-[10px] text-muted-foreground sm:text-xs">Gesamt</p>
+        {/* Big total number */}
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.15 }}
+          className="mt-8 rounded-3xl border border-border bg-gradient-to-br from-koder-orange/10 to-forest-deep/5 p-6 text-center sm:p-8">
+          <Users className="mx-auto h-8 w-8 text-koder-orange" />
+          <p className="mt-3 text-6xl font-black tabular-nums text-koder-orange sm:text-7xl">{data.length}</p>
+          <p className="mt-1 text-lg font-medium text-muted-foreground">Anmeldungen gesamt</p>
+          <div className="mt-3 flex items-center justify-center gap-6 text-sm">
+            <span><span className="font-bold">{genderTotal.m}</span> <span className="text-muted-foreground">Männlich</span></span>
+            <span className="text-border">|</span>
+            <span><span className="font-bold">{genderTotal.w}</span> <span className="text-muted-foreground">Weiblich</span></span>
           </div>
-          {["Kinderlauf", "Kurz und knackig", "Koderrunde", "Trailrun"].map(
-            (s) => (
-              <div
-                key={s}
-                className="rounded-xl border border-border bg-card px-3 py-2 text-center sm:rounded-2xl sm:p-4"
-              >
-                <p className="text-xl font-extrabold sm:text-3xl">
-                  {streckeCounts[s] || 0}
-                </p>
-                <p className="text-[10px] text-muted-foreground sm:text-xs">{s}</p>
+        </motion.div>
+
+        {/* Strecken bars */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
+          className="mt-8">
+          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
+            <TrendingUp size={14} /> Anmeldungen pro Strecke
+          </h2>
+          <div className="mt-4 space-y-3">
+            {STRECKEN_ORDER.map((name) => {
+              const s = streckenStats[name] || { total: 0, m: 0, w: 0 };
+              const pct = (s.total / maxStrecke) * 100;
+              const color = STRECKEN_COLORS[name] || "#FF6B00";
+              return (
+                <div key={name} className="rounded-2xl border border-border bg-card p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-4 w-4 rounded-full" style={{ backgroundColor: color }} />
+                      <span className="font-semibold">{name}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <span className="text-muted-foreground">♂ {s.m}</span>
+                      <span className="text-muted-foreground">♀ {s.w}</span>
+                      <span className="min-w-[3ch] text-right text-xl font-black" style={{ color }}>{s.total}</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 h-3 overflow-hidden rounded-full bg-muted">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.8, delay: 0.3 }}
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: color }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* Gender split visual */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.35 }}
+          className="mt-8 rounded-2xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">Geschlechterverteilung</h2>
+          <div className="mt-4 flex items-center gap-4">
+            <div className="flex-1">
+              <div className="flex h-8 overflow-hidden rounded-full">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${data.length > 0 ? (genderTotal.m / data.length) * 100 : 50}%` }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="flex items-center justify-center bg-blue-500 text-xs font-bold text-white"
+                >
+                  {data.length > 0 ? Math.round((genderTotal.m / data.length) * 100) : 0}%
+                </motion.div>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${data.length > 0 ? (genderTotal.w / data.length) * 100 : 50}%` }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="flex items-center justify-center bg-pink-500 text-xs font-bold text-white"
+                >
+                  {data.length > 0 ? Math.round((genderTotal.w / data.length) * 100) : 0}%
+                </motion.div>
               </div>
-            )
-          )}
-        </motion.div>
-
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="mt-6 space-y-2 sm:mt-8"
-        >
-          <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
-            <Filter size={14} />
-            Filter
-          </span>
-          <div className="flex flex-wrap items-center gap-2">
-
-          {/* Strecke filter */}
-          <select
-            value={filterStrecke}
-            onChange={(e) => setFilterStrecke(e.target.value)}
-            className="rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-koder-orange focus:outline-none focus:ring-1 focus:ring-koder-orange"
-          >
-            <option value="">Alle Strecken</option>
-            {strecken.map((s) => (
-              <option key={s} value={s}>
-                {s} ({streckeCounts[s] || 0})
-              </option>
-            ))}
-          </select>
-
-          {/* Geschlecht filter */}
-          <select
-            value={filterGeschlecht}
-            onChange={(e) => setFilterGeschlecht(e.target.value)}
-            className="rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-koder-orange focus:outline-none focus:ring-1 focus:ring-koder-orange"
-          >
-            <option value="">Alle Geschlechter</option>
-            {geschlechter.map((g) => (
-              <option key={g} value={g}>
-                {g === "M" ? "Männlich" : g === "W" ? "Weiblich" : g}
-              </option>
-            ))}
-          </select>
-
-          {/* Altersklasse filter */}
-          <select
-            value={filterAK}
-            onChange={(e) => setFilterAK(e.target.value)}
-            className="rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-koder-orange focus:outline-none focus:ring-1 focus:ring-koder-orange"
-          >
-            <option value="">Alle Altersklassen</option>
-            {altersklassen.map((ak) => (
-              <option key={ak} value={ak}>
-                {ak}
-              </option>
-            ))}
-          </select>
-
-          {hasActiveFilter && (
-            <button
-              onClick={() => {
-                setFilterStrecke("");
-                setFilterGeschlecht("");
-                setFilterAK("");
-              }}
-              className="rounded-xl px-3 py-2 text-sm font-medium text-koder-orange hover:bg-koder-orange/10"
-            >
-              Zurücksetzen
-            </button>
-          )}
-
-            <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-              <RefreshCw size={12} />
-              {lastUpdated
-                ? `${new Date(lastUpdated).toLocaleTimeString("de-DE")}`
-                : "..."}
+              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                <span>♂ Männlich ({genderTotal.m})</span>
+                <span>♀ Weiblich ({genderTotal.w})</span>
+              </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Result count */}
-        {hasActiveFilter && (
-          <p className="mt-3 text-sm text-muted-foreground">
-            {filtered.length} von {data.length} Teilnehmern
-          </p>
-        )}
-
-        {/* Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-6 overflow-hidden rounded-3xl border border-border bg-card"
-        >
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border bg-forest-deep/5 hover:bg-forest-deep/5 dark:bg-forest-deep/30">
-                  <TableHead className="w-12 text-center font-semibold uppercase tracking-wider">
-                    #
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    Name
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    Strecke
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    Geschlecht
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wider">
-                    Altersklasse
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.map((t, i) => (
-                  <TableRow key={`${t.vorname}-${t.nachname}-${i}`} className="hover:bg-koder-orange/5">
-                    <TableCell className="text-center text-sm text-muted-foreground">
-                      {i + 1}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {t.vorname} {t.nachname}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${STRECKE_COLORS[t.strecke] || ""}`}
-                      >
-                        {t.strecke}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm">
-                        {t.geschlecht === "M"
-                          ? "♂ Männlich"
-                          : t.geschlecht === "W"
-                            ? "♀ Weiblich"
-                            : t.geschlecht}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="text-xs">
-                        {t.altersklasse}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {filtered.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="py-12 text-center text-muted-foreground">
-                      <Users className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
-                      Keine Teilnehmer gefunden.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          )}
+        {/* Altersklassen grid */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
+          className="mt-8">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">Altersklassen</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {akStats.map(([ak, count]) => (
+              <div key={ak} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+                <span className="text-sm font-semibold">{ak}</span>
+                <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-koder-orange/10 px-1.5 text-xs font-bold text-koder-orange">
+                  {count}
+                </span>
+              </div>
+            ))}
+          </div>
         </motion.div>
 
-        {/* Refresh hint removed */}
+        {/* Per-Strecke Altersklassen breakdown */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.55 }}
+          className="mt-8 grid gap-4 sm:grid-cols-2">
+          {STRECKEN_ORDER.map((name) => {
+            const color = STRECKEN_COLORS[name] || "#FF6B00";
+            const streckeData = data.filter((t) => t.strecke === name);
+            const akBreakdown: Record<string, number> = {};
+            streckeData.forEach((t) => {
+              if (t.altersklasse && t.altersklasse !== "–")
+                akBreakdown[t.altersklasse] = (akBreakdown[t.altersklasse] || 0) + 1;
+            });
+            const sorted = Object.entries(akBreakdown).sort((a, b) => b[1] - a[1]);
+
+            return (
+              <div key={name} className="rounded-2xl border border-border bg-card p-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
+                  <h3 className="font-bold">{name}</h3>
+                  <span className="ml-auto text-lg font-black" style={{ color }}>{streckeData.length}</span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {sorted.map(([ak, count]) => (
+                    <span key={ak} className="rounded-lg bg-muted px-2 py-1 text-[11px]">
+                      {ak} <span className="font-bold" style={{ color }}>{count}</span>
+                    </span>
+                  ))}
+                  {sorted.length === 0 && <span className="text-xs text-muted-foreground">Keine AK</span>}
+                </div>
+              </div>
+            );
+          })}
+        </motion.div>
       </div>
     </div>
   );
