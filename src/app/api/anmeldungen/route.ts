@@ -93,9 +93,9 @@ export async function GET() {
         return {
           vorname: (r.vorname || "").trim(),
           nachname: (r.nachname || "").trim(),
-          geschlecht: r.geschlecht === "weiblich" ? "W" : r.geschlecht === "männlich" ? "M" : r.geschlecht || "–",
+          geschlecht: (r.geschlecht || "").trim() === "weiblich" ? "W" : (r.geschlecht || "").trim() === "männlich" ? "M" : "–",
           geburtsdatum: r.geburtsdatum || "",
-          altersklasse: berechneAltersklasse(r.geburtsdatum, r.geschlecht, strecke),
+          altersklasse: berechneAltersklasse(r.geburtsdatum, (r.geschlecht || "").trim(), strecke),
           strecke,
         };
       });
