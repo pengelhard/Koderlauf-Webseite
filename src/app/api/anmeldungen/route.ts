@@ -73,7 +73,7 @@ function parseStrecke(raw: string): string {
 export async function GET() {
   try {
     const res = await fetch(APPS_SCRIPT_URL, {
-      next: { revalidate: 300 },
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) {
@@ -87,12 +87,12 @@ export async function GET() {
     }
 
     const teilnehmer: Teilnehmer[] = raw
-      .filter((r: Record<string, string>) => r.vorname && r.nachname)
+      .filter((r: Record<string, string>) => (r.vorname || "").trim() || (r.nachname || "").trim() || (r.strecke || "").trim())
       .map((r: Record<string, string>) => {
         const strecke = parseStrecke(r.strecke);
         return {
-          vorname: r.vorname?.trim(),
-          nachname: r.nachname?.trim(),
+          vorname: (r.vorname || "").trim(),
+          nachname: (r.nachname || "").trim(),
           geschlecht: r.geschlecht === "weiblich" ? "W" : r.geschlecht === "männlich" ? "M" : r.geschlecht || "–",
           geburtsdatum: r.geburtsdatum || "",
           altersklasse: berechneAltersklasse(r.geburtsdatum, r.geschlecht, strecke),

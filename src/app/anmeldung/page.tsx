@@ -79,7 +79,7 @@ export default function AnmeldungPage() {
               src={GOOGLE_FORMS_EMBED}
               title="Koderlauf 2026 Anmeldung"
               className="w-full"
-              style={{ height: "1400px", border: "none" }}
+              style={{ height: "min(1200px, 80vh)", border: "none" }}
             >
               Wird geladen…
             </iframe>
