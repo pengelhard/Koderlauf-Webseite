@@ -51,10 +51,12 @@ export function Stats() {
       .catch(() => {});
   }, []);
 
+  const daysLeft = Math.max(0, Math.ceil((new Date("2026-04-04T14:00:00").getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+
   const stats = [
     { value: counts.total, label: "Anmeldungen", suffix: "" },
     { value: counts.strecken, label: "Strecken", suffix: "" },
-    { value: 37, label: "Tage bis zum Start", suffix: "" },
+    { value: daysLeft, label: "Tage bis zum Start", suffix: "" },
     { value: 1, label: "Koderlauf", suffix: "." },
   ];
 
