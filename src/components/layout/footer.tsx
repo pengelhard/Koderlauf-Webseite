@@ -53,6 +53,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/sponsoren" className="transition-colors hover:text-white">
+                  Sponsoren
+                </Link>
+              </li>
+              <li>
                 <Link href="/anmeldung" className="transition-colors hover:text-white">
                   Anmeldung 2026
                 </Link>

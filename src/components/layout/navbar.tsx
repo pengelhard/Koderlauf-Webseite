@@ -15,6 +15,7 @@ const navLinks = [
   { href: "/anmeldungen", label: "Anmeldungen" },
   { href: "/ergebnisse", label: "Ergebnisse" },
   { href: "/galerie", label: "Galerie" },
+  { href: "/sponsoren", label: "Sponsoren" },
   { href: "/anmeldung", label: "Anmeldung" },
 ];
 
