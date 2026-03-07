@@ -26,6 +26,8 @@ const SPONSORS: Sponsor[] = [
   { name: "Kaffeetechnik Piesche", ort: "Gunzenhausen", logo: "/sponsors/kaffeetechnik-piesche.png", website: "http://www.kaffeetechnik.info/" },
   { name: "Tretlager", ort: "Wassertrüdingen", logo: "/sponsors/tretlager.gif", website: "http://tretlager.net/" },
   { name: "Adler Apotheke", ort: "Wassertrüdingen", logo: "/sponsors/adler-apotheke.png", website: "https://deineadlerapo.de/" },
+  { name: "AMK Engelhardt", ort: "Hainsfarth", logo: "/sponsors/amk-engelhardt.png", website: "https://bauzaun-mieten.net/" },
+  { name: "BayWa Bau & Garten", ort: "Gunzenhausen", logo: "/sponsors/baywa.png", website: "https://www.baywa-baumarkt.de/markt/gunzenhausen/" },
   { name: "Medien Schlicker", ort: "Obermögersheim", logo: "/sponsors/medien-schlicker.png", website: "https://medien-schlicker.de/" },
   { name: "Jeremias Abgastechnik", ort: "Wassertrüdingen", logo: "/sponsors/jeremias.png", website: "https://jeremias.de/" },
   { name: "Lucalia Balloons", ort: "Schobdach", logo: "/sponsors/lucalia-balloons.png", website: "https://lucalia-balloons-und-events-1.jimdosite.com/" },
