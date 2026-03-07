@@ -2,10 +2,11 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { CalendarDays, MapPin, Clock, Navigation } from "lucide-react";
+import { CalendarDays, MapPin, Clock, Navigation, ExternalLink } from "lucide-react";
 
-const GOOGLE_FORMS_EMBED =
-  "https://docs.google.com/forms/d/e/1FAIpQLSfAkm13x6Nml-SNe6isACTMN2SYOtutCgVNdmwrw9pbIFHhnQ/viewform?embedded=true";
+const GOOGLE_FORMS_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSfAkm13x6Nml-SNe6isACTMN2SYOtutCgVNdmwrw9pbIFHhnQ/viewform";
+const GOOGLE_FORMS_EMBED = `${GOOGLE_FORMS_URL}?embedded=true`;
 
 const MAPS_URL =
   "https://maps.google.com/?q=Sportheim+Obermögersheim+91717+Wassertrüdingen";
@@ -84,6 +85,15 @@ export default function AnmeldungPage() {
               Wird geladen…
             </iframe>
           </div>
+          <a
+            href={GOOGLE_FORMS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-koder-orange/40 bg-koder-orange/5 py-4 text-sm font-semibold text-koder-orange transition-all hover:border-koder-orange hover:bg-koder-orange/10"
+          >
+            <ExternalLink size={18} />
+            Anmeldeformular direkt öffnen
+          </a>
         </motion.div>
 
         {/* Strecken-Überblick */}

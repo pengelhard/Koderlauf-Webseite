@@ -9,26 +9,26 @@ interface Sponsor {
   ort: string;
   logo?: string;
   website?: string;
-  type: "gold" | "sponsor";
 }
 
 const SPONSORS: Sponsor[] = [
-  { name: "Heiko Biermeyer", ort: "Obermögersheim", type: "gold" },
-  { name: "Bittig IT", ort: "Obermögersheim", type: "gold" },
-  { name: "Edeka Holler", ort: "Wassertrüdingen", logo: "/sponsors/edeka.png", website: "https://edeka-wassertruedingen.de/", type: "sponsor" },
-  { name: "Modehaus Steingass", ort: "Gunzenhausen", logo: "/sponsors/steingass.png", website: "https://www.modehaus-steingass.de/", type: "sponsor" },
-  { name: "S-Kuhl Hofladen", ort: "Obermögersheim", website: "https://s-kuhl.de/", type: "sponsor" },
-  { name: "Kaufhalle Schmidt", ort: "Wassertrüdingen", type: "sponsor" },
-  { name: "Schreinerei Zinsmeister", ort: "Obermögersheim", website: "https://schreinerei-zinsmeister.de/", type: "sponsor" },
-  { name: "Label B", ort: "Wassertrüdingen", type: "sponsor" },
-  { name: "Mobiles Sägewerk", ort: "Obermögersheim", type: "sponsor" },
-  { name: "Jäger", ort: "Obermögersheim", type: "sponsor" },
-  { name: "Kaffeetechnik Piesche", ort: "Gunzenhausen", website: "http://www.kaffeetechnik.info/", type: "sponsor" },
-  { name: "Tretlager", ort: "Wassertrüdingen", website: "http://tretlager.net/", type: "sponsor" },
-  { name: "Adler Apotheke", ort: "Wassertrüdingen", logo: "/sponsors/adler-apotheke.png", website: "https://deineadlerapo.de/", type: "sponsor" },
-  { name: "Medien Schlicker", ort: "Obermögersheim", website: "https://medien-schlicker.de/", type: "sponsor" },
-  { name: "Jeremias Abgastechnik", ort: "Wassertrüdingen", logo: "/sponsors/jeremias.png", website: "https://jeremias.de/", type: "sponsor" },
-  { name: "Lucalia Balloons", ort: "Schobdach", type: "sponsor" },
+  { name: "Heiko Biermeyer", ort: "Obermögersheim", logo: "/sponsors/biermayer.png", website: "https://elektrotechnik-biermeyer.de/" },
+  { name: "Bittig IT", ort: "Obermögersheim", logo: "/sponsors/bittig-it.png", website: "https://www.bittig-it.de/" },
+  { name: "Edeka Holler", ort: "Wassertrüdingen", logo: "/sponsors/edeka.png", website: "https://edeka-wassertruedingen.de/" },
+  { name: "Modehaus Steingass", ort: "Gunzenhausen", logo: "/sponsors/steingass.png", website: "https://www.modehaus-steingass.de/" },
+  { name: "Büttner Agrartechnik", ort: "Ehingen", logo: "/sponsors/buettner.png", website: "https://www.buettner-agrartechnik.de/" },
+  { name: "S-Kuhl Hofladen", ort: "Obermögersheim", logo: "/sponsors/s-kuhl.png", website: "https://s-kuhl.de/" },
+  { name: "Schmidt Haustechnik", ort: "Wassertrüdingen", logo: "/sponsors/schmidt.png", website: "https://schmidt-haustechnik.de/" },
+  { name: "Schreinerei Zinsmeister", ort: "Obermögersheim", logo: "/sponsors/zinsmeister.png", website: "https://schreinerei-zinsmeister.de/" },
+  { name: "Label B", ort: "Wassertrüdingen", logo: "/sponsors/label-b.png", website: "https://www.label-b.de/" },
+  { name: "Mobiles Sägewerk", ort: "Obermögersheim", logo: "/sponsors/mobiles-saegewerk.png" },
+  { name: "Jäger", ort: "Obermögersheim" },
+  { name: "Kaffeetechnik Piesche", ort: "Gunzenhausen", logo: "/sponsors/kaffeetechnik-piesche.png", website: "http://www.kaffeetechnik.info/" },
+  { name: "Tretlager", ort: "Wassertrüdingen", logo: "/sponsors/tretlager.gif", website: "http://tretlager.net/" },
+  { name: "Adler Apotheke", ort: "Wassertrüdingen", logo: "/sponsors/adler-apotheke.png", website: "https://deineadlerapo.de/" },
+  { name: "Medien Schlicker", ort: "Obermögersheim", logo: "/sponsors/medien-schlicker.png", website: "https://medien-schlicker.de/" },
+  { name: "Jeremias Abgastechnik", ort: "Wassertrüdingen", logo: "/sponsors/jeremias.png", website: "https://jeremias.de/" },
+  { name: "Lucalia Balloons", ort: "Schobdach", logo: "/sponsors/lucalia-balloons.png", website: "https://lucalia-balloons-und-events-1.jimdosite.com/" },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
@@ -37,16 +37,13 @@ const item = { hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transiti
 function SponsorInitials({ name }: { name: string }) {
   const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return (
-    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-koder-orange/20 to-forest-deep/20 text-xl font-black text-koder-orange">
+    <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-koder-orange/20 to-forest-deep/20 text-xl font-black text-koder-orange">
       {initials}
     </div>
   );
 }
 
 export default function SponsorenPage() {
-  const goldSponsors = SPONSORS.filter((s) => s.type === "gold");
-  const regularSponsors = SPONSORS.filter((s) => s.type === "sponsor");
-
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -70,27 +67,6 @@ export default function SponsorenPage() {
           </p>
         </motion.div>
 
-        {/* Gold-Sponsoren */}
-        {goldSponsors.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
-            className="mt-10">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-yellow-500">
-              ⭐ Gold-Sponsoren
-            </h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {goldSponsors.map((s) => (
-                <div key={s.name} className="flex items-center gap-4 rounded-2xl border-2 border-yellow-500/20 bg-gradient-to-r from-yellow-500/5 to-transparent p-5">
-                  <SponsorInitials name={s.name} />
-                  <div>
-                    <h3 className="text-lg font-bold">{s.name}</h3>
-                    <p className="text-xs text-muted-foreground">{s.ort} · Geldspende</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
         {/* Alle Sponsoren */}
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}
           className="mt-10">
@@ -98,13 +74,13 @@ export default function SponsorenPage() {
             Unsere Sponsoren & Unterstützer
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {regularSponsors.map((s) => (
+            {SPONSORS.map((s) => (
               <motion.div key={s.name} variants={item}>
                 {s.website ? (
                   <a href={s.website} target="_blank" rel="noopener noreferrer"
                     className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-koder-orange/30 hover:shadow-lg hover:shadow-koder-orange/5">
                     {s.logo ? (
-                      <Image src={s.logo} alt={s.name} width={64} height={64} className="h-16 w-16 rounded-xl object-contain" unoptimized />
+                      <Image src={s.logo} alt={s.name} width={96} height={96} className="h-24 w-24 rounded-xl object-contain" unoptimized />
                     ) : (
                       <SponsorInitials name={s.name} />
                     )}
@@ -119,7 +95,7 @@ export default function SponsorenPage() {
                 ) : (
                   <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
                     {s.logo ? (
-                      <Image src={s.logo} alt={s.name} width={64} height={64} className="h-16 w-16 rounded-xl object-contain" unoptimized />
+                      <Image src={s.logo} alt={s.name} width={96} height={96} className="h-24 w-24 rounded-xl object-contain" unoptimized />
                     ) : (
                       <SponsorInitials name={s.name} />
                     )}
