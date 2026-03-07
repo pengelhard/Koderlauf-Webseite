@@ -84,10 +84,10 @@ export default function SponsorenPage() {
                     ) : (
                       <SponsorInitials name={s.name} />
                     )}
-                    <div className="min-w-0 flex-1">
-                      <h3 className="truncate font-bold">{s.name}</h3>
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <h3 className="break-words font-bold leading-relaxed">{s.name}</h3>
                       <p className="text-xs text-muted-foreground">{s.ort}</p>
-                      <p className="mt-1 flex items-center gap-1 text-[10px] text-koder-orange opacity-0 transition-opacity group-hover:opacity-100">
+                      <p className="flex items-center gap-1 pt-0.5 text-[10px] text-koder-orange opacity-0 transition-opacity group-hover:opacity-100">
                         <ExternalLink size={10} /> Website besuchen
                       </p>
                     </div>
@@ -99,8 +99,8 @@ export default function SponsorenPage() {
                     ) : (
                       <SponsorInitials name={s.name} />
                     )}
-                    <div className="min-w-0 flex-1">
-                      <h3 className="truncate font-bold">{s.name}</h3>
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <h3 className="break-words font-bold leading-relaxed">{s.name}</h3>
                       <p className="text-xs text-muted-foreground">{s.ort}</p>
                     </div>
                   </div>
