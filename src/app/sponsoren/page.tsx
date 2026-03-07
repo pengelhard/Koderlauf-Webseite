@@ -9,13 +9,15 @@ interface Sponsor {
   ort: string;
   logo?: string;
   website?: string;
+  /** Logo hat helle Farben – im Light-Mode invertieren für Sichtbarkeit */
+  invertInLightMode?: boolean;
 }
 
 const SPONSORS: Sponsor[] = [
   { name: "Heiko Biermeyer", ort: "Obermögersheim", logo: "/sponsors/biermayer.png", website: "https://elektrotechnik-biermeyer.de/" },
   { name: "Bittig IT", ort: "Obermögersheim", logo: "/sponsors/bittig-it.png", website: "https://www.bittig-it.de/" },
   { name: "Edeka Holler", ort: "Wassertrüdingen", logo: "/sponsors/edeka.png", website: "https://edeka-wassertruedingen.de/" },
-  { name: "Modehaus Steingass", ort: "Gunzenhausen", logo: "/sponsors/steingass.png", website: "https://www.modehaus-steingass.de/" },
+  { name: "Modehaus Steingass", ort: "Gunzenhausen", logo: "/sponsors/steingass.png", website: "https://www.modehaus-steingass.de/", invertInLightMode: true },
   { name: "Büttner Agrartechnik", ort: "Ehingen", logo: "/sponsors/buettner.png", website: "https://www.buettner-agrartechnik.de/" },
   { name: "S-Kuhl Hofladen", ort: "Obermögersheim", logo: "/sponsors/s-kuhl.png", website: "https://s-kuhl.de/" },
   { name: "Schmidt Haustechnik", ort: "Wassertrüdingen", logo: "/sponsors/schmidt.png", website: "https://schmidt-haustechnik.de/" },
@@ -82,7 +84,7 @@ export default function SponsorenPage() {
                   <a href={s.website} target="_blank" rel="noopener noreferrer"
                     className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-koder-orange/30 hover:shadow-lg hover:shadow-koder-orange/5">
                     {s.logo ? (
-                      <Image src={s.logo} alt={s.name} width={96} height={96} className="h-24 w-24 rounded-xl object-contain" unoptimized />
+                      <Image src={s.logo} alt={s.name} width={96} height={96} className={`h-24 w-24 rounded-xl object-contain ${s.invertInLightMode ? "invert dark:invert-0" : ""}`} unoptimized />
                     ) : (
                       <SponsorInitials name={s.name} />
                     )}
@@ -97,7 +99,7 @@ export default function SponsorenPage() {
                 ) : (
                   <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
                     {s.logo ? (
-                      <Image src={s.logo} alt={s.name} width={96} height={96} className="h-24 w-24 rounded-xl object-contain" unoptimized />
+                      <Image src={s.logo} alt={s.name} width={96} height={96} className={`h-24 w-24 rounded-xl object-contain ${s.invertInLightMode ? "invert dark:invert-0" : ""}`} unoptimized />
                     ) : (
                       <SponsorInitials name={s.name} />
                     )}
