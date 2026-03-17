@@ -46,6 +46,9 @@ export function EventInfo() {
             und genieß die Stimmung am Sportheim und an der Strecke – jeder ist
             willkommen, vom Einsteiger bis zur Tempo-Fee.
           </p>
+          <p className="mx-auto mt-3 text-base font-semibold text-koder-orange sm:text-lg">
+            Jeder Finisher erhält eine einzigartige Koderlauf-Medaille! 🏅
+          </p>
           <p className="mt-3 text-lg font-semibold sm:text-xl">
             Let&apos;s go – wir freuen uns auf dich! 🏃‍♀️🏃‍♂️✨
           </p>

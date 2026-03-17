@@ -28,7 +28,7 @@ export default function DatenschutzPage() {
               <li>Vorname, Nachname, E-Mail-Adresse</li>
               <li>Geburtsdatum (optional, für Altersklasse)</li>
               <li>Vereinszugehörigkeit (optional)</li>
-              <li>Gewählte Distanz und T-Shirt-Größe</li>
+              <li>Gewählte Distanz</li>
               <li>Startnummer und Ergebniszeiten</li>
             </ul>
             <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung).</p>

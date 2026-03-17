@@ -33,6 +33,13 @@ const SPONSORS: Sponsor[] = [
   { name: "Medien Schlicker", ort: "Obermögersheim", logo: "/sponsors/medien-schlicker.png", website: "https://medien-schlicker.de/" },
   { name: "Jeremias Abgastechnik", ort: "Wassertrüdingen", logo: "/sponsors/jeremias.png", website: "https://jeremias.de/" },
   { name: "Lucalia Balloons", ort: "Schobdach", logo: "/sponsors/lucalia-balloons.png", website: "https://lucalia-balloons-und-events-1.jimdosite.com/" },
+  { name: "Martina Edelmann", ort: "Obermögersheim", logo: "/sponsors/edelmann.png", website: "https://www.dvag.de/martina.edelmann/index.html" },
+  { name: "Beyhl", ort: "Auhausen", logo: "/sponsors/beyhl.png", website: "https://www.beyhl.de/" },
+  { name: "Blattwerkbauer", ort: "Wassertrüdingen", logo: "/sponsors/blattwerk.png", website: "https://www.instagram.com/blattwerkbauer/", invertInLightMode: true },
+  { name: "DOMMEL", ort: "Wassertrüdingen", logo: "/sponsors/dommel.png", website: "https://www.dommel.de/" },
+  { name: "Fliesen Ballenberger", ort: "Gunzenhausen", logo: "/sponsors/ballenberger.png" },
+  { name: "KFZ Rosenbauer", ort: "Unterschwaningen" },
+  { name: "KFZ Jungwirth", ort: "Obermögersheim", logo: "/sponsors/jungwirth.png" },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };

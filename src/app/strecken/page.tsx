@@ -29,12 +29,14 @@ interface Strecke {
   icon: typeof Route;
   color: string;
   gpxFile: string;
+  startgebuehr: string;
 }
 
 const STRECKEN: Strecke[] = [
   {
     id: "kinderlauf",
     name: "Kinderlauf",
+    startgebuehr: "7 €",
     difficulty: "leicht",
     description:
       "Vom Start am Sportheim geht\u2019s über den Sportplatz auf asphaltierten Weg bis zum Wendepunkt, Ziel ist wieder am Sportplatz.",
@@ -45,6 +47,7 @@ const STRECKEN: Strecke[] = [
   {
     id: "kurz-knackig",
     name: "Kurz und knackig",
+    startgebuehr: "12 €",
     difficulty: "mittel",
     description:
       "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der \u201eEbene\u201c weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",
@@ -55,6 +58,7 @@ const STRECKEN: Strecke[] = [
   {
     id: "koderrunde",
     name: "Koderrunde",
+    startgebuehr: "12 €",
     difficulty: "mittel",
     description:
       "Diese Runde ist prädestiniert für alle, die gerne in traumhafter Umgebung walken oder laufen. Die abwechslungsreiche Strecke führt über den Sportplatz, dann am Rande der Ortschaft entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene entlang zurück zum Sportheim und damit direkt ins Ziel.",
@@ -65,6 +69,7 @@ const STRECKEN: Strecke[] = [
   {
     id: "trailrun",
     name: "Trailrun",
+    startgebuehr: "12 €",
     difficulty: "schwer",
     description:
       "Dieser besondere Teil des Koderlaufs macht ihn einzigartig \u2013 die Wegführung geht in Teilen ähnlich wie die Koderrunde, allerdings mit größeren Offroad-Anteilen. Die Wachtlerspitze auf 587\u00a0m inmitten unseres wunderschönen Wachtlerwaldes bildet wortwörtlich den Höhepunkt des Trailruns. Es geht steil bergauf und bergab quer durch den Wald, weshalb hier ganz besonders auf passende Laufausstattung geachtet werden sollte.",
@@ -159,7 +164,7 @@ function StreckenContent() {
                   </div>
                   <h3 className="truncate text-sm font-bold">{strecke.name}</h3>
                 </div>
-                <div className="mt-2 flex items-baseline gap-2">
+                <div className="mt-2 flex flex-wrap items-baseline gap-2">
                   <span className="text-lg font-extrabold sm:text-xl" style={{ color: strecke.color }}>
                     {track ? `${track.distance.toFixed(1)} km` : "..."}
                   </span>
@@ -168,6 +173,9 @@ function StreckenContent() {
                       ↑ {track.elevationGain} Hm
                     </span>
                   )}
+                  <span className="text-[10px] text-muted-foreground sm:text-xs">
+                    Startgebühr {strecke.startgebuehr}
+                  </span>
                 </div>
               </motion.button>
             );

@@ -5,10 +5,10 @@ import Link from "next/link";
 import { Mountain, TreePine, Zap, Baby } from "lucide-react";
 
 const strecken = [
-  { id: "kinderlauf", name: "Kinderlauf", dist: "800 m", zeit: "14:00", icon: Baby, color: "#FF6B00" },
-  { id: "kurz-knackig", name: "Kurz und knackig", dist: "4 km", zeit: "14:30", icon: Zap, color: "#22C55E" },
-  { id: "koderrunde", name: "Koderrunde", dist: "8,5 km", zeit: "14:45", icon: TreePine, color: "#EAB308" },
-  { id: "trailrun", name: "Trailrun", dist: "11,25 km", zeit: "15:20", icon: Mountain, color: "#3B82F6" },
+  { id: "kinderlauf", name: "Kinderlauf", dist: "800 m", zeit: "14:00", startgebuehr: "7 €", icon: Baby, color: "#FF6B00" },
+  { id: "kurz-knackig", name: "Kurz und knackig", dist: "4 km", zeit: "14:30", startgebuehr: "12 €", icon: Zap, color: "#22C55E" },
+  { id: "koderrunde", name: "Koderrunde", dist: "8,5 km", zeit: "14:45", startgebuehr: "12 €", icon: TreePine, color: "#EAB308" },
+  { id: "trailrun", name: "Trailrun", dist: "11,25 km", zeit: "15:20", startgebuehr: "12 €", icon: Mountain, color: "#3B82F6" },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
@@ -58,6 +58,7 @@ export function Features() {
                 <div className="mt-3 space-y-1">
                   <p className="text-xl font-extrabold text-koder-orange sm:text-2xl">{s.dist}</p>
                   <p className="text-xs text-muted-foreground">Start {s.zeit} Uhr</p>
+                  <p className="text-xs text-muted-foreground">Startgebühr {s.startgebuehr}</p>
                 </div>
               </Link>
             </motion.div>
