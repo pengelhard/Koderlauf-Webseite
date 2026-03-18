@@ -38,6 +38,7 @@ const SPONSORS: Sponsor[] = [
   { name: "Blattwerkbauer", ort: "Wassertrüdingen", logo: "/sponsors/blattwerk.png", website: "https://www.instagram.com/blattwerkbauer/", invertInLightMode: true },
   { name: "DOMMEL", ort: "Wassertrüdingen", logo: "/sponsors/dommel.png", website: "https://www.dommel.de/" },
   { name: "Fliesen Ballenberger", ort: "Gunzenhausen", logo: "/sponsors/ballenberger.png" },
+  { name: "Rothenberger Optik und Schmuck", ort: "Wassertrüdingen", logo: "/sponsors/rothenberger.png", website: "https://www.optik-rothenberger.de/" },
   { name: "KFZ Rosenbauer", ort: "Unterschwaningen" },
   { name: "KFZ Jungwirth", ort: "Obermögersheim", logo: "/sponsors/jungwirth.png" },
 ];
