@@ -41,6 +41,10 @@ const SPONSORS: Sponsor[] = [
   { name: "Rothenberger Optik und Schmuck", ort: "Wassertrüdingen", logo: "/sponsors/rothenberger.png", website: "https://www.optik-rothenberger.de/" },
   { name: "KFZ Rosenbauer", ort: "Unterschwaningen" },
   { name: "KFZ Jungwirth", ort: "Obermögersheim", logo: "/sponsors/jungwirth.png" },
+  { name: "Elektronic Thoma GmbH", ort: "Dentlein am Forst", logo: "/sponsors/thoma.png", website: "https://www.thoma.de/" },
+  { name: "Kleeberger Forstdienstleistung", ort: "Obermögersheim", logo: "/sponsors/kleeberger.png" },
+  { name: "R+V Versicherung Klaus Kapp", ort: "Wassertrüdingen", logo: "/sponsors/ruv.png", website: "https://www.ruv.de/vor-ort/wassertruedingen/kapp/" },
+  { name: "GeuKo Laserscan", ort: "Wassertrüdingen", logo: "/sponsors/geuko.png", website: "https://geuko.de/", invertInLightMode: true },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
