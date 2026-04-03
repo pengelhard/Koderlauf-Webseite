@@ -43,10 +43,12 @@ export function Stats() {
   const [counts, setCounts] = useState<CountData>({ total: 0, strecken: 4 });
 
   useEffect(() => {
-    fetch("/api/anmeldungen")
+    fetch("/api/anmeldungen", { cache: "no-store" })
       .then((r) => r.json())
-      .then((d) => {
-        if (d.count) setCounts({ total: d.count, strecken: 4 });
+      .then((d: { total?: number; count?: number }) => {
+        const total =
+          typeof d.total === "number" ? d.total : typeof d.count === "number" ? d.count : 0;
+        setCounts({ total, strecken: 4 });
       })
       .catch(() => {});
   }, []);

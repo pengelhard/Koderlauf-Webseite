@@ -39,12 +39,43 @@ const SPONSORS: Sponsor[] = [
   { name: "DOMMEL", ort: "Wassertrüdingen", logo: "/sponsors/dommel.png", website: "https://www.dommel.de/" },
   { name: "Fliesen Ballenberger", ort: "Gunzenhausen", logo: "/sponsors/ballenberger.png" },
   { name: "Rothenberger Optik und Schmuck", ort: "Wassertrüdingen", logo: "/sponsors/rothenberger.png", website: "https://www.optik-rothenberger.de/" },
-  { name: "KFZ Rosenbauer", ort: "Unterschwaningen" },
+  { name: "KFZ Rosenbauer", ort: "Unterschwaningen", logo: "/sponsors/kfz-rosenbauer.png" },
   { name: "KFZ Jungwirth", ort: "Obermögersheim", logo: "/sponsors/jungwirth.png" },
   { name: "Elektronic Thoma GmbH", ort: "Dentlein am Forst", logo: "/sponsors/thoma.png", website: "https://www.thoma.de/" },
   { name: "Kleeberger Forstdienstleistung", ort: "Obermögersheim", logo: "/sponsors/kleeberger.png" },
   { name: "R+V Versicherung Klaus Kapp", ort: "Wassertrüdingen", logo: "/sponsors/ruv.png", website: "https://www.ruv.de/vor-ort/wassertruedingen/kapp/" },
   { name: "GeuKo Laserscan", ort: "Wassertrüdingen", logo: "/sponsors/geuko.png", website: "https://geuko.de/", invertInLightMode: true },
+  { name: "Getränke Peschke", ort: "Ostheim" },
+  {
+    name: "Sparkasse Wassertrüdingen",
+    ort: "Wassertrüdingen",
+    logo: "/sponsors/sparkasse-wassertruedingen.png",
+    website: "https://www.sparkasse.de/standorte/filialen/sparkasse-ansbach-beratungs-center-wassertruedingen-104062",
+  },
+  {
+    name: "Thomas Schneller e.K.",
+    ort: "Unterschwaningen",
+    logo: "/sponsors/schneller.png",
+    website: "https://www.kartoffelfeinkost-schneller.de/unterschwaningen.html",
+  },
+  {
+    name: "M. Flock",
+    ort: "Wolframs-Eschenbach",
+    logo: "/sponsors/flock-transporte.png",
+    website: "https://www.flock-transporte.de/",
+  },
+  {
+    name: "AMRO IT-Systeme GmbH",
+    ort: "Weißenburg i. Bay.",
+    logo: "/sponsors/amro-it-systeme.png",
+    website: "https://www.amro.de/",
+  },
+  {
+    name: "Stache Fitness",
+    ort: "Oberasbach",
+    logo: "/sponsors/stache-fitness.png",
+    website: "https://www.stache-fitness.de/",
+  },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };

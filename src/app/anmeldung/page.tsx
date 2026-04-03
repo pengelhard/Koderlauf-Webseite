@@ -108,18 +108,23 @@ export default function AnmeldungPage() {
           </h3>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {[
-              { name: "Kinderlauf", dist: "800 m", id: "kinderlauf" },
-              { name: "Kurz und knackig", dist: "4 km", id: "kurz-knackig" },
-              { name: "Koderrunde", dist: "8,5 km", id: "koderrunde" },
-              { name: "Trailrun", dist: "11,25 km", id: "trailrun" },
+              { name: "Kinderlauf", dist: "800 m", id: "kinderlauf", color: "#FF6B00" },
+              { name: "Kurz und knackig", dist: "4 km", id: "kurz-knackig", color: "#22C55E" },
+              { name: "Koderrunde", dist: "8,5 km", id: "koderrunde", color: "#EAB308" },
+              { name: "Trailrun", dist: "11,25 km", id: "trailrun", color: "#3B82F6" },
             ].map((s) => (
               <Link
                 key={s.id}
                 href={`/strecken?route=${s.id}`}
-                className="flex items-center justify-between rounded-2xl border border-border bg-card px-5 py-3 transition-all hover:border-koder-orange/30 hover:bg-koder-orange/5"
+                className="flex items-center justify-between rounded-2xl border border-border px-5 py-3 transition-all hover:border-koder-orange/30"
+                style={{
+                  background: `linear-gradient(to bottom right, ${s.color}33, ${s.color}0D)`,
+                }}
               >
                 <span className="font-semibold">{s.name}</span>
-                <span className="text-lg font-extrabold text-koder-orange">{s.dist}</span>
+                <span className="text-lg font-extrabold" style={{ color: s.color }}>
+                  {s.dist}
+                </span>
               </Link>
             ))}
           </div>

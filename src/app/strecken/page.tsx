@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 // Badge removed — difficulty labels removed per user request
 import {
   Mountain,
-  Timer,
+  ArrowDownToLine,
   TrendingUp,
   TrendingDown,
   MapPin,
@@ -36,7 +36,7 @@ const STRECKEN: Strecke[] = [
   {
     id: "kinderlauf",
     name: "Kinderlauf",
-    startgebuehr: "7 €",
+    startgebuehr: "10 €",
     difficulty: "leicht",
     description:
       "Vom Start am Sportheim geht\u2019s über den Sportplatz auf asphaltierten Weg bis zum Wendepunkt, Ziel ist wieder am Sportplatz.",
@@ -47,7 +47,7 @@ const STRECKEN: Strecke[] = [
   {
     id: "kurz-knackig",
     name: "Kurz und knackig",
-    startgebuehr: "12 €",
+    startgebuehr: "15 €",
     difficulty: "mittel",
     description:
       "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der \u201eEbene\u201c weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",
@@ -58,7 +58,7 @@ const STRECKEN: Strecke[] = [
   {
     id: "koderrunde",
     name: "Koderrunde",
-    startgebuehr: "12 €",
+    startgebuehr: "15 €",
     difficulty: "mittel",
     description:
       "Diese Runde ist prädestiniert für alle, die gerne in traumhafter Umgebung walken oder laufen. Die abwechslungsreiche Strecke führt über den Sportplatz, dann am Rande der Ortschaft entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene entlang zurück zum Sportheim und damit direkt ins Ziel.",
@@ -69,7 +69,7 @@ const STRECKEN: Strecke[] = [
   {
     id: "trailrun",
     name: "Trailrun",
-    startgebuehr: "12 €",
+    startgebuehr: "15 €",
     difficulty: "schwer",
     description:
       "Dieser besondere Teil des Koderlaufs macht ihn einzigartig \u2013 die Wegführung geht in Teilen ähnlich wie die Koderrunde, allerdings mit größeren Offroad-Anteilen. Die Wachtlerspitze auf 587\u00a0m inmitten unseres wunderschönen Wachtlerwaldes bildet wortwörtlich den Höhepunkt des Trailruns. Es geht steil bergauf und bergab quer durch den Wald, weshalb hier ganz besonders auf passende Laufausstattung geachtet werden sollte.",
@@ -150,10 +150,13 @@ function StreckenContent() {
                 onClick={() => { setSelected(strecke.id); setHoverPoint(null); }}
                 className={`group rounded-2xl border-2 p-3 text-left transition-all sm:p-4 ${
                   selected === strecke.id
-                    ? "bg-koder-orange/10 shadow-lg shadow-koder-orange/10"
+                    ? "shadow-lg"
                     : "border-border hover:border-koder-orange/30"
                 }`}
-                style={selected === strecke.id ? { borderColor: strecke.color } : {}}
+                style={{
+                  borderColor: selected === strecke.id ? strecke.color : undefined,
+                  background: `linear-gradient(to bottom right, ${strecke.color}33, ${strecke.color}0D)`,
+                }}
               >
                 <div className="flex items-center gap-2">
                   <div
@@ -256,7 +259,7 @@ function StreckenContent() {
                       <p className="text-[10px] text-muted-foreground">Max (m)</p>
                     </div>
                     <div className="rounded-xl bg-muted p-3 text-center">
-                      <Timer size={16} className="mx-auto text-koder-orange-bright" />
+                      <ArrowDownToLine size={16} className="mx-auto text-sky-600 dark:text-sky-400" />
                       <p className="mt-1 text-lg font-extrabold sm:text-xl">{gpxTrack.minEle}</p>
                       <p className="text-[10px] text-muted-foreground">Min (m)</p>
                     </div>

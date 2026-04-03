@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CountdownTimer } from "@/components/sections/countdown";
+import { RunnerInfoDialog } from "@/components/sections/runner-info-dialog";
 
 const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/2711092/2711092-hd_1920_1080_24fps.mp4";
 const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80";
@@ -19,7 +20,8 @@ export function Hero() {
 
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  // Kein scroll-gekoppeltes Opacity mehr: In Chrome-Responsive/Device-Mode liefert useScroll
+  // mitunter sofort progress≈1 → Opacity 0 → nur dunkles Video/Overlay sichtbar („schwarzer Bildschirm“).
 
   return (
     <section ref={ref} className="relative h-screen w-full overflow-hidden">
@@ -59,10 +61,7 @@ export function Hero() {
 
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-forest-deep/90 via-forest-deep/50 to-forest-deep/30" />
 
-      <motion.div
-        style={{ opacity: contentOpacity }}
-        className="relative z-20 flex h-full flex-col items-center justify-center px-4 text-center"
-      >
+      <motion.div className="relative z-20 flex h-full flex-col items-center justify-center px-4 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -118,9 +117,18 @@ export function Hero() {
         </motion.div>
 
         <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.62 }}
+          className="mt-8 flex justify-center px-2"
+        >
+          <RunnerInfoDialog />
+        </motion.div>
+
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
+          transition={{ duration: 0.6, delay: 0.76 }}
           className="mt-8 flex flex-col gap-4 sm:flex-row"
         >
           <Link

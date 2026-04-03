@@ -32,30 +32,37 @@ function ResultTable({
   caption?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-border bg-card">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
       {caption && (
         <p className="border-b border-border bg-muted/40 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {caption}
         </p>
       )}
-      <table className="w-full min-w-[280px] text-left text-sm">
+      <table className="w-full table-fixed text-left text-xs sm:text-sm">
+        <colgroup>
+          {showPlatz && <col style={{ width: "10%" }} />}
+          <col style={{ width: showPlatz ? "10%" : "12%" }} />
+          <col style={{ width: showPlatz ? "44%" : "50%" }} />
+          <col style={{ width: showPlatz ? "10%" : "12%" }} />
+          <col style={{ width: showPlatz ? "26%" : "26%" }} />
+        </colgroup>
         <thead>
           <tr className="border-b border-border bg-muted/30">
             {showPlatz && (
-              <th scope="col" className="w-14 px-3 py-2.5 font-semibold sm:px-4">
+              <th scope="col" className="px-2 py-1.5 font-semibold sm:px-4 sm:py-2.5">
                 Platz
               </th>
             )}
-            <th scope="col" className="w-16 px-3 py-2.5 font-semibold sm:px-4">
+            <th scope="col" className="px-2 py-1.5 font-semibold sm:px-4 sm:py-2.5">
               Nr.
             </th>
-            <th scope="col" className="px-3 py-2.5 font-semibold sm:px-4">
+            <th scope="col" className="px-2 py-1.5 font-semibold sm:px-4 sm:py-2.5">
               Name
             </th>
-            <th scope="col" className="w-12 px-3 py-2.5 font-semibold sm:px-4">
+            <th scope="col" className="px-2 py-1.5 font-semibold sm:px-4 sm:py-2.5">
               m/w
             </th>
-            <th scope="col" className="w-24 px-3 py-2.5 font-semibold tabular-nums sm:px-4">
+            <th scope="col" className="whitespace-nowrap px-2 py-1.5 font-semibold tabular-nums sm:px-4 sm:py-2.5">
               Zeit
             </th>
           </tr>
@@ -70,20 +77,20 @@ function ResultTable({
               )}
             >
               {showPlatz && (
-                <td className="px-3 py-2.5 font-medium text-koder-orange sm:px-4">
+                <td className="px-2 py-1.5 font-medium text-koder-orange sm:px-4 sm:py-2.5">
                   {i + 1}
                 </td>
               )}
-              <td className="px-3 py-2.5 tabular-nums text-muted-foreground sm:px-4">
+              <td className="px-2 py-1.5 tabular-nums text-muted-foreground sm:px-4 sm:py-2.5">
                 {r.startnummer}
               </td>
-              <td className="px-3 py-2.5 font-medium sm:px-4">
+              <td className="truncate px-2 py-1.5 font-medium sm:px-4 sm:py-2.5">
                 {r.vorname} {r.nachname}
               </td>
-              <td className="px-3 py-2.5 text-muted-foreground sm:px-4">
+              <td className="px-2 py-1.5 text-muted-foreground sm:px-4 sm:py-2.5">
                 {r.geschlecht}
               </td>
-              <td className="px-3 py-2.5 font-mono tabular-nums sm:px-4">
+              <td className="whitespace-nowrap px-2 py-1.5 font-mono text-[0.7rem] tabular-nums sm:px-4 sm:py-2.5 sm:text-sm">
                 {r.zeit}
               </td>
             </tr>
@@ -203,30 +210,33 @@ function AltersklassenTabs({
           role="tabpanel"
           id={`ak-panel-${activeAk}`}
           aria-labelledby={`ak-tab-${activeAk}`}
-          className="space-y-6 border-t border-border pt-5"
+          className="border-t border-border pt-5"
         >
-          <p className="text-xs text-muted-foreground">
+          <p className="mb-4 text-xs text-muted-foreground">
             <span className="font-medium text-foreground">Altersklasse {activeAk}</span>
             {" · "}
             Jg. {meta.jahrgang} · ca. {meta.alterSpan}
           </p>
 
-          {inAkM.length > 0 && (
-            <div>
-              <h5 className="mb-2 text-sm font-medium text-muted-foreground">
-                {formatAkLabel("M", meta)}
-              </h5>
-              <ResultTable rows={inAkM} />
-            </div>
-          )}
-          {inAkW.length > 0 && (
-            <div>
-              <h5 className="mb-2 text-sm font-medium text-muted-foreground">
-                {formatAkLabel("W", meta)}
-              </h5>
-              <ResultTable rows={inAkW} />
-            </div>
-          )}
+          <div className="grid gap-6 md:grid-cols-2">
+            {inAkM.length > 0 && (
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Männlich
+                </p>
+                <ResultTable rows={inAkM} />
+              </div>
+            )}
+            {inAkW.length > 0 && (
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Weiblich
+                </p>
+                <ResultTable rows={inAkW} />
+              </div>
+            )}
+          </div>
+
           {inAkM.length === 0 && inAkW.length === 0 && (
             <p className="text-sm text-muted-foreground">
               In dieser Altersklasse keine Einträge.

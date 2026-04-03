@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Baby,
@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErgebnisseResultsPanel } from "@/components/ergebnisse/results-panel";
 import { cn } from "@/lib/utils";
 
+/** Farben analog zu Strecken-Seite */
 const STRECKEN = [
   {
     id: "kinderlauf",
@@ -28,6 +29,7 @@ const STRECKEN = [
     Icon: Baby,
     color: "from-koder-orange/20 to-koder-orange/5",
     ring: "ring-koder-orange/30",
+    borderColor: "#FF6B00",
     iconColor: "text-koder-orange",
   },
   {
@@ -37,6 +39,7 @@ const STRECKEN = [
     Icon: Zap,
     color: "from-emerald-500/15 to-emerald-500/5",
     ring: "ring-emerald-500/25",
+    borderColor: "#22C55E",
     iconColor: "text-emerald-600 dark:text-emerald-400",
   },
   {
@@ -46,6 +49,7 @@ const STRECKEN = [
     Icon: TreePine,
     color: "from-amber-500/15 to-amber-500/5",
     ring: "ring-amber-500/25",
+    borderColor: "#EAB308",
     iconColor: "text-amber-600 dark:text-amber-400",
   },
   {
@@ -55,6 +59,7 @@ const STRECKEN = [
     Icon: Mountain,
     color: "from-sky-500/15 to-sky-500/5",
     ring: "ring-sky-500/25",
+    borderColor: "#3B82F6",
     iconColor: "text-sky-600 dark:text-sky-400",
   },
 ] as const;
@@ -70,6 +75,19 @@ const RACESOLUTION_LIVE_URL =
 
 export default function ErgebnissePage() {
   const [selectedStrecke, setSelectedStrecke] = useState<string | null>(null);
+  const panelContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedStrecke && panelContainerRef.current) {
+      requestAnimationFrame(() => {
+        panelContainerRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+          inline: "nearest",
+        });
+      });
+    }
+  }, [selectedStrecke]);
 
   return (
     <div className="relative min-h-screen overflow-hidden pt-24 pb-20">
@@ -131,7 +149,7 @@ export default function ErgebnissePage() {
           className="mt-16"
           aria-label="Strecke wählen"
         >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
             {STRECKEN.map((s, i) => {
               const active = selectedStrecke === s.id;
               return (
@@ -147,26 +165,28 @@ export default function ErgebnissePage() {
                       setSelectedStrecke((prev) => (prev === s.id ? null : s.id))
                     }
                     aria-pressed={active}
+                    style={active ? { borderColor: s.borderColor } : undefined}
                     className={cn(
-                      "group relative flex h-full w-full flex-col rounded-2xl border bg-gradient-to-br p-5 text-left shadow-sm ring-1 transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange focus-visible:ring-offset-2",
+                      "group relative flex h-full w-full flex-col rounded-xl border-2 bg-gradient-to-br p-3 text-left shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:rounded-2xl sm:p-5",
                       s.color,
-                      s.ring,
-                      active && "ring-2 ring-koder-orange ring-offset-2",
+                      !active && "border-border ring-1",
+                      !active && s.ring,
+                      !active && "focus-visible:ring-koder-orange",
                     )}
                   >
                     <div
                       className={cn(
-                        "mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-background/80 shadow-inner",
+                        "mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-background/80 shadow-inner sm:mb-3 sm:h-11 sm:w-11 sm:rounded-xl",
                         s.iconColor,
                       )}
                     >
-                      <s.Icon className="h-5 w-5" strokeWidth={2} />
+                      <s.Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
                     </div>
-                    <p className="font-semibold leading-snug">{s.name}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{s.distance}</p>
-                    <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-koder-orange opacity-90 group-hover:opacity-100">
+                    <p className="text-xs font-semibold leading-snug sm:text-base">{s.name}</p>
+                    <p className="mt-0.5 text-[10px] text-muted-foreground sm:mt-1 sm:text-sm">{s.distance}</p>
+                    <span className="mt-2 inline-flex items-center gap-0.5 text-[10px] font-semibold uppercase tracking-wider text-koder-orange opacity-90 group-hover:opacity-100 sm:mt-4 sm:gap-1 sm:text-xs">
                       Ergebnisse
-                      <ChevronRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+                      <ChevronRight className="h-3 w-3 transition group-hover:translate-x-0.5 sm:h-3.5 sm:w-3.5" />
                     </span>
                   </button>
                 </motion.div>
@@ -174,7 +194,8 @@ export default function ErgebnissePage() {
             })}
           </div>
 
-          <AnimatePresence mode="wait">
+          <div ref={panelContainerRef} className="scroll-mt-32">
+            <AnimatePresence mode="wait">
             {selectedStrecke && (
               <ErgebnisseResultsPanel
                 key={selectedStrecke}
@@ -187,6 +208,7 @@ export default function ErgebnissePage() {
               />
             )}
           </AnimatePresence>
+          </div>
         </motion.section>
 
         {/* Ehrungsregeln */}

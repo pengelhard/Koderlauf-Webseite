@@ -32,7 +32,7 @@
   --color-error: #EF4444;
   --color-dark-bg: #0A0A0A;
   --color-light-bg: #F8F9FA;
-  --color-text-secondary: #94A3B8;
+  --color-text-secondary: var(--text-secondary);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -62,6 +62,8 @@
 
 :root {
   --radius: 0.625rem;
+  /** Sekundärtext / Grautöne im Light-Mode – höherer Kontrast zu #F8F9FA (vormals #94A3B8). */
+  --text-secondary: #475569;
   --background: #F8F9FA;
   --foreground: #171717;
   --card: #ffffff;
@@ -73,7 +75,7 @@
   --secondary: #0A3D2A;
   --secondary-foreground: #ffffff;
   --muted: #f1f5f9;
-  --muted-foreground: #94A3B8;
+  --muted-foreground: #475569;
   --accent: #1E8A6B;
   --accent-foreground: #ffffff;
   --destructive: #EF4444;
@@ -96,6 +98,7 @@
 }
 
 .dark {
+  --text-secondary: #94a3b8;
   --background: #0A0A0A;
   --foreground: #E5E7EB;
   --card: #141414;

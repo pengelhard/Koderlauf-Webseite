@@ -11,9 +11,9 @@ const EARLY_BIRD_DEADLINE = new Date("2027-02-28T23:59:59");
 const EVENT_DATE = new Date("2027-06-15T09:00:00");
 
 const PRICES: Record<Distance, Record<PriceTier, number>> = {
-  "5km": { early_bird: 1500, normal: 2000, nachmeldung: 3000 },
-  "10km": { early_bird: 2500, normal: 3000, nachmeldung: 4000 },
-  kids: { early_bird: 800, normal: 1000, nachmeldung: 2000 },
+  "5km": { early_bird: 1800, normal: 2300, nachmeldung: 3300 },
+  "10km": { early_bird: 2800, normal: 3300, nachmeldung: 4300 },
+  kids: { early_bird: 1100, normal: 1300, nachmeldung: 2300 },
 };
 
 const TIER_LABELS: Record<PriceTier, string> = {

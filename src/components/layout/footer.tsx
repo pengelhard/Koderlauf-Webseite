@@ -58,6 +58,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/feedback" className="transition-colors hover:text-white">
+                  Feedback
+                </Link>
+              </li>
+              <li>
                 <Link href="/anmeldung" className="transition-colors hover:text-white">
                   Anmeldung 2026
                 </Link>
