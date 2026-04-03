@@ -1,16 +1,20 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 const PROD_TO = "info@koderlauf.de";
 const MAX_SUBJECT = 180;
 const MAX_MESSAGE = 8000;
 const MAX_NAME = 120;
 
+export const runtime = "nodejs";
+/** Vercel: genug Zeit für SMTP-Handshake */
+export const maxDuration = 25;
+
 function isValidEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
-/** Lokal: mit FEEDBACK_DEV_TO an die bei Resend erlaubte Test-Adresse senden. Live immer PROD_TO. */
+/** Lokal: optional andere Empfänger-Adresse (z. B. zum Testen). */
 function getFeedbackTo(): string {
   const devOverride = process.env.FEEDBACK_DEV_TO?.trim();
   if (process.env.NODE_ENV === "development" && devOverride && isValidEmail(devOverride)) {
@@ -19,12 +23,72 @@ function getFeedbackTo(): string {
   return PROD_TO;
 }
 
+function smtpFailureHint(message: string): string | null {
+  const m = message.toLowerCase();
+  if (
+    m.includes("invalid login") ||
+    m.includes("authentication failed") ||
+    m.includes("535") ||
+    m.includes("eauth") ||
+    m.includes("badcredentials")
+  ) {
+    return "SMTP-Anmeldung fehlgeschlagen: SMTP_USER und SMTP_PASS prüfen (Postfach-Passwort des Providers).";
+  }
+  if (m.includes("econnrefused") || m.includes("etimedout") || m.includes("enotfound") || m.includes("gai")) {
+    return "Keine Verbindung zum SMTP-Server (Host/Port/Firewall). Hinweis: Einige Serverless-Plattformen blockieren ausgehendes SMTP – dann Relais oder anderen Host nutzen.";
+  }
+  if (m.includes("certificate") || m.includes("tls") || m.includes("ssl")) {
+    return "TLS-Problem: Port 587 mit STARTTLS oder 465 mit SSL testen; SMTP_SECURE in der Doku des Providers prüfen.";
+  }
+  return null;
+}
+
+function getSmtpConfig():
+  | { ok: true; transporter: nodemailer.Transporter; from: string }
+  | { ok: false; reason: "missing_host" | "missing_user" | "missing_pass" } {
+  const host = process.env.SMTP_HOST?.trim();
+  const user = process.env.SMTP_USER?.trim();
+  const pass = (process.env.SMTP_PASS ?? "").trim();
+  const portRaw = process.env.SMTP_PORT?.trim();
+  const port = portRaw ? Number.parseInt(portRaw, 10) : 587;
+
+  if (!host) return { ok: false, reason: "missing_host" };
+  if (!user) return { ok: false, reason: "missing_user" };
+  if (!pass) return { ok: false, reason: "missing_pass" };
+
+  const secureEnv = process.env.SMTP_SECURE?.trim().toLowerCase();
+  const secure = secureEnv === "true" || secureEnv === "1" || port === 465;
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+    ...(port === 587 && !secure ? { requireTLS: true } : {}),
+  });
+
+  const from =
+    process.env.SMTP_FROM?.trim() ||
+    `Koderlauf Website <${user}>`;
+
+  return { ok: true, transporter, from };
+}
+
 export async function POST(request: Request) {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    console.error("RESEND_API_KEY fehlt");
+  const smtp = getSmtpConfig();
+  if (!smtp.ok) {
+    const msg =
+      smtp.reason === "missing_host"
+        ? "SMTP_HOST fehlt in der Server-Konfiguration."
+        : smtp.reason === "missing_user"
+          ? "SMTP_USER fehlt in der Server-Konfiguration."
+          : "SMTP_PASS fehlt in der Server-Konfiguration.";
+    console.error("Feedback SMTP:", msg);
     return NextResponse.json(
-      { error: "E-Mail-Versand ist derzeit nicht eingerichtet. Bitte später erneut versuchen oder schreibt direkt an info@koderlauf.de." },
+      {
+        error: "E-Mail-Versand ist derzeit nicht eingerichtet. Bitte später erneut versuchen oder schreibt direkt an info@koderlauf.de.",
+        hint: "Auf dem Server SMTP_HOST, SMTP_USER und SMTP_PASS setzen (siehe .env.example).",
+      },
       { status: 503 }
     );
   }
@@ -72,14 +136,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const from =
-    process.env.RESEND_FROM_EMAIL?.trim() || "Koderlauf Website <onboarding@resend.dev>";
-
   const to = getFeedbackTo();
   const text = [
-    ...(to !== PROD_TO
-      ? [`[Nur Entwicklung: Zustellung an ${to} (Live: ${PROD_TO})`, ""]
-      : []),
+    ...(to !== PROD_TO ? [`[Nur Entwicklung: Zustellung an ${to} (Live: ${PROD_TO})`, ""] : []),
     "Nachricht über das Feedback-Formular auf koderlauf.de",
     "",
     `Name/Crew: ${nameStr}`,
@@ -90,36 +149,26 @@ export async function POST(request: Request) {
   ].join("\n");
 
   try {
-    const resend = new Resend(key);
-    const { error } = await resend.emails.send({
-      from,
-      to: [to],
+    await smtp.transporter.sendMail({
+      from: smtp.from,
+      to,
       replyTo: emailStr,
       subject: `[Koderlauf Feedback] ${subjectStr}`.slice(0, 250),
       text,
     });
 
-    if (error) {
-      console.error("Resend:", error);
-      const detail =
-        typeof error === "object" && error !== null && "message" in error
-          ? String((error as { message: unknown }).message)
-          : null;
-      return NextResponse.json(
-        {
-          error: "Die E-Mail konnte nicht gesendet werden. Bitte versucht es später oder schreibt an info@koderlauf.de.",
-          ...(process.env.NODE_ENV === "development" && detail ? { detail } : {}),
-        },
-        { status: 502 }
-      );
-    }
-
     return NextResponse.json({ ok: true });
   } catch (e) {
-    console.error("Feedback send error:", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("Feedback SMTP send error:", msg, e);
+    const hint = smtpFailureHint(msg);
     return NextResponse.json(
-      { error: "Die E-Mail konnte nicht gesendet werden. Bitte später erneut versuchen." },
-      { status: 500 }
+      {
+        error: "Die E-Mail konnte nicht gesendet werden. Bitte versucht es später oder schreibt an info@koderlauf.de.",
+        ...(hint ? { hint } : {}),
+        ...(process.env.NODE_ENV === "development" ? { detail: msg } : {}),
+      },
+      { status: 502 }
     );
   }
 }

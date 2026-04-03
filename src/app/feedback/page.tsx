@@ -77,8 +77,12 @@ export default function FeedbackPage() {
       if (!res.ok) {
         setStatus("error");
         const base = typeof data.error === "string" ? data.error : "Senden fehlgeschlagen.";
+        const hint = typeof data.hint === "string" ? data.hint : "";
         const detail = typeof data.detail === "string" ? data.detail : "";
-        setErrorMsg(detail ? `${base}\n\nTechnische Info: ${detail}` : base);
+        const parts = [base];
+        if (hint) parts.push(hint);
+        if (detail) parts.push(`Technische Info: ${detail}`);
+        setErrorMsg(parts.join("\n\n"));
         return;
       }
       setStatus("success");
