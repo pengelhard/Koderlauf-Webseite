@@ -124,8 +124,7 @@ export default function FeedbackPage() {
               <CheckCircle2 className="h-14 w-14 text-koder-orange" aria-hidden />
               <p className="text-lg font-semibold">Danke – eure Nachricht ist unterwegs!</p>
               <p className="max-w-md text-sm text-muted-foreground">
-                Wir melden uns bei Bedarf an die angegebene Adresse. Bei dringenden Fragen könnt ihr weiterhin direkt an
-                info@koderlauf.de schreiben.
+                Wir melden uns bei Bedarf an die angegebene Adresse.
               </p>
               <Button type="button" variant="outline" className="mt-2" onClick={() => setStatus("idle")}>
                 Weitere Nachricht senden

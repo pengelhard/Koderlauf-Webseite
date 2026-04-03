@@ -200,9 +200,6 @@ export default function AnmeldungenPage() {
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
             <TrendingUp size={14} /> Anmeldungen pro Strecke
           </h2>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Automatische Aktualisierung ca. alle Minute bei offener Seite; nach Tab-Wechsel wird sofort neu geladen.
-          </p>
           <div className="mt-4 space-y-3">
             {STRECKEN_ORDER.map((name) => {
               const s = stats.strecken[name] || { total: 0, m: 0, w: 0 };
