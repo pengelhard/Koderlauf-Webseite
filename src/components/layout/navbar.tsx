@@ -60,6 +60,8 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             {mounted && (
               <button
+                type="button"
+                suppressHydrationWarning
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="rounded-full p-2 text-white/70 transition-colors hover:text-koder-orange"
                 aria-label="Theme wechseln"
@@ -69,6 +71,8 @@ export function Navbar() {
             )}
 
             <button
+              type="button"
+              suppressHydrationWarning
               onClick={() => setMobileOpen(!mobileOpen)}
               className="rounded-lg p-2 text-white"
               aria-expanded={mobileOpen}

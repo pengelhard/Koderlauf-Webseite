@@ -20,6 +20,7 @@ import {
 import { parseGpx, type GpxTrack } from "@/lib/gpx";
 import { RouteMap } from "@/components/map/route-map";
 import { ElevationProfile } from "@/components/map/elevation-profile";
+import { cn } from "@/lib/utils";
 
 interface Strecke {
   id: string;
@@ -85,7 +86,10 @@ type HoverPoint = { lat: number; lon: number; ele: number; distance: number } | 
 
 function StreckenContent() {
   const searchParams = useSearchParams();
-  const initialRoute = searchParams.get("route") || "trailrun";
+  const paramRoute = searchParams.get("route");
+  const allowedIds = new Set(STRECKEN.map((s) => s.id));
+  const initialRoute = paramRoute && allowedIds.has(paramRoute) ? paramRoute : "trailrun";
+  const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
   const [selected, setSelected] = useState<string>(initialRoute);
   const [gpxTracks, setGpxTracks] = useState<Record<string, GpxTrack>>({});
   const [loading, setLoading] = useState(false);
@@ -95,6 +99,7 @@ function StreckenContent() {
   const gpxTrack = gpxTracks[selected] || null;
 
   useEffect(() => {
+    if (yearTab !== "2026") return;
     if (gpxTracks[selected]) return;
 
     let cancelled = false;
@@ -111,7 +116,7 @@ function StreckenContent() {
       .catch(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [selected, activeStrecke.gpxFile, gpxTracks]);
+  }, [yearTab, selected, activeStrecke.gpxFile, gpxTracks]);
 
   const handleProfileHover = useCallback((point: HoverPoint) => {
     setHoverPoint(point);
@@ -126,19 +131,54 @@ function StreckenContent() {
           transition={{ duration: 0.6 }}
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
-            Koderlauf 2026
+            Koderlauf
           </p>
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
             Strecken
           </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Vier Distanzen durch die Wälder rund um Obermögersheim – von
-            kinderleicht bis Trailrun-Abenteuer. Start am Sportheim.
-          </p>
+          <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-border bg-muted/40 p-1">
+            {(["2026", "2027"] as const).map((y) => (
+              <button
+                key={y}
+                type="button"
+                onClick={() => setYearTab(y)}
+                className={cn(
+                  "rounded-xl px-5 py-2.5 text-sm font-semibold transition-all sm:px-8",
+                  yearTab === y
+                    ? "bg-koder-orange text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Strecken {y}
+              </button>
+            ))}
+          </div>
         </motion.div>
 
+        {yearTab === "2027" ? (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-10 rounded-3xl border border-border bg-card p-6 sm:p-8"
+          >
+            <p className="text-base leading-relaxed text-muted-foreground">
+              Für den <strong className="font-semibold text-foreground">Koderlauf 2027</strong> am{" "}
+              <strong className="font-semibold text-foreground">29. Mai 2027</strong> wird es{" "}
+              <strong className="font-semibold text-foreground">neue Strecken</strong> geben. Sobald
+              diese endgültig feststehen, werden sie hier mit Beschreibungen, Streckenverlauf und
+              Karten angezeigt.
+            </p>
+          </motion.div>
+        ) : (
+          <>
+        <p className="mt-8 max-w-2xl text-sm text-muted-foreground sm:text-base">
+          Vier Distanzen durch die Wälder rund um Obermögersheim – von kinderleicht bis
+          Trailrun-Abenteuer. Start am Sportheim (Stand 2026).
+        </p>
+
         {/* Route selector cards */}
-        <div className="mt-8 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 sm:mt-8">
           {STRECKEN.map((strecke) => {
             const track = gpxTracks[strecke.id];
             return (
@@ -269,6 +309,8 @@ function StreckenContent() {
             </CardContent>
           </Card>
         </motion.div>
+          </>
+        )}
       </div>
     </div>
   );

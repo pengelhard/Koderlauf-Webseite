@@ -1,55 +1,75 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Camera, Image as ImageIcon } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+
+/** Bei Ordnerwechsel URL anpassen. */
+const GALLERY_DRIVE_URL =
+  "https://drive.google.com/drive/folders/1eC9zITUdOfzDMByNtB7ZdZuaIsReQKeB?usp=sharing";
 
 export default function GaleriePage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-koder-orange">
             Koderlauf 2026
           </p>
-          <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
+          <h1 className="mt-3 text-5xl font-extrabold tracking-tight sm:text-6xl">
             Galerie
           </h1>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-12 rounded-3xl border-2 border-dashed border-koder-orange/20 bg-koder-orange/5 p-8 text-center sm:p-12"
+          transition={{ duration: 0.5, delay: 0.06 }}
+          className="relative mt-12 overflow-hidden rounded-3xl border border-border/80 bg-card p-8 shadow-xl sm:p-10"
         >
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-koder-orange/10">
-            <Camera className="h-10 w-10 text-koder-orange" />
-          </div>
-          <h2 className="mt-6 text-2xl font-extrabold">
-            Fotos nach dem Lauf
-          </h2>
-          <p className="mx-auto mt-4 max-w-md text-muted-foreground">
-            Die Fotos und Videos vom Koderlauf 2026 werden nach der Veranstaltung am
-            <span className="font-semibold text-koder-orange"> 04. April 2026 </span>
-            hier veröffentlicht.
-          </p>
+          <div
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,var(--color-koder-orange)_0%,transparent_55%)] opacity-[0.12]"
+            aria-hidden
+          />
 
-          <div className="mx-auto mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <ImageIcon size={16} />
-            Professionelle Fotos + Community-Uploads
-          </div>
+          <div className="relative mx-auto max-w-md text-center">
+            <p className="text-lg font-medium leading-relaxed text-foreground sm:text-xl">
+              Die ersten Bilder und Videos vom{" "}
+              <span className="text-koder-orange">4. April</span> sind schon in der Galerie auf
+              Google&nbsp;Drive. In den nächsten Tagen werden dort noch mehr ergänzt.
+            </p>
 
-          <Link
-            href="/anmeldung"
-            className="mt-8 inline-flex rounded-2xl bg-koder-orange px-8 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright"
-          >
-            Jetzt anmelden
-          </Link>
+            <a
+              href={GALLERY_DRIVE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glow-orange mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-koder-orange py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright sm:w-auto sm:px-12"
+            >
+              Zur Galerie
+              <ExternalLink className="h-4 w-4 opacity-90" aria-hidden />
+            </a>
+
+            <p className="mt-10 border-t border-border/80 pt-8 text-sm text-muted-foreground">
+              <Link
+                href="/feedback"
+                className="font-medium text-koder-orange underline-offset-4 hover:underline"
+              >
+                Feedback
+              </Link>
+              {" · "}
+              <Link
+                href="/anmeldung"
+                className="font-medium text-foreground/80 underline-offset-4 hover:underline"
+              >
+                Anmeldung 2027
+              </Link>
+            </p>
+          </div>
         </motion.div>
       </div>
     </div>

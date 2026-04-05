@@ -37,14 +37,27 @@ export function EventInfo() {
           className="text-center"
         >
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Willkommen zum Koderlauf 2026!
+            Willkommen zum Koderlauf!
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Gemeinsam laufen, lachen, anfeuern – ob Kurz und knackig, Koderrunde,
-            Trailrun oder der Kinderlauf: Bei uns zählt die Freude am Bewegen und
-            das Miteinander im Dorf. Schnür die Schuhe, hol dir deine Startnummer
-            und genieß die Stimmung am Sportheim und an der Strecke – jeder ist
+            Gemeinsam laufen, lachen, anfeuern – der Koderlauf 2026 war ein voller
+            Erfolg mit 400 Anmeldungen. Ob Kurz und knackig, Koderrunde, Trailrun
+            oder der Kinderlauf: Bei uns zählt die Freude am Bewegen und das
+            Miteinander im Dorf. Schnür die Schuhe, hol dir deine Startnummer und
+            genieß die Stimmung am Sportheim und an der Strecke – jeder ist
             willkommen, vom Einsteiger bis zur Tempo-Fee.
+          </p>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Auch nächstes Jahr geben wir wieder Vollgas – mit neuen Strecken, neuen Ideen und
+            einem eingespielten Team, das aus 2026 genau weiß, worauf es ankommt. Der Koderlauf
+            wird dabei ein echtes Highlight: eingebettet in das 50-jährige Jubiläum des
+            Sportvereins Obermögersheim.
+          </p>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Die Vorfreude? Die liegt jetzt schon in der Luft. Egal ob du selbst an den Start
+            gehst, an der Strecke Stimmung machst oder einfach nur das Event genießt – wir
+            freuen uns auf jeden Einzelnen von euch. Auf Gänsehautmomente im Wald, gute Laune
+            im Dorf und den unvergesslichen Zieleinlauf am Sportheim.
           </p>
           <p className="mx-auto mt-3 text-base font-semibold text-koder-orange sm:text-lg">
             Jeder Finisher erhält eine einzigartige Koderlauf-Medaille! 🏅
@@ -88,7 +101,7 @@ export function EventInfo() {
             href="/anmeldung"
             className="glow-orange inline-flex rounded-2xl bg-koder-orange px-10 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright"
           >
-            Jetzt anmelden
+            Zur Anmeldung
           </Link>
         </motion.div>
       </div>

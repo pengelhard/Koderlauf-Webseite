@@ -39,7 +39,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/strecken" className="transition-colors hover:text-white">
-                  Strecken 2026
+                  Strecken
                 </Link>
               </li>
               <li>
@@ -64,7 +64,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/anmeldung" className="transition-colors hover:text-white">
-                  Anmeldung 2026
+                  Anmeldung
                 </Link>
               </li>
             </ul>

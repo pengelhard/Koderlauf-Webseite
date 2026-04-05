@@ -2,7 +2,10 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import { Heart, ExternalLink } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Sponsor {
   name: string;
@@ -13,7 +16,7 @@ interface Sponsor {
   invertInLightMode?: boolean;
 }
 
-const SPONSORS: Sponsor[] = [
+const SPONSORS_2026: Sponsor[] = [
   { name: "Heiko Biermeyer", ort: "Obermögersheim", logo: "/sponsors/biermayer.png", website: "https://elektrotechnik-biermeyer.de/" },
   { name: "Bittig IT", ort: "Obermögersheim", logo: "/sponsors/bittig-it.png", website: "https://www.bittig-it.de/" },
   { name: "Edeka Holler", ort: "Wassertrüdingen", logo: "/sponsors/edeka.png", website: "https://edeka-wassertruedingen.de/" },
@@ -91,18 +94,53 @@ function SponsorInitials({ name }: { name: string }) {
 }
 
 export default function SponsorenPage() {
+  const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
+
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf 2026</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf</p>
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Sponsoren</h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Ohne unsere großartigen Sponsoren und Unterstützer wäre der Koderlauf nicht möglich.
-            Ein herzliches Dankeschön an alle, die dieses Event ermöglichen!
+            Ohne unsere Sponsoren und Unterstützer wäre der Koderlauf nicht möglich. Wählt das Jahr –
+            die Liste für 2027 wird ergänzt, sobald Partner feststehen.
           </p>
+          <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-border bg-muted/40 p-1">
+            {(["2026", "2027"] as const).map((y) => (
+              <button
+                key={y}
+                type="button"
+                onClick={() => setYearTab(y)}
+                className={cn(
+                  "rounded-xl px-5 py-2.5 text-sm font-semibold transition-all sm:px-8",
+                  yearTab === y
+                    ? "bg-koder-orange text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Sponsoren {y}
+              </button>
+            ))}
+          </div>
         </motion.div>
 
+        {yearTab === "2027" ? (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-10 rounded-3xl border border-border bg-card p-6 text-center sm:p-10"
+          >
+            <Heart className="mx-auto h-8 w-8 text-koder-orange" />
+            <h2 className="mt-3 text-2xl font-extrabold">Sponsoring Koderlauf 2027</h2>
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Die Sponsoren und Unterstützer für den Koderlauf 2027 werden wir hier bekannt geben, sobald
+              die Partnerschaften feststehen. Interesse? Meldet euch gern bei uns.
+            </p>
+          </motion.div>
+        ) : (
+          <>
         {/* Danke Banner */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}
           className="mt-10 rounded-3xl border border-koder-orange/20 bg-gradient-to-r from-koder-orange/10 to-forest-deep/5 p-6 text-center sm:p-8">
@@ -118,10 +156,10 @@ export default function SponsorenPage() {
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}
           className="mt-10">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
-            Unsere Sponsoren & Unterstützer
+            Unsere Sponsoren & Unterstützer 2026
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {SPONSORS.map((s) => (
+            {SPONSORS_2026.map((s) => (
               <motion.div key={s.name} variants={item}>
                 {s.website ? (
                   <a href={s.website} target="_blank" rel="noopener noreferrer"
@@ -156,10 +194,17 @@ export default function SponsorenPage() {
             ))}
           </div>
         </motion.div>
+          </>
+        )}
 
         <p className="mt-10 text-center text-sm text-muted-foreground">
           Du möchtest den Koderlauf auch unterstützen? Schreib uns an{" "}
           <a href="mailto:info@koderlauf.de" className="text-koder-orange hover:underline">info@koderlauf.de</a>
+          {" "}oder nutzt unser{" "}
+          <Link href="/feedback" className="text-koder-orange hover:underline">
+            Kontaktformular
+          </Link>
+          .
         </p>
       </div>
     </div>

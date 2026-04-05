@@ -5,7 +5,6 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CountdownTimer } from "@/components/sections/countdown";
-import { RunnerInfoDialog } from "@/components/sections/runner-info-dialog";
 
 const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/2711092/2711092-hd_1920_1080_24fps.mp4";
 const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80";
@@ -82,9 +81,9 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange"
+          className="mb-4 rounded-lg bg-black/50 px-5 py-2.5 text-base font-extrabold uppercase tracking-[0.18em] text-koder-orange-bright shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/10 backdrop-blur-sm sm:text-lg sm:tracking-[0.22em] md:text-xl md:tracking-[0.25em] [text-shadow:0_1px_2px_rgba(0,0,0,0.9)]"
         >
-          04. April 2026 &middot; Obermögersheim
+          29. Mai 2027 &middot; Obermögersheim
         </motion.p>
 
         <motion.h1
@@ -95,7 +94,7 @@ export function Hero() {
         >
           KODERLAUF
           <br />
-          <span className="text-gradient-orange">2026</span>
+          <span className="text-gradient-orange">2027</span>
         </motion.h1>
 
         <motion.p
@@ -113,22 +112,13 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-8"
         >
-          <CountdownTimer targetDate="2026-04-04T14:00:00" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.62 }}
-          className="mt-8 flex justify-center px-2"
-        >
-          <RunnerInfoDialog />
+          <CountdownTimer targetDate="2027-05-29T14:00:00" />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.76 }}
+          transition={{ duration: 0.6, delay: 0.62 }}
           className="mt-8 flex flex-col gap-4 sm:flex-row"
         >
           <Link
@@ -147,7 +137,7 @@ export function Hero() {
             href="/anmeldung"
             className="glow-orange rounded-2xl bg-koder-orange px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright"
           >
-            Jetzt anmelden
+            Zur Anmeldung
           </Link>
         </motion.div>
       </motion.div>

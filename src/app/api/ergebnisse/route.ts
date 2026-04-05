@@ -5,6 +5,7 @@ import {
   STRECKE_ID_TO_DISTANZ,
   type ResultRow,
 } from "@/lib/data/results";
+import { ERGEBNISSE_FALLBACK_OFFIZIELL_2026 } from "@/lib/data/demo-ergebnisse";
 
 export async function GET(req: NextRequest) {
   const strecke = req.nextUrl.searchParams.get("strecke");
@@ -56,7 +57,7 @@ export async function GET(req: NextRequest) {
 
   if (rows.length === 0) {
     rows = getDemoResultsByDistance(distanz);
-    usedDemo = true;
+    usedDemo = !ERGEBNISSE_FALLBACK_OFFIZIELL_2026;
   }
 
   return NextResponse.json({
