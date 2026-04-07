@@ -4,9 +4,8 @@ import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 
-/** Bei Ordnerwechsel URL anpassen. */
-const GALLERY_DRIVE_URL =
-  "https://drive.google.com/drive/folders/1eC9zITUdOfzDMByNtB7ZdZuaIsReQKeB?usp=sharing";
+/** Geteiltes Album – bei Wechsel des Albums URL anpassen. */
+const GALLERY_PHOTOS_URL = "https://photos.app.goo.gl/MfnZNyHNQSxDaRWx6";
 
 export default function GaleriePage() {
   return (
@@ -40,12 +39,12 @@ export default function GaleriePage() {
           <div className="relative mx-auto max-w-md text-center">
             <p className="text-lg font-medium leading-relaxed text-foreground sm:text-xl">
               Die ersten Bilder und Videos vom{" "}
-              <span className="text-koder-orange">4. April</span> sind schon in der Galerie auf
-              Google&nbsp;Drive. In den nächsten Tagen werden dort noch mehr ergänzt.
+              <span className="text-koder-orange">4. April</span> sind schon in der Galerie in
+              Google&nbsp;Fotos. In den nächsten Tagen werden dort noch mehr ergänzt.
             </p>
 
             <a
-              href={GALLERY_DRIVE_URL}
+              href={GALLERY_PHOTOS_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="glow-orange mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-koder-orange py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright sm:w-auto sm:px-12"

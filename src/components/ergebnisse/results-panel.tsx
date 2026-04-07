@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Info, X } from "lucide-react";
 import type { ResultRow } from "@/lib/data/results";
-import { formatAkLabel, getAltersklasseMeta } from "@/lib/data/altersklassen";
+import { getAltersklasseMeta } from "@/lib/data/altersklassen";
 import { cn } from "@/lib/utils";
 
 function timeToSeconds(t: string): number {
@@ -107,7 +107,9 @@ type ApiResponse = {
   distanz: string;
 };
 
-/** Altersklassen-Bereich mit Tabs – nur eine Klasse sichtbar, weniger Scroll. */
+type AkTabKey = "all" | number;
+
+/** Altersklassen-Bereich mit Tabs – „Alle“ oder einzelne AK. */
 function AltersklassenTabs({
   rows,
 }: {
@@ -127,44 +129,62 @@ function AltersklassenTabs({
     return [...s].sort((a, b) => a - b);
   }, [rows]);
 
-  const [activeAk, setActiveAk] = useState<number | null>(null);
+  const hasGenderRows = useMemo(
+    () =>
+      rows.some(
+        (r) => r.geschlecht === "M" || r.geschlecht === "W",
+      ),
+    [rows],
+  );
+
+  const [activeTab, setActiveTab] = useState<AkTabKey>("all");
 
   useEffect(() => {
-    if (aksWithData.length === 0) {
-      setActiveAk(null);
-      return;
-    }
-    setActiveAk((prev) =>
-      prev != null && aksWithData.includes(prev) ? prev : aksWithData[0],
-    );
+    setActiveTab((prev) => {
+      if (prev === "all") return "all";
+      if (typeof prev === "number" && aksWithData.includes(prev)) return prev;
+      return "all";
+    });
   }, [aksWithData]);
 
-  if (aksWithData.length === 0) {
+  const allM = useMemo(
+    () => sortByZeit(rows.filter((r) => r.geschlecht === "M")),
+    [rows],
+  );
+  const allW = useMemo(
+    () => sortByZeit(rows.filter((r) => r.geschlecht === "W")),
+    [rows],
+  );
+
+  if (!hasGenderRows) {
     return (
       <p className="rounded-lg border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-        Keine Altersklassen-Zuordnung in den Ergebnisdaten – sobald Jahrgang/Geschlecht
-        gepflegt sind, erscheinen hier die Klassen als Registerkarten.
+        Keine geschlechterbezogenen Einträge in den Ergebnisdaten.
       </p>
     );
   }
 
-  const meta = activeAk != null ? getAltersklasseMeta(activeAk) : undefined;
+  const meta =
+    typeof activeTab === "number" ? getAltersklasseMeta(activeTab) : undefined;
   const inAkM =
-    activeAk != null
+    typeof activeTab === "number"
       ? sortByZeit(
           rows.filter(
-            (r) => r.altersklasse === activeAk && r.geschlecht === "M",
+            (r) => r.altersklasse === activeTab && r.geschlecht === "M",
           ),
         )
       : [];
   const inAkW =
-    activeAk != null
+    typeof activeTab === "number"
       ? sortByZeit(
           rows.filter(
-            (r) => r.altersklasse === activeAk && r.geschlecht === "W",
+            (r) => r.altersklasse === activeTab && r.geschlecht === "W",
           ),
         )
       : [];
+
+  const showM = activeTab === "all" ? allM : inAkM;
+  const showW = activeTab === "all" ? allW : inAkW;
 
   return (
     <div className="space-y-4">
@@ -179,8 +199,24 @@ function AltersklassenTabs({
         aria-label="Altersklasse wählen"
         className="-mx-1 flex gap-1 overflow-x-auto pb-1 pt-0.5 sm:flex-wrap sm:overflow-visible"
       >
+        <button
+          type="button"
+          role="tab"
+          id="ak-tab-all"
+          aria-selected={activeTab === "all"}
+          aria-controls="ak-panel-all"
+          onClick={() => setActiveTab("all")}
+          className={cn(
+            "shrink-0 rounded-lg px-3.5 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange focus-visible:ring-offset-2",
+            activeTab === "all"
+              ? "bg-koder-orange text-white shadow-sm"
+              : "border border-border bg-muted/40 text-foreground hover:bg-muted/70",
+          )}
+        >
+          Alle
+        </button>
         {aksWithData.map((ak) => {
-          const selected = activeAk === ak;
+          const selected = activeTab === ak;
           const m = getAltersklasseMeta(ak);
           return (
             <button
@@ -191,7 +227,7 @@ function AltersklassenTabs({
               aria-selected={selected}
               aria-controls={`ak-panel-${ak}`}
               title={m ? `Jg. ${m.jahrgang}` : undefined}
-              onClick={() => setActiveAk(ak)}
+              onClick={() => setActiveTab(ak)}
               className={cn(
                 "shrink-0 rounded-lg px-3.5 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange focus-visible:ring-offset-2",
                 selected
@@ -205,45 +241,55 @@ function AltersklassenTabs({
         })}
       </div>
 
-      {activeAk != null && meta && (
-        <div
-          role="tabpanel"
-          id={`ak-panel-${activeAk}`}
-          aria-labelledby={`ak-tab-${activeAk}`}
-          className="border-t border-border pt-5"
-        >
+      <div
+        role="tabpanel"
+        id={activeTab === "all" ? "ak-panel-all" : `ak-panel-${activeTab}`}
+        aria-labelledby={
+          activeTab === "all" ? "ak-tab-all" : `ak-tab-${activeTab}`
+        }
+        className="border-t border-border pt-5"
+      >
+        {activeTab === "all" ? (
           <p className="mb-4 text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">Altersklasse {activeAk}</span>
+            <span className="font-medium text-foreground">Alle Teilnehmenden</span>
+            {" · "}
+            sortiert nach Zeit, getrennt Männlich / Weiblich
+          </p>
+        ) : meta ? (
+          <p className="mb-4 text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">Altersklasse {activeTab}</span>
             {" · "}
             Jg. {meta.jahrgang} · ca. {meta.alterSpan}
           </p>
+        ) : null}
 
-          <div className="grid gap-6 md:grid-cols-2">
-            {inAkM.length > 0 && (
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Männlich
-                </p>
-                <ResultTable rows={inAkM} />
-              </div>
-            )}
-            {inAkW.length > 0 && (
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Weiblich
-                </p>
-                <ResultTable rows={inAkW} />
-              </div>
-            )}
-          </div>
-
-          {inAkM.length === 0 && inAkW.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              In dieser Altersklasse keine Einträge.
-            </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          {showM.length > 0 && (
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Männlich
+              </p>
+              <ResultTable rows={showM} />
+            </div>
+          )}
+          {showW.length > 0 && (
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Weiblich
+              </p>
+              <ResultTable rows={showW} />
+            </div>
           )}
         </div>
-      )}
+
+        {showM.length === 0 && showW.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            {activeTab === "all"
+              ? "Keine Einträge."
+              : "In dieser Altersklasse keine Einträge."}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
