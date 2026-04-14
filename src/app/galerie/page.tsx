@@ -2,10 +2,35 @@
 
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
-import Link from "next/link";
 
-/** Geteiltes Album – bei Wechsel des Albums URL anpassen. */
-const GALLERY_PHOTOS_URL = "https://photos.app.goo.gl/MfnZNyHNQSxDaRWx6";
+/** Oeffentliche Google-Fotos-Alben fuer die Galerie. */
+const GALLERY_ROUTE_URL = "https://photos.app.goo.gl/yDoCZKztQSZx1w9v7";
+const GALLERY_START_FINISH_URL = "https://photos.app.goo.gl/CSWq4RVGnuqMbYs68";
+const GALLERY_SETUP_URL = "https://photos.app.goo.gl/gL4wMBUdV857n1qF8";
+
+type GalleryLink = {
+  label: string;
+  hint: string;
+  href: string;
+};
+
+const GALLERY_LINKS: GalleryLink[] = [
+  {
+    label: "Auf der Strecke",
+    hint: "Laufmomente und Eindruecke entlang der Strecke",
+    href: GALLERY_ROUTE_URL,
+  },
+  {
+    label: "Start-Zielbereich",
+    hint: "Start, Zieleinlauf und Stimmung vor Ort",
+    href: GALLERY_START_FINISH_URL,
+  },
+  {
+    label: "Aufbau",
+    hint: "Vorbereitungen rund um den Koderlauf",
+    href: GALLERY_SETUP_URL,
+  },
+];
 
 export default function GaleriePage() {
   return (
@@ -38,36 +63,49 @@ export default function GaleriePage() {
 
           <div className="relative mx-auto max-w-md text-center">
             <p className="text-lg font-medium leading-relaxed text-foreground sm:text-xl">
-              Die ersten Bilder und Videos vom{" "}
-              <span className="text-koder-orange">4. April</span> sind schon in der Galerie in
-              Google&nbsp;Fotos. In den nächsten Tagen werden dort noch mehr ergänzt.
+              Die Bilder vom <span className="text-koder-orange">4. April</span> findest du jetzt
+              in Google-Fotos-Alben.
             </p>
 
-            <a
-              href={GALLERY_PHOTOS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glow-orange mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-koder-orange py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright sm:w-auto sm:px-12"
-            >
-              Zur Galerie
-              <ExternalLink className="h-4 w-4 opacity-90" aria-hidden />
-            </a>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {GALLERY_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={[
+                    "group relative overflow-hidden rounded-2xl border px-5 py-4 text-left transition-all duration-200",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange/60",
+                    "border-border/80 bg-background/80 hover:-translate-y-0.5 hover:border-koder-orange/60 hover:bg-koder-orange/5 hover:shadow-lg hover:shadow-koder-orange/10",
+                  ].join(" ")}
+                >
+                  <span
+                    className={[
+                      "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+                      "bg-[radial-gradient(circle_at_80%_20%,rgba(249,115,22,0.18),transparent_58%)]",
+                    ].join(" ")}
+                    aria-hidden
+                  />
 
-            <p className="mt-10 border-t border-border/80 pt-8 text-sm text-muted-foreground">
-              <Link
-                href="/feedback"
-                className="font-medium text-koder-orange underline-offset-4 hover:underline"
-              >
-                Feedback
-              </Link>
-              {" · "}
-              <Link
-                href="/anmeldung"
-                className="font-medium text-foreground/80 underline-offset-4 hover:underline"
-              >
-                Anmeldung 2027
-              </Link>
-            </p>
+                  <span className="relative flex items-start gap-3">
+                    <span className="flex-1">
+                      <span className="block text-sm font-bold tracking-wide text-foreground">
+                        {link.label}
+                      </span>
+                      <span className="mt-1 block text-xs text-muted-foreground">{link.hint}</span>
+                    </span>
+                    <ExternalLink
+                      className={[
+                        "mt-0.5 h-4 w-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5",
+                        "text-koder-orange",
+                      ].join(" ")}
+                      aria-hidden
+                    />
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
