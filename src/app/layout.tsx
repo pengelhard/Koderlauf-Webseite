@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { StickyCta } from "@/components/layout/sticky-cta";
 import { TestBanner } from "@/components/layout/test-banner";
+import { MobileMotionConfig } from "@/components/mobile-motion-config";
 import { EVENT } from "@/lib/event-config";
 import { getSiteUrlFromHost, isTestHost } from "@/lib/site-url";
 import "./globals.css";
@@ -57,6 +58,7 @@ export default function RootLayout({
     <html lang="de" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider>
+          <MobileMotionConfig />
           <Navbar />
           <TestBanner />
           <main className="min-h-screen">{children}</main>
