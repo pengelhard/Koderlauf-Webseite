@@ -60,8 +60,8 @@ export function Stats() {
         {stats.map((stat) => (
           <motion.div
             key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             className="text-center"
           >

@@ -71,11 +71,16 @@ const fadeUp = {
 
 
 export default function ErgebnissePage() {
-  const [selectedStrecke, setSelectedStrecke] = useState<string | null>(null);
+  const [selectedStrecke, setSelectedStrecke] = useState<string | null>("kinderlauf");
   const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
   const panelContainerRef = useRef<HTMLDivElement>(null);
+  const skipInitialScroll = useRef(true);
 
   useEffect(() => {
+    if (skipInitialScroll.current) {
+      skipInitialScroll.current = false;
+      return;
+    }
     if (selectedStrecke && panelContainerRef.current) {
       requestAnimationFrame(() => {
         panelContainerRef.current?.scrollIntoView({
@@ -123,7 +128,7 @@ export default function ErgebnissePage() {
             value={yearTab}
             onChange={(year) => {
               setYearTab(year);
-              setSelectedStrecke(null);
+              setSelectedStrecke(year === "2026" ? "kinderlauf" : null);
             }}
           />
         </motion.header>
@@ -200,134 +205,134 @@ export default function ErgebnissePage() {
           </AnimatePresence>
           </div>
         </motion.section>
-
-        {/* Ehrungsregeln */}
-        <motion.section
-          {...fadeUp}
-          transition={{ duration: 0.45, delay: 0.12 }}
-          className="mt-20"
-          aria-labelledby="ehrungen-heading"
-        >
-          <div className="mb-8 border-b border-border pb-4">
-            <h2
-              id="ehrungen-heading"
-              className="text-xl font-bold tracking-tight sm:text-2xl"
-            >
-              Wertung &amp; Ehrungen
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Kurz erklärt – wer wird wie ausgezeichnet?
-            </p>
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-2">
-            {/* Kinderlauf */}
-            <Card className="overflow-hidden border-2 border-koder-orange/25 bg-gradient-to-b from-koder-orange/[0.06] to-card shadow-md">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-koder-orange/15 text-koder-orange">
-                    <Baby className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Kinderlauf</CardTitle>
-                    <p className="text-sm text-muted-foreground">800&nbsp;m</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-5 pt-0">
-                <div className="rounded-xl border border-border/80 bg-card/80 p-4">
-                  <div className="flex items-start gap-3">
-                    <Gift className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                    <div>
-                      <p className="font-semibold">Alle Teilnehmenden</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        Jede Teilnehmerin und jeder Teilnehmer am Kinderlauf erhält
-                        eine <strong className="text-foreground">Urkunde</strong> und
-                        einen <strong className="text-foreground">kleinen Preis</strong>.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-xl border border-border/80 bg-card/80 p-4">
-                  <div className="flex items-start gap-3">
-                    <Medal className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                    <div>
-                      <p className="font-semibold">Platzierungspreise</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        Die <strong className="text-foreground">drei schnellsten
-                        Mädchen</strong> und die{" "}
-                        <strong className="text-foreground">drei schnellsten Jungen</strong>{" "}
-                        werden gesondert geehrt und erhalten einen Platzierungspreis.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Kurz, Koderrunde, Trailrun */}
-            <Card className="border shadow-md">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/10 text-secondary">
-                    <Award className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">
-                      Kurz und knackig, Koderrunde &amp; Trailrun
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      4&nbsp;km · 8,5&nbsp;km · 11,25&nbsp;km
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4 pt-0">
-                <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
-                  <Trophy className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                  <div>
-                    <p className="font-semibold">Gesamtwertung</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                      Platzierungen <strong className="text-foreground">1. bis 3.</strong>{" "}
-                      für <strong className="text-foreground">männlich</strong> und{" "}
-                      <strong className="text-foreground">weiblich</strong> – jeweils
-                      getrennt ausgewiesen.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
-                  <Users className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                  <div>
-                    <p className="font-semibold">Altersklassenwertung</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                      In jeder Altersklasse wird der{" "}
-                      <strong className="text-foreground">1. Platz männlich</strong> und
-                      der <strong className="text-foreground">1. Platz weiblich</strong>{" "}
-                      gewertet und geehrt.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </motion.section>
           </>
         ) : (
-          /* 2027 Placeholder */
-          <motion.div
-            {...fadeUp}
-            transition={{ duration: 0.4 }}
-            className="mt-8 rounded-3xl border border-border bg-card p-8 text-center sm:p-12"
-          >
-            <p className="text-lg text-muted-foreground">
-              Für den <strong className="font-semibold text-foreground">Koderlauf 2027</strong> liegen
-              noch keine Ergebnisse vor.
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Sobald der Lauf stattgefunden hat, werden hier die Ergebnisse und Ehrungen
-              veröffentlicht.
-            </p>
-          </motion.div>
+          <>
+            <motion.div
+              {...fadeUp}
+              transition={{ duration: 0.4 }}
+              className="mt-8 rounded-3xl border border-border bg-card p-8 text-center sm:p-12"
+            >
+              <p className="text-lg text-muted-foreground">
+                Für den <strong className="font-semibold text-foreground">Koderlauf 2027</strong> liegen
+                noch keine Ergebnisse vor.
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Sobald der Lauf stattgefunden hat, werden hier die Ergebnisse veröffentlicht.
+              </p>
+            </motion.div>
+
+            {/* Ehrungsregeln */}
+            <motion.section
+              {...fadeUp}
+              transition={{ duration: 0.45, delay: 0.12 }}
+              className="mt-20"
+              aria-labelledby="ehrungen-heading"
+            >
+              <div className="mb-8 border-b border-border pb-4">
+                <h2
+                  id="ehrungen-heading"
+                  className="text-xl font-bold tracking-tight sm:text-2xl"
+                >
+                  Wertung &amp; Ehrungen
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Kurz erklärt – wer wird wie ausgezeichnet?
+                </p>
+              </div>
+
+              <div className="grid gap-8 lg:grid-cols-2">
+                {/* Kinderlauf */}
+                <Card className="overflow-hidden border-2 border-koder-orange/25 bg-gradient-to-b from-koder-orange/[0.06] to-card shadow-md">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-koder-orange/15 text-koder-orange">
+                        <Baby className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">Kinderlauf</CardTitle>
+                        <p className="text-sm text-muted-foreground">800&nbsp;m</p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-5 pt-0">
+                    <div className="rounded-xl border border-border/80 bg-card/80 p-4">
+                      <div className="flex items-start gap-3">
+                        <Gift className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                        <div>
+                          <p className="font-semibold">Alle Teilnehmenden</p>
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                            Jede Teilnehmerin und jeder Teilnehmer am Kinderlauf erhält
+                            eine <strong className="text-foreground">Urkunde</strong> und
+                            einen <strong className="text-foreground">kleinen Preis</strong>.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-border/80 bg-card/80 p-4">
+                      <div className="flex items-start gap-3">
+                        <Medal className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                        <div>
+                          <p className="font-semibold">Platzierungspreise</p>
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                            Die <strong className="text-foreground">drei schnellsten
+                            Mädchen</strong> und die{" "}
+                            <strong className="text-foreground">drei schnellsten Jungen</strong>{" "}
+                            werden gesondert geehrt und erhalten einen Platzierungspreis.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Kurz, Koderrunde, Trailrun */}
+                <Card className="border shadow-md">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/10 text-secondary">
+                        <Award className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">
+                          Kurz und knackig, Koderrunde &amp; Trailrun
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          4&nbsp;km · 8,5&nbsp;km · 11,25&nbsp;km
+                        </p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-0">
+                    <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
+                      <Trophy className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                      <div>
+                        <p className="font-semibold">Gesamtwertung</p>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          Platzierungen <strong className="text-foreground">1. bis 3.</strong>{" "}
+                          für <strong className="text-foreground">männlich</strong> und{" "}
+                          <strong className="text-foreground">weiblich</strong> – jeweils
+                          getrennt ausgewiesen.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
+                      <Users className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                      <div>
+                        <p className="font-semibold">Altersklassenwertung</p>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          In jeder Altersklasse wird der{" "}
+                          <strong className="text-foreground">1. Platz männlich</strong> und
+                          der <strong className="text-foreground">1. Platz weiblich</strong>{" "}
+                          gewertet und geehrt.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.section>
+          </>
         )}
       </div>
     </div>

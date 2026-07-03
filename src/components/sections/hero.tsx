@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CountdownTimer } from "@/components/sections/countdown";
@@ -9,9 +9,27 @@ import { CountdownTimer } from "@/components/sections/countdown";
 const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/2711092/2711092-hd_1920_1080_24fps.mp4";
 const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80";
 
+/** Parallax nur auf Desktop mit Maus – auf Touch-Geräten verursacht das scroll-gekoppelte
+ *  Transform sichtbare Rendering-Artefakte (Ghosting) und Jank. */
+function useParallaxEnabled() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px) and (pointer: fine)");
+    const update = () => setEnabled(mq.matches);
+    const id = requestAnimationFrame(update);
+    mq.addEventListener("change", update);
+    return () => {
+      cancelAnimationFrame(id);
+      mq.removeEventListener("change", update);
+    };
+  }, []);
+  return enabled;
+}
+
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const [videoError, setVideoError] = useState(false);
+  const parallaxEnabled = useParallaxEnabled();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -23,9 +41,9 @@ export function Hero() {
   // mitunter sofort progress≈1 → Opacity 0 → nur dunkles Video/Overlay sichtbar („schwarzer Bildschirm“).
 
   return (
-    <section ref={ref} className="relative h-screen w-full overflow-hidden">
+    <section ref={ref} className="relative h-[100svh] w-full overflow-hidden">
       <motion.div
-        style={{ y: bgY, scale: bgScale }}
+        style={parallaxEnabled ? { y: bgY, scale: bgScale } : undefined}
         className="absolute inset-0 z-0"
       >
         {!videoError ? (

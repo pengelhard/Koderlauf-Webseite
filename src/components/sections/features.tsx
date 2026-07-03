@@ -13,16 +13,18 @@ const ICONS: Record<string, LucideIcon> = {
   spielerei: Route,
 };
 
+// Nur Opacity animieren: Transform-Animationen beim Scrollen erzeugen auf
+// Mobilgeräten Rendering-Artefakte (Ghosting alter Frames).
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
+const item = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.4 } } };
 
 export function Features() {
   return (
     <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center"

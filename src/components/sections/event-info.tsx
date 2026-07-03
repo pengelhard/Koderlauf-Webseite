@@ -27,16 +27,17 @@ const INFOS = [
   { icon: Backpack, text: "Persönliche Gegenstände können in begrenzter Anzahl abgegeben werden" },
 ];
 
+// Nur Opacity animieren: Scroll-Transforms verursachen auf Mobile Ghosting.
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
-const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
+const item = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.3 } } };
 
 export function EventInfo() {
   return (
     <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center"
@@ -58,8 +59,8 @@ export function EventInfo() {
         {/* Rückblick / Ausblick */}
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="flex flex-col rounded-3xl border border-border bg-card p-6 sm:p-8"
@@ -97,8 +98,8 @@ export function EventInfo() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="flex flex-col rounded-3xl border border-koder-orange/30 bg-koder-orange/5 p-6 sm:p-8"
@@ -161,8 +162,8 @@ export function EventInfo() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="mt-8 text-center"

@@ -3,8 +3,55 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Camera, ExternalLink, PlayCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { YearSwitcher } from "@/components/ui/year-switcher";
+
+/**
+ * Video-Overlay für eine Galerie-Kachel: lädt das Video erst, wenn die Kachel
+ * im Viewport ist, und blendet es erst ein, sobald es abspielbereit ist.
+ * Bis dahin bleibt das darunterliegende Bild sichtbar (schneller First Paint).
+ */
+function GalleryVideo({ src, label }: { src: string; label: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0" aria-hidden={!ready}>
+      {inView && (
+        <video
+          src={src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-label={label}
+          onCanPlay={() => setReady(true)}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 group-hover:scale-105 ${
+            ready ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      )}
+    </div>
+  );
+}
 
 /** Öffentliche Google-Fotos-Alben für die Galerie. */
 const GALLERY_ROUTE_URL = "https://photos.app.goo.gl/yDoCZKztQSZx1w9v7";
@@ -28,28 +75,28 @@ const GALLERY_LINKS: GalleryLink[] = [
     label: "Auf der Strecke",
     hint: "Laufmomente und Eindrücke entlang der Strecke",
     href: GALLERY_ROUTE_URL,
-    image: "/gallery-strecke.png",
+    image: "/gallery-strecke.webp",
     imageAlt: "Streckenposten beim Koderlauf mit Wegweisern für Koderrunde und Trailrun",
   },
   {
     label: "Start-Zielbereich",
     hint: "Start, Zieleinlauf und Stimmung vor Ort",
     href: GALLERY_START_FINISH_URL,
-    image: "/gallery-start-ziel.png",
+    image: "/gallery-start-ziel.webp",
     imageAlt: "Kinderlauf-Start im Start- und Zielbereich des Koderlaufs",
   },
   {
     label: "Aufbau",
     hint: "Vorbereitungen rund um den Koderlauf",
     href: GALLERY_SETUP_URL,
-    image: "/gallery-aufbau.png",
+    image: "/gallery-aufbau.webp",
     imageAlt: "Helfer beim Aufbau der Banner am Sportgelände",
   },
   {
     label: "YouTube",
     hint: "Drohnenaufnahmen",
     href: YOUTUBE_CHANNEL_URL,
-    image: "/gallery-drohne.png",
+    image: "/gallery-drohne.webp",
     imageAlt: "Drohnenaufnahme vom Sportheim und Start-Zielbereich des Koderlaufs",
     video: "/gallery-drohne-loop.mp4",
     accent: "youtube",
@@ -98,7 +145,7 @@ export default function GaleriePage() {
                 </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  {GALLERY_LINKS.map((link) => (
+                  {GALLERY_LINKS.map((link, index) => (
                     <a
                       key={link.label}
                       href={link.href}
@@ -112,27 +159,19 @@ export default function GaleriePage() {
                           : "border-border/80 hover:-translate-y-1 hover:border-koder-orange/70 hover:shadow-2xl hover:shadow-koder-orange/15",
                       ].join(" ")}
                     >
-                      {link.video ? (
-                        <video
-                          src={link.video}
-                          poster={link.image}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          preload="metadata"
-                          aria-label={link.imageAlt}
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <Image
-                          src={link.image}
-                          alt={link.imageAlt}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          sizes="(min-width: 640px) 50vw, 100vw"
-                        />
-                      )}
+                      {/* Bild immer sofort rendern – das Video lädt im Hintergrund nach
+                          und blendet sich erst ein, wenn es abspielbereit ist. */}
+                      <Image
+                        src={link.image}
+                        alt={link.imageAlt}
+                        fill
+                        priority={index < 2}
+                        loading={index < 2 ? "eager" : "lazy"}
+                        quality={70}
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(min-width: 640px) 50vw, 100vw"
+                      />
+                      {link.video && <GalleryVideo src={link.video} label={link.imageAlt} />}
                       <span className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/5" />
                       <span
                         className={

@@ -49,8 +49,9 @@ const RAHMENPROGRAMM = [
   },
 ];
 
+// Nur Opacity animieren: Scroll-Transforms verursachen auf Mobile Ghosting.
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
-const item = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } };
+const item = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.35 } } };
 
 export function JubilaeumsProgramm() {
   return (
@@ -58,8 +59,8 @@ export function JubilaeumsProgramm() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Kopf */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-3xl text-center"
@@ -79,8 +80,8 @@ export function JubilaeumsProgramm() {
 
         {/* Samstag / Koderlauf – Highlight */}
         <motion.article
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="mt-12 overflow-hidden rounded-3xl border border-koder-orange/45 bg-gradient-to-br from-koder-orange/15 via-white/[0.04] to-white/[0.02] shadow-2xl shadow-koder-orange/10"
@@ -139,7 +140,7 @@ export function JubilaeumsProgramm() {
             {/* Rechte Spalte: Tape Jam */}
             <div className="relative min-h-72 border-t border-koder-orange/25 lg:min-h-0 lg:border-l lg:border-t-0">
               <Image
-                src="/tape-jam.png"
+                src="/tape-jam.webp"
                 alt="Tape Jam – Tribute to 80's Rock live auf der Bühne"
                 fill
                 className="object-cover object-top"
@@ -203,8 +204,8 @@ export function JubilaeumsProgramm() {
         </motion.div>
 
         <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.2 }}
           className="mt-8 text-center text-sm text-white/50"

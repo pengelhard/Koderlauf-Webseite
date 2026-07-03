@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CalendarDays, MapPin, Navigation, Award, Baby, Zap, TreePine, Mountain, Route, Megaphone } from "lucide-react";
+import { CalendarDays, MapPin, Navigation, Award, Megaphone } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
+import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
 
 export default function AnmeldungPage() {
   const fruehbucher = EVENT.preise.phasen[0];
@@ -110,90 +111,7 @@ export default function AnmeldungPage() {
           className="mt-10"
         >
           <h2 className="text-2xl font-extrabold tracking-tight">Startzeiten {EVENT.jahr}</h2>
-
-          {/* Große, luftige Timeline – exakt wie im Bild: Icons/Marker auf der Linie, Text abwechselnd drüber/drunter */}
-          <div className="relative h-64 pt-2 pb-2">
-            {/* Dünne, klare Timeline-Linie (wie im Bild) */}
-            <div className="absolute left-[3%] right-[3%] top-1/2 h-px -translate-y-1/2 rounded-full bg-foreground/50" />
-
-            {[
-              { name: "Kinderlauf",     time: "14:30", color: "#FF6B00", icon: Baby,     pos: 6,  side: "top" as const },
-              { name: "Spielerei",      time: "15:00", color: "#7C3AED", icon: Route,    pos: 22, side: "bottom" as const },
-              { name: "Trailrun",       time: "15:10", color: "#3B82F6", icon: Mountain, pos: 38, side: "top" as const },
-              { name: "Koderrunde",     time: "15:20", color: "#EAB308", icon: TreePine, pos: 55, side: "bottom" as const },
-              { name: "Kurz & knackig", time: "15:30", color: "#22C55E", icon: Zap,      pos: 72, side: "top" as const },
-              { name: "Siegerehrung",   time: "19:00", color: "#D97706", icon: Award,    pos: 95, side: "bottom" as const },
-            ].map((s) => {
-              const Icon = s.icon;
-              const isTop = s.side === "top";
-              return (
-                <div
-                  key={s.name}
-                  className="absolute"
-                  style={{ left: `${s.pos}%`, top: "50%", transform: "translateX(-50%)" }}
-                >
-                  {/* Marker exakt zentriert auf der Linie (bleibt immer auf der Linie) */}
-                  <div
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-offset-2 ring-offset-background"
-                    style={{
-                      backgroundColor: s.color,
-                      color: "#fff",
-                      boxShadow: `0 0 0 5px ${s.color}22, 0 0 18px ${s.color}55, 0 0 36px ${s.color}33`,
-                    }}
-                  >
-                    <Icon size={18} />
-                  </div>
-
-                  {/* Text + kurzer Stiel – abwechselnd komplett ober- oder unterhalb des Markers */}
-                  <div
-                    className={`absolute left-1/2 -translate-x-1/2 flex flex-col items-center ${isTop ? "bottom-[calc(50%+3px)]" : "top-[calc(50%+3px)]"}`}
-                  >
-                    {/* Bei oben: Text zuerst, dann kurzer Stiel runter zum Marker */}
-                    {isTop && (
-                      <div className="text-center mb-1">
-                        <div
-                          className="text-[10px] sm:text-xs font-semibold tracking-tight whitespace-nowrap"
-                          style={{ color: s.color }}
-                        >
-                          {s.name}
-                        </div>
-                        <div
-                          className="text-base sm:text-lg font-extrabold tabular-nums tracking-[-0.4px]"
-                          style={{ color: s.color }}
-                        >
-                          {s.time}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Kurzer Verbindungsstrich (Stiel) – Abstand Text ↔ Icon grob wie im Bild */}
-                    <div
-                      className="w-px"
-                      style={{ height: "8px", backgroundColor: `${s.color}55` }}
-                    />
-
-                    {/* Bei unten: Stiel zuerst, dann Text */}
-                    {!isTop && (
-                      <div className="text-center mt-1">
-                        <div
-                          className="text-[10px] sm:text-xs font-semibold tracking-tight whitespace-nowrap"
-                          style={{ color: s.color }}
-                        >
-                          {s.name}
-                        </div>
-                        <div
-                          className="text-base sm:text-lg font-extrabold tabular-nums tracking-[-0.4px]"
-                          style={{ color: s.color }}
-                        >
-                          {s.time}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <StartzeitenTimeline />
         </motion.div>
 
         {/* Info cards: Date + Location (clean 2-col) */}

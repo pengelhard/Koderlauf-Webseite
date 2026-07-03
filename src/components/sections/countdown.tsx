@@ -72,13 +72,14 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
           key={block.label}
           className="flex w-16 flex-col items-center rounded-xl border border-koder-orange/20 bg-koder-orange/10 py-2 backdrop-blur-sm sm:w-24 sm:rounded-2xl sm:py-4"
         >
+          {/* Nur Opacity animieren: sekündliche Transform-Springs erzeugen auf Mobile dauerhafte Repaint-Last */}
           <AnimatePresence mode="popLayout">
             <motion.span
               key={block.value}
-              initial={{ y: -10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 10, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               className="text-2xl font-extrabold tabular-nums text-koder-orange sm:text-4xl"
             >
               {pad(block.value)}
