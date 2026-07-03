@@ -134,13 +134,13 @@ export function JubilaeumsProgramm() {
               </div>
             </div>
 
-            {/* Rechte Spalte: Tape Jam */}
-            <div className="relative min-h-72 border-t border-koder-orange/25 lg:min-h-0 lg:border-l lg:border-t-0">
+            {/* Rechte Spalte: Tape Jam – Mobile Hochformat, damit die Band vollständig sichtbar ist */}
+            <div className="relative aspect-[3/4] w-full border-t border-koder-orange/25 lg:aspect-auto lg:min-h-full lg:border-l lg:border-t-0">
               <Image
                 src="/tape-jam.webp"
                 alt="Tape Jam – Tribute to 80's Rock live auf der Bühne"
                 fill
-                className="object-cover object-top"
+                className="object-contain object-center lg:object-cover lg:object-top"
                 sizes="(min-width: 1024px) 45vw, 100vw"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-5 sm:p-6">

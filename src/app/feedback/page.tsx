@@ -170,8 +170,9 @@ export default function FeedbackPage() {
                   required
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="z. B. Lob zur Strecke oder Frage zur Startzeit"
+                  placeholder="z. B. Lob, Frage oder Verbesserung"
                   maxLength={180}
+                  className="text-sm placeholder:text-sm"
                   aria-invalid={status === "error" && !subject.trim()}
                 />
               </div>
