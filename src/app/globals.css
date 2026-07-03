@@ -186,6 +186,19 @@
   }
 }
 
+/* Workaround für Chrome auf Mali-GPUs (z. B. Huawei P30, Mali-G76): Beim Scrollen
+   verwendet Chromes GPU-Rasterung teils veraltete/falsch positionierte Tiles wieder
+   ("Ghosting" alter Karten-Inhalte). Firefox ist nicht betroffen. Eine eigene
+   Compositing-Ebene für die betroffenen Kachel-Container zwingt Chrome, sie separat
+   und stabil zu rastern. Nur auf Mobile aktiv, Desktop bleibt unverändert. */
+@media (max-width: 1023px) {
+  .mobile-gpu-layer {
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
 .maplibregl-ctrl-attrib {
   display: none !important;
 }

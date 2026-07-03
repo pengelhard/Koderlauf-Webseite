@@ -39,7 +39,7 @@ export function Features() {
 
         <motion.div
           {...variantsReveal(staticReveal, container)}
-          className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
+          className="mobile-gpu-layer mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
         >
           {EVENT.strecken.map((s) => {
             const Icon = ICONS[s.id] ?? Route;

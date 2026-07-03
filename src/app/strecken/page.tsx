@@ -251,7 +251,7 @@ function StreckenContent() {
         )}
 
         {/* Route selector cards */}
-        <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5 sm:mt-8">
+        <div className="mobile-gpu-layer mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5 sm:mt-8">
           {currentRoutes.map((strecke) => {
             const track = gpxTracks[strecke.id];
             return (

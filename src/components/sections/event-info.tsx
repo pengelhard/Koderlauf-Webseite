@@ -57,7 +57,7 @@ export function EventInfo() {
         </motion.div>
 
         {/* Rückblick / Ausblick */}
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+        <div className="mobile-gpu-layer mt-10 grid gap-4 sm:grid-cols-2">
           <motion.div
             {...fadeReveal(staticReveal, { duration: 0.5 })}
             className="flex flex-col rounded-3xl border border-border bg-card p-6 sm:p-8"
@@ -134,7 +134,7 @@ export function EventInfo() {
 
         <motion.div
           {...variantsReveal(staticReveal, container)}
-          className="mx-auto mt-12 grid max-w-2xl gap-2"
+          className="mobile-gpu-layer mx-auto mt-12 grid max-w-2xl gap-2"
         >
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
             <MapPin size={14} />
