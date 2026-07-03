@@ -17,6 +17,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErgebnisseResultsPanel } from "@/components/ergebnisse/results-panel";
 import { cn } from "@/lib/utils";
+import { YearSwitcher } from "@/components/ui/year-switcher";
 
 /** Farben analog zu Strecken-Seite */
 const STRECKEN = [
@@ -112,33 +113,19 @@ export default function ErgebnissePage() {
           className="mb-12 text-center sm:mb-16"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-koder-orange">
-            Koderlauf
+            Koderlauf {yearTab}
           </p>
           <h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
             Ergebnisse &amp; Ehrungen
           </h1>
 
-          {/* Year Tabs */}
-          <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-border bg-muted/40 p-1">
-            {(["2026", "2027"] as const).map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => {
-                  setYearTab(y);
-                  setSelectedStrecke(null);
-                }}
-                className={cn(
-                  "rounded-xl px-5 py-2 text-sm font-semibold transition-all",
-                  yearTab === y
-                    ? "bg-koder-orange text-white shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Ergebnisse {y}
-              </button>
-            ))}
-          </div>
+          <YearSwitcher
+            value={yearTab}
+            onChange={(year) => {
+              setYearTab(year);
+              setSelectedStrecke(null);
+            }}
+          />
         </motion.header>
 
 

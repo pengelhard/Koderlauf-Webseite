@@ -114,16 +114,12 @@ export default function AnmeldungenPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf 2026</p>
-              <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Anmeldungen</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Finale Zahlen – Archiv</p>
-            </div>
-          </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf 2026</p>
+          <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Anmeldungen</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Finale Zahlen – Archiv</p>
           {fetchError && (
-            <p className="mt-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p className="mx-auto mt-4 max-w-2xl rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {fetchError}
               {stats.total > 0 && " — es werden die zuletzt geladenen Daten angezeigt."}
             </p>

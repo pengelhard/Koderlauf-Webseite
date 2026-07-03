@@ -1,5 +1,6 @@
 import { Hero } from "@/components/sections/hero";
 import { EventInfo } from "@/components/sections/event-info";
+import { JubilaeumsProgramm } from "@/components/sections/jubilaeums-programm";
 import { Features } from "@/components/sections/features";
 import { Zeitplan } from "@/components/sections/zeitplan";
 import { Stats } from "@/components/sections/stats";
@@ -12,6 +13,7 @@ export default function Home() {
       <EventInfo />
       <Features />
       <Zeitplan />
+      <JubilaeumsProgramm />
       <Stats />
       <Faq />
     </>

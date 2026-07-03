@@ -1,9 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { ExternalLink } from "lucide-react";
+import { Camera, ExternalLink, PlayCircle } from "lucide-react";
+import { useState } from "react";
+import { YearSwitcher } from "@/components/ui/year-switcher";
 
-/** Oeffentliche Google-Fotos-Alben fuer die Galerie. */
+/** Öffentliche Google-Fotos-Alben für die Galerie. */
 const GALLERY_ROUTE_URL = "https://photos.app.goo.gl/yDoCZKztQSZx1w9v7";
 const GALLERY_START_FINISH_URL = "https://photos.app.goo.gl/CSWq4RVGnuqMbYs68";
 const GALLERY_SETUP_URL = "https://photos.app.goo.gl/gL4wMBUdV857n1qF8";
@@ -13,37 +16,52 @@ type GalleryLink = {
   label: string;
   hint: string;
   href: string;
+  image: string;
+  imageAlt: string;
+  /** Optionales Video, das statt des Bildes in Dauerschleife läuft */
+  video?: string;
   accent?: "default" | "youtube";
 };
 
 const GALLERY_LINKS: GalleryLink[] = [
   {
     label: "Auf der Strecke",
-    hint: "Laufmomente und Eindruecke entlang der Strecke",
+    hint: "Laufmomente und Eindrücke entlang der Strecke",
     href: GALLERY_ROUTE_URL,
+    image: "/gallery-strecke.png",
+    imageAlt: "Streckenposten beim Koderlauf mit Wegweisern für Koderrunde und Trailrun",
   },
   {
     label: "Start-Zielbereich",
     hint: "Start, Zieleinlauf und Stimmung vor Ort",
     href: GALLERY_START_FINISH_URL,
+    image: "/gallery-start-ziel.png",
+    imageAlt: "Kinderlauf-Start im Start- und Zielbereich des Koderlaufs",
   },
   {
     label: "Aufbau",
     hint: "Vorbereitungen rund um den Koderlauf",
     href: GALLERY_SETUP_URL,
+    image: "/gallery-aufbau.png",
+    imageAlt: "Helfer beim Aufbau der Banner am Sportgelände",
   },
   {
     label: "YouTube",
     hint: "Drohnenaufnahmen",
     href: YOUTUBE_CHANNEL_URL,
+    image: "/gallery-drohne.png",
+    imageAlt: "Drohnenaufnahme vom Sportheim und Start-Zielbereich des Koderlaufs",
+    video: "/gallery-drohne-loop.mp4",
     accent: "youtube",
   },
 ];
 
 export default function GaleriePage() {
+  const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
+
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -51,73 +69,121 @@ export default function GaleriePage() {
           className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-koder-orange">
-            Koderlauf 2026
+            Koderlauf {yearTab}
           </p>
           <h1 className="mt-3 text-5xl font-extrabold tracking-tight sm:text-6xl">
             Galerie
           </h1>
+          <YearSwitcher value={yearTab} onChange={setYearTab} />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.06 }}
-          className="relative mt-12 overflow-hidden rounded-3xl border border-border/80 bg-card p-8 shadow-xl sm:p-10"
+          className="relative mt-12 overflow-hidden rounded-3xl border border-border/80 bg-card p-4 shadow-xl sm:p-6"
         >
           <div
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,var(--color-koder-orange)_0%,transparent_55%)] opacity-[0.12]"
             aria-hidden
           />
 
-          <div className="relative mx-auto max-w-md text-center">
-            <p className="text-lg font-medium leading-relaxed text-foreground sm:text-xl">
-              Die Bilder und Videos vom <span className="text-koder-orange">1. Koderlauf 2026</span>{" "}
-              findest du jetzt in Google-Fotos-Alben und auf YouTube.
-            </p>
+          <div className="relative">
+            {yearTab === "2026" ? (
+              <>
+                <p className="mx-auto max-w-2xl text-center text-lg font-medium leading-relaxed text-foreground sm:text-xl">
+                  Die Bilder und Videos vom{" "}
+                  <span className="text-koder-orange">1. Koderlauf 2026</span>{" "}
+                  findest du in Google-Fotos-Alben und auf YouTube.
+                </p>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {GALLERY_LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={[
-                    "group relative overflow-hidden rounded-2xl border px-5 py-4 text-left transition-all duration-200",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange/60",
-                    link.accent === "youtube"
-                      ? "border-red-500/30 bg-red-500/[0.07] hover:-translate-y-0.5 hover:border-red-500/60 hover:bg-red-500/[0.12] hover:shadow-lg hover:shadow-red-500/10"
-                      : "border-border/80 bg-background/80 hover:-translate-y-0.5 hover:border-koder-orange/60 hover:bg-koder-orange/5 hover:shadow-lg hover:shadow-koder-orange/10",
-                  ].join(" ")}
-                >
-                  <span
-                    className={[
-                      "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
-                      link.accent === "youtube"
-                        ? "bg-[radial-gradient(circle_at_80%_20%,rgba(239,68,68,0.22),transparent_58%)]"
-                        : "bg-[radial-gradient(circle_at_80%_20%,rgba(249,115,22,0.18),transparent_58%)]",
-                    ].join(" ")}
-                    aria-hidden
-                  />
-
-                  <span className="relative flex items-start gap-3">
-                    <span className="flex-1">
-                      <span className="block text-sm font-bold tracking-wide text-foreground">
-                        {link.label}
-                      </span>
-                      <span className="mt-1 block text-xs text-muted-foreground">{link.hint}</span>
-                    </span>
-                    <ExternalLink
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {GALLERY_LINKS.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={[
-                        "mt-0.5 h-4 w-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5",
-                        link.accent === "youtube" ? "text-red-500" : "text-koder-orange",
+                        "group relative min-h-64 overflow-hidden rounded-3xl border text-left transition-all duration-300",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange/60",
+                        link.accent === "youtube"
+                          ? "border-red-500/30 hover:-translate-y-1 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/15"
+                          : "border-border/80 hover:-translate-y-1 hover:border-koder-orange/70 hover:shadow-2xl hover:shadow-koder-orange/15",
                       ].join(" ")}
-                      aria-hidden
-                    />
-                  </span>
-                </a>
-              ))}
-            </div>
+                    >
+                      {link.video ? (
+                        <video
+                          src={link.video}
+                          poster={link.image}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          aria-label={link.imageAlt}
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <Image
+                          src={link.image}
+                          alt={link.imageAlt}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          sizes="(min-width: 640px) 50vw, 100vw"
+                        />
+                      )}
+                      <span className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/5" />
+                      <span
+                        className={
+                          link.accent === "youtube"
+                            ? "absolute inset-0 bg-red-500/0 transition-colors duration-300 group-hover:bg-red-500/10"
+                            : "absolute inset-0 bg-koder-orange/0 transition-colors duration-300 group-hover:bg-koder-orange/10"
+                        }
+                        aria-hidden
+                      />
+
+                      <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-6">
+                        <span className="min-w-0">
+                          <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
+                            {link.accent === "youtube" ? (
+                              <PlayCircle size={14} />
+                            ) : (
+                              <Camera size={14} />
+                            )}
+                            {link.accent === "youtube" ? "Video" : "Fotoalbum"}
+                          </span>
+                          <span className="block text-2xl font-extrabold tracking-tight text-white">
+                            {link.label}
+                          </span>
+                          <span className="mt-1 block text-sm leading-relaxed text-white/75">
+                            {link.hint}
+                          </span>
+                        </span>
+                        <ExternalLink
+                          className={[
+                            "mb-1 h-5 w-5 shrink-0 text-white transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1",
+                            link.accent === "youtube" ? "drop-shadow-[0_0_10px_rgba(239,68,68,0.9)]" : "drop-shadow-[0_0_10px_rgba(255,107,0,0.9)]",
+                          ].join(" ")}
+                          aria-hidden
+                        />
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="mx-auto max-w-2xl rounded-3xl border border-koder-orange/30 bg-koder-orange/10 p-8 text-center sm:p-10">
+                <Camera className="mx-auto h-9 w-9 text-koder-orange" />
+                <h2 className="mt-4 text-2xl font-extrabold tracking-tight">
+                  Galerie 2027 folgt
+                </h2>
+                <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  Nach dem Koderlauf 2027 findet ihr hier die neuen Fotos,
+                  Videos und Drohnenaufnahmen vom Jubiläumswochenende.
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

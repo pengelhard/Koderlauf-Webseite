@@ -24,6 +24,7 @@ import { getAktuellerPreis } from "@/lib/event-config";
 import { RouteMap } from "@/components/map/route-map";
 import { ElevationProfile } from "@/components/map/elevation-profile";
 import { cn } from "@/lib/utils";
+import { YearSwitcher } from "@/components/ui/year-switcher";
 
 interface Strecke {
   id: string;
@@ -162,7 +163,6 @@ function StreckenContent() {
 
   const [selected, setSelected] = useState<string>(initialRoute);
   const [gpxTracks, setGpxTracks] = useState<Record<string, GpxTrack>>({});
-  const [loading, setLoading] = useState(false);
   const [hoverPoint, setHoverPoint] = useState<HoverPoint>(null);
 
   // Always guarantee a valid selected route for the current year (prevents crashes during HMR / tab switch)
@@ -179,28 +179,28 @@ function StreckenContent() {
     if (!newRoutes.some((r) => r.id === selected)) {
       setSelected(newRoutes[0].id);
       setHoverPoint(null);
-      setGpxTracks({});
     }
   }, [yearTab, selected]);
 
+  // Preload GPX for all routes so cards show km/Hm without clicking
   useEffect(() => {
-    if (gpxTracks[safeSelected]) return;
-
     let cancelled = false;
-    requestAnimationFrame(() => { if (!cancelled) setLoading(true); });
+    const routes = yearTab === "2026" ? STRECKEN : STRECKEN_2027;
 
-    fetch(activeStrecke.gpxFile)
-      .then((r) => r.text())
-      .then((xml) => {
-        if (cancelled) return;
-        const track = parseGpx(xml);
-        setGpxTracks((prev) => ({ ...prev, [safeSelected]: track }));
-        setLoading(false);
-      })
-      .catch(() => { if (!cancelled) setLoading(false); });
+    setGpxTracks({});
+
+    for (const strecke of routes) {
+      fetch(strecke.gpxFile)
+        .then((r) => r.text())
+        .then((xml) => {
+          if (cancelled) return;
+          setGpxTracks((prev) => ({ ...prev, [strecke.id]: parseGpx(xml) }));
+        })
+        .catch(() => {});
+    }
 
     return () => { cancelled = true; };
-  }, [safeSelected, activeStrecke.gpxFile, gpxTracks]);
+  }, [yearTab]);
 
   const handleProfileHover = useCallback((point: HoverPoint) => {
     setHoverPoint(point);
@@ -213,39 +213,24 @@ function StreckenContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
-            Koderlauf
+            Koderlauf {yearTab}
           </p>
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
             Strecken
           </h1>
-          <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-border bg-muted/40 p-1">
-            {(["2026", "2027"] as const).map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => setYearTab(y)}
-                className={cn(
-                  "rounded-xl px-5 py-2.5 text-sm font-semibold transition-all sm:px-8",
-                  yearTab === y
-                    ? "bg-koder-orange text-white shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Strecken {y}
-              </button>
-            ))}
-          </div>
+          <YearSwitcher value={yearTab} onChange={setYearTab} />
         </motion.div>
 
         {yearTab === "2026" ? (
-          <p className="mt-8 max-w-2xl text-sm text-muted-foreground sm:text-base">
+          <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-muted-foreground sm:text-base">
             Vier Distanzen durch die Wälder rund um Obermögersheim – von kinderleicht bis
             Trailrun-Abenteuer. Start am Sportheim (Stand 2026).
           </p>
         ) : (
-          <div className="mt-8 max-w-2xl space-y-3 text-sm text-muted-foreground sm:text-base">
+          <div className="mx-auto mt-8 max-w-2xl space-y-3 text-center text-sm text-muted-foreground sm:text-base">
             <p>
               Für den 2. Koderlauf im Rahmen unseres 50-jährigen SVO-Jubiläums haben wir wieder
               richtig tolle Strecken für euch vorbereitet!
@@ -357,22 +342,17 @@ function StreckenContent() {
           <Card className="overflow-hidden rounded-3xl border-border">
             <CardContent className="p-0">
               <div className="relative h-[320px] sm:h-[400px] lg:h-[500px] [&_.maplibregl-ctrl-attrib]:!hidden">
-                {loading ? (
+                {!gpxTrack ? (
                   <div className="flex h-[320px] sm:h-[400px] lg:h-[500px] items-center justify-center bg-muted">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />
                   </div>
-                ) : gpxTrack ? (
+                ) : (
                   <RouteMap
                     points={gpxTrack.points}
                     highlightPoint={hoverPoint}
                     routeColor={activeStrecke.color}
                     className="rounded-none border-0"
                   />
-                ) : (
-                  <div className="flex h-[320px] sm:h-[400px] lg:h-[500px] flex-col items-center justify-center bg-gradient-to-br from-forest-deep/20 to-forest-deep/5">
-                    <MapPin size={48} className="text-koder-orange/40" />
-                    <p className="mt-4 text-lg font-semibold text-muted-foreground">Laden...</p>
-                  </div>
                 )}
               </div>
 

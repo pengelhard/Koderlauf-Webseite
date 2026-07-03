@@ -14,6 +14,7 @@ export default function AnmeldungPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
             Koderlauf {EVENT.jahr}
@@ -21,7 +22,7 @@ export default function AnmeldungPage() {
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
             Anmeldung
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
             Infos zum nächsten Koderlauf am {EVENT.datumFormatiert} in {EVENT.ort}.
           </p>
         </motion.div>

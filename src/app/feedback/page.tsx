@@ -103,10 +103,11 @@ export default function FeedbackPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf 2026</p>
           <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">Feedback &amp; Kontakt</h1>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             Wir freuen uns über eure Rückmeldung: Wie hat euch der Koderlauf gefallen, was lief besonders gut – und was
             können wir fürs nächste Mal noch verbessern? Hier könnt ihr uns auch gern allgemeine{" "}
             <strong className="font-semibold text-foreground">Fragen zur Veranstaltung</strong> stellen.

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Heart, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { YearSwitcher } from "@/components/ui/year-switcher";
 
 interface Sponsor {
   name: string;
@@ -146,30 +146,14 @@ export default function SponsorenPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf</p>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf {yearTab}</p>
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Sponsoren</h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
             Ohne unsere Sponsoren und Unterstützer wäre der Koderlauf nicht möglich. Wählt das Jahr –
             die Liste für 2027 wird ergänzt, sobald Partner feststehen.
           </p>
-          <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-border bg-muted/40 p-1">
-            {(["2026", "2027"] as const).map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => setYearTab(y)}
-                className={cn(
-                  "rounded-xl px-5 py-2.5 text-sm font-semibold transition-all sm:px-8",
-                  yearTab === y
-                    ? "bg-koder-orange text-white shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Sponsoren {y}
-              </button>
-            ))}
-          </div>
+          <YearSwitcher value={yearTab} onChange={setYearTab} />
         </motion.div>
 
         {yearTab === "2027" ? (

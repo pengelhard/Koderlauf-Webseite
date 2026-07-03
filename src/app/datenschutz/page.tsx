@@ -6,8 +6,15 @@ export default function DatenschutzPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-extrabold tracking-tight">Datenschutzerklärung</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Stand: Februar 2026</p>
+        <div className="text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
+            Koderlauf
+          </p>
+          <h1 className="mt-4 text-4xl font-extrabold tracking-tight">
+            Datenschutzerklärung
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">Stand: Februar 2026</p>
+        </div>
 
         <div className="mt-10 space-y-6 text-sm leading-relaxed text-muted-foreground [&_h2]:mt-8 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-foreground [&_h3]:mt-4 [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:mt-2 [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1">
           <section>
