@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { EVENT } from "@/lib/event-config";
 
 function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -34,32 +35,23 @@ function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string
   return <span ref={ref}>0{suffix}</span>;
 }
 
-interface CountData {
-  total: number;
-  strecken: number;
-}
-
 export function Stats() {
-  const [counts, setCounts] = useState<CountData>({ total: 0, strecken: 4 });
+  const [daysLeft, setDaysLeft] = useState(0);
 
+  // Erst nach dem Mount berechnen, damit Server- und Client-HTML identisch sind
   useEffect(() => {
-    fetch("/api/anmeldungen", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d: { total?: number; count?: number }) => {
-        const total =
-          typeof d.total === "number" ? d.total : typeof d.count === "number" ? d.count : 0;
-        setCounts({ total, strecken: 4 });
-      })
-      .catch(() => {});
+    const id = requestAnimationFrame(() => {
+      const diff = new Date(EVENT.datum).getTime() - Date.now();
+      setDaysLeft(Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24))));
+    });
+    return () => cancelAnimationFrame(id);
   }, []);
 
-  const daysLeft = Math.max(0, Math.ceil((new Date("2026-04-04T14:00:00").getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-
   const stats = [
-    { value: counts.total, label: "Anmeldungen", suffix: "" },
-    { value: counts.strecken, label: "Strecken", suffix: "" },
-    { value: daysLeft, label: "Tage bis zum Start", suffix: "" },
-    { value: 1, label: "Koderlauf", suffix: "." },
+    { value: EVENT.vorjahr.anmeldungen, label: `Starter ${EVENT.vorjahr.jahr}` },
+    { value: EVENT.strecken.length, label: `Strecken ${EVENT.jahr}` },
+    { value: daysLeft, label: "Tage bis zum Start" },
+    { value: 50, label: "Jahre SV Obermögersheim" },
   ];
 
   return (
@@ -74,7 +66,7 @@ export function Stats() {
             className="text-center"
           >
             <p className="text-3xl font-extrabold text-koder-orange sm:text-5xl">
-              <AnimatedNumber value={stat.value} suffix={stat.suffix} />
+              <AnimatedNumber value={stat.value} />
             </p>
             <p className="mt-2 text-xs font-medium uppercase tracking-widest text-white/60 sm:text-sm">
               {stat.label}

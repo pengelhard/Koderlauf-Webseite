@@ -14,6 +14,8 @@ interface Sponsor {
   website?: string;
   /** Logo hat helle Farben – im Light-Mode invertieren für Sichtbarkeit */
   invertInLightMode?: boolean;
+  /** Hauptsponsoren werden in einer eigenen, größeren Sektion oben angezeigt */
+  hauptsponsor?: boolean;
 }
 
 const SPONSORS_2026: Sponsor[] = [
@@ -81,6 +83,9 @@ const SPONSORS_2026: Sponsor[] = [
   },
 ];
 
+const HAUPTSPONSOREN = SPONSORS_2026.filter((s) => s.hauptsponsor);
+const WEITERE_SPONSOREN = SPONSORS_2026.filter((s) => !s.hauptsponsor);
+
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const item = { hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
 
@@ -91,6 +96,48 @@ function SponsorInitials({ name }: { name: string }) {
       {initials}
     </div>
   );
+}
+
+function SponsorCard({ sponsor, gross = false }: { sponsor: Sponsor; gross?: boolean }) {
+  const logoSize = gross ? "h-32 w-32" : "h-24 w-24";
+  const inner = (
+    <>
+      {sponsor.logo ? (
+        <Image
+          src={sponsor.logo}
+          alt={sponsor.name}
+          width={gross ? 128 : 96}
+          height={gross ? 128 : 96}
+          className={`${logoSize} rounded-xl object-contain ${sponsor.invertInLightMode ? "invert dark:invert-0" : ""}`}
+          unoptimized
+        />
+      ) : (
+        <SponsorInitials name={sponsor.name} />
+      )}
+      <div className="min-w-0 flex-1 space-y-1">
+        <h3 className={`break-words font-bold leading-relaxed ${gross ? "text-lg" : ""}`}>{sponsor.name}</h3>
+        <p className="text-xs text-muted-foreground">{sponsor.ort}</p>
+        {sponsor.website && (
+          <p className="flex items-center gap-1 pt-0.5 text-[10px] text-koder-orange opacity-0 transition-opacity group-hover:opacity-100">
+            <ExternalLink size={10} /> Website besuchen
+          </p>
+        )}
+      </div>
+    </>
+  );
+
+  const cardClasses = gross
+    ? "group flex items-center gap-5 rounded-3xl border-2 border-koder-orange/30 bg-gradient-to-br from-koder-orange/10 to-transparent p-6 transition-all hover:border-koder-orange/60 hover:shadow-xl hover:shadow-koder-orange/10"
+    : "group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-koder-orange/30 hover:shadow-lg hover:shadow-koder-orange/5";
+
+  if (sponsor.website) {
+    return (
+      <a href={sponsor.website} target="_blank" rel="noopener noreferrer" className={cardClasses}>
+        {inner}
+      </a>
+    );
+  }
+  return <div className={cardClasses}>{inner}</div>;
 }
 
 export default function SponsorenPage() {
@@ -152,44 +199,33 @@ export default function SponsorenPage() {
           </p>
         </motion.div>
 
-        {/* Alle Sponsoren */}
+        {/* Hauptsponsoren (nur sichtbar, wenn Einträge mit hauptsponsor: true markiert sind) */}
+        {HAUPTSPONSOREN.length > 0 && (
+          <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}
+            className="mt-10">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
+              Hauptsponsoren 2026
+            </h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              {HAUPTSPONSOREN.map((s) => (
+                <motion.div key={s.name} variants={item}>
+                  <SponsorCard sponsor={s} gross />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Alle weiteren Sponsoren */}
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}
           className="mt-10">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
-            Unsere Sponsoren & Unterstützer 2026
+            {HAUPTSPONSOREN.length > 0 ? "Weitere Sponsoren & Unterstützer 2026" : "Unsere Sponsoren & Unterstützer 2026"}
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {SPONSORS_2026.map((s) => (
+            {WEITERE_SPONSOREN.map((s) => (
               <motion.div key={s.name} variants={item}>
-                {s.website ? (
-                  <a href={s.website} target="_blank" rel="noopener noreferrer"
-                    className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-koder-orange/30 hover:shadow-lg hover:shadow-koder-orange/5">
-                    {s.logo ? (
-                      <Image src={s.logo} alt={s.name} width={96} height={96} className={`h-24 w-24 rounded-xl object-contain ${s.invertInLightMode ? "invert dark:invert-0" : ""}`} unoptimized />
-                    ) : (
-                      <SponsorInitials name={s.name} />
-                    )}
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <h3 className="break-words font-bold leading-relaxed">{s.name}</h3>
-                      <p className="text-xs text-muted-foreground">{s.ort}</p>
-                      <p className="flex items-center gap-1 pt-0.5 text-[10px] text-koder-orange opacity-0 transition-opacity group-hover:opacity-100">
-                        <ExternalLink size={10} /> Website besuchen
-                      </p>
-                    </div>
-                  </a>
-                ) : (
-                  <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-                    {s.logo ? (
-                      <Image src={s.logo} alt={s.name} width={96} height={96} className={`h-24 w-24 rounded-xl object-contain ${s.invertInLightMode ? "invert dark:invert-0" : ""}`} unoptimized />
-                    ) : (
-                      <SponsorInitials name={s.name} />
-                    )}
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <h3 className="break-words font-bold leading-relaxed">{s.name}</h3>
-                      <p className="text-xs text-muted-foreground">{s.ort}</p>
-                    </div>
-                  </div>
-                )}
+                <SponsorCard sponsor={s} />
               </motion.div>
             ))}
           </div>

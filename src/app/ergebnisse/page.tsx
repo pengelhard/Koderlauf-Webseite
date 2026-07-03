@@ -12,8 +12,6 @@ import {
   Gift,
   Users,
   ChevronRight,
-  ExternalLink,
-  Radio,
   Trophy,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,12 +67,11 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 };
 
-/** Live-Ergebnisse (RaceSolution) – 1. Obermögersheimer Koderlauf */
-const RACESOLUTION_LIVE_URL =
-  "https://www.racesolution.de/ergebnisse.html?event=id-1obermoegersheimer-koderlauf";
+
 
 export default function ErgebnissePage() {
   const [selectedStrecke, setSelectedStrecke] = useState<string | null>(null);
+  const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
   const panelContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -115,40 +112,46 @@ export default function ErgebnissePage() {
           className="mb-12 text-center sm:mb-16"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-koder-orange">
-            Koderlauf 2026
+            Koderlauf
           </p>
           <h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
             Ergebnisse &amp; Ehrungen
           </h1>
+
+          {/* Year Tabs */}
+          <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-border bg-muted/40 p-1">
+            {(["2026", "2027"] as const).map((y) => (
+              <button
+                key={y}
+                type="button"
+                onClick={() => {
+                  setYearTab(y);
+                  setSelectedStrecke(null);
+                }}
+                className={cn(
+                  "rounded-xl px-5 py-2 text-sm font-semibold transition-all",
+                  yearTab === y
+                    ? "bg-koder-orange text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Ergebnisse {y}
+              </button>
+            ))}
+          </div>
         </motion.header>
 
-        {/* Live-Ergebnisse RaceSolution */}
-        <motion.section
-          {...fadeUp}
-          transition={{ duration: 0.45, delay: 0 }}
-          className="mb-12 flex justify-center sm:mb-16"
-          aria-label="Live-Ergebnisse bei RaceSolution"
-        >
-          <a
-            href={RACESOLUTION_LIVE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Live-Ergebnisse bei RaceSolution öffnen (öffnet neues Fenster)"
-            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl border-2 border-koder-orange bg-koder-orange px-8 py-3 text-sm font-semibold uppercase tracking-widest text-white shadow-sm transition hover:bg-koder-orange-bright"
-          >
-            <Radio className="h-4 w-4 shrink-0" aria-hidden />
-            Live verfolgen
-            <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-90" aria-hidden />
-          </a>
-        </motion.section>
 
-        {/* Strecken-Kacheln + Ergebnis-Panel */}
-        <motion.section
-          {...fadeUp}
-          transition={{ duration: 0.45, delay: 0.08 }}
-          className="mt-16"
-          aria-label="Strecke wählen"
-        >
+
+        {yearTab === "2026" ? (
+          <>
+            {/* Strecken-Kacheln + Ergebnis-Panel (2026) */}
+            <motion.section
+              {...fadeUp}
+              transition={{ duration: 0.45, delay: 0.08 }}
+              className="mt-8"
+              aria-label="Strecke wählen"
+            >
           <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
             {STRECKEN.map((s, i) => {
               const active = selectedStrecke === s.id;
@@ -321,6 +324,24 @@ export default function ErgebnissePage() {
             </Card>
           </div>
         </motion.section>
+          </>
+        ) : (
+          /* 2027 Placeholder */
+          <motion.div
+            {...fadeUp}
+            transition={{ duration: 0.4 }}
+            className="mt-8 rounded-3xl border border-border bg-card p-8 text-center sm:p-12"
+          >
+            <p className="text-lg text-muted-foreground">
+              Für den <strong className="font-semibold text-foreground">Koderlauf 2027</strong> liegen
+              noch keine Ergebnisse vor.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Sobald der Lauf stattgefunden hat, werden hier die Ergebnisse und Ehrungen
+              veröffentlicht.
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { getPublicDomainLabel, getSiteUrl } from "@/lib/site-url";
 
 const PROD_TO = "info@koderlauf.de";
 const MAX_SUBJECT = 180;
@@ -139,7 +140,7 @@ export async function POST(request: Request) {
   const to = getFeedbackTo();
   const text = [
     ...(to !== PROD_TO ? [`[Nur Entwicklung: Zustellung an ${to} (Live: ${PROD_TO})`, ""] : []),
-    "Nachricht über das Feedback-Formular auf koderlauf.de",
+    `Nachricht über das Feedback-Formular auf ${getPublicDomainLabel(getSiteUrl())}`,
     "",
     `Name/Crew: ${nameStr}`,
     `Antwort an: ${emailStr}`,

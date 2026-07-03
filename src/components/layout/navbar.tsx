@@ -11,11 +11,9 @@ import { Logo } from "@/components/ui/logo";
 
 const navLinks = [
   { href: "/strecken", label: "Strecken" },
-  { href: "/anmeldungen", label: "Anmeldungen" },
   { href: "/ergebnisse", label: "Ergebnisse" },
   { href: "/galerie", label: "Galerie" },
   { href: "/sponsoren", label: "Sponsoren" },
-  { href: "/feedback", label: "Feedback" },
 ] as const;
 
 export function Navbar() {
@@ -57,6 +55,19 @@ export function Navbar() {
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
           <Logo size="md" />
 
+          {/* Desktop navigation links */}
+          <div className="hidden md:flex items-center gap-6 text-sm font-semibold uppercase tracking-widest text-white/90">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition-colors hover:text-koder-orange"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
           <div className="flex items-center gap-3">
             {mounted && (
               <button
@@ -70,6 +81,16 @@ export function Navbar() {
               </button>
             )}
 
+            {/* Desktop Anmelden button - always visible on md+ */}
+            <Link
+              href="/anmeldung"
+              className="hidden md:inline-flex rounded-xl bg-koder-orange px-5 py-2 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-koder-orange/90"
+            >
+              Jetzt anmelden
+            </Link>
+
+            {/* Hamburger always visible so the dropdown for other pages is available at the top */}
+            {/* Hamburger always visible so the dropdown for other pages is available at the top */}
             <button
               type="button"
               suppressHydrationWarning

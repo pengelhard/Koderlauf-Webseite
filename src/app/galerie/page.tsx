@@ -7,11 +7,13 @@ import { ExternalLink } from "lucide-react";
 const GALLERY_ROUTE_URL = "https://photos.app.goo.gl/yDoCZKztQSZx1w9v7";
 const GALLERY_START_FINISH_URL = "https://photos.app.goo.gl/CSWq4RVGnuqMbYs68";
 const GALLERY_SETUP_URL = "https://photos.app.goo.gl/gL4wMBUdV857n1qF8";
+const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@koderlauf";
 
 type GalleryLink = {
   label: string;
   hint: string;
   href: string;
+  accent?: "default" | "youtube";
 };
 
 const GALLERY_LINKS: GalleryLink[] = [
@@ -29,6 +31,12 @@ const GALLERY_LINKS: GalleryLink[] = [
     label: "Aufbau",
     hint: "Vorbereitungen rund um den Koderlauf",
     href: GALLERY_SETUP_URL,
+  },
+  {
+    label: "YouTube",
+    hint: "Drohnenaufnahmen",
+    href: YOUTUBE_CHANNEL_URL,
+    accent: "youtube",
   },
 ];
 
@@ -63,8 +71,8 @@ export default function GaleriePage() {
 
           <div className="relative mx-auto max-w-md text-center">
             <p className="text-lg font-medium leading-relaxed text-foreground sm:text-xl">
-              Die Bilder vom <span className="text-koder-orange">4. April</span> findest du jetzt
-              in Google-Fotos-Alben.
+              Die Bilder und Videos vom <span className="text-koder-orange">1. Koderlauf 2026</span>{" "}
+              findest du jetzt in Google-Fotos-Alben und auf YouTube.
             </p>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -77,13 +85,17 @@ export default function GaleriePage() {
                   className={[
                     "group relative overflow-hidden rounded-2xl border px-5 py-4 text-left transition-all duration-200",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange/60",
-                    "border-border/80 bg-background/80 hover:-translate-y-0.5 hover:border-koder-orange/60 hover:bg-koder-orange/5 hover:shadow-lg hover:shadow-koder-orange/10",
+                    link.accent === "youtube"
+                      ? "border-red-500/30 bg-red-500/[0.07] hover:-translate-y-0.5 hover:border-red-500/60 hover:bg-red-500/[0.12] hover:shadow-lg hover:shadow-red-500/10"
+                      : "border-border/80 bg-background/80 hover:-translate-y-0.5 hover:border-koder-orange/60 hover:bg-koder-orange/5 hover:shadow-lg hover:shadow-koder-orange/10",
                   ].join(" ")}
                 >
                   <span
                     className={[
                       "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
-                      "bg-[radial-gradient(circle_at_80%_20%,rgba(249,115,22,0.18),transparent_58%)]",
+                      link.accent === "youtube"
+                        ? "bg-[radial-gradient(circle_at_80%_20%,rgba(239,68,68,0.22),transparent_58%)]"
+                        : "bg-[radial-gradient(circle_at_80%_20%,rgba(249,115,22,0.18),transparent_58%)]",
                     ].join(" ")}
                     aria-hidden
                   />
@@ -98,7 +110,7 @@ export default function GaleriePage() {
                     <ExternalLink
                       className={[
                         "mt-0.5 h-4 w-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5",
-                        "text-koder-orange",
+                        link.accent === "youtube" ? "text-red-500" : "text-koder-orange",
                       ].join(" ")}
                       aria-hidden
                     />

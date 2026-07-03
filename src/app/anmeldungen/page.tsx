@@ -4,19 +4,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useLayoutEffect, useMemo, useCallback } from "react";
 import { Users, TrendingUp, RefreshCw } from "lucide-react";
 import { STRECKEN_COLORS } from "@/lib/strecken-config";
-
-interface StreckenStat {
-  total: number;
-  m: number;
-  w: number;
-}
-
-interface AnmeldungenStats {
-  total: number;
-  gender: { m: number; w: number };
-  strecken: Record<string, StreckenStat>;
-  lastUpdated: string;
-}
+import type { AnmeldungenStats } from "@/lib/data/anmeldungen-2026";
 
 const STRECKEN_ORDER = ["Kinderlauf", "Kurz und knackig", "Koderrunde", "Trailrun"];
 const POLL_MS = 60_000;
@@ -131,34 +119,9 @@ export default function AnmeldungenPage() {
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf 2026</p>
               <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Anmeldungen</h1>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {refreshing && (
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                  Aktualisiere…
-                </span>
-              )}
-              <button
-                type="button"
-                onClick={() => void fetchData({ background: true })}
-                disabled={refreshing}
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
-              >
-                <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-                Neu laden
-              </button>
+              <p className="mt-1 text-sm text-muted-foreground">Finale Zahlen – Archiv</p>
             </div>
           </div>
-          {stats.lastUpdated && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Stand:{" "}
-              {new Date(stats.lastUpdated).toLocaleString("de-DE", {
-                dateStyle: "short",
-                timeStyle: "short",
-              })}
-            </p>
-          )}
           {fetchError && (
             <p className="mt-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {fetchError}

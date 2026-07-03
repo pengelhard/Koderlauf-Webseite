@@ -1,7 +1,9 @@
 import { ImageResponse } from "next/og";
+import { EVENT } from "@/lib/event-config";
+import { getPublicDomainLabel, getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "edge";
-export const alt = "Koderlauf 2026 – Lauf mit Herz durch den Wald";
+export const alt = `Koderlauf ${EVENT.jahr} – ${EVENT.claim}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -81,7 +83,7 @@ export default async function OGImage() {
               color: "transparent",
             }}
           >
-            2026
+            {EVENT.jahr}
           </div>
           <div
             style={{
@@ -107,11 +109,11 @@ export default async function OGImage() {
             textTransform: "uppercase" as const,
           }}
         >
-          <span>04. April 2026</span>
+          <span>{EVENT.datumFormatiert}</span>
           <span>·</span>
-          <span>800m · 4km · 8,5km · 11,25km</span>
+          <span>{EVENT.strecken.map((s) => s.distanz).join(" · ")}</span>
           <span>·</span>
-          <span>koderlauf.de</span>
+          <span>{getPublicDomainLabel(getSiteUrl())}</span>
         </div>
       </div>
     ),

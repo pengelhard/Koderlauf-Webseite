@@ -18,14 +18,17 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
     minutes: 0,
     seconds: 0,
   });
+  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
     function update() {
       const diff = new Date(targetDate).getTime() - Date.now();
       if (diff <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setFinished(true);
         return;
       }
+      setFinished(false);
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -37,6 +40,23 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
   }, [targetDate]);
+
+  if (finished) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="rounded-2xl border border-koder-orange/30 bg-koder-orange/15 px-6 py-4 text-center backdrop-blur-sm sm:px-10 sm:py-5"
+      >
+        <p className="text-xl font-extrabold text-koder-orange sm:text-3xl">
+          Heute ist es soweit! 🎉
+        </p>
+        <p className="mt-1 text-xs font-medium uppercase tracking-widest text-white/70 sm:text-sm">
+          Wir sehen uns am Sportheim Obermögersheim
+        </p>
+      </motion.div>
+    );
+  }
 
   const blocks = [
     { label: "Tage", value: timeLeft.days },

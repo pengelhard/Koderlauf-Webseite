@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="https://gpx.studio" version="1.1" schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1" xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2">
+  <metadata>
+    <name>Lauf 800 km</name>
+    <author>
+      <name>gpx.studio</name>
+      <link href="https://gpx.studio"/>
+    </author>
+  </metadata>
+  <wpt lat="49.052419" lon="10.661978">
+    <ele>473.9989574041816</ele>
+    <name>Position 1 (Peter Engelhard</name>
+    <cmt>Am Wendepunkt 800m Strecke</cmt>
+    <desc>Am Wendepunkt 800m Strecke</desc>
+    <sym>Alert</sym>
+  </wpt>
+  <wpt lat="49.051296" lon="10.662291">
+    <ele>476.6557745863687</ele>
+    <name>Position 2</name>
+    <cmt>Am Siegelweiher </cmt>
+    <desc>Am Siegelweiher </desc>
+    <sym>Crossing</sym>
+  </wpt>
+  <trk>
+    <name>Lauf 800 km</name>
+    <trkseg>
+      <trkpt lat="49.0548733503899" lon="10.66378951866659">
+        <ele>466.81953256583023</ele>
+      </trkpt>
+      <trkpt lat="49.054828874140156" lon="10.663504417279285">
+        <ele>466.37446038063445</ele>
+      </trkpt>
+      <trkpt lat="49.054828874140156" lon="10.663504417279285">
+        <ele>466.37446038063445</ele>
+      </trkpt>
+      <trkpt lat="49.05481032933446" lon="10.663477791675348">
+        <ele>466.311732711226</ele>
+      </trkpt>
+      <trkpt lat="49.054769620336316" lon="10.663441509664978">
+        <ele>466.2140878729152</ele>
+      </trkpt>
+      <trkpt lat="49.054769620336316" lon="10.663441509664978">
+        <ele>466.2140878729152</ele>
+      </trkpt>
+      <trkpt lat="49.05445424775445" lon="10.663467598819466">
+        <ele>466.27347840547384</ele>
+      </trkpt>
+      <trkpt lat="49.05445424775445" lon="10.663467598819466">
+        <ele>466.27347840547384</ele>
+      </trkpt>
+      <trkpt lat="49.05445424775445" lon="10.663467598819466">
+        <ele>466.27347840547384</ele>
+      </trkpt>
+      <trkpt lat="49.054384262714706" lon="10.663347992179979">
+        <ele>466.14225233276034</ele>
+      </trkpt>
+      <trkpt lat="49.054804031656516" lon="10.663168354188628">
+        <ele>465.68353780511546</ele>
+      </trkpt>
+      <trkpt lat="49.054804031656516" lon="10.663168354188628">
+        <ele>465.68353780511546</ele>
+      </trkpt>
+      <trkpt lat="49.054804031656516" lon="10.663168354188628">
+        <ele>465.68353780511546</ele>
+      </trkpt>
+      <trkpt lat="49.055240582879065" lon="10.663003882610802">
+        <ele>466.08052035174353</ele>
+      </trkpt>
+      <trkpt lat="49.0554146080695" lon="10.662938318259648">
+        <ele>465.87070002472115</ele>
+      </trkpt>
+      <trkpt lat="49.05530732185149" lon="10.66227197646814">
+        <ele>464.495135751158</ele>
+      </trkpt>
+      <trkpt lat="49.05523953223948" lon="10.661850943344376">
+        <ele>464.5382452024716</ele>
+      </trkpt>
+      <trkpt lat="49.05523953223948" lon="10.661850943344376">
+        <ele>464.5382452024716</ele>
+      </trkpt>
+      <trkpt lat="49.05509886901453" lon="10.661924801163138">
+        <ele>464.92664814563983</ele>
+      </trkpt>
+      <trkpt lat="49.05509886901453" lon="10.661924801163138">
+        <ele>464.92664814563983</ele>
+      </trkpt>
+      <trkpt lat="49.05509886901453" lon="10.661924801163138">
+        <ele>464.92664814563983</ele>
+      </trkpt>
+      <trkpt lat="49.054838815933806" lon="10.662003155114235">
+        <ele>465.7533434289136</ele>
+      </trkpt>
+      <trkpt lat="49.054838815933806" lon="10.662003155114235">
+        <ele>465.7533434289136</ele>
+      </trkpt>
+      <trkpt lat="49.05447183779992" lon="10.662152973203774">
+        <ele>466.61648305318124</ele>
+      </trkpt>
+      <trkpt lat="49.05447183779992" lon="10.662152973203774">
+        <ele>466.61648305318124</ele>
+      </trkpt>
+      <trkpt lat="49.05447183779992" lon="10.662152973203774">
+        <ele>466.61648305318124</ele>
+      </trkpt>
+      <trkpt lat="49.054095923337144" lon="10.662327064024936">
+        <ele>467.5060616513259</ele>
+      </trkpt>
+      <trkpt lat="49.054095923337144" lon="10.662327064024936">
+        <ele>467.5060616513259</ele>
+      </trkpt>
+      <trkpt lat="49.05410482575386" lon="10.663013071115667">
+        <ele>466.67706697466843</ele>
+      </trkpt>
+      <trkpt lat="49.054112719852895" lon="10.663621378734092">
+        <ele>466.8632788504716</ele>
+      </trkpt>
+      <trkpt lat="49.054112719852895" lon="10.663621378734092">
+        <ele>466.8632788504716</ele>
+      </trkpt>
+      <trkpt lat="49.05412770020551" lon="10.664307139707567">
+        <ele>468.0508115955165</ele>
+      </trkpt>
+      <trkpt lat="49.054130661598975" lon="10.664442704478269">
+        <ele>468.47417728956805</ele>
+      </trkpt>
+      <trkpt lat="49.054130661598975" lon="10.664442704478269">
+        <ele>468.43781152735494</ele>
+      </trkpt>
+      <trkpt lat="49.05417818074275" lon="10.6644957771598">
+        <ele>468.4306569325745</ele>
+      </trkpt>
+      <trkpt lat="49.05417818074275" lon="10.6644957771598">
+        <ele>468.4306569325745</ele>
+      </trkpt>
+      <trkpt lat="49.054253608708706" lon="10.66453788568947">
+        <ele>468.4356178496037</ele>
+      </trkpt>
+      <trkpt lat="49.05468790487142" lon="10.66436005717023">
+        <ele>467.6400376911284</ele>
+      </trkpt>
+      <trkpt lat="49.05493485093285" lon="10.664258941719055">
+        <ele>467.5852889598874</ele>
+      </trkpt>
+      <trkpt lat="49.05493485093285" lon="10.664258941719055">
+        <ele>467.5852889598874</ele>
+      </trkpt>
+      <trkpt lat="49.05493485093285" lon="10.664258941719055">
+        <ele>467.5852889598874</ele>
+      </trkpt>
+      <trkpt lat="49.05487926733039" lon="10.663817533757054">
+        <ele>466.86627895589834</ele>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

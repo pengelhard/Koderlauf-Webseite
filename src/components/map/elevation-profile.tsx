@@ -8,9 +8,10 @@ interface ElevationProfileProps {
   points: GpxPoint[];
   className?: string;
   onHover?: (point: { lat: number; lon: number; ele: number; distance: number } | null) => void;
+  color?: string; // route color from the selected strecke (matches the map)
 }
 
-export function ElevationProfile({ points, className = "", onHover }: ElevationProfileProps) {
+export function ElevationProfile({ points, className = "", onHover, color = "#FF6B00" }: ElevationProfileProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
@@ -131,8 +132,8 @@ export function ElevationProfile({ points, className = "", onHover }: ElevationP
             transform: "translateX(-50%)",
           }}
         >
-          <span className="font-bold text-koder-orange">{Math.round(hoverPoint.elevation)} m</span>
-          <span className="mx-1.5 text-white/40">|</span>
+          <span className="font-bold" style={{ color }}>{Math.round(hoverPoint.elevation)} m</span>
+          <span className="mx-1 text-white/40">·</span>
           <span>{hoverPoint.distance.toFixed(1)} km</span>
         </div>
       )}
@@ -177,10 +178,10 @@ export function ElevationProfile({ points, className = "", onHover }: ElevationP
         })}
 
         {/* Area fill */}
-        <path d={areaPath} fill="#FF6B00" fillOpacity={0.12} />
+        <path d={areaPath} fill={color} fillOpacity={0.12} />
 
         {/* Line */}
-        <path d={linePath} fill="none" stroke="#FF6B00" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+        <path d={linePath} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
 
         {/* Start dot */}
         <circle cx={x(0)} cy={y(profile[0].elevation)} r={4} fill="#22C55E" />
@@ -195,7 +196,7 @@ export function ElevationProfile({ points, className = "", onHover }: ElevationP
               y1={padding.top}
               x2={x(hoverPoint.distance)}
               y2={padding.top + plotH}
-              stroke="#FF6B00"
+              stroke={color}
               strokeWidth={1}
               strokeDasharray="3,3"
               opacity={0.7}
@@ -204,7 +205,7 @@ export function ElevationProfile({ points, className = "", onHover }: ElevationP
               cx={x(hoverPoint.distance)}
               cy={y(hoverPoint.elevation)}
               r={5}
-              fill="#FF6B00"
+              fill={color}
               stroke="#fff"
               strokeWidth={2}
             />
