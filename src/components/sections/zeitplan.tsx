@@ -3,17 +3,17 @@
 import { motion } from "framer-motion";
 import { EVENT } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
+import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
 export function Zeitplan() {
+  const staticReveal = useStaticReveal();
+
   return (
     <section className="bg-muted/30 py-16 sm:py-24">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Nur Opacity animieren: Scroll-Transforms verursachen auf Mobile Ghosting */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
@@ -25,10 +25,7 @@ export function Zeitplan() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.1 })}
           className="mt-6"
         >
           <StartzeitenTimeline />

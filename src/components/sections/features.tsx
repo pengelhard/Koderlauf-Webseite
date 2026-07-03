@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Mountain, TreePine, Zap, Baby, Route, type LucideIcon } from "lucide-react";
 import { EVENT, getAktuellerPreis } from "@/lib/event-config";
+import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const ICONS: Record<string, LucideIcon> = {
   kinderlauf: Baby,
@@ -19,14 +20,13 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } 
 const item = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.4 } } };
 
 export function Features() {
+  const staticReveal = useStaticReveal();
+
   return (
     <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
@@ -38,10 +38,7 @@ export function Features() {
         </motion.div>
 
         <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
+          {...variantsReveal(staticReveal, container)}
           className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
         >
           {EVENT.strecken.map((s) => {

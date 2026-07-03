@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Heart, ExternalLink } from "lucide-react";
 import { YearSwitcher } from "@/components/ui/year-switcher";
+import { useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 interface Sponsor {
   name: string;
@@ -142,6 +143,7 @@ function SponsorCard({ sponsor, gross = false }: { sponsor: Sponsor; gross?: boo
 
 export default function SponsorenPage() {
   const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
+  const staticReveal = useStaticReveal();
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -185,7 +187,7 @@ export default function SponsorenPage() {
 
         {/* Hauptsponsoren (nur sichtbar, wenn Einträge mit hauptsponsor: true markiert sind) */}
         {HAUPTSPONSOREN.length > 0 && (
-          <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}
+          <motion.div {...variantsReveal(staticReveal, container)}
             className="mt-10">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
               Hauptsponsoren 2026
@@ -201,7 +203,7 @@ export default function SponsorenPage() {
         )}
 
         {/* Alle weiteren Sponsoren */}
-        <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}
+        <motion.div {...variantsReveal(staticReveal, container)}
           className="mt-10">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
             {HAUPTSPONSOREN.length > 0 ? "Weitere Sponsoren & Unterstützer 2026" : "Unsere Sponsoren & Unterstützer 2026"}

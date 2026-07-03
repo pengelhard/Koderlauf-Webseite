@@ -3,8 +3,19 @@
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { EVENT } from "@/lib/event-config";
+import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
-function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
+function AnimatedNumber({
+  value,
+  suffix = "",
+  instant = false,
+}: {
+  value: number;
+  suffix?: string;
+  /** Zahl sofort setzen statt hochzählen – Textmutationen während des
+      Scrollens erzeugen auf Mobile Rendering-Artefakte (Ghosting). */
+  instant?: boolean;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const motionVal = useMotionValue(0);
   const rounded = useTransform(motionVal, (v) => Math.round(v));
@@ -22,8 +33,15 @@ function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string
   }, []);
 
   useEffect(() => {
-    if (inView) animate(motionVal, value, { duration: 1.5, ease: "easeOut" });
-  }, [inView, motionVal, value]);
+    if (instant) {
+      motionVal.set(value);
+      return;
+    }
+    if (inView) {
+      const controls = animate(motionVal, value, { duration: 1.5, ease: "easeOut" });
+      return () => controls.stop();
+    }
+  }, [inView, motionVal, value, instant]);
 
   useEffect(() => {
     const unsub = rounded.on("change", (v) => {
@@ -37,6 +55,7 @@ function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string
 
 export function Stats() {
   const [daysLeft, setDaysLeft] = useState(0);
+  const staticReveal = useStaticReveal();
 
   // Erst nach dem Mount berechnen, damit Server- und Client-HTML identisch sind
   useEffect(() => {
@@ -60,13 +79,11 @@ export function Stats() {
         {stats.map((stat) => (
           <motion.div
             key={stat.label}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            {...fadeReveal(staticReveal)}
             className="text-center"
           >
             <p className="text-3xl font-extrabold text-koder-orange sm:text-5xl">
-              <AnimatedNumber value={stat.value} />
+              <AnimatedNumber value={stat.value} instant={staticReveal} />
             </p>
             <p className="mt-2 text-xs font-medium uppercase tracking-widest text-white/60 sm:text-sm">
               {stat.label}

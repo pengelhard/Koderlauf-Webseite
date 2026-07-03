@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 interface CountdownTimerProps {
@@ -19,8 +19,23 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
     seconds: 0,
   });
   const [finished, setFinished] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  /* Nur ticken, wenn der Countdown sichtbar ist: sekündliche DOM-Updates
+     invalidieren sonst auch beim Scrollen Render-Tiles (Mobile-Ghosting). */
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setVisible(entry.isIntersecting);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (!visible) return;
     function update() {
       const diff = new Date(targetDate).getTime() - Date.now();
       if (diff <= 0) {
@@ -39,7 +54,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [targetDate, visible]);
 
   if (finished) {
     return (
@@ -66,7 +81,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
   ];
 
   return (
-    <div className="flex gap-2 sm:gap-4">
+    <div ref={rootRef} className="flex gap-2 sm:gap-4">
       {blocks.map((block) => (
         <div
           key={block.label}

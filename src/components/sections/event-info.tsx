@@ -16,6 +16,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
+import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const INFOS = [
   { icon: MapPin, text: "Start/Ziel & Orga: Sportheim Obermögersheim" },
@@ -32,14 +33,13 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } 
 const item = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.3 } } };
 
 export function EventInfo() {
+  const staticReveal = useStaticReveal();
+
   return (
     <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="text-center"
         >
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -59,10 +59,7 @@ export function EventInfo() {
         {/* Rückblick / Ausblick */}
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            {...fadeReveal(staticReveal, { duration: 0.5 })}
             className="flex flex-col rounded-3xl border border-border bg-card p-6 sm:p-8"
           >
             <div className="flex items-center gap-3">
@@ -98,10 +95,7 @@ export function EventInfo() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            {...fadeReveal(staticReveal, { duration: 0.5, delay: 0.1 })}
             className="flex flex-col rounded-3xl border border-koder-orange/30 bg-koder-orange/5 p-6 sm:p-8"
           >
             <div className="flex items-center gap-3">
@@ -139,10 +133,7 @@ export function EventInfo() {
         </div>
 
         <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
+          {...variantsReveal(staticReveal, container)}
           className="mx-auto mt-12 grid max-w-2xl gap-2"
         >
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
@@ -162,10 +153,7 @@ export function EventInfo() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="mt-8 text-center"
         >
           <Link

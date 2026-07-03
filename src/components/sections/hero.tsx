@@ -28,12 +28,30 @@ function useParallaxEnabled() {
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [videoError, setVideoError] = useState(false);
   const parallaxEnabled = useParallaxEnabled();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
+
+  /* Video pausieren, sobald der Hero aus dem Viewport gescrollt ist: Ein weiter
+     laufendes Video erzeugt dauerhafte Compositing-Updates, die auf Mobil-GPUs
+     beim Scrollen Ghosting verursachen (und unnötig Akku kosten). */
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        vid.play().catch(() => {});
+      } else {
+        vid.pause();
+      }
+    });
+    observer.observe(vid);
+    return () => observer.disconnect();
+  }, [videoError]);
 
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
@@ -48,6 +66,7 @@ export function Hero() {
       >
         {!videoError ? (
           <video
+            ref={videoRef}
             autoPlay
             muted
             loop

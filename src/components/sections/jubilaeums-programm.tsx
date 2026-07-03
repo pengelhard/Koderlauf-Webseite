@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
+import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const SAMSTAG_PROGRAMM = [
   { zeit: "13:00", text: "Startnummern- & Chipausgabe", icon: Ticket },
@@ -54,15 +55,14 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } 
 const item = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.35 } } };
 
 export function JubilaeumsProgramm() {
+  const staticReveal = useStaticReveal();
+
   return (
     <section className="bg-gradient-to-br from-forest-deep via-forest-deep to-black py-16 text-white sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Kopf */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="mx-auto max-w-3xl text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
@@ -80,10 +80,7 @@ export function JubilaeumsProgramm() {
 
         {/* Samstag / Koderlauf – Highlight */}
         <motion.article
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="mt-12 overflow-hidden rounded-3xl border border-koder-orange/45 bg-gradient-to-br from-koder-orange/15 via-white/[0.04] to-white/[0.02] shadow-2xl shadow-koder-orange/10"
         >
           <div className="grid lg:grid-cols-[1.15fr_1fr]">
@@ -160,10 +157,7 @@ export function JubilaeumsProgramm() {
 
         {/* Freitag & Sonntag – Rahmenprogramm */}
         <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
+          {...variantsReveal(staticReveal, container)}
           className="mt-6 grid gap-4 sm:grid-cols-2"
         >
           {RAHMENPROGRAMM.map((tag) => {
@@ -204,10 +198,7 @@ export function JubilaeumsProgramm() {
         </motion.div>
 
         <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          {...fadeReveal(staticReveal, { duration: 0.4, delay: 0.2 })}
           className="mt-8 text-center text-sm text-white/50"
         >
           Weitere Details zum Festwochenende folgen, sobald der Ablauf final steht.

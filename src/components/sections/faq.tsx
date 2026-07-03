@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { EVENT } from "@/lib/event-config";
 import { cn } from "@/lib/utils";
+import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
 const FAQS = [
   {
@@ -41,15 +42,13 @@ const FAQS = [
 
 export function Faq() {
   const [open, setOpen] = useState<number | null>(null);
+  const staticReveal = useStaticReveal();
 
   return (
     <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
@@ -66,10 +65,7 @@ export function Faq() {
             return (
               <motion.div
                 key={faq.frage}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
+                {...fadeReveal(staticReveal, { duration: 0.3, delay: i * 0.05 })}
                 className="overflow-hidden rounded-2xl border border-border bg-card"
               >
                 <button

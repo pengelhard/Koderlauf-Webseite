@@ -44,14 +44,16 @@ export function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Kein backdrop-blur auf dem fixierten Header: verursacht auf Mobile
-          Scroll-Ghosting (GPU-Artefakte). Blur nur auf Desktop (lg+). */}
+      {/* Mobile: komplett statischer, deckender Header. Der Klassenwechsel beim
+          Überschreiten der Scroll-Schwelle löst sonst mitten im Scrollen einen
+          Repaint aus → Ghosting auf Mali-GPUs. Blur/Transparenz-Effekte und die
+          Transition gibt es deshalb nur auf Desktop (lg+). */}
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          "fixed top-0 left-0 right-0 z-50 bg-forest-deep shadow-lg lg:transition-all lg:duration-300",
           scrolled
-            ? "bg-forest-deep shadow-lg lg:bg-forest-deep/95 lg:backdrop-blur-md"
-            : "bg-forest-deep/90 lg:bg-forest-deep/70 lg:backdrop-blur-sm"
+            ? "lg:bg-forest-deep/95 lg:backdrop-blur-md"
+            : "lg:bg-forest-deep/70 lg:backdrop-blur-sm lg:shadow-none"
         )}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
