@@ -48,12 +48,12 @@ export function Features() {
             const Icon = ICONS[s.id] ?? Route;
             return (
               <motion.div key={s.id} variants={item}>
+                {/* Solide Farbe statt Alpha-Gradient + nur Farb-Transition:
+                    Gradients/Shadows-Transitions triggern auf Mali-GPUs Scroll-Ghosting. */}
                 <Link
                   href={`/strecken?route=${s.id}`}
-                  className="group flex h-full flex-col rounded-2xl border border-border p-4 transition-all hover:border-koder-orange/30 hover:shadow-lg sm:p-5"
-                  style={{
-                    background: `linear-gradient(to bottom right, ${s.farbe}33, ${s.farbe}0D)`,
-                  }}
+                  className="group flex h-full flex-col rounded-2xl border border-border p-4 transition-colors hover:border-koder-orange/30 lg:hover:shadow-lg sm:p-5"
+                  style={{ backgroundColor: `${s.farbe}1F` }}
                 >
                   <div className="flex items-center gap-2">
                     <div

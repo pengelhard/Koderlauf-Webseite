@@ -44,7 +44,7 @@ function GalleryVideo({ src, label }: { src: string; label: string }) {
           preload="auto"
           aria-label={label}
           onCanPlay={() => setReady(true)}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 group-hover:scale-105 ${
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 lg:group-hover:scale-105 ${
             ready ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -152,11 +152,12 @@ export default function GaleriePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={[
-                        "group relative min-h-64 overflow-hidden rounded-3xl border text-left transition-all duration-300",
+                        // Hover-Transforms nur auf Desktop: Touch-Geräte (Mali-GPU) zeigen sonst Scroll-Ghosting
+                        "group relative min-h-64 overflow-hidden rounded-3xl border text-left transition-colors duration-300 lg:transition-all",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange/60",
                         link.accent === "youtube"
-                          ? "border-red-500/30 hover:-translate-y-1 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/15"
-                          : "border-border/80 hover:-translate-y-1 hover:border-koder-orange/70 hover:shadow-2xl hover:shadow-koder-orange/15",
+                          ? "border-red-500/30 hover:border-red-500/70 lg:hover:-translate-y-1 lg:hover:shadow-2xl lg:hover:shadow-red-500/15"
+                          : "border-border/80 hover:border-koder-orange/70 lg:hover:-translate-y-1 lg:hover:shadow-2xl lg:hover:shadow-koder-orange/15",
                       ].join(" ")}
                     >
                       {/* Bild immer sofort rendern – das Video lädt im Hintergrund nach
@@ -168,7 +169,7 @@ export default function GaleriePage() {
                         priority={index < 2}
                         loading={index < 2 ? "eager" : "lazy"}
                         quality={70}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover lg:transition-transform lg:duration-500 lg:group-hover:scale-105"
                         sizes="(min-width: 640px) 50vw, 100vw"
                       />
                       {link.video && <GalleryVideo src={link.video} label={link.imageAlt} />}
@@ -201,7 +202,7 @@ export default function GaleriePage() {
                         </span>
                         <ExternalLink
                           className={[
-                            "mb-1 h-5 w-5 shrink-0 text-white transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1",
+                            "mb-1 h-5 w-5 shrink-0 text-white lg:transition-transform lg:duration-300 lg:group-hover:-translate-y-1 lg:group-hover:translate-x-1",
                             link.accent === "youtube" ? "drop-shadow-[0_0_10px_rgba(239,68,68,0.9)]" : "drop-shadow-[0_0_10px_rgba(255,107,0,0.9)]",
                           ].join(" ")}
                           aria-hidden

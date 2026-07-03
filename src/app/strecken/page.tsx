@@ -259,14 +259,16 @@ function StreckenContent() {
                 key={strecke.id}
                 id={strecke.id}
                 onClick={() => { setSelected(strecke.id); setHoverPoint(null); }}
-                className={`group rounded-2xl border-2 p-3.5 text-left transition-all active:scale-[0.985] sm:p-4 touch-manipulation ${
+                /* Keine Scale-Transforms und keine Alpha-Gradients: beide triggern
+                   auf Mali-GPUs (z. B. Huawei P30) Scroll-Ghosting in Chrome. */
+                className={`group rounded-2xl border-2 p-3.5 text-left transition-colors sm:p-4 touch-manipulation ${
                   selected === strecke.id
                     ? "shadow-lg"
-                    : "border-border hover:border-koder-orange/30 hover:scale-[1.015]"
+                    : "border-border hover:border-koder-orange/30"
                 }`}
                 style={{
                   borderColor: selected === strecke.id ? strecke.color : undefined,
-                  background: `linear-gradient(to bottom right, ${strecke.color}33, ${strecke.color}0D)`,
+                  backgroundColor: `${strecke.color}1F`,
                 }}
               >
                 <div className="flex items-center gap-2">
@@ -404,7 +406,7 @@ function StreckenContent() {
         <div className="mt-8 flex justify-center pb-12">
           <Link
             href="/anmeldung"
-            className="rounded-2xl bg-koder-orange px-8 py-3 text-sm font-semibold uppercase tracking-widest text-white shadow-sm transition hover:bg-koder-orange/90 active:scale-[0.985]"
+            className="rounded-2xl bg-koder-orange px-8 py-3 text-sm font-semibold uppercase tracking-widest text-white shadow-sm transition-colors hover:bg-koder-orange/90"
           >
             Jetzt anmelden
           </Link>

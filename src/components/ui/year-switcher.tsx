@@ -22,7 +22,7 @@ export function YearSwitcher({ value, onChange, className = "" }: YearSwitcherPr
           type="button"
           onClick={() => onChange(year)}
           className={[
-            "flex-1 rounded-xl px-5 py-2.5 text-sm font-bold transition-all",
+            "flex-1 rounded-xl px-5 py-2.5 text-sm font-bold transition-colors",
             value === year
               ? "bg-koder-orange text-white shadow-sm"
               : "text-muted-foreground hover:text-foreground",
