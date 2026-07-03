@@ -125,7 +125,7 @@ export function ElevationProfile({ points, className = "", onHover, color = "#FF
       {/* Hover tooltip */}
       {hoverPoint && (
         <div
-          className="pointer-events-none absolute z-10 rounded-xl bg-forest-deep/95 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-sm transition-all"
+          className="pointer-events-none absolute z-10 rounded-xl bg-forest-deep/95 px-3 py-2 text-xs text-white shadow-lg lg:backdrop-blur-sm transition-all"
           style={{
             left: `${(x(hoverPoint.distance) / width) * 100}%`,
             top: "8px",

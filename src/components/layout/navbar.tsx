@@ -37,19 +37,21 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 cursor-default border-0 bg-black/45 backdrop-blur-[2px]"
+            className="fixed inset-0 z-40 cursor-default border-0 bg-black/45"
             aria-label="Menü schließen"
             onClick={() => setMobileOpen(false)}
           />
         )}
       </AnimatePresence>
 
+      {/* Kein backdrop-blur auf dem fixierten Header: verursacht auf Mobile
+          Scroll-Ghosting (GPU-Artefakte). Blur nur auf Desktop (lg+). */}
       <header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           scrolled
-            ? "bg-forest-deep/95 backdrop-blur-md shadow-lg"
-            : "bg-forest-deep/70 backdrop-blur-sm"
+            ? "bg-forest-deep shadow-lg lg:bg-forest-deep/95 lg:backdrop-blur-md"
+            : "bg-forest-deep/90 lg:bg-forest-deep/70 lg:backdrop-blur-sm"
         )}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
@@ -111,7 +113,7 @@ export function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               role="presentation"
-              className="cursor-pointer overflow-hidden bg-forest-deep/98 backdrop-blur-xl"
+              className="cursor-pointer overflow-hidden bg-forest-deep"
               onClick={() => setMobileOpen(false)}
             >
               <div className="flex flex-col gap-4 px-6 py-8">

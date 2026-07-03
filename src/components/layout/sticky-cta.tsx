@@ -14,8 +14,9 @@ export function StickyCta() {
   if (!EVENT.anmeldungOffen) return null;
   if (pathname.startsWith("/anmeldung")) return null;
 
+  // Kein backdrop-blur: fixierte Elemente mit Blur verursachen auf Mobile Scroll-Ghosting
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-koder-orange/20 bg-background/95 p-3 backdrop-blur-md md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-koder-orange/20 bg-background p-3 md:hidden">
       <Link
         href="/anmeldung"
         className="glow-orange flex w-full items-center justify-center rounded-2xl bg-koder-orange px-6 py-3 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright"

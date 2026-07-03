@@ -99,7 +99,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-4 rounded-lg bg-black/50 px-5 py-2.5 text-base font-extrabold uppercase tracking-[0.18em] text-koder-orange-bright shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/10 backdrop-blur-sm sm:text-lg sm:tracking-[0.22em] md:text-xl md:tracking-[0.25em] [text-shadow:0_1px_2px_rgba(0,0,0,0.9)]"
+          className="mb-4 rounded-lg bg-black/50 px-5 py-2.5 text-base font-extrabold uppercase tracking-[0.18em] text-koder-orange-bright shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/10 lg:backdrop-blur-sm sm:text-lg sm:tracking-[0.22em] md:text-xl md:tracking-[0.25em] [text-shadow:0_1px_2px_rgba(0,0,0,0.9)]"
         >
           29. Mai 2027 &middot; Obermögersheim
         </motion.p>
@@ -141,13 +141,13 @@ export function Hero() {
         >
           <Link
             href="/strecken"
-            className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/20"
+            className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white lg:backdrop-blur-sm transition-colors hover:border-white/40 hover:bg-white/20"
           >
             Strecken
           </Link>
           <Link
             href="/galerie"
-            className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/20"
+            className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white lg:backdrop-blur-sm transition-colors hover:border-white/40 hover:bg-white/20"
           >
             Galerie
           </Link>

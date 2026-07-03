@@ -184,7 +184,7 @@ export default function GaleriePage() {
 
                       <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-6">
                         <span className="min-w-0">
-                          <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
+                          <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white lg:backdrop-blur-sm">
                             {link.accent === "youtube" ? (
                               <PlayCircle size={14} />
                             ) : (

@@ -175,6 +175,17 @@
   }
 }
 
+/* Mobile Browser (v. a. Android Chrome / iOS Safari) rendern backdrop-filter auf
+   fixierten/scrollenden Elementen fehlerhaft: alte Frames bleiben als "Ghosting"
+   sichtbar. Auf kleinen Screens deshalb global deaktivieren – die halbtransparenten
+   Hintergründe bleiben erhalten, nur der Blur entfällt. */
+@media (max-width: 1023px) {
+  * {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
 .maplibregl-ctrl-attrib {
   display: none !important;
 }

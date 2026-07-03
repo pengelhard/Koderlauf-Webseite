@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface CountdownTimerProps {
   targetDate: string;
@@ -46,7 +46,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="rounded-2xl border border-koder-orange/30 bg-koder-orange/15 px-6 py-4 text-center backdrop-blur-sm sm:px-10 sm:py-5"
+        className="rounded-2xl border border-koder-orange/30 bg-koder-orange/15 px-6 py-4 text-center lg:backdrop-blur-sm sm:px-10 sm:py-5"
       >
         <p className="text-xl font-extrabold text-koder-orange sm:text-3xl">
           Heute ist es soweit! 🎉
@@ -70,21 +70,13 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
       {blocks.map((block) => (
         <div
           key={block.label}
-          className="flex w-16 flex-col items-center rounded-xl border border-koder-orange/20 bg-koder-orange/10 py-2 backdrop-blur-sm sm:w-24 sm:rounded-2xl sm:py-4"
+          className="flex w-16 flex-col items-center rounded-xl border border-koder-orange/20 bg-koder-orange/10 py-2 lg:backdrop-blur-sm sm:w-24 sm:rounded-2xl sm:py-4"
         >
-          {/* Nur Opacity animieren: sekündliche Transform-Springs erzeugen auf Mobile dauerhafte Repaint-Last */}
-          <AnimatePresence mode="popLayout">
-            <motion.span
-              key={block.value}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="text-2xl font-extrabold tabular-nums text-koder-orange sm:text-4xl"
-            >
-              {pad(block.value)}
-            </motion.span>
-          </AnimatePresence>
+          {/* Bewusst ohne Animation: sekündliche Animationen erzeugen auf Mobile
+              dauerhafte Rendering-Last und tragen zum Scroll-Ghosting bei. */}
+          <span className="text-2xl font-extrabold tabular-nums text-koder-orange sm:text-4xl">
+            {pad(block.value)}
+          </span>
           <span className="mt-1 text-[10px] font-medium uppercase tracking-widest text-white/50 sm:text-xs">
             {block.label}
           </span>
