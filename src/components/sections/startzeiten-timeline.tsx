@@ -22,12 +22,60 @@ const ITEMS: TimelineItem[] = [
   { name: "Siegerehrung",        time: "19:00", color: "#D97706", icon: Award,    pos: 93, side: "top" },
 ];
 
-/** Horizontale Timeline mit allen Startzeiten inkl. Startnummernausgabe und Siegerehrung.
- *  Auf schmalen Displays horizontal scrollbar, damit die nowrap-Labels nicht überlaufen. */
+/** Timeline mit allen Startzeiten inkl. Startnummernausgabe und Siegerehrung.
+ *  Mobile: vertikal-schlangenförmig (Einträge abwechselnd links/rechts der Linie),
+ *  damit nichts horizontal gescrollt werden muss. Desktop (sm+): horizontal. */
 export function StartzeitenTimeline() {
   return (
     <>
-      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
+      {/* Mobile: vertikaler Zeitstrahl */}
+      <div className="relative mx-auto max-w-md sm:hidden">
+        <div className="absolute left-1/2 top-5 bottom-5 w-px -translate-x-1/2 bg-foreground/40" />
+        <div className="flex flex-col gap-7">
+          {ITEMS.map((s, i) => {
+            const Icon = s.icon;
+            const isLeft = i % 2 === 0;
+            return (
+              <div key={s.name} className="relative grid grid-cols-[1fr_2.5rem_1fr] items-center">
+                {/* Marker auf der Linie */}
+                <div className="col-start-2 row-start-1 flex justify-center">
+                  <div
+                    className="z-10 flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-offset-2 ring-offset-background"
+                    style={{
+                      backgroundColor: s.color,
+                      color: "#fff",
+                      boxShadow: `0 0 0 5px ${s.color}22, 0 0 18px ${s.color}55`,
+                    }}
+                  >
+                    <Icon size={18} />
+                  </div>
+                </div>
+
+                {/* Kurzer Verbindungsstrich zum Text */}
+                <div
+                  className={`absolute top-1/2 h-px w-3 ${isLeft ? "right-[calc(50%+1.25rem)]" : "left-[calc(50%+1.25rem)]"}`}
+                  style={{ backgroundColor: `${s.color}55` }}
+                />
+
+                {/* Text abwechselnd links/rechts der Linie */}
+                <div
+                  className={`row-start-1 ${isLeft ? "col-start-1 pr-4 text-right" : "col-start-3 pl-4 text-left"}`}
+                >
+                  <div className="text-xs font-semibold tracking-tight" style={{ color: s.color }}>
+                    {s.name}
+                  </div>
+                  <div className="text-lg font-extrabold tabular-nums tracking-[-0.4px]" style={{ color: s.color }}>
+                    {s.time}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Desktop: horizontale Timeline */}
+      <div className="hidden sm:block">
       <div className="relative h-64 min-w-[560px] pt-2 pb-2">
         {/* Dünne, klare Timeline-Linie */}
         <div className="absolute left-[3%] right-[3%] top-1/2 h-px -translate-y-1/2 rounded-full bg-foreground/50" />
@@ -100,7 +148,7 @@ export function StartzeitenTimeline() {
       </div>
       </div>
 
-      <p className="mx-auto -mt-2 max-w-2xl text-center text-xs leading-relaxed text-muted-foreground sm:text-sm">
+      <p className="mx-auto mt-6 max-w-2xl text-center text-xs leading-relaxed text-muted-foreground sm:-mt-2 sm:text-sm">
         Wir empfehlen allen, die es sich einrichten können: Holt eure Startnummern und bestellten T-Shirts
         bereits am Freitag zwischen{" "}
         <strong className="font-semibold text-foreground">17:00 bis 20:00 Uhr</strong>{" "}

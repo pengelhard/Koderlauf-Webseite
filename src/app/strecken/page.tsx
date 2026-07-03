@@ -343,7 +343,7 @@ function StreckenContent() {
         >
           <Card className="overflow-hidden rounded-3xl border-border">
             <CardContent className="p-0">
-              <div className="relative h-[320px] sm:h-[400px] lg:h-[500px] [&_.maplibregl-ctrl-attrib]:!hidden">
+              <div className="relative h-[320px] overflow-hidden sm:h-[400px] lg:h-[500px] [&_.maplibregl-ctrl-attrib]:!hidden">
                 {!gpxTrack ? (
                   <div className="flex h-[320px] sm:h-[400px] lg:h-[500px] items-center justify-center bg-muted">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />

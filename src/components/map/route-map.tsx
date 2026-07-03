@@ -179,8 +179,7 @@ export function RouteMap({ points, highlightPoint, routeColor = "#FF6B00", class
   return (
     <div
       ref={containerRef}
-      className={`w-full overflow-hidden rounded-3xl border border-border ${className}`}
-      style={{ height: "500px" }}
+      className={`h-full w-full overflow-hidden rounded-3xl border border-border ${className}`}
     />
   );
 }
