@@ -83,6 +83,22 @@ export function getStrecke(id: string): EventStrecke | undefined {
   return EVENT.strecken.find((s) => s.id === id);
 }
 
+/** Distanz-String ("800 m", "4 km", "10,5 km") in Kilometer für Sortierung. */
+export function parseDistanzKm(distanz: string): number {
+  const normalized = distanz.replace(",", ".").trim().toLowerCase();
+  if (normalized.endsWith(" m")) {
+    return parseFloat(normalized) / 1000;
+  }
+  if (normalized.endsWith(" km")) {
+    return parseFloat(normalized);
+  }
+  return 0;
+}
+
+export function getStreckenNachDistanz(): EventStrecke[] {
+  return [...EVENT.strecken].sort((a, b) => parseDistanzKm(a.distanz) - parseDistanzKm(b.distanz));
+}
+
 export function getAktuellePreisPhase(now: Date = new Date()): PreisPhase {
   for (const phase of EVENT.preise.phasen) {
     if (phase.bis === null || now <= new Date(phase.bis)) return phase;

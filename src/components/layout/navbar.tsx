@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/ergebnisse", label: "Ergebnisse" },
   { href: "/galerie", label: "Galerie" },
   { href: "/sponsoren", label: "Sponsoren" },
+  { href: "/feedback", label: "Feedback" },
 ] as const;
 
 export function Navbar() {

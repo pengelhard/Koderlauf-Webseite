@@ -4,17 +4,17 @@ import { motion } from "framer-motion";
 import { CalendarDays, MapPin, Navigation, Award, Megaphone } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
+import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
 export default function AnmeldungPage() {
   const fruehbucher = EVENT.preise.phasen[0];
+  const staticReveal = useStaticReveal();
 
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
@@ -30,10 +30,8 @@ export default function AnmeldungPage() {
 
         {!EVENT.anmeldungOffen && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="glow-orange mt-8 rounded-3xl border border-koder-orange/40 bg-gradient-to-br from-koder-orange/20 to-koder-orange/5 p-8 text-center sm:p-10"
+            {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.15 })}
+            className="glow-orange mt-8 rounded-3xl border border-koder-orange/40 bg-koder-orange/20 p-8 text-center sm:p-10"
           >
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-koder-orange/20 text-koder-orange">
               <Megaphone className="h-7 w-7" aria-hidden />
@@ -54,9 +52,7 @@ export default function AnmeldungPage() {
 
         {/* Pricing overview */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
+          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.25 })}
           className="mt-8"
         >
           <h2 className="text-2xl font-extrabold tracking-tight">Startgebühren {EVENT.jahr}</h2>
@@ -105,21 +101,17 @@ export default function AnmeldungPage() {
 
         {/* Startzeiten 2027 – nur Startzeiten inkl. Siegerehrung */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.3 })}
           className="mt-10"
         >
           <h2 className="text-2xl font-extrabold tracking-tight">Startzeiten {EVENT.jahr}</h2>
           <StartzeitenTimeline />
         </motion.div>
 
-        {/* Info cards: Date + Location (clean 2-col) */}
+        {/* Info cards: Date + Location */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="mt-8 grid gap-3 sm:grid-cols-2"
+          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.35 })}
+          className="mobile-gpu-layer mt-8 grid gap-3 sm:grid-cols-2"
         >
           <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
             <CalendarDays className="h-5 w-5 shrink-0 text-koder-orange" />
@@ -132,7 +124,7 @@ export default function AnmeldungPage() {
             href={EVENT.mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:border-koder-orange/40 hover:bg-koder-orange/5"
+            className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-koder-orange/40 hover:bg-koder-orange/5"
           >
             <MapPin className="h-5 w-5 shrink-0 text-koder-orange" />
             <div className="min-w-0">

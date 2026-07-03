@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Mountain, TreePine, Zap, Baby, Route, type LucideIcon } from "lucide-react";
-import { EVENT, getAktuellerPreis } from "@/lib/event-config";
+import { EVENT, getAktuellerPreis, getStreckenNachDistanz } from "@/lib/event-config";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -21,6 +21,7 @@ const item = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duratio
 
 export function Features() {
   const staticReveal = useStaticReveal();
+  const strecken = getStreckenNachDistanz();
 
   return (
     <section className="py-16 sm:py-24">
@@ -41,7 +42,7 @@ export function Features() {
           {...variantsReveal(staticReveal, container)}
           className="mobile-gpu-layer mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
         >
-          {EVENT.strecken.map((s) => {
+          {strecken.map((s) => {
             const Icon = ICONS[s.id] ?? Route;
             return (
               <motion.div key={s.id} variants={item}>
