@@ -16,6 +16,7 @@ import {
   Zap,
   Baby,
   Route,
+  PartyPopper,
 } from "lucide-react";
 import { parseGpx, type GpxTrack } from "@/lib/gpx";
 import { RouteMap } from "@/components/map/route-map";
@@ -32,6 +33,16 @@ interface Strecke {
 }
 
 const STRECKEN: Strecke[] = [
+  {
+    id: "spielerei",
+    name: "Spielerei",
+    difficulty: "leicht",
+    description:
+      "Die Spielerei ist der lockere Auftakt zum Koderlauf — ein gemeinsamer Spaziergang/Lauf für alle. Wichtiger Hinweis: Die Straßenverkehrsordnung muss eingehalten werden! Wir stellen zwar Streckenposten, aber jeder Teilnehmer muss selbst auf den Verkehr achten — besonders an Straßenkreuzungen und der Bundesstraße. Teilnahme auf eigene Verantwortung.",
+    icon: PartyPopper,
+    color: "#A855F7",
+    gpxFile: "/kinderlauf.gpx",
+  },
   {
     id: "kinderlauf",
     name: "Kinderlauf",
@@ -143,7 +154,7 @@ function StreckenContent() {
         </motion.div>
 
         {/* Route selector cards */}
-        <div className="mt-8 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5">
+        <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
           {STRECKEN.map((strecke) => {
             const track = gpxTracks[strecke.id];
             return (
