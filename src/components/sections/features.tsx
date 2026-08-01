@@ -7,7 +7,8 @@ import { Mountain, TreePine, Zap, Baby } from "lucide-react";
 const strecken = [
   { id: "kinderlauf", name: "Kinderlauf", dist: "800 m", zeit: "15:10", icon: Baby, color: "#FF6B00" },
   { id: "kurz-knackig", name: "Kurz und knackig", dist: "4 km", zeit: "16:40", icon: Zap, color: "#22C55E" },
-  { id: "koderrunde", name: "Koderrunde", dist: "8,5 km", zeit: "16:30", icon: TreePine, color: "#EAB308" },
+  { id: "koderrunde", name: "Koderrunde (Lauf)", dist: "8,5 km", zeit: "16:30", icon: TreePine, color: "#EAB308" },
+  { id: "koderrunde-walking", name: "Koderrunde (Walking)", dist: "8,5 km", zeit: "16:30", icon: TreePine, color: "#A3E635" },
   { id: "trailrun", name: "Trailrun", dist: "11,25 km", zeit: "16:20", icon: Mountain, color: "#3B82F6" },
 ];
 
@@ -38,7 +39,7 @@ export function Features() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4"
+          className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-5"
         >
           {strecken.map((s) => (
             <motion.div key={s.id} variants={item}>

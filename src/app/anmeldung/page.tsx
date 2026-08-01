@@ -110,7 +110,8 @@ export default function AnmeldungPage() {
             {[
               { name: "Kinderlauf", dist: "800 m", id: "kinderlauf" },
               { name: "Kurz und knackig", dist: "4 km", id: "kurz-knackig" },
-              { name: "Koderrunde", dist: "8,5 km", id: "koderrunde" },
+              { name: "Koderrunde (Lauf)", dist: "8,5 km", id: "koderrunde" },
+              { name: "Koderrunde (Walking)", dist: "8,5 km", id: "koderrunde-walking" },
               { name: "Trailrun", dist: "11,25 km", id: "trailrun" },
             ].map((s) => (
               <Link

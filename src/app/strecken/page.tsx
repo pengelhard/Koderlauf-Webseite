@@ -54,12 +54,22 @@ const STRECKEN: Strecke[] = [
   },
   {
     id: "koderrunde",
-    name: "Koderrunde",
+    name: "Koderrunde (Lauf)",
     difficulty: "mittel",
     description:
-      "Diese Runde ist prädestiniert für alle, die gerne in traumhafter Umgebung walken oder laufen. Die abwechslungsreiche Strecke führt über den Sportplatz, dann am Rande der Ortschaft entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene entlang zurück zum Sportheim und damit direkt ins Ziel.",
+      "Diese Runde ist prädestiniert für alle, die gerne in traumhafter Umgebung laufen. Die abwechslungsreiche Strecke führt über den Sportplatz, dann am Rande der Ortschaft entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene entlang zurück zum Sportheim und damit direkt ins Ziel.",
     icon: TreePine,
     color: "#EAB308",
+    gpxFile: "/koderrunde.gpx",
+  },
+  {
+    id: "koderrunde-walking",
+    name: "Koderrunde (Walking)",
+    difficulty: "mittel",
+    description:
+      "Dieselbe wunderschöne Strecke wie die Koderrunde — aber im Walking-Tempo! Perfekt für alle, die lieber walken als laufen. Eigene Wertung, gleiche Strecke, gleicher Start um 16:30 Uhr.",
+    icon: TreePine,
+    color: "#A3E635",
     gpxFile: "/koderrunde.gpx",
   },
   {
@@ -133,7 +143,7 @@ function StreckenContent() {
         </motion.div>
 
         {/* Route selector cards */}
-        <div className="mt-8 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5">
           {STRECKEN.map((strecke) => {
             const track = gpxTracks[strecke.id];
             return (
