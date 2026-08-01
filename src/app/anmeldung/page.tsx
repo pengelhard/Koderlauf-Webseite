@@ -48,8 +48,8 @@ export default function AnmeldungPage() {
           <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
             <Clock className="h-5 w-5 shrink-0 text-koder-orange" />
             <div>
-              <p className="text-sm font-semibold">14:00 Uhr Start</p>
-              <p className="text-xs text-muted-foreground">Erster Startschuss</p>
+              <p className="text-sm font-semibold">Ab 15:00 Uhr</p>
+              <p className="text-xs text-muted-foreground">Spielerei 15:00, Kinderlauf 15:10</p>
             </div>
           </div>
           <a

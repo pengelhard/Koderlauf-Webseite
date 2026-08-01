@@ -85,7 +85,7 @@ export function Hero() {
           transition={{ duration: 0.6 }}
           className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange"
         >
-          04. April 2026 &middot; Obermögersheim
+          04. April 2026 &middot; Ab 15:00 Uhr &middot; Obermögersheim
         </motion.p>
 
         <motion.h1
@@ -114,7 +114,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-8"
         >
-          <CountdownTimer targetDate="2026-04-04T14:00:00" />
+          <CountdownTimer targetDate="2026-04-04T15:00:00" />
         </motion.div>
 
         <motion.div
