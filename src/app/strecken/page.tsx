@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,9 +18,11 @@ import {
   Route,
   Clock,
   Footprints,
+  CupSoda,
 } from "lucide-react";
 import { parseGpx, type GpxTrack } from "@/lib/gpx";
 import { getAktuellerPreis } from "@/lib/event-config";
+import { getVerpflegungForStrecke } from "@/lib/verpflegung";
 import { RouteMap } from "@/components/map/route-map";
 import { ElevationProfile } from "@/components/map/elevation-profile";
 import { cn } from "@/lib/utils";
@@ -187,6 +189,10 @@ function StreckenContent() {
 
   const activeStrecke = currentRoutes.find((s) => s.id === safeSelected)!;
   const gpxTrack = gpxTracks[safeSelected] || null;
+  const verpflegung = useMemo(
+    () => (yearTab === "2027" ? getVerpflegungForStrecke(safeSelected) : []),
+    [yearTab, safeSelected],
+  );
 
   // Reset selection when switching year (only if current selection is invalid for the new year)
   useEffect(() => {
@@ -379,13 +385,41 @@ function StreckenContent() {
                   </div>
                 ) : (
                   <RouteMap
+                    key={`${safeSelected}-${yearTab}`}
                     points={gpxTrack.points}
                     highlightPoint={hoverPoint}
                     routeColor={activeStrecke.color}
+                    stations={verpflegung}
                     className="rounded-none border-0"
                   />
                 )}
               </div>
+
+              {verpflegung.length > 0 && (
+                <div className="border-t border-border px-4 py-3 sm:px-6">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <CupSoda size={16} className="text-teal-600 dark:text-teal-400" aria-hidden />
+                    Verpflegung auf dieser Strecke
+                  </div>
+                  <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
+                    {verpflegung.map((s, i) => (
+                      <li key={s.id} className="flex items-baseline gap-2 text-sm text-muted-foreground">
+                        <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white">
+                          {i + 1}
+                        </span>
+                        <span>
+                          <span className="font-medium text-foreground">{s.name}</span>
+                          {" – "}
+                          {s.hint}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Zusätzlich Verpflegung im Ziel am Sportheim.
+                  </p>
+                </div>
+              )}
 
               {/* Elevation profile directly under map */}
               {gpxTrack && (

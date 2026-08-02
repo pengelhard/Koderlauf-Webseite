@@ -5,19 +5,50 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { GpxPoint } from "@/lib/gpx";
 import { toGeoJson } from "@/lib/gpx";
+import type { VerpflegungsStation } from "@/lib/verpflegung";
 
 interface RouteMapProps {
   points: GpxPoint[];
   highlightPoint?: { lat: number; lon: number; ele: number; distance: number } | null;
   routeColor?: string;
   className?: string;
+  /** Verpflegungsstationen entlang der Strecke */
+  stations?: VerpflegungsStation[];
 }
 
-export function RouteMap({ points, highlightPoint, routeColor = "#FF6B00", className = "" }: RouteMapProps) {
+function createAidMarkerElement(label: string): HTMLDivElement {
+  const el = document.createElement("div");
+  el.style.cssText = [
+    "display:flex",
+    "align-items:center",
+    "justify-content:center",
+    "width:28px",
+    "height:28px",
+    "border-radius:9999px",
+    "background:#0D9488",
+    "color:#fff",
+    "font:700 11px/1 system-ui,sans-serif",
+    "border:2px solid #fff",
+    "box-shadow:0 2px 8px rgba(0,0,0,0.35)",
+    "cursor:pointer",
+  ].join(";");
+  el.textContent = label;
+  el.setAttribute("aria-label", `Verpflegung ${label}`);
+  return el;
+}
+
+export function RouteMap({
+  points,
+  highlightPoint,
+  routeColor = "#FF6B00",
+  className = "",
+  stations = [],
+}: RouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
+  const stationMarkersRef = useRef<maplibregl.Marker[]>([]);
 
   useEffect(() => {
     if (!containerRef.current || points.length === 0) return;
@@ -33,6 +64,13 @@ export function RouteMap({ points, highlightPoint, routeColor = "#FF6B00", class
       },
       { minLon: Infinity, maxLon: -Infinity, minLat: Infinity, maxLat: -Infinity }
     );
+
+    for (const s of stations) {
+      if (s.lon < bounds.minLon) bounds.minLon = s.lon;
+      if (s.lon > bounds.maxLon) bounds.maxLon = s.lon;
+      if (s.lat < bounds.minLat) bounds.minLat = s.lat;
+      if (s.lat > bounds.maxLat) bounds.maxLat = s.lat;
+    }
 
     const centerLon = (bounds.minLon + bounds.maxLon) / 2;
     const centerLat = (bounds.minLat + bounds.maxLat) / 2;
@@ -122,6 +160,15 @@ export function RouteMap({ points, highlightPoint, routeColor = "#FF6B00", class
         .setPopup(new maplibregl.Popup({ offset: 25, className: "koder-popup" }).setHTML("<strong>Ziel</strong>"))
         .addTo(map);
 
+      stationMarkersRef.current = stations.map((station, index) => {
+        const label = String(index + 1);
+        const html = `<strong>${station.name}</strong><br/><span style="opacity:.85">${station.hint}</span>`;
+        return new maplibregl.Marker({ element: createAidMarkerElement(label) })
+          .setLngLat([station.lon, station.lat])
+          .setPopup(new maplibregl.Popup({ offset: 22, className: "koder-popup" }).setHTML(html))
+          .addTo(map);
+      });
+
       map.fitBounds(
         [[bounds.minLon - 0.005, bounds.minLat - 0.005], [bounds.maxLon + 0.005, bounds.maxLat + 0.005]],
         { padding: 60, pitch: 60, bearing: -20, duration: 1000 }
@@ -133,12 +180,14 @@ export function RouteMap({ points, highlightPoint, routeColor = "#FF6B00", class
     return () => {
       markerRef.current?.remove();
       popupRef.current?.remove();
+      stationMarkersRef.current.forEach((m) => m.remove());
+      stationMarkersRef.current = [];
       map.remove();
       mapRef.current = null;
       markerRef.current = null;
       popupRef.current = null;
     };
-  }, [points]);
+  }, [points, stations]);
 
   const updateHighlight = useCallback((pt: { lat: number; lon: number; ele: number; distance: number } | null | undefined) => {
     const map = mapRef.current;
