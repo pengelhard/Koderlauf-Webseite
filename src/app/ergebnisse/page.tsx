@@ -297,7 +297,7 @@ export default function ErgebnissePage() {
                           Alle weiteren Strecken
                         </CardTitle>
                         <p className="text-sm text-muted-foreground">
-                          4&nbsp;km · 8,5&nbsp;km (Lauf &amp; Walking) · 10,5&nbsp;km · 24&nbsp;km
+                          4&nbsp;km · 8,5&nbsp;km (Lauf &amp; Walking) · 10,5&nbsp;km · 25&nbsp;km
                         </p>
                       </div>
                     </div>

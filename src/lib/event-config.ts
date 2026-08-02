@@ -60,7 +60,7 @@ export const EVENT = {
     anmeldungen: 399,
   },
   strecken: [
-    { id: "spielerei", name: "Spielerei", distanz: "24 km", startzeit: "15:00", farbe: "#7C3AED", gpxFile: "/2027-spielerei.gpx" },
+    { id: "spielerei", name: "Spielerei", distanz: "25 km", startzeit: "15:00", farbe: "#7C3AED", gpxFile: "/2027-spielerei.gpx" },
     { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "15:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx" },
     { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "16:20", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx" },
     { id: "koderrunde", name: "Koderrunde (Lauf)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung" },
