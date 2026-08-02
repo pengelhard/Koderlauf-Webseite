@@ -22,7 +22,11 @@ import {
 } from "lucide-react";
 import { parseGpx, type GpxTrack } from "@/lib/gpx";
 import { getAktuellerPreis } from "@/lib/event-config";
-import { getVerpflegungForStrecke } from "@/lib/verpflegung";
+import {
+  formatVerpflegungKm,
+  getAbstandZurVorherigen,
+  getVerpflegungForStrecke,
+} from "@/lib/verpflegung";
 import { RouteMap } from "@/components/map/route-map";
 import { ElevationProfile } from "@/components/map/elevation-profile";
 import { cn } from "@/lib/utils";
@@ -401,22 +405,32 @@ function StreckenContent() {
                     <CupSoda size={16} className="text-teal-600 dark:text-teal-400" aria-hidden />
                     Verpflegung auf dieser Strecke
                   </div>
-                  <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
-                    {verpflegung.map((s) => (
-                      <li key={s.id} className="flex items-baseline gap-2 text-sm text-muted-foreground">
-                        <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white">
-                          {s.nr}
-                        </span>
-                        <span>
-                          <span className="font-medium text-foreground">{s.name}</span>
-                          {" – "}
-                          {s.hint}
-                        </span>
-                      </li>
-                    ))}
+                  <ul className="mt-2 space-y-2">
+                    {verpflegung.map((s, i) => {
+                      const abstand = getAbstandZurVorherigen(verpflegung, i);
+                      return (
+                        <li key={s.id} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white">
+                            {s.nr}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="font-medium text-foreground">{s.name}</span>
+                            {" – "}
+                            {s.hint}
+                            <span className="mt-0.5 block text-xs">
+                              bei {formatVerpflegungKm(s.km)}
+                              {" · "}
+                              {i === 0
+                                ? `${formatVerpflegungKm(abstand)} ab Start`
+                                : `${formatVerpflegungKm(abstand)} seit Station ${verpflegung[i - 1].nr}`}
+                            </span>
+                          </span>
+                        </li>
+                      );
+                    })}
                   </ul>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Zusätzlich Verpflegung im Ziel am Sportheim.
+                    Kilometerstände ca., aus der GPX-Strecke. Zusätzlich Verpflegung im Ziel am Sportheim.
                   </p>
                 </div>
               )}

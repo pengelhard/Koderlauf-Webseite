@@ -164,7 +164,7 @@ export function RouteMap({
         .addTo(map);
 
       stationMarkersRef.current = getMapMarkersForStations(stations).map((station) => {
-        const html = `<strong>${station.name}</strong><br/><span style="opacity:.85">${station.hint}</span>`;
+        const html = `<strong>${station.name}</strong><br/><span style="opacity:.85">${station.hint}</span><br/><span style="opacity:.85">bei ${station.kmLabel}</span>`;
         return new maplibregl.Marker({ element: createAidMarkerElement(station.label) })
           .setLngLat([station.lon, station.lat])
           .setPopup(new maplibregl.Popup({ offset: 22, className: "koder-popup" }).setHTML(html))
