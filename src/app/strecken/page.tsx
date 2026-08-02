@@ -148,7 +148,7 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
     description:
       "Dieselbe schöne Strecke wie die Koderrunde (Lauf) – aber im Walking-Tempo. Perfekt für alle, die lieber walken als laufen. Start gemeinsam mit dem Lauf um 16:30 Uhr, eigene Wertung für Walkerinnen und Walker.",
     icon: Footprints,
-    color: "#84CC16",
+    color: "#EAB308",
     gpxFile: "/2027-koderrunde.gpx",
   },
   {

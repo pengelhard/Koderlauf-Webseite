@@ -11,9 +11,9 @@ export default function Home() {
     <>
       <Hero />
       <EventInfo />
+      <JubilaeumsProgramm />
       <Features />
       <Zeitplan />
-      <JubilaeumsProgramm />
       <Stats />
       <div id="faq">
         <Faq />

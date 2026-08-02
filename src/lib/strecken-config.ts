@@ -3,7 +3,7 @@ export const STRECKEN_COLORS: Record<string, string> = {
   "Kurz und knackig": "#22C55E",
   Koderrunde: "#EAB308",
   "Koderrunde (Lauf)": "#EAB308",
-  "Koderrunde (Walking)": "#84CC16",
+  "Koderrunde (Walking)": "#EAB308",
   Trailrun: "#3B82F6",
   Spielerei: "#7C3AED",
 };
@@ -13,7 +13,7 @@ export const STRECKEN_BADGE_CLASSES: Record<string, string> = {
   "Kurz und knackig": "bg-green-500/10 text-green-600 border-green-500/20",
   Koderrunde: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
   "Koderrunde (Lauf)": "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
-  "Koderrunde (Walking)": "bg-lime-500/10 text-lime-600 border-lime-500/20",
+  "Koderrunde (Walking)": "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
   Trailrun: "bg-blue-500/10 text-blue-600 border-blue-500/20",
   Spielerei: "bg-violet-500/10 text-violet-600 border-violet-500/20",
 };

@@ -64,7 +64,7 @@ export const EVENT = {
     { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "15:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx" },
     { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "16:20", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx" },
     { id: "koderrunde", name: "Koderrunde (Lauf)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung" },
-    { id: "koderrunde-walking", name: "Koderrunde (Walking)", distanz: "8,5 km", startzeit: "16:30", farbe: "#84CC16", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung" },
+    { id: "koderrunde-walking", name: "Koderrunde (Walking)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung" },
     { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "16:40", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx" },
   ] satisfies EventStrecke[],
   zeitplan: [
