@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CalendarDays, MapPin, Navigation, Award, Megaphone } from "lucide-react";
+import { CalendarDays, MapPin, Navigation, Award, Megaphone, Accessibility } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
@@ -106,6 +106,30 @@ export default function AnmeldungPage() {
         >
           <h2 className="text-2xl font-extrabold tracking-tight">Startzeiten {EVENT.jahr}</h2>
           <StartzeitenTimeline />
+        </motion.div>
+
+        <motion.div
+          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.32 })}
+          className="mt-6 rounded-2xl border border-border bg-card p-5 sm:p-6"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-forest-light/15 text-forest-light">
+              <Accessibility className="h-5 w-5" aria-hidden />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold">Früher Start bei Beeinträchtigung</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Geistig oder körperlich beeinträchtigte Personen dürfen auf Wunsch ca.{" "}
+                <strong className="font-semibold text-foreground">2–5 Minuten vor dem regulären Startschuss</strong>{" "}
+                der jeweiligen Strecke loslaufen. Bitte meldet euch dafür möglichst frühzeitig per E-Mail an{" "}
+                <a href="mailto:info@koderlauf.de?subject=Fr%C3%BCher%20Start%20Koderlauf" className="font-semibold text-koder-orange hover:underline">
+                  info@koderlauf.de
+                </a>
+                . Eine kurze Meldung vor dem Lauf am Sportheim geht auch – die Vorab-Mail hilft uns aber,
+                alles ruhig vorzubereiten.
+              </p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Info cards: Date + Location */}

@@ -136,7 +136,12 @@ export function StartzeitenTimeline() {
         Die Koderrunde startet um 16:30 Uhr gemeinsam als{" "}
         <strong className="font-semibold text-foreground">Lauf</strong> und{" "}
         <strong className="font-semibold text-foreground">Walking</strong> – mit eigener Wertung.
-        Wir empfehlen, Startnummern und bestellte T-Shirts bereits am Freitag zwischen{" "}
+        Geistig oder körperlich beeinträchtigte Personen dürfen auf Wunsch 2–5 Min. vor dem Startschuss
+        loslaufen – bitte möglichst per Mail an{" "}
+        <a href="mailto:info@koderlauf.de?subject=Fr%C3%BCher%20Start%20Koderlauf" className="font-semibold text-koder-orange hover:underline">
+          info@koderlauf.de
+        </a>{" "}
+        melden. Wir empfehlen, Startnummern und bestellte T-Shirts bereits am Freitag zwischen{" "}
         <strong className="font-semibold text-foreground">17:00 bis 20:00 Uhr</strong>{" "}
         am Sportplatz abzuholen.
       </p>

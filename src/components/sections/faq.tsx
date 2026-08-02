@@ -21,6 +21,11 @@ const FAQS = [
       "Gleiche Strecke (8,5 km) und gleicher Start um 16:30 Uhr – aber getrennte Wertung. Meldet euch entweder als Lauf oder als Walking an, je nachdem, wie ihr die Runde bestreiten wollt.",
   },
   {
+    frage: "Können geistig oder körperlich beeinträchtigte Personen früher starten?",
+    antwort:
+      "Ja. Wer geistig oder körperlich beeinträchtigt ist, darf auf Wunsch ca. 2–5 Minuten vor dem regulären Startschuss der jeweiligen Strecke loslaufen. Bitte meldet euch dafür möglichst frühzeitig per E-Mail an info@koderlauf.de – so können wir alles ruhig vorbereiten. Eine kurze Meldung vor dem Lauf am Sportheim ist auch möglich, die Vorab-Mail ist aber klar besser.",
+  },
+  {
     frage: "Kann ich mich vor Ort nachmelden?",
     antwort:
       "Ja! Nachmeldungen sind am Eventtag direkt vor Ort möglich – es gilt dann der Nachmeldepreis. Wer sicher einen Startplatz und den günstigeren Preis möchte, meldet sich am besten vorab an.",

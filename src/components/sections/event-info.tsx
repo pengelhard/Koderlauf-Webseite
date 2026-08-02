@@ -14,6 +14,7 @@ import {
   Sparkles,
   ArrowRight,
   CalendarDays,
+  Accessibility,
 } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
@@ -26,6 +27,10 @@ const INFOS = [
   { icon: Flag, text: "Laufstrecke teilweise offroad (siehe Streckenbeschreibung)" },
   { icon: Ticket, text: "Startnummern- und Chipübergabe ab 13:00 Uhr" },
   { icon: Backpack, text: "Persönliche Gegenstände können in begrenzter Anzahl abgegeben werden" },
+  {
+    icon: Accessibility,
+    text: "Geistig oder körperlich beeinträchtigte Personen dürfen auf Wunsch 2–5 Min. vor dem Startschuss loslaufen – bitte möglichst per Mail an info@koderlauf.de melden",
+  },
 ];
 
 // Nur Opacity animieren: Scroll-Transforms verursachen auf Mobile Ghosting.
