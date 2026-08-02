@@ -113,9 +113,9 @@ export function EventInfo() {
               <strong className="text-foreground">
                 {EVENT.strecken.length} Strecken
               </strong>{" "}
-              inklusive der neuen „Spielerei“, unserer längsten und
-              forderndsten Runde. Und das Beste: Der Koderlauf ist eingebettet
-              in das Jubiläum{" "}
+              inklusive der neuen „Spielerei“ und der Koderrunde als Lauf und
+              Walking (eigene Wertung). Und das Beste: Der Koderlauf ist
+              eingebettet in das Jubiläum{" "}
               <strong className="text-foreground">{EVENT.jubilaeum}</strong>.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-4 text-sm font-semibold">

@@ -18,8 +18,8 @@ import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-
 
 const SAMSTAG_PROGRAMM = [
   { zeit: "13:00", text: "Startnummern- & Chipausgabe", icon: Ticket },
-  { zeit: "14:30", text: "Koderlauf – Start aller fünf Strecken", icon: Route },
-  { zeit: "19:00", text: "Siegerehrung am Sportheim", icon: Trophy },
+  { zeit: "15:00", text: "Koderlauf – Start der Strecken (Spielerei zuerst)", icon: Route },
+  { zeit: "18:30", text: "Siegerehrung am Sportheim", icon: Trophy },
   { zeit: "21:30", text: "Live: Tape Jam – Tribute to 80's Rock", icon: Music },
 ];
 
@@ -94,9 +94,9 @@ export function JubilaeumsProgramm() {
                 Koderlauf {EVENT.jahr}
               </h3>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">
-                Der große Tag: fünf Strecken vom Kinderlauf bis zur neuen
-                „Spielerei“, Start und Ziel direkt am Sportheim – und abends
-                wird gefeiert.
+                Der große Tag: Strecken vom Kinderlauf bis zur neuen
+                „Spielerei“, inklusive Koderrunde als Lauf und Walking – Start
+                und Ziel direkt am Sportheim, und abends wird gefeiert.
               </p>
 
               <ol className="mt-8 space-y-4">

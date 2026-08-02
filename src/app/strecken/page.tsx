@@ -12,12 +12,12 @@ import {
   ArrowDownToLine,
   TrendingUp,
   TrendingDown,
-  MapPin,
   TreePine,
   Zap,
   Baby,
   Route,
   Clock,
+  Footprints,
 } from "lucide-react";
 import { parseGpx, type GpxTrack } from "@/lib/gpx";
 import { getAktuellerPreis } from "@/lib/event-config";
@@ -36,6 +36,7 @@ interface Strecke {
   gpxFile: string;
   startgebuehr: string;
   startTime?: string;
+  badge?: string;
 }
 
 const STRECKEN: Strecke[] = [
@@ -89,10 +90,22 @@ const STRECKEN: Strecke[] = [
 
 const STRECKEN_2027: (Strecke & { startTime: string })[] = [
   {
+    id: "spielerei",
+    name: "Spielerei",
+    startgebuehr: "22 €",
+    startTime: "15:00",
+    difficulty: "extrem",
+    description:
+      "Die Spielerei wartet auf die, die es wirklich wissen wollen. Unsere längste und forderndste Strecke führt hoch zur Wachtelerspitze, weiter über den Spielberg zum Gelben Berg und zurück zum Ziel – mit ordentlich Höhenmetern und echten Trail-Passagen. Das ist keine harmlose Spielerei, sondern deine Chance, dich richtig zu fordern und neue Grenzen zu erleben. Wer es ernst meint, ist hier genau richtig. Wichtig: Die Straßenverkehrsordnung muss eingehalten werden! Wir stellen zwar Streckenposten, aber jeder Teilnehmer muss selbst auf den Verkehr achten – besonders an Straßenkreuzungen und der Bundesstraße. Das gilt für alle Läufe, bei der Spielerei aber noch einmal ausdrücklich, weil die Route öffentliche Straßen kreuzt. Teilnahme auf eigene Verantwortung.",
+    icon: Route,
+    color: "#7C3AED",
+    gpxFile: "/2027-spielerei.gpx",
+  },
+  {
     id: "kinderlauf",
     name: "Kinderlauf",
     startgebuehr: "10 €",
-    startTime: "14:30",
+    startTime: "15:10",
     difficulty: "leicht",
     description:
       "Der Kinderlauf führt einmal um den unteren Fußballplatz und dann direkt zurück ins Ziel – perfekt für die Kleinsten und ein echtes Highlight für die ganze Familie!",
@@ -101,34 +114,10 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
     gpxFile: "/2027-kinderlauf.gpx",
   },
   {
-    id: "kurz-knackig",
-    name: "Kurz und knackig",
-    startgebuehr: "15 €",
-    startTime: "15:30",
-    difficulty: "mittel",
-    description:
-      "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der „Ebene“ weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",
-    icon: Zap,
-    color: "#22C55E",
-    gpxFile: "/2027-kurz-knackig.gpx",
-  },
-  {
-    id: "koderrunde",
-    name: "Koderrunde",
-    startgebuehr: "15 €",
-    startTime: "15:20",
-    difficulty: "mittel",
-    description:
-      "Diese Runde ist prädestiniert für alle, die gerne in traumhafter Umgebung walken oder laufen. Die abwechslungsreiche Strecke führt über den Sportplatz, dann am Rande der Ortschaft entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene entlang zurück zum Sportheim und damit direkt ins Ziel.",
-    icon: TreePine,
-    color: "#EAB308",
-    gpxFile: "/2027-koderrunde.gpx",
-  },
-  {
     id: "trailrun",
     name: "Trailrun",
     startgebuehr: "18 €",
-    startTime: "15:10",
+    startTime: "16:20",
     difficulty: "schwer",
     description:
       "Dieser besondere Teil des Koderlaufs macht ihn einzigartig – die Wegführung geht in Teilen ähnlich wie die Koderrunde, allerdings mit größeren Offroad-Anteilen. Die Wachtlerspitze auf 587 m inmitten unseres wunderschönen Wachtlerwaldes bildet wortwörtlich den Höhepunkt des Trailruns. Es geht steil bergauf und bergab quer durch den Wald. Achtung! Der Streckenverlauf wurde etwas angepasst.",
@@ -137,16 +126,42 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
     gpxFile: "/2027-trailrun.gpx",
   },
   {
-    id: "spielerei",
-    name: "Spielerei",
-    startgebuehr: "22 €",
-    startTime: "15:00",
-    difficulty: "extrem",
+    id: "koderrunde",
+    name: "Koderrunde (Lauf)",
+    startgebuehr: "15 €",
+    startTime: "16:30",
+    difficulty: "mittel",
+    badge: "eigene Wertung",
     description:
-      "Die Spielerei wartet auf die, die es wirklich wissen wollen. Unsere längste und forderndste Strecke führt hoch zur Wachtelerspitze, weiter über den Spielberg zum Gelben Berg und zurück zum Ziel – mit ordentlich Höhenmetern und echten Trail-Passagen. Das ist keine harmlose Spielerei, sondern deine Chance, dich richtig zu fordern und neue Grenzen zu erleben. Wer es ernst meint, ist hier genau richtig.",
-    icon: Route,
-    color: "#7C3AED",
-    gpxFile: "/2027-spielerei.gpx",
+      "Die Koderrunde als Laufrunde: abwechslungsreich über den Sportplatz, am Ortsrand entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene zurück zum Sportheim. Start gemeinsam mit dem Walking um 16:30 Uhr – aber mit eigener Wertung für Läuferinnen und Läufer.",
+    icon: TreePine,
+    color: "#EAB308",
+    gpxFile: "/2027-koderrunde.gpx",
+  },
+  {
+    id: "koderrunde-walking",
+    name: "Koderrunde (Walking)",
+    startgebuehr: "15 €",
+    startTime: "16:30",
+    difficulty: "mittel",
+    badge: "eigene Wertung",
+    description:
+      "Dieselbe schöne Strecke wie die Koderrunde (Lauf) – aber im Walking-Tempo. Perfekt für alle, die lieber walken als laufen. Start gemeinsam mit dem Lauf um 16:30 Uhr, eigene Wertung für Walkerinnen und Walker.",
+    icon: Footprints,
+    color: "#84CC16",
+    gpxFile: "/2027-koderrunde.gpx",
+  },
+  {
+    id: "kurz-knackig",
+    name: "Kurz und knackig",
+    startgebuehr: "15 €",
+    startTime: "16:40",
+    difficulty: "mittel",
+    description:
+      "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der „Ebene“ weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",
+    icon: Zap,
+    color: "#22C55E",
+    gpxFile: "/2027-kurz-knackig.gpx",
   },
 ];
 
@@ -243,15 +258,16 @@ function StreckenContent() {
             <p>
               <strong className="font-semibold text-foreground">Wichtig für alle:</strong> Der Start-
               und Zielbereich wurde auf den oberen Fußballplatz verlegt. Außerdem haben wir manche
-              Strecken leicht angepasst. Auf allen Routen gelten selbstverständlich die StVO und jeder
-              ist für sich selbst verantwortlich. Wie jedes Jahr sorgen zahlreiche Streckenposten für
-              eure Sicherheit, eine gute Verpflegung und einen reibungslosen Ablauf.
+              Strecken leicht angepasst. Auf allen Routen gilt die Straßenverkehrsordnung – jeder
+              ist für sich selbst verantwortlich. Wir stellen Streckenposten, aber besonders an
+              Straßenkreuzungen und der Bundesstraße müsst ihr selbst auf den Verkehr achten.
+              Die Koderrunde gibt es als Lauf und als Walking (gleicher Start, eigene Wertung).
             </p>
           </div>
         )}
 
         {/* Route selector cards */}
-        <div className="mobile-gpu-layer mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5 sm:mt-8">
+        <div className="mobile-gpu-layer mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3 sm:mt-8">
           {currentRoutes.map((strecke) => {
             const track = gpxTracks[strecke.id];
             return (
@@ -278,7 +294,12 @@ function StreckenContent() {
                   >
                     <strecke.icon size={16} />
                   </div>
-                  <h3 className="truncate text-sm font-bold">{strecke.name}</h3>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-bold leading-tight">{strecke.name}</h3>
+                    {strecke.badge && (
+                      <p className="text-[10px] font-medium text-muted-foreground">{strecke.badge}</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Start time prominently per route (2027 only) */}
@@ -322,12 +343,19 @@ function StreckenContent() {
           className="mt-6 rounded-2xl border border-border bg-card px-4 py-3 sm:px-6 sm:py-4"
         >
           {yearTab === "2027" && activeStrecke.startTime && (
-            <div
-              className="mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold"
-              style={{ backgroundColor: `${activeStrecke.color}15`, color: activeStrecke.color }}
-            >
-              <Clock size={15} />
-              Start {activeStrecke.startTime} Uhr
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <div
+                className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold"
+                style={{ backgroundColor: `${activeStrecke.color}15`, color: activeStrecke.color }}
+              >
+                <Clock size={15} />
+                Start {activeStrecke.startTime} Uhr
+              </div>
+              {activeStrecke.badge && (
+                <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  {activeStrecke.badge}
+                </div>
+              )}
             </div>
           )}
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{activeStrecke.description}</p>

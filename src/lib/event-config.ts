@@ -12,6 +12,8 @@ export interface EventStrecke {
   startzeit: string;
   farbe: string;
   gpxFile: string;
+  /** Kurzer Zusatz unter dem Namen, z. B. „eigene Wertung“ */
+  badge?: string;
 }
 
 export interface PreisPhase {
@@ -35,8 +37,8 @@ export const EVENT = {
   jahr: 2027,
   /** Wievielter Koderlauf (Ausgabe) */
   ausgabe: 2,
-  /** Erster Start (Kinderlauf) */
-  datum: "2027-05-29T14:30:00",
+  /** Erster Start (Spielerei) */
+  datum: "2027-05-29T15:00:00",
   datumFormatiert: "29. Mai 2027",
   datumKurz: "Sa, 29. Mai 2027",
   ort: "Obermögersheim",
@@ -52,20 +54,21 @@ export const EVENT = {
     anmeldungen: 399,
   },
   strecken: [
-    { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "14:30", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx" },
     { id: "spielerei", name: "Spielerei", distanz: "24 km", startzeit: "15:00", farbe: "#7C3AED", gpxFile: "/2027-spielerei.gpx" },
-    { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "15:10", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx" },
-    { id: "koderrunde", name: "Koderrunde", distanz: "8,5 km", startzeit: "15:20", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx" },
-    { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "15:30", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx" },
+    { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "15:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx" },
+    { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "16:20", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx" },
+    { id: "koderrunde", name: "Koderrunde (Lauf)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung" },
+    { id: "koderrunde-walking", name: "Koderrunde (Walking)", distanz: "8,5 km", startzeit: "16:30", farbe: "#84CC16", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung" },
+    { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "16:40", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx" },
   ] satisfies EventStrecke[],
   zeitplan: [
     { zeit: "13:00", titel: "Startnummern- & Chipausgabe" },
-    { zeit: "14:30", titel: "Start Kinderlauf", streckeId: "kinderlauf" },
     { zeit: "15:00", titel: "Start Spielerei", streckeId: "spielerei" },
-    { zeit: "15:10", titel: "Start Trailrun", streckeId: "trailrun" },
-    { zeit: "15:20", titel: "Start Koderrunde", streckeId: "koderrunde" },
-    { zeit: "15:30", titel: "Start Kurz und knackig", streckeId: "kurz-knackig" },
-    { zeit: "19:00", titel: "Siegerehrung" },
+    { zeit: "15:10", titel: "Start Kinderlauf", streckeId: "kinderlauf" },
+    { zeit: "16:20", titel: "Start Trailrun", streckeId: "trailrun" },
+    { zeit: "16:30", titel: "Start Koderrunde (Lauf & Walking)", streckeId: "koderrunde" },
+    { zeit: "16:40", titel: "Start Kurz und knackig", streckeId: "kurz-knackig" },
+    { zeit: "18:30", titel: "Siegerehrung" },
   ] satisfies ZeitplanEintrag[],
   preise: {
     phasen: [
@@ -96,7 +99,18 @@ export function parseDistanzKm(distanz: string): number {
 }
 
 export function getStreckenNachDistanz(): EventStrecke[] {
-  return [...EVENT.strecken].sort((a, b) => parseDistanzKm(a.distanz) - parseDistanzKm(b.distanz));
+  return [...EVENT.strecken].sort((a, b) => {
+    const byDist = parseDistanzKm(a.distanz) - parseDistanzKm(b.distanz);
+    if (byDist !== 0) return byDist;
+    return a.name.localeCompare(b.name, "de");
+  });
+}
+
+/** Strecke mit der frühesten Startzeit (chronologischer erster Start). */
+export function getErsterStart(): EventStrecke {
+  return EVENT.strecken.reduce((earliest, s) =>
+    s.startzeit < earliest.startzeit ? s : earliest
+  );
 }
 
 export function getAktuellePreisPhase(now: Date = new Date()): PreisPhase {

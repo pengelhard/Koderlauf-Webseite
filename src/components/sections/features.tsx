@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Mountain, TreePine, Zap, Baby, Route, type LucideIcon } from "lucide-react";
+import { Mountain, TreePine, Zap, Baby, Route, Footprints, type LucideIcon } from "lucide-react";
 import { EVENT, getAktuellerPreis, getStreckenNachDistanz } from "@/lib/event-config";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
@@ -10,6 +10,7 @@ const ICONS: Record<string, LucideIcon> = {
   kinderlauf: Baby,
   "kurz-knackig": Zap,
   koderrunde: TreePine,
+  "koderrunde-walking": Footprints,
   trailrun: Mountain,
   spielerei: Route,
 };
@@ -36,18 +37,19 @@ export function Features() {
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
             Für jeden das Richtige
           </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+            Die Koderrunde gibt es als Lauf und als Walking – gleicher Start, eigene Wertung.
+          </p>
         </motion.div>
 
         <motion.div
           {...variantsReveal(staticReveal, container)}
-          className="mobile-gpu-layer mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
+          className="mobile-gpu-layer mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3"
         >
           {strecken.map((s) => {
             const Icon = ICONS[s.id] ?? Route;
             return (
               <motion.div key={s.id} variants={item}>
-                {/* Solide Farbe statt Alpha-Gradient + nur Farb-Transition:
-                    Gradients/Shadows-Transitions triggern auf Mali-GPUs Scroll-Ghosting. */}
                 <Link
                   href={`/strecken?route=${s.id}`}
                   className="group flex h-full flex-col rounded-2xl border border-border p-4 transition-colors hover:border-koder-orange/30 lg:hover:shadow-lg sm:p-5"
@@ -60,7 +62,12 @@ export function Features() {
                     >
                       <Icon size={16} />
                     </div>
-                    <h3 className="truncate text-sm font-bold sm:text-base">{s.name}</h3>
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-bold leading-tight sm:text-base">{s.name}</h3>
+                      {s.badge && (
+                        <p className="text-[10px] font-medium text-muted-foreground">{s.badge}</p>
+                      )}
+                    </div>
                   </div>
                   <div className="mt-3 space-y-1">
                     <p className="text-xl font-extrabold sm:text-2xl" style={{ color: s.farbe }}>

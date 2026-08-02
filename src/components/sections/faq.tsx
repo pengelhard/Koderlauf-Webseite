@@ -4,14 +4,21 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { EVENT } from "@/lib/event-config";
+import { EVENT, getErsterStart } from "@/lib/event-config";
 import { cn } from "@/lib/utils";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
+
+const ersterStart = getErsterStart();
 
 const FAQS = [
   {
     frage: "Wann und wo findet der Koderlauf statt?",
-    antwort: `Am ${EVENT.datumKurz} rund um das Sportheim Obermögersheim. Der erste Start (Kinderlauf) ist um ${EVENT.strecken[0].startzeit} Uhr, die Startnummern- und Chipausgabe beginnt bereits um 13:00 Uhr.`,
+    antwort: `Am ${EVENT.datumKurz} rund um das Sportheim Obermögersheim. Der erste Start (${ersterStart.name}) ist um ${ersterStart.startzeit} Uhr, die Startnummern- und Chipausgabe beginnt bereits um 13:00 Uhr.`,
+  },
+  {
+    frage: "Was ist der Unterschied zwischen Koderrunde Lauf und Walking?",
+    antwort:
+      "Gleiche Strecke (8,5 km) und gleicher Start um 16:30 Uhr – aber getrennte Wertung. Meldet euch entweder als Lauf oder als Walking an, je nachdem, wie ihr die Runde bestreiten wollt.",
   },
   {
     frage: "Kann ich mich vor Ort nachmelden?",

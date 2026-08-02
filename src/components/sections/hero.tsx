@@ -149,7 +149,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-8"
         >
-          <CountdownTimer targetDate="2027-05-29T14:00:00" />
+          <CountdownTimer targetDate="2027-05-29T15:00:00" />
         </motion.div>
 
         <motion.div
