@@ -19,11 +19,11 @@ import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-
 
 const INFOS = [
   { icon: MapPin, text: "Start/Ziel & Orga: Sportheim Obermögersheim" },
-  { icon: Ticket, text: "Startnummern (Chip an der Nummer) Do/Fr 17–20 Uhr empfohlen, am Eventtag ab 13:00 Uhr" },
+  { icon: Ticket, text: "Startnummern Do/Fr 17–20 Uhr empfohlen, am Eventtag ab 13:00 Uhr" },
   { icon: Utensils, text: "Verpflegung während der Läufe und im Ziel; Essen & Trinken am Sportheim" },
   { icon: Car, text: "Parkmöglichkeiten vor Ort vorhanden" },
   { icon: ShowerHead, text: "Duschen im Sportheim möglich" },
-  { icon: Flag, text: "StVO beachten – besonders an Kreuzungen (Details auf der Strecken-Seite)" },
+  { icon: Flag, text: "StVO gilt – kein Vorrecht im Straßenverkehr (Details: Strecken / FAQ)" },
 ];
 
 // Nur Opacity animieren: Scroll-Transforms verursachen auf Mobile Ghosting.
@@ -50,7 +50,7 @@ export function EventInfo() {
             genießt: Wir freuen uns auf jeden Einzelnen von euch.
           </p>
           <p className="mx-auto mt-4 text-base font-semibold text-koder-orange sm:text-lg">
-            Jeder Finisher erhält eine einzigartige Koderlauf-Medaille! 🏅
+            Exklusive KoderMedaille für jeden Finisher!
           </p>
         </motion.div>
 

@@ -308,13 +308,15 @@ export default function ErgebnissePage() {
                       <div>
                         <p className="font-semibold">Ehrung pro Strecke</p>
                         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                          Geehrt werden nur die{" "}
+                          Bei der Siegerehrung werden die{" "}
                           <strong className="text-foreground">drei schnellsten Männer</strong> und
                           die{" "}
                           <strong className="text-foreground">drei schnellsten Frauen</strong>{" "}
-                          je Lauf (Platz&nbsp;1–3, getrennt). Koderrunde Lauf und Walking zählen
-                          als eigene Wertungen. Es gibt{" "}
-                          <strong className="text-foreground">keine separate Altersklassen-Ehrung</strong>.
+                          je Lauf ausgezeichnet (Platz&nbsp;1–3). Koderrunde Lauf und Walking zählen
+                          als eigene Wertungen. Eine separate Altersklassen-Ehrung gibt es nicht –
+                          die{" "}
+                          <strong className="text-foreground">drei Schnellsten je Altersklasse</strong>{" "}
+                          erhalten aber eine <strong className="text-foreground">Urkunde</strong>.
                         </p>
                       </div>
                     </div>

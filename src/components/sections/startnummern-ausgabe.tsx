@@ -39,10 +39,7 @@ export function StartnummernAusgabe({ className = "" }: { className?: string }) 
           </p>
           <p className="mt-2 flex items-start gap-2 text-sm text-muted-foreground">
             <Shirt size={16} className="mt-0.5 shrink-0 text-koder-orange" aria-hidden />
-            <span>
-              Bestellte T-Shirts werden ebenfalls an diesen Terminen ausgegeben.
-              Der Timing-Chip ist an der Startnummer befestigt.
-            </span>
+            <span>Bestellte T-Shirts werden ebenfalls an diesen Terminen ausgegeben.</span>
           </p>
           <p className="mt-2 text-xs text-muted-foreground">{a.ort}</p>
         </div>

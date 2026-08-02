@@ -86,9 +86,6 @@ export default function AnmeldungPage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Der Timing-Chip ist an der Startnummer befestigt.
-            </p>
           </div>
 
           <div className="mt-4 rounded-2xl border border-koder-orange/40 bg-koder-orange/5 p-4">

@@ -96,7 +96,7 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
     startTime: "15:00",
     difficulty: "extrem",
     description:
-      "Die Spielerei wartet auf die, die es wirklich wissen wollen. Unsere längste und forderndste Strecke führt hoch zur Wachtlerspitze, weiter über den Spielberg zum Gelben Berg und zurück zum Ziel – mit ordentlich Höhenmetern und echten Trail-Passagen. Das ist keine harmlose Spielerei, sondern deine Chance, dich richtig zu fordern und neue Grenzen zu erleben. Wer es ernst meint, ist hier genau richtig. Wichtig: Die Straßenverkehrsordnung muss eingehalten werden! Wir stellen zwar Streckenposten, aber jeder Teilnehmer muss selbst auf den Verkehr achten – besonders an Straßenkreuzungen und der Bundesstraße. Das gilt für alle Läufe, bei der Spielerei aber noch einmal ausdrücklich, weil die Route öffentliche Straßen kreuzt. Teilnahme auf eigene Verantwortung.",
+      "Die Spielerei wartet auf die, die es wirklich wissen wollen. Unsere längste und forderndste Strecke führt hoch zur Wachtlerspitze, weiter über den Spielberg zum Gelben Berg und zurück zum Ziel – mit ordentlich Höhenmetern und echten Trail-Passagen. Das ist keine harmlose Spielerei, sondern deine Chance, dich richtig zu fordern und neue Grenzen zu erleben. Wer es ernst meint, ist hier genau richtig. Wichtig: Die Route kreuzt öffentliche Straßen – es gilt die StVO, Teilnehmende haben kein Vorrecht im Verkehr. Streckenposten sind vor Ort; besondere Vorsicht an Kreuzungen und der Bundesstraße.",
     icon: Route,
     color: "#7C3AED",
     gpxFile: "/2027-spielerei.gpx",
@@ -108,7 +108,7 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
     startTime: "15:10",
     difficulty: "leicht",
     description:
-      "Der Kinderlauf führt einmal um den unteren Fußballplatz und dann direkt zurück ins Ziel – perfekt für die Kleinsten und ein echtes Highlight für die ganze Familie!",
+      "Der Kinderlauf (800 m) ist für Kinder bis maximal 8 Jahre – ein echtes Highlight für die ganze Familie!",
     icon: Baby,
     color: "#FF6B00",
     gpxFile: "/2027-kinderlauf.gpx",
@@ -258,10 +258,11 @@ function StreckenContent() {
             <p>
               <strong className="font-semibold text-foreground">Wichtig für alle:</strong> Der Start-
               und Zielbereich wurde auf den oberen Fußballplatz verlegt. Außerdem haben wir manche
-              Strecken leicht angepasst. Auf allen Routen gilt die Straßenverkehrsordnung – jeder
-              ist für sich selbst verantwortlich. Wir stellen Streckenposten, aber besonders an
-              Straßenkreuzungen und der Bundesstraße müsst ihr selbst auf den Verkehr achten.
-              Die Koderrunde gibt es als Lauf und als Walking (gleicher Start, eigene Wertung).
+              Strecken leicht angepasst. Die Läufe verlaufen teilweise im öffentlichen Verkehr –
+              es gilt die StVO, Teilnehmende haben kein Vorrecht und starten auf eigene Gefahr.
+              Streckenposten unterstützen euch; besondere Vorsicht an Kreuzungen und der
+              Bundesstraße. Die Koderrunde gibt es als Lauf und als Walking (gleicher Start,
+              eigene Wertung).
             </p>
           </div>
         )}

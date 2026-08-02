@@ -85,12 +85,12 @@ export const EVENT = {
     ],
     eventtag: "Samstag, 29. Mai 2027 ab 13:00 Uhr",
     hinweis:
-      "Empfohlen für alle mit kurzer Anreise: Holt Startnummer (inkl. Timing-Chip) und bestellte T-Shirts schon Donnerstag oder Freitag ab – weniger Stress am Eventtag.",
+      "Empfohlen für alle mit kurzer Anreise: Holt Startnummer und bestellte T-Shirts schon Donnerstag oder Freitag ab – weniger Stress am Eventtag.",
   },
   /** Was in der Startgebühr enthalten ist */
   startgebuehrEnthaelt: [
     "Startnummer mit Timing-Chip",
-    "Medaille für jeden Finisher",
+    "Exklusive KoderMedaille für jeden Finisher",
     "Verpflegung während der Läufe",
     "Verpflegung im Ziel",
   ],

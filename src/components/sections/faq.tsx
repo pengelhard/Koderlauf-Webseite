@@ -20,7 +20,7 @@ const FAQS = [
   },
   {
     frage: "Was ist in der Startgebühr enthalten?",
-    antwort: `In der Startgebühr sind enthalten: ${EVENT.startgebuehrEnthaelt.join(", ")}. Der Timing-Chip ist an der Startnummer befestigt.`,
+    antwort: `In der Startgebühr sind enthalten: ${EVENT.startgebuehrEnthaelt.join(", ")}.`,
   },
   {
     frage: "Wann kann ich Startnummer und T-Shirt abholen?",
@@ -33,12 +33,11 @@ const FAQS = [
   },
   {
     frage: "Welche Altersklassen gibt es?",
-    antwort: `${formatAltersklassenKurz()} Die Zuordnung erfolgt über das Geburtsjahr bei der Anmeldung (für die Ergebnislisten). Bei der Siegerehrung 2027 werden nur die drei schnellsten Männer und die drei schnellsten Frauen je Strecke geehrt – keine separate Altersklassen-Ehrung.`,
+    antwort: `${formatAltersklassenKurz()} Die Zuordnung erfolgt über das Geburtsjahr bei der Anmeldung. Bei der Siegerehrung werden die drei schnellsten Männer und die drei schnellsten Frauen je Strecke geehrt. Eine separate Altersklassen-Ehrung gibt es nicht – die drei Schnellsten je Altersklasse bekommen aber eine Urkunde.`,
   },
   {
     frage: "Für wen ist der Kinderlauf?",
-    antwort:
-      "Der Kinderlauf (800 m) ist für Kinder gedacht – einmal um den unteren Fußballplatz und zurück. Die genaue Altersgrenze wird bei der Online-Anmeldung ausgewiesen.",
+    antwort: "Der Kinderlauf (800 m) ist für Kinder bis maximal 8 Jahre.",
   },
   {
     frage: "Können geistig oder körperlich beeinträchtigte Personen früher starten?",
@@ -55,7 +54,7 @@ const FAQS = [
   {
     frage: "Muss ich die Straßenverkehrsordnung beachten?",
     antwort:
-      "Ja. Auf allen Strecken gilt die StVO – jeder Teilnehmer ist selbst verantwortlich. Wir stellen Streckenposten, aber besonders an Straßenkreuzungen und der Bundesstraße müsst ihr selbst auf den Verkehr achten. Bei der Spielerei gilt das ausdrücklich, weil die Route öffentliche Straßen kreuzt.",
+      "Ja. Die Strecken verlaufen teilweise auf öffentlichen Straßen und Wegen – die Teilnahme erfolgt daher auf eigene Gefahr. Es gilt durchgehend die StVO; Läuferinnen und Läufer haben kein Vorrecht im Straßenverkehr und müssen bei fließendem Verkehr warten. Streckenposten unterstützen euch, ersetzen aber nicht die eigene Vorsicht – besonders an Kreuzungen und der Bundesstraße. Das gilt für alle Läufe, bei der Spielerei ausdrücklich, weil dort öffentliche Straßen gekreuzt werden.",
   },
   {
     frage: "Gibt es Parkplätze?",
@@ -75,7 +74,7 @@ const FAQS = [
   {
     frage: "Bekommt jeder eine Medaille?",
     antwort:
-      "Ja! Jeder Finisher erhält eine einzigartige Koderlauf-Medaille – egal auf welcher Strecke.",
+      "Ja! Jeder Finisher erhält eine exklusive KoderMedaille – egal auf welcher Strecke.",
   },
   {
     frage: "Kann ich ein T-Shirt oder eine Abendkarte mitbestellen?",
