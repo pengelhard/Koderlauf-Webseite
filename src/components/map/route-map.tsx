@@ -6,6 +6,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import type { GpxPoint } from "@/lib/gpx";
 import { toGeoJson } from "@/lib/gpx";
 import type { VerpflegungsStation } from "@/lib/verpflegung";
+import { getMapMarkersForStations } from "@/lib/verpflegung";
 
 interface RouteMapProps {
   points: GpxPoint[];
@@ -18,11 +19,12 @@ interface RouteMapProps {
 
 function createAidMarkerElement(label: string): HTMLDivElement {
   const el = document.createElement("div");
+  const wide = label.length > 1;
   el.style.cssText = [
     "display:flex",
     "align-items:center",
     "justify-content:center",
-    "width:28px",
+    wide ? "min-width:34px;padding:0 6px" : "width:28px",
     "height:28px",
     "border-radius:9999px",
     "background:#0D9488",
@@ -31,6 +33,7 @@ function createAidMarkerElement(label: string): HTMLDivElement {
     "border:2px solid #fff",
     "box-shadow:0 2px 8px rgba(0,0,0,0.35)",
     "cursor:pointer",
+    "white-space:nowrap",
   ].join(";");
   el.textContent = label;
   el.setAttribute("aria-label", `Verpflegung ${label}`);
@@ -160,10 +163,9 @@ export function RouteMap({
         .setPopup(new maplibregl.Popup({ offset: 25, className: "koder-popup" }).setHTML("<strong>Ziel</strong>"))
         .addTo(map);
 
-      stationMarkersRef.current = stations.map((station, index) => {
-        const label = String(index + 1);
+      stationMarkersRef.current = getMapMarkersForStations(stations).map((station) => {
         const html = `<strong>${station.name}</strong><br/><span style="opacity:.85">${station.hint}</span>`;
-        return new maplibregl.Marker({ element: createAidMarkerElement(label) })
+        return new maplibregl.Marker({ element: createAidMarkerElement(station.label) })
           .setLngLat([station.lon, station.lat])
           .setPopup(new maplibregl.Popup({ offset: 22, className: "koder-popup" }).setHTML(html))
           .addTo(map);

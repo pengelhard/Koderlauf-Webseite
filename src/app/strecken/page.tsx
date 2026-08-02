@@ -402,10 +402,10 @@ function StreckenContent() {
                     Verpflegung auf dieser Strecke
                   </div>
                   <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
-                    {verpflegung.map((s, i) => (
+                    {verpflegung.map((s) => (
                       <li key={s.id} className="flex items-baseline gap-2 text-sm text-muted-foreground">
                         <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white">
-                          {i + 1}
+                          {s.nr}
                         </span>
                         <span>
                           <span className="font-medium text-foreground">{s.name}</span>
