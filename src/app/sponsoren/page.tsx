@@ -152,8 +152,7 @@ export default function SponsorenPage() {
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">Koderlauf {yearTab}</p>
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Sponsoren</h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Ohne unsere Sponsoren und Unterstützer wäre der Koderlauf nicht möglich. Wählt das Jahr –
-            die Liste für 2027 wird ergänzt, sobald Partner feststehen.
+            Ohne unsere Sponsoren und Unterstützer wäre der Koderlauf nicht möglich.
           </p>
           <YearSwitcher value={yearTab} onChange={setYearTab} />
         </motion.div>

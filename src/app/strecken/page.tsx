@@ -96,7 +96,7 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
     startTime: "15:00",
     difficulty: "extrem",
     description:
-      "Die Spielerei wartet auf die, die es wirklich wissen wollen. Unsere längste und forderndste Strecke führt hoch zur Wachtelerspitze, weiter über den Spielberg zum Gelben Berg und zurück zum Ziel – mit ordentlich Höhenmetern und echten Trail-Passagen. Das ist keine harmlose Spielerei, sondern deine Chance, dich richtig zu fordern und neue Grenzen zu erleben. Wer es ernst meint, ist hier genau richtig. Wichtig: Die Straßenverkehrsordnung muss eingehalten werden! Wir stellen zwar Streckenposten, aber jeder Teilnehmer muss selbst auf den Verkehr achten – besonders an Straßenkreuzungen und der Bundesstraße. Das gilt für alle Läufe, bei der Spielerei aber noch einmal ausdrücklich, weil die Route öffentliche Straßen kreuzt. Teilnahme auf eigene Verantwortung.",
+      "Die Spielerei wartet auf die, die es wirklich wissen wollen. Unsere längste und forderndste Strecke führt hoch zur Wachtlerspitze, weiter über den Spielberg zum Gelben Berg und zurück zum Ziel – mit ordentlich Höhenmetern und echten Trail-Passagen. Das ist keine harmlose Spielerei, sondern deine Chance, dich richtig zu fordern und neue Grenzen zu erleben. Wer es ernst meint, ist hier genau richtig. Wichtig: Die Straßenverkehrsordnung muss eingehalten werden! Wir stellen zwar Streckenposten, aber jeder Teilnehmer muss selbst auf den Verkehr achten – besonders an Straßenkreuzungen und der Bundesstraße. Das gilt für alle Läufe, bei der Spielerei aber noch einmal ausdrücklich, weil die Route öffentliche Straßen kreuzt. Teilnahme auf eigene Verantwortung.",
     icon: Route,
     color: "#7C3AED",
     gpxFile: "/2027-spielerei.gpx",

@@ -10,7 +10,6 @@ import {
   Award,
   Medal,
   Gift,
-  Users,
   ChevronRight,
   Trophy,
 } from "lucide-react";
@@ -295,10 +294,10 @@ export default function ErgebnissePage() {
                       </div>
                       <div>
                         <CardTitle className="text-lg">
-                          Kurz und knackig, Koderrunde &amp; Trailrun
+                          Alle weiteren Strecken
                         </CardTitle>
                         <p className="text-sm text-muted-foreground">
-                          4&nbsp;km · 8,5&nbsp;km · 11,25&nbsp;km
+                          4&nbsp;km · 8,5&nbsp;km (Lauf &amp; Walking) · 10,5&nbsp;km · 24&nbsp;km
                         </p>
                       </div>
                     </div>
@@ -307,24 +306,15 @@ export default function ErgebnissePage() {
                     <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
                       <Trophy className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
                       <div>
-                        <p className="font-semibold">Gesamtwertung</p>
+                        <p className="font-semibold">Ehrung pro Strecke</p>
                         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                          Platzierungen <strong className="text-foreground">1. bis 3.</strong>{" "}
-                          für <strong className="text-foreground">männlich</strong> und{" "}
-                          <strong className="text-foreground">weiblich</strong> – jeweils
-                          getrennt ausgewiesen.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
-                      <Users className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                      <div>
-                        <p className="font-semibold">Altersklassenwertung</p>
-                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                          In jeder Altersklasse wird der{" "}
-                          <strong className="text-foreground">1. Platz männlich</strong> und
-                          der <strong className="text-foreground">1. Platz weiblich</strong>{" "}
-                          gewertet und geehrt.
+                          Geehrt werden nur die{" "}
+                          <strong className="text-foreground">drei schnellsten Männer</strong> und
+                          die{" "}
+                          <strong className="text-foreground">drei schnellsten Frauen</strong>{" "}
+                          je Lauf (Platz&nbsp;1–3, getrennt). Koderrunde Lauf und Walking zählen
+                          als eigene Wertungen. Es gibt{" "}
+                          <strong className="text-foreground">keine separate Altersklassen-Ehrung</strong>.
                         </p>
                       </div>
                     </div>

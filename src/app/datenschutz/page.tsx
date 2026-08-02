@@ -42,9 +42,14 @@ export default function DatenschutzPage() {
           </section>
 
           <section>
-            <h2>4. Anmeldung (Google Forms)</h2>
-            <p>Die Anmeldung zum Koderlauf 2026 erfolgt über Google Forms (Google Ireland Limited). Dabei werden die eingegebenen Daten an Google übermittelt und dort gespeichert. Es gelten die{" "}
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-koder-orange hover:underline">Datenschutzbestimmungen von Google</a>.
+            <h2>4. Anmeldung (RaceSolution)</h2>
+            <p>
+              Die Online-Anmeldung zum Koderlauf erfolgt über unseren Partner RaceSolution
+              (racesolution.de). Dabei werden die für die Anmeldung und Zeitmessung erforderlichen
+              Daten an RaceSolution übermittelt und dort verarbeitet. Es gelten zusätzlich die
+              Datenschutz- und Teilnahmebedingungen von RaceSolution, die im Anmeldeportal
+              einsehbar sind. Die Anmeldung 2026 erfolgte noch über Google Forms; für Archivzwecke
+              können entsprechende Daten weiterhin bei Google gespeichert sein.
             </p>
           </section>
 

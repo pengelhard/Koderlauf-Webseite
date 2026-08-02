@@ -2,9 +2,20 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CalendarDays, MapPin, Navigation, Award, Megaphone, Accessibility, Shirt, Ticket } from "lucide-react";
+import {
+  CalendarDays,
+  MapPin,
+  Navigation,
+  Award,
+  Megaphone,
+  Accessibility,
+  Shirt,
+  Ticket,
+  CheckCircle2,
+} from "lucide-react";
 import { EVENT } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
+import { StartnummernAusgabe } from "@/components/sections/startnummern-ausgabe";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
 export default function AnmeldungPage() {
@@ -41,7 +52,8 @@ export default function AnmeldungPage() {
               Vorverkauf startet in Kürze
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Der Vorverkauf ist noch nicht gestartet. Sobald es Startplätze gibt, geben wir das{" "}
+              Die Online-Anmeldung läuft über {EVENT.anmeldePartner.name}. Sobald der
+              Vorverkauf startet, geben wir das{" "}
               <strong className="font-semibold text-foreground">hier auf dieser Seite</strong>{" "}
               bekannt – inklusive optionalem T-Shirt und günstigerer Abendkarte für Tape Jam.
             </p>
@@ -51,20 +63,46 @@ export default function AnmeldungPage() {
           </motion.div>
         )}
 
-        {/* Pricing overview */}
+        <motion.div
+          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.2 })}
+          className="mt-8"
+        >
+          <StartnummernAusgabe />
+        </motion.div>
+
         <motion.div
           {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.25 })}
           className="mt-8"
         >
           <h2 className="text-2xl font-extrabold tracking-tight">Startgebühren {EVENT.jahr}</h2>
+
+          <div className="mt-4 rounded-2xl border border-border bg-card p-4">
+            <p className="text-sm font-semibold">In der Startgebühr enthalten</p>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {EVENT.startgebuehrEnthaelt.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-koder-orange" aria-hidden />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Der Timing-Chip ist an der Startnummer befestigt.
+            </p>
+          </div>
+
           <div className="mt-4 rounded-2xl border border-koder-orange/40 bg-koder-orange/5 p-4">
             <div className="flex items-start gap-3">
               <Award className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
               <div>
                 <p className="font-semibold text-foreground">Senioren ab 70 Jahren</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Zahlen auf <strong className="text-foreground">allen Strecken</strong> und in <strong className="text-foreground">allen Phasen</strong> nur
-                  <span className="ml-1 text-xl font-extrabold text-koder-orange">{EVENT.preise.seniorenAb70} €</span>.
+                  Zahlen auf <strong className="text-foreground">allen Strecken</strong> und in{" "}
+                  <strong className="text-foreground">allen Phasen</strong> nur
+                  <span className="ml-1 text-xl font-extrabold text-koder-orange">
+                    {EVENT.preise.seniorenAb70} €
+                  </span>
+                  – ohne Preiserhöhung.
                 </p>
               </div>
             </div>
@@ -86,8 +124,8 @@ export default function AnmeldungPage() {
                       <div className="font-semibold">{phase.name}</div>
                       <div className="text-xs text-muted-foreground">{phase.hinweis}</div>
                     </td>
-                    <td className="px-4 py-3 font-extrabold text-lg">{phase.kinderlauf} €</td>
-                    <td className="px-4 py-3 font-extrabold text-lg">{phase.andere} €</td>
+                    <td className="px-4 py-3 text-lg font-extrabold">{phase.kinderlauf} €</td>
+                    <td className="px-4 py-3 text-lg font-extrabold">{phase.andere} €</td>
                   </tr>
                 ))}
               </tbody>
@@ -95,19 +133,25 @@ export default function AnmeldungPage() {
           </div>
 
           <p className="mt-3 text-xs text-muted-foreground">
-            Die genauen Strecken und weitere Details findest du auf der{" "}
-            <a href="/strecken" className="underline hover:text-foreground">Strecken-Seite</a>.
+            Strecken und Details:{" "}
+            <a href="/strecken" className="underline hover:text-foreground">
+              Strecken-Seite
+            </a>
+            . Weitere Fragen:{" "}
+            <a href="/#faq" className="underline hover:text-foreground">
+              FAQ
+            </a>
+            .
           </p>
         </motion.div>
 
-        {/* Zusatzoptionen: T-Shirt + Abendkarte */}
         <motion.div
           {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.28 })}
           className="mt-10"
         >
           <h2 className="text-2xl font-extrabold tracking-tight">Gleich mitbestellen</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Bei der Online-Anmeldung könnt ihr optional T-Shirt und günstigere Abendkarte dazu buchen.
+            Bei der Online-Anmeldung optional dazu buchen.
           </p>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -167,13 +211,14 @@ export default function AnmeldungPage() {
           </div>
         </motion.div>
 
-        {/* Startzeiten 2027 – nur Startzeiten inkl. Siegerehrung */}
         <motion.div
           {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.3 })}
           className="mt-10"
         >
           <h2 className="text-2xl font-extrabold tracking-tight">Startzeiten {EVENT.jahr}</h2>
-          <StartzeitenTimeline />
+          <div className="mt-4">
+            <StartzeitenTimeline />
+          </div>
         </motion.div>
 
         <motion.div
@@ -188,19 +233,20 @@ export default function AnmeldungPage() {
               <h3 className="text-base font-extrabold">Früher Start bei Beeinträchtigung</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Geistig oder körperlich beeinträchtigte Personen dürfen auf Wunsch ca.{" "}
-                <strong className="font-semibold text-foreground">2–5 Minuten vor dem regulären Startschuss</strong>{" "}
-                der jeweiligen Strecke loslaufen. Bitte meldet euch dafür möglichst frühzeitig per E-Mail an{" "}
-                <a href="mailto:info@koderlauf.de?subject=Fr%C3%BCher%20Start%20Koderlauf" className="font-semibold text-koder-orange hover:underline">
-                  info@koderlauf.de
+                <strong className="font-semibold text-foreground">2–5 Minuten vor dem Startschuss</strong>{" "}
+                loslaufen. Bitte möglichst frühzeitig per Mail an{" "}
+                <a
+                  href={`mailto:${EVENT.kontaktEmail}?subject=Fr%C3%BCher%20Start%20Koderlauf`}
+                  className="font-semibold text-koder-orange hover:underline"
+                >
+                  {EVENT.kontaktEmail}
                 </a>
-                . Eine kurze Meldung vor dem Lauf am Sportheim geht auch – die Vorab-Mail hilft uns aber,
-                alles ruhig vorzubereiten.
+                .
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Info cards: Date + Location */}
         <motion.div
           {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.35 })}
           className="mobile-gpu-layer mt-8 grid gap-3 sm:grid-cols-2"

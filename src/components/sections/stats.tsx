@@ -67,7 +67,7 @@ export function Stats() {
   }, []);
 
   const stats = [
-    { value: EVENT.vorjahr.anmeldungen, label: `Starter ${EVENT.vorjahr.jahr}` },
+    { value: EVENT.vorjahr.anmeldungen, label: `Anmeldungen ${EVENT.vorjahr.jahr}` },
     { value: EVENT.strecken.length, label: `Strecken ${EVENT.jahr}` },
     { value: daysLeft, label: "Tage bis zum Start" },
     { value: 50, label: "Jahre SV Obermögersheim" },

@@ -37,9 +37,6 @@ export function Features() {
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
             Für jeden das Richtige
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-            Die Koderrunde gibt es als Lauf und als Walking – gleicher Start, eigene Wertung.
-          </p>
         </motion.div>
 
         <motion.div

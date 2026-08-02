@@ -49,6 +49,12 @@ export const EVENT = {
   /** Steuert Vorverkaufs-Banner und Sticky-CTA */
   anmeldungOffen: false,
   jubilaeum: "50 Jahre SV Obermögersheim",
+  kontaktEmail: "info@koderlauf.de",
+  /** Online-Anmeldung & Zeitmessung */
+  anmeldePartner: {
+    name: "RaceSolution",
+    url: "https://www.racesolution.de/",
+  },
   vorjahr: {
     jahr: 2026,
     anmeldungen: 399,
@@ -62,7 +68,7 @@ export const EVENT = {
     { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "16:40", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx" },
   ] satisfies EventStrecke[],
   zeitplan: [
-    { zeit: "13:00", titel: "Startnummern- & Chipausgabe" },
+    { zeit: "13:00", titel: "Startnummernausgabe am Eventtag" },
     { zeit: "15:00", titel: "Start Spielerei", streckeId: "spielerei" },
     { zeit: "15:10", titel: "Start Kinderlauf", streckeId: "kinderlauf" },
     { zeit: "16:20", titel: "Start Trailrun", streckeId: "trailrun" },
@@ -70,6 +76,24 @@ export const EVENT = {
     { zeit: "16:40", titel: "Start Kurz und knackig", streckeId: "kurz-knackig" },
     { zeit: "18:30", titel: "Siegerehrung" },
   ] satisfies ZeitplanEintrag[],
+  /** Vorab-Ausgabe Startnummern & T-Shirts (empfohlen) */
+  startnummernAusgabe: {
+    ort: "Sportplatz / Sportheim Obermögersheim",
+    termine: [
+      { tag: "Donnerstag", datum: "27. Mai 2027", zeit: "17:00–20:00 Uhr" },
+      { tag: "Freitag", datum: "28. Mai 2027", zeit: "17:00–20:00 Uhr" },
+    ],
+    eventtag: "Samstag, 29. Mai 2027 ab 13:00 Uhr",
+    hinweis:
+      "Empfohlen für alle mit kurzer Anreise: Holt Startnummer (inkl. Timing-Chip) und bestellte T-Shirts schon Donnerstag oder Freitag ab – weniger Stress am Eventtag.",
+  },
+  /** Was in der Startgebühr enthalten ist */
+  startgebuehrEnthaelt: [
+    "Startnummer mit Timing-Chip",
+    "Medaille für jeden Finisher",
+    "Verpflegung während der Läufe",
+    "Verpflegung im Ziel",
+  ],
   preise: {
     phasen: [
       { id: "fruehbucher", name: "Frühbucher", bis: "2026-11-30T23:59:59", hinweis: "online bis 30.11.2026", kinderlauf: 5, andere: 8 },

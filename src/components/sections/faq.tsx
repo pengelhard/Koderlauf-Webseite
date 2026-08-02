@@ -5,30 +5,57 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { EVENT, getErsterStart } from "@/lib/event-config";
+import { formatAltersklassenKurz } from "@/lib/data/altersklassen";
 import { cn } from "@/lib/utils";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
 const ersterStart = getErsterStart();
+const spaet = EVENT.preise.phasen.find((p) => p.id === "spaet");
+const vorOrt = EVENT.preise.phasen.find((p) => p.id === "vor_ort");
 
 const FAQS = [
   {
     frage: "Wann und wo findet der Koderlauf statt?",
-    antwort: `Am ${EVENT.datumKurz} rund um das Sportheim Obermögersheim. Der erste Start (${ersterStart.name}) ist um ${ersterStart.startzeit} Uhr, die Startnummern- und Chipausgabe beginnt bereits um 13:00 Uhr.`,
+    antwort: `Am ${EVENT.datumKurz} rund um das ${EVENT.ortDetail}. Der erste Start (${ersterStart.name}) ist um ${ersterStart.startzeit} Uhr. Startnummern gibt es am Eventtag ab 13:00 Uhr – und schon Do/Fr von 17–20 Uhr (empfohlen).`,
+  },
+  {
+    frage: "Was ist in der Startgebühr enthalten?",
+    antwort: `In der Startgebühr sind enthalten: ${EVENT.startgebuehrEnthaelt.join(", ")}. Der Timing-Chip ist an der Startnummer befestigt.`,
+  },
+  {
+    frage: "Wann kann ich Startnummer und T-Shirt abholen?",
+    antwort: `Am besten schon am ${EVENT.startnummernAusgabe.termine.map((t) => `${t.tag} (${t.datum}, ${t.zeit})`).join(" oder ")} am Sportplatz. Weniger Stress am Eventtag – besonders, wenn ihr keine weite Anreise habt. Am Samstag zusätzlich ${EVENT.startnummernAusgabe.eventtag}. Bestellte T-Shirts werden dort mit ausgegeben.`,
   },
   {
     frage: "Was ist der Unterschied zwischen Koderrunde Lauf und Walking?",
     antwort:
-      "Gleiche Strecke (8,5 km) und gleicher Start um 16:30 Uhr – aber getrennte Wertung. Meldet euch entweder als Lauf oder als Walking an, je nachdem, wie ihr die Runde bestreiten wollt.",
+      "Gleiche Strecke (8,5 km) und gleicher Start um 16:30 Uhr – aber getrennte Wertung. Meldet euch entweder als Lauf oder als Walking an.",
+  },
+  {
+    frage: "Welche Altersklassen gibt es?",
+    antwort: `${formatAltersklassenKurz()} Die Zuordnung erfolgt über das Geburtsjahr bei der Anmeldung (für die Ergebnislisten). Bei der Siegerehrung 2027 werden nur die drei schnellsten Männer und die drei schnellsten Frauen je Strecke geehrt – keine separate Altersklassen-Ehrung.`,
+  },
+  {
+    frage: "Für wen ist der Kinderlauf?",
+    antwort:
+      "Der Kinderlauf (800 m) ist für Kinder gedacht – einmal um den unteren Fußballplatz und zurück. Die genaue Altersgrenze wird bei der Online-Anmeldung ausgewiesen.",
   },
   {
     frage: "Können geistig oder körperlich beeinträchtigte Personen früher starten?",
-    antwort:
-      "Ja. Wer geistig oder körperlich beeinträchtigt ist, darf auf Wunsch ca. 2–5 Minuten vor dem regulären Startschuss der jeweiligen Strecke loslaufen. Bitte meldet euch dafür möglichst frühzeitig per E-Mail an info@koderlauf.de – so können wir alles ruhig vorbereiten. Eine kurze Meldung vor dem Lauf am Sportheim ist auch möglich, die Vorab-Mail ist aber klar besser.",
+    antwort: `Ja. Auf Wunsch ca. 2–5 Minuten vor dem regulären Startschuss der jeweiligen Strecke. Bitte möglichst frühzeitig per E-Mail an ${EVENT.kontaktEmail} melden – so können wir alles ruhig vorbereiten. Eine kurze Meldung vor dem Lauf am Sportheim ist auch möglich.`,
   },
   {
     frage: "Kann ich mich vor Ort nachmelden?",
+    antwort: `Ja. Online ist die Spätmeldung ${spaet?.hinweis ?? "bis kurz vor dem Event"} möglich. Am Eventtag sind Nachmeldungen vor Ort ${vorOrt?.hinweis ?? "möglich"} – dann gilt der Nachmeldepreis.`,
+  },
+  {
+    frage: "Wie funktioniert Storno oder Startplatz-Übertrag?",
+    antwort: `Online-Anmeldung und Zeitmessung laufen über ${EVENT.anmeldePartner.name}. Stornierungen, Umbuchungen und Startplatz-Überträge werden über deren Meldeportal bzw. Reklamationsformular abgewickelt – bitte die Teilnahmebedingungen bei der Anmeldung beachten. Link: ${EVENT.anmeldePartner.url}`,
+  },
+  {
+    frage: "Muss ich die Straßenverkehrsordnung beachten?",
     antwort:
-      "Ja! Online ist die Spätmeldung bis zum 28.05.2027 möglich. Am Eventtag sind Nachmeldungen vor Ort bis 14:30 Uhr möglich – dann gilt der Nachmeldepreis. Wer sicher einen Startplatz und den günstigeren Preis möchte, meldet sich am besten vorab an.",
+      "Ja. Auf allen Strecken gilt die StVO – jeder Teilnehmer ist selbst verantwortlich. Wir stellen Streckenposten, aber besonders an Straßenkreuzungen und der Bundesstraße müsst ihr selbst auf den Verkehr achten. Bei der Spielerei gilt das ausdrücklich, weil die Route öffentliche Straßen kreuzt.",
   },
   {
     frage: "Gibt es Parkplätze?",
@@ -43,12 +70,16 @@ const FAQS = [
   {
     frage: "Gibt es Verpflegung?",
     antwort:
-      "Essen und Trinken gibt es den ganzen Tag vor Ort am Sportheim. Direkt nach dem Zieleinlauf wartet zudem eine Zielverpflegung auf alle Läuferinnen und Läufer.",
+      "Ja: Verpflegung während der Läufe und Verpflegung im Ziel. Essen und Trinken gibt es außerdem den ganzen Tag vor Ort am Sportheim.",
   },
   {
     frage: "Bekommt jeder eine Medaille?",
     antwort:
-      "Ja! Jeder Finisher erhält eine einzigartige Koderlauf-Medaille – egal auf welcher Strecke. 🏅",
+      "Ja! Jeder Finisher erhält eine einzigartige Koderlauf-Medaille – egal auf welcher Strecke.",
+  },
+  {
+    frage: "Kann ich ein T-Shirt oder eine Abendkarte mitbestellen?",
+    antwort: `Ja, bei der Online-Anmeldung optional: ${EVENT.extras.tshirt.name} für ${EVENT.extras.tshirt.preis} € (Größen Kinder 104–164 und Erwachsene XS–XXL) sowie eine ${EVENT.extras.abendkarte.name} zum ${EVENT.extras.abendkarte.preisHinweis} für Tape Jam ab 21:30 Uhr.`,
   },
 ];
 
@@ -77,7 +108,7 @@ export function Faq() {
             return (
               <motion.div
                 key={faq.frage}
-                {...fadeReveal(staticReveal, { duration: 0.3, delay: i * 0.05 })}
+                {...fadeReveal(staticReveal, { duration: 0.3, delay: i * 0.03 })}
                 className="overflow-hidden rounded-2xl border border-border bg-card"
               >
                 <button

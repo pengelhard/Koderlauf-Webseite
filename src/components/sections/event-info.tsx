@@ -8,29 +8,22 @@ import {
   ShowerHead,
   Utensils,
   Ticket,
-  Backpack,
   Flag,
   Trophy,
   Sparkles,
   ArrowRight,
   CalendarDays,
-  Accessibility,
 } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const INFOS = [
   { icon: MapPin, text: "Start/Ziel & Orga: Sportheim Obermögersheim" },
-  { icon: Utensils, text: "Essen & Trinken vor Ort; Zielverpflegung direkt nach Zieleinlauf" },
+  { icon: Ticket, text: "Startnummern (Chip an der Nummer) Do/Fr 17–20 Uhr empfohlen, am Eventtag ab 13:00 Uhr" },
+  { icon: Utensils, text: "Verpflegung während der Läufe und im Ziel; Essen & Trinken am Sportheim" },
   { icon: Car, text: "Parkmöglichkeiten vor Ort vorhanden" },
   { icon: ShowerHead, text: "Duschen im Sportheim möglich" },
-  { icon: Flag, text: "Laufstrecke teilweise offroad (siehe Streckenbeschreibung)" },
-  { icon: Ticket, text: "Startnummern- und Chipübergabe ab 13:00 Uhr" },
-  { icon: Backpack, text: "Persönliche Gegenstände können in begrenzter Anzahl abgegeben werden" },
-  {
-    icon: Accessibility,
-    text: "Geistig oder körperlich beeinträchtigte Personen dürfen auf Wunsch 2–5 Min. vor dem Startschuss loslaufen – bitte möglichst per Mail an info@koderlauf.de melden",
-  },
+  { icon: Flag, text: "StVO beachten – besonders an Kreuzungen (Details auf der Strecken-Seite)" },
 ];
 
 // Nur Opacity animieren: Scroll-Transforms verursachen auf Mobile Ghosting.
@@ -155,6 +148,13 @@ export function EventInfo() {
               <span className="text-sm">{info.text}</span>
             </motion.div>
           ))}
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            Mehr Infos zu Startgebühr, Altersklassen, Storno und frühem Start in den{" "}
+            <Link href="/#faq" className="text-koder-orange hover:underline">
+              FAQ
+            </Link>
+            .
+          </p>
         </motion.div>
 
         <motion.div

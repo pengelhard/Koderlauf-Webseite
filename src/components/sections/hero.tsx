@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CountdownTimer } from "@/components/sections/countdown";
+import { EVENT } from "@/lib/event-config";
 
 const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/2711092/2711092-hd_1920_1080_24fps.mp4";
 const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80";
@@ -120,7 +121,7 @@ export function Hero() {
           transition={{ duration: 0.6 }}
           className="mb-4 rounded-lg bg-black/50 px-5 py-2.5 text-base font-extrabold uppercase tracking-[0.18em] text-koder-orange-bright shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/10 lg:backdrop-blur-sm sm:text-lg sm:tracking-[0.22em] md:text-xl md:tracking-[0.25em] [text-shadow:0_1px_2px_rgba(0,0,0,0.9)]"
         >
-          29. Mai 2027 &middot; Obermögersheim
+          {EVENT.datumFormatiert} &middot; {EVENT.ort}
         </motion.p>
 
         <motion.h1
@@ -131,7 +132,7 @@ export function Hero() {
         >
           KODERLAUF
           <br />
-          <span className="text-gradient-orange">2027</span>
+          <span className="text-gradient-orange">{EVENT.jahr}</span>
         </motion.h1>
 
         <motion.p
@@ -140,7 +141,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-6 max-w-lg text-lg font-medium text-white/80 md:text-xl"
         >
-          Lauf mit Herz durch den Wald
+          {EVENT.claim}
         </motion.p>
 
         <motion.div
@@ -149,7 +150,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-8"
         >
-          <CountdownTimer targetDate="2027-05-29T15:00:00" />
+          <CountdownTimer targetDate={EVENT.datum} />
         </motion.div>
 
         <motion.div

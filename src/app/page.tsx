@@ -15,7 +15,9 @@ export default function Home() {
       <Zeitplan />
       <JubilaeumsProgramm />
       <Stats />
-      <Faq />
+      <div id="faq">
+        <Faq />
+      </div>
     </>
   );
 }
