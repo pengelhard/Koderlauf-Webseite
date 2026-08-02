@@ -46,13 +46,6 @@ export const VERPFLEGUNG_SPIELEREI: readonly VerpflegungsStation[] = [
     id: "v4",
     nr: 4,
     name: "Verpflegung 4",
-    hint: "Nach dem Wachtler",
-    ...WACHTLER,
-  },
-  {
-    id: "v5",
-    nr: 5,
-    name: "Verpflegung 5",
     hint: "Jägerstand",
     ...JAEGERSTAND,
   },
