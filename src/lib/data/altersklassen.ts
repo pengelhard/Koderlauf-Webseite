@@ -31,7 +31,7 @@ export function getAltersklassenDlv(wettkampfJahr: number = EVENT.jahr): Altersk
     { name: "U18", alterSpan: "16–17", jahrgang: jg(16, 17), gruppe: "jugend" },
     { name: "U20", alterSpan: "18–19", jahrgang: jg(18, 19), gruppe: "jugend" },
     { name: "U23", alterSpan: "20–22", jahrgang: jg(20, 22), gruppe: "junioren" },
-    { name: "Männer / Frauen", alterSpan: "20–29", jahrgang: jg(20, 29), gruppe: "erwachsene" },
+    { name: "Männer / Frauen", alterSpan: "23–29", jahrgang: jg(23, 29), gruppe: "erwachsene" },
     ...([30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95] as const).map((age) => ({
       name: `M/W ${age}`,
       alterSpan: age === 95 ? "ab 95" : `${age}–${age + 4}`,
