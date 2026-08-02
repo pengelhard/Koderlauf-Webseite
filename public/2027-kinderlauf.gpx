@@ -1,28 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx creator="https://gpx.studio" version="1.1" schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1" xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2">
   <metadata>
-    <name>Lauf 800 km</name>
+    <name>Kinderlauf 800 km</name>
     <author>
       <name>gpx.studio</name>
       <link href="https://gpx.studio"/>
     </author>
   </metadata>
-  <wpt lat="49.052419" lon="10.661978">
-    <ele>473.9989574041816</ele>
-    <name>Position 1 (Peter Engelhard</name>
-    <cmt>Am Wendepunkt 800m Strecke</cmt>
-    <desc>Am Wendepunkt 800m Strecke</desc>
-    <sym>Alert</sym>
-  </wpt>
-  <wpt lat="49.051296" lon="10.662291">
-    <ele>476.6557745863687</ele>
-    <name>Position 2</name>
-    <cmt>Am Siegelweiher </cmt>
-    <desc>Am Siegelweiher </desc>
-    <sym>Crossing</sym>
-  </wpt>
   <trk>
-    <name>Lauf 800 km</name>
+    <name>Kinderlauf 800 km</name>
     <trkseg>
       <trkpt lat="49.0548733503899" lon="10.66378951866659">
         <ele>466.81953256583023</ele>
@@ -115,31 +101,52 @@
         <ele>466.8632788504716</ele>
       </trkpt>
       <trkpt lat="49.054112719852895" lon="10.663621378734092">
-        <ele>466.8632788504716</ele>
+        <ele>467.29359451784563</ele>
       </trkpt>
-      <trkpt lat="49.05412770020551" lon="10.664307139707567">
-        <ele>468.0508115955165</ele>
+      <trkpt lat="49.05412607916492" lon="10.664307217752535">
+        <ele>468.7026698704045</ele>
       </trkpt>
-      <trkpt lat="49.054130661598975" lon="10.664442704478269">
-        <ele>468.47417728956805</ele>
+      <trkpt lat="49.05413943847693" lon="10.66499305677098">
+        <ele>470.4526422371359</ele>
       </trkpt>
-      <trkpt lat="49.054130661598975" lon="10.664442704478269">
-        <ele>468.43781152735494</ele>
+      <trkpt lat="49.054143572907776" lon="10.66520530976635">
+        <ele>470.8179808280061</ele>
       </trkpt>
-      <trkpt lat="49.05417818074275" lon="10.6644957771598">
-        <ele>468.4306569325745</ele>
+      <trkpt lat="49.054143572907776" lon="10.66520530976635">
+        <ele>470.8179808280061</ele>
       </trkpt>
-      <trkpt lat="49.05417818074275" lon="10.6644957771598">
-        <ele>468.4306569325745</ele>
+      <trkpt lat="49.05414508466123" lon="10.665347896330815">
+        <ele>471.0735923472638</ele>
       </trkpt>
-      <trkpt lat="49.054253608708706" lon="10.66453788568947">
-        <ele>468.4356178496037</ele>
+      <trkpt lat="49.05422232572528" lon="10.665387790148316">
+        <ele>470.72029494160256</ele>
       </trkpt>
-      <trkpt lat="49.05468790487142" lon="10.66436005717023">
-        <ele>467.6400376911284</ele>
+      <trkpt lat="49.05422232572528" lon="10.665387790148316">
+        <ele>470.72029494160256</ele>
+      </trkpt>
+      <trkpt lat="49.05422232572528" lon="10.665387790148316">
+        <ele>470.72029494160256</ele>
+      </trkpt>
+      <trkpt lat="49.054258838686735" lon="10.665383502258805">
+        <ele>470.57184008379613</ele>
+      </trkpt>
+      <trkpt lat="49.054258838686735" lon="10.665383502258805">
+        <ele>470.57184008379613</ele>
+      </trkpt>
+      <trkpt lat="49.05469569097849" lon="10.665299349971207">
+        <ele>469.4403353708342</ele>
+      </trkpt>
+      <trkpt lat="49.05469569097849" lon="10.665299349971207">
+        <ele>469.4403353708342</ele>
+      </trkpt>
+      <trkpt lat="49.05471168816568" lon="10.664613634447576">
+        <ele>468.9254223235773</ele>
+      </trkpt>
+      <trkpt lat="49.05471606897149" lon="10.664425852276054">
+        <ele>468.35920800121534</ele>
       </trkpt>
       <trkpt lat="49.05493485093285" lon="10.664258941719055">
-        <ele>467.5852889598874</ele>
+        <ele>467.9898862234367</ele>
       </trkpt>
       <trkpt lat="49.05493485093285" lon="10.664258941719055">
         <ele>467.5852889598874</ele>
