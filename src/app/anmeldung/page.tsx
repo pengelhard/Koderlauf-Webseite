@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { CalendarDays, MapPin, Navigation, Award, Megaphone, Accessibility } from "lucide-react";
+import { CalendarDays, MapPin, Navigation, Award, Megaphone, Accessibility, Shirt, Ticket } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
@@ -42,7 +43,7 @@ export default function AnmeldungPage() {
             <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
               Der Vorverkauf ist noch nicht gestartet. Sobald es Startplätze gibt, geben wir das{" "}
               <strong className="font-semibold text-foreground">hier auf dieser Seite</strong>{" "}
-              bekannt – schaut also gern wieder vorbei.
+              bekannt – inklusive optionalem T-Shirt und günstigerer Abendkarte für Tape Jam.
             </p>
             <p className="mx-auto mt-4 inline-flex rounded-full border border-koder-orange/30 bg-background/60 px-4 py-1.5 text-xs font-semibold text-koder-orange sm:text-sm">
               Tipp: Frühbucherpreise gelten {fruehbucher.hinweis}
@@ -97,6 +98,73 @@ export default function AnmeldungPage() {
             Die genauen Strecken und weitere Details findest du auf der{" "}
             <a href="/strecken" className="underline hover:text-foreground">Strecken-Seite</a>.
           </p>
+        </motion.div>
+
+        {/* Zusatzoptionen: T-Shirt + Abendkarte */}
+        <motion.div
+          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.28 })}
+          className="mt-10"
+        >
+          <h2 className="text-2xl font-extrabold tracking-tight">Gleich mitbestellen</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Bei der Online-Anmeldung könnt ihr optional T-Shirt und günstigere Abendkarte dazu buchen.
+          </p>
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <div className="overflow-hidden rounded-3xl border border-border bg-card">
+              <div className="relative aspect-[4/3] bg-muted">
+                <Image
+                  src={EVENT.extras.tshirt.bild}
+                  alt="Koderlauf-T-Shirt – Motiv 2026"
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 640px) 50vw, 100vw"
+                />
+              </div>
+              <div className="p-5">
+                <div className="flex items-center gap-2 text-koder-orange">
+                  <Shirt size={18} aria-hidden />
+                  <p className="text-xs font-semibold uppercase tracking-widest">Merchandise</p>
+                </div>
+                <h3 className="mt-2 text-xl font-extrabold">{EVENT.extras.tshirt.name}</h3>
+                <p className="mt-1 text-2xl font-extrabold text-koder-orange">
+                  {EVENT.extras.tshirt.preis} €
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {EVENT.extras.tshirt.hinweis}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col overflow-hidden rounded-3xl border border-koder-orange/35 bg-koder-orange/5">
+              <div className="relative aspect-[4/3]">
+                <Image
+                  src="/tape-jam.webp"
+                  alt="Tape Jam – Tribute to 80's Rock"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(min-width: 640px) 50vw, 100vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                <p className="absolute bottom-3 left-4 right-4 text-sm font-bold text-white">
+                  Abendprogramm · ab 21:30 Uhr
+                </p>
+              </div>
+              <div className="flex flex-1 flex-col p-5">
+                <div className="flex items-center gap-2 text-koder-orange">
+                  <Ticket size={18} aria-hidden />
+                  <p className="text-xs font-semibold uppercase tracking-widest">Teilnehmer-Vorteil</p>
+                </div>
+                <h3 className="mt-2 text-xl font-extrabold">{EVENT.extras.abendkarte.name}</h3>
+                <p className="mt-1 text-lg font-extrabold text-koder-orange">
+                  {EVENT.extras.abendkarte.preisHinweis}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {EVENT.extras.abendkarte.beschreibung}
+                </p>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Startzeiten 2027 – nur Startzeiten inkl. Siegerehrung */}

@@ -80,6 +80,21 @@ export const EVENT = {
     /** Senioren ab 70 zahlen auf allen Strecken und in allen Phasen diesen Preis */
     seniorenAb70: 5,
   },
+  extras: {
+    tshirt: {
+      name: "Koderlauf-T-Shirt",
+      preis: 25,
+      bild: "/tshirt-koderlauf.png",
+      hinweis: "Motiv vom letzten Jahr – neues Motiv folgt. Größen Kinder 104–164 und Erwachsene XS–XXL.",
+    },
+    abendkarte: {
+      name: "Abendkarte Tape Jam",
+      /** Reduzierter Teilnehmerpreis – genauer Betrag folgt nach Abstimmung */
+      preisHinweis: "günstiger Teilnehmerpreis",
+      beschreibung:
+        "Als Läuferin oder Läufer könnt ihr bei der Anmeldung eine günstigere Abendkarte für Tape Jam (Tribute to 80's Rock) mitbestellen – ab 21:30 Uhr am Sportheim.",
+    },
+  },
 };
 
 export function getStrecke(id: string): EventStrecke | undefined {

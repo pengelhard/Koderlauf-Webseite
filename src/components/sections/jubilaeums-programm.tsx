@@ -150,6 +150,9 @@ export function JubilaeumsProgramm() {
                 <p className="mt-1 text-lg font-extrabold sm:text-xl">
                   Tape Jam – Tribute to 80&apos;s Rock
                 </p>
+                <p className="mt-2 text-xs leading-relaxed text-white/80 sm:text-sm">
+                  Als Teilnehmer: günstigere Abendkarte bei der Anmeldung mitbestellen.
+                </p>
               </div>
             </div>
           </div>
