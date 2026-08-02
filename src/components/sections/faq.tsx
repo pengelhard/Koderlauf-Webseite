@@ -28,7 +28,7 @@ const FAQS = [
   {
     frage: "Kann ich mich vor Ort nachmelden?",
     antwort:
-      "Ja! Nachmeldungen sind am Eventtag direkt vor Ort möglich – es gilt dann der Nachmeldepreis. Wer sicher einen Startplatz und den günstigeren Preis möchte, meldet sich am besten vorab an.",
+      "Ja! Online ist die Spätmeldung bis zum 28.05.2027 möglich. Am Eventtag sind Nachmeldungen vor Ort bis 14:30 Uhr möglich – dann gilt der Nachmeldepreis. Wer sicher einen Startplatz und den günstigeren Preis möchte, meldet sich am besten vorab an.",
   },
   {
     frage: "Gibt es Parkplätze?",

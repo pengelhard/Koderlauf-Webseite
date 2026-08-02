@@ -74,8 +74,8 @@ export const EVENT = {
     phasen: [
       { id: "fruehbucher", name: "Frühbucher", bis: "2026-11-30T23:59:59", hinweis: "online bis 30.11.2026", kinderlauf: 5, andere: 8 },
       { id: "normal", name: "Normalpreis", bis: "2027-03-31T23:59:59", hinweis: "online bis 31.03.2027", kinderlauf: 7, andere: 12 },
-      { id: "spaet", name: "Spätmeldung", bis: "2027-05-15T23:59:59", hinweis: "online bis 15.05.2027", kinderlauf: 10, andere: 16 },
-      { id: "vor_ort", name: "Nachmeldung vor Ort", bis: null, hinweis: "am Eventtag am Sportheim", kinderlauf: 15, andere: 21 },
+      { id: "spaet", name: "Spätmeldung", bis: "2027-05-28T23:59:59", hinweis: "online bis 28.05.2027", kinderlauf: 10, andere: 16 },
+      { id: "vor_ort", name: "Nachmeldung vor Ort", bis: null, hinweis: "am Eventtag bis 14:30 Uhr am Sportheim", kinderlauf: 15, andere: 21 },
     ] satisfies PreisPhase[],
     /** Senioren ab 70 zahlen auf allen Strecken und in allen Phasen diesen Preis */
     seniorenAb70: 5,
