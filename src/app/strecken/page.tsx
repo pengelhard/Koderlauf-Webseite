@@ -430,7 +430,7 @@ function StreckenContent() {
                     })}
                   </ul>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Kilometerstände ca., aus der GPX-Strecke. Zusätzlich Verpflegung im Ziel am Sportheim.
+                    Zusätzlich Verpflegung im Ziel am Sportheim.
                   </p>
                 </div>
               )}
