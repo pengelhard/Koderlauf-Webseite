@@ -40,6 +40,10 @@ const FAQS = [
     antwort: "Der Kinderlauf (800 m) ist für Kinder bis maximal 8 Jahre.",
   },
   {
+    frage: "Ab welchem Alter darf ich welche Strecke laufen?",
+    antwort: `Mindestalter: Kurz und knackig ab 8, Koderrunde (Lauf & Walking) ab 12, Trailrun ab 16, Spielerei ab 18 Jahren. ${EVENT.elternEinverstaendnis}`,
+  },
+  {
     frage: "Können geistig oder körperlich beeinträchtigte Personen früher starten?",
     antwort: `Ja. Auf Wunsch ca. 2–5 Minuten vor dem regulären Startschuss der jeweiligen Strecke. Bitte möglichst frühzeitig per E-Mail an ${EVENT.kontaktEmail} melden – so können wir alles ruhig vorbereiten. Eine kurze Meldung vor dem Lauf am Sportheim ist auch möglich.`,
   },
@@ -78,7 +82,7 @@ const FAQS = [
   },
   {
     frage: "Kann ich ein T-Shirt oder eine Abendkarte mitbestellen?",
-    antwort: `Ja, bei der Online-Anmeldung optional: ${EVENT.extras.tshirt.name} für ${EVENT.extras.tshirt.preis} € (Größen Kinder 104–164 und Erwachsene XS–XXL) sowie eine ${EVENT.extras.abendkarte.name} zum ${EVENT.extras.abendkarte.preisHinweis} für Tape Jam ab 21:30 Uhr.`,
+    antwort: `Ja, bei der Online-Anmeldung optional: ${EVENT.extras.tshirt.name} für ${EVENT.extras.tshirt.preis} € (Größen 116, 128, 140, 152, 164, S–XXL, 3XL, 4XL) sowie eine ${EVENT.extras.abendkarte.name} zum ${EVENT.extras.abendkarte.preisHinweis} für Tape Jam ab 21:30 Uhr.`,
   },
 ];
 

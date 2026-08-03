@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Mountain, TreePine, Zap, Baby, Route, Footprints, type LucideIcon } from "lucide-react";
-import { EVENT, getAktuellerPreis, getStreckenNachDistanz } from "@/lib/event-config";
+import { EVENT, formatAlterHinweis, getAktuellerPreis, getStreckenNachDistanz } from "@/lib/event-config";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -45,6 +45,7 @@ export function Features() {
         >
           {strecken.map((s) => {
             const Icon = ICONS[s.id] ?? Route;
+            const alter = formatAlterHinweis(s);
             return (
               <motion.div key={s.id} variants={item}>
                 <Link
@@ -71,6 +72,7 @@ export function Features() {
                       {s.distanz}
                     </p>
                     <p className="text-xs text-muted-foreground">Start {s.startzeit} Uhr</p>
+                    {alter && <p className="text-xs text-muted-foreground">{alter}</p>}
                     <p className="text-xs text-muted-foreground">
                       Startgebühr {getAktuellerPreis(s.id)}
                     </p>

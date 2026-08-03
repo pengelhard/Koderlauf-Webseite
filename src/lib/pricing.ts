@@ -28,20 +28,20 @@ export const DISTANCE_LABELS: Record<Distance, string> = {
   kids: "Kids-Lauf (~2 km, bis 14 Jahre)",
 };
 
-/** Erwachsenen- und Kindergrößen (wie 2026). */
+/** T-Shirt-Größen 2027 (Kinder + Erwachsene). */
 export const TSHIRT_SIZES = [
-  "104",
   "116",
   "128",
   "140",
   "152",
   "164",
-  "XS",
   "S",
   "M",
   "L",
   "XL",
   "XXL",
+  "3XL",
+  "4XL",
 ] as const;
 export type TShirtSize = (typeof TSHIRT_SIZES)[number];
 

@@ -21,7 +21,7 @@ import {
   CupSoda,
 } from "lucide-react";
 import { parseGpx, type GpxTrack } from "@/lib/gpx";
-import { getAktuellerPreis } from "@/lib/event-config";
+import { EVENT, formatAlterHinweis, getAktuellerPreis, getStrecke } from "@/lib/event-config";
 import {
   formatVerpflegungKm,
   getAbstandZurVorherigen,
@@ -193,6 +193,8 @@ function StreckenContent() {
 
   const activeStrecke = currentRoutes.find((s) => s.id === safeSelected)!;
   const gpxTrack = gpxTracks[safeSelected] || null;
+  const eventStrecke = yearTab === "2027" ? getStrecke(safeSelected) : undefined;
+  const alterHinweis = eventStrecke ? formatAlterHinweis(eventStrecke) : null;
   const verpflegung = useMemo(
     () => (yearTab === "2027" ? getVerpflegungForStrecke(safeSelected) : []),
     [yearTab, safeSelected],
@@ -273,6 +275,11 @@ function StreckenContent() {
               Streckenposten unterstützen euch; besondere Vorsicht an Kreuzungen und der
               Bundesstraße. Die Koderrunde gibt es als Lauf und als Walking (gleicher Start,
               eigene Wertung).
+            </p>
+            <p>
+              <strong className="font-semibold text-foreground">Mindestalter:</strong> Kurz und
+              knackig ab 8, Koderrunde ab 12, Trailrun ab 16, Spielerei ab 18 Jahre. Kinderlauf bis
+              max. 8 Jahre. {EVENT.elternEinverstaendnis}
             </p>
           </div>
         )}
@@ -362,6 +369,11 @@ function StreckenContent() {
                 <Clock size={15} />
                 Start {activeStrecke.startTime} Uhr
               </div>
+              {alterHinweis && (
+                <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  {alterHinweis}
+                </div>
+              )}
               {activeStrecke.badge && (
                 <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
                   {activeStrecke.badge}

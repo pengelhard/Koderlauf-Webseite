@@ -14,6 +14,10 @@ export interface EventStrecke {
   gpxFile: string;
   /** Kurzer Zusatz unter dem Namen, z. B. „eigene Wertung“ */
   badge?: string;
+  /** Mindestalter in Jahren (Wettkampfjahr) */
+  minAlter?: number;
+  /** Maximalalter in Jahren (z. B. Kinderlauf) */
+  maxAlter?: number;
 }
 
 export interface PreisPhase {
@@ -60,13 +64,19 @@ export const EVENT = {
     anmeldungen: 399,
   },
   strecken: [
-    { id: "spielerei", name: "Spielerei", distanz: "25 km", startzeit: "15:00", farbe: "#7C3AED", gpxFile: "/2027-spielerei.gpx" },
-    { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "15:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx" },
-    { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "16:20", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx" },
-    { id: "koderrunde", name: "Koderrunde (Lauf)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung" },
-    { id: "koderrunde-walking", name: "Koderrunde (Walking)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung" },
-    { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "16:40", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx" },
+    { id: "spielerei", name: "Spielerei", distanz: "25 km", startzeit: "15:00", farbe: "#7C3AED", gpxFile: "/2027-spielerei.gpx", minAlter: 18 },
+    { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "15:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx", maxAlter: 8 },
+    { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "16:20", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx", minAlter: 16 },
+    { id: "koderrunde", name: "Koderrunde (Lauf)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung", minAlter: 12 },
+    { id: "koderrunde-walking", name: "Koderrunde (Walking)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung", minAlter: 12 },
+    { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "16:40", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx", minAlter: 8 },
   ] satisfies EventStrecke[],
+  /**
+   * Wer das Mindestalter einer Strecke unterschreitet, braucht eine
+   * Einverständniserklärung der Eltern (Details bei der Anmeldung).
+   */
+  elternEinverstaendnis:
+    "Wer jünger als das Mindestalter der gewählten Strecke ist und trotzdem mitlaufen möchte, benötigt eine Einverständniserklärung der Eltern.",
   zeitplan: [
     { zeit: "13:00", titel: "Startnummernausgabe am Eventtag" },
     { zeit: "15:00", titel: "Start Spielerei", streckeId: "spielerei" },
@@ -109,7 +119,8 @@ export const EVENT = {
       name: "Koderlauf-T-Shirt",
       preis: 25,
       bild: "/tshirt-koderlauf.png",
-      hinweis: "Motiv vom letzten Jahr – neues Motiv folgt. Größen Kinder 104–164 und Erwachsene XS–XXL.",
+      hinweis:
+        "Motiv vom letzten Jahr – neues Motiv folgt. Größen: 116, 128, 140, 152, 164, S–XXL, 3XL, 4XL.",
     },
     abendkarte: {
       name: "Abendkarte Tape Jam",
@@ -123,6 +134,13 @@ export const EVENT = {
 
 export function getStrecke(id: string): EventStrecke | undefined {
   return EVENT.strecken.find((s) => s.id === id);
+}
+
+/** z. B. „ab 16 Jahre“ / „bis 8 Jahre“ */
+export function formatAlterHinweis(strecke: EventStrecke): string | null {
+  if (strecke.maxAlter != null) return `bis ${strecke.maxAlter} Jahre`;
+  if (strecke.minAlter != null) return `ab ${strecke.minAlter} Jahre`;
+  return null;
 }
 
 /** Distanz-String ("800 m", "4 km", "10,5 km") in Kilometer für Sortierung. */
