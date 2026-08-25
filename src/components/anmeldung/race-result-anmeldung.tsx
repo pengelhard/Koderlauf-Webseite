@@ -243,6 +243,39 @@ html, body {
 .RRReg .RRReg_FatalError_Custom {
   color: #E5E7EB !important;
 }
+
+/* Scrollbar im Koderlauf-Stil */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #FF6B00 #1a1a1a;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #FF6B00;
+  border-radius: 9999px;
+  border: 2px solid #1a1a1a;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #FF9F1C;
+}
+.RRReg .RRReg_Nav {
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff66 transparent;
+}
+.RRReg .RRReg_Nav::-webkit-scrollbar {
+  height: 6px;
+}
+.RRReg .RRReg_Nav::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.45);
+  border: none;
+}
 `;
 
 function buildEmbedSrcDoc(formId: RaceResultFormId): string {
@@ -292,11 +325,15 @@ function buildEmbedSrcDoc(formId: RaceResultFormId): string {
 
 /**
  * Bindet das Race-Result-Anmeldeformular ein (Einzel- oder Sammelanmeldung).
+ * Zuerst nur Auswahl; Formular erst nach Klick.
  */
 export function RaceResultAnmeldung({ className = "" }: { className?: string }) {
-  const [formId, setFormId] = useState<RaceResultFormId>("einzeln");
+  const [formId, setFormId] = useState<RaceResultFormId | null>(null);
   const [iframeReady, setIframeReady] = useState(false);
-  const srcDoc = useMemo(() => buildEmbedSrcDoc(formId), [formId]);
+  const srcDoc = useMemo(
+    () => (formId ? buildEmbedSrcDoc(formId) : ""),
+    [formId],
+  );
 
   useEffect(() => {
     setIframeReady(false);
@@ -318,33 +355,65 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
     };
   }, []);
 
-  return (
-    <div className={cn("space-y-4", className)}>
-      <div
-        className="flex flex-wrap gap-2"
-        role="tablist"
-        aria-label="Anmeldeart wählen"
-      >
-        {RACE_RESULT.forms.map((f) => {
-          const active = f.id === formId;
-          return (
+  if (!formId) {
+    return (
+      <div className={cn("space-y-4", className)}>
+        <p className="text-sm text-muted-foreground">Wie möchtet ihr euch anmelden?</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {RACE_RESULT.forms.map((f) => (
             <button
               key={f.id}
               type="button"
-              role="tab"
-              aria-selected={active}
               onClick={() => setFormId(f.id)}
-              className={cn(
-                "rounded-xl border px-4 py-2 text-sm font-semibold transition-colors",
-                active
-                  ? "border-koder-orange bg-koder-orange text-white"
-                  : "border-border bg-card text-foreground hover:border-koder-orange/40",
-              )}
+              className="rounded-2xl border border-border bg-card px-5 py-6 text-left transition-colors hover:border-koder-orange/50 hover:bg-koder-orange/5"
             >
-              {f.label}
+              <span className="block text-lg font-extrabold text-foreground">{f.label}</span>
+              <span className="mt-1 block text-sm text-muted-foreground">
+                {f.id === "einzeln" ? "Für eine Person" : "Mehrere Personen auf einmal"}
+              </span>
             </button>
-          );
-        })}
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Abwicklung über Race Result / RaceSolution.
+        </p>
+      </div>
+    );
+  }
+
+  const activeForm = getRaceResultForm(formId);
+
+  return (
+    <div className={cn("space-y-4", className)}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-semibold text-foreground">{activeForm.label}</p>
+        <div className="flex flex-wrap gap-2">
+          {RACE_RESULT.forms.map((f) => {
+            const active = f.id === formId;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setFormId(f.id)}
+                className={cn(
+                  "rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors sm:text-sm",
+                  active
+                    ? "border-koder-orange bg-koder-orange text-white"
+                    : "border-border bg-card text-foreground hover:border-koder-orange/40",
+                )}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setFormId(null)}
+            className="rounded-xl border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:border-koder-orange/40 hover:text-foreground sm:text-sm"
+          >
+            Zurück
+          </button>
+        </div>
       </div>
 
       <p className="text-xs text-muted-foreground">
@@ -364,14 +433,13 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
         )}
         <iframe
           key={formId}
-          title={getRaceResultForm(formId).label}
+          title={activeForm.label}
           srcDoc={srcDoc}
           className={cn(
             "h-[min(90vh,1100px)] w-full bg-[#0A0A0A] transition-opacity duration-300",
             iframeReady ? "opacity-100" : "opacity-0",
           )}
           onLoad={() => {
-            // Formular-Scripts brauchen etwas länger als das leere IFrame-Dokument
             window.setTimeout(() => setIframeReady(true), 600);
           }}
           referrerPolicy="no-referrer-when-downgrade"

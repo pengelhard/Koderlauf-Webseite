@@ -46,7 +46,8 @@ export default function AnmeldungPage() {
           >
             <h2 className="text-2xl font-extrabold tracking-tight">Jetzt anmelden</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Wählt Einzel- oder Sammel-Anmeldung. Abwicklung über {EVENT.anmeldePartner.name}.
+              Zuerst Anmeldeart wählen – danach öffnet sich das Formular. Abwicklung über{" "}
+              {EVENT.anmeldePartner.name}.
             </p>
             <div className="mt-4">
               <RaceResultAnmeldung />
