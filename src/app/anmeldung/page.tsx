@@ -56,12 +56,11 @@ export default function AnmeldungPage() {
               <div className="flex items-start gap-3">
                 <Beer className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" aria-hidden />
                 <div>
-                  <p className="font-semibold text-foreground">Vereinswertung: {VEREINS_WERTUNG.preis}</p>
+                  <p className="font-semibold text-foreground">{VEREINS_WERTUNG.titel}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Bitte bei der Anmeldung den{" "}
+                    <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong> Bitte den{" "}
                     <strong className="text-foreground">offiziellen Vereinsnamen</strong> angeben,
-                    damit die Zuordnung stimmt. Der Verein mit den meisten Teilnehmern gewinnt{" "}
-                    {VEREINS_WERTUNG.preis}. {VEREINS_WERTUNG.ausrichterCanonical} ist als
+                    damit die Zuordnung stimmt. {VEREINS_WERTUNG.ausrichterCanonical} ist als
                     Ausrichter nicht in der Wertung.
                   </p>
                   <Link

@@ -307,10 +307,10 @@ export default function AnmeldungenPage() {
             className="mt-8"
           >
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
-              <Beer size={14} /> Vereinswertung – {VEREINS_WERTUNG.preis}
+              <Beer size={14} /> {VEREINS_WERTUNG.titel}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Der Verein mit den meisten Teilnehmern gewinnt {VEREINS_WERTUNG.preis}.{" "}
+              <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong>{" "}
               {VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung.
             </p>
 

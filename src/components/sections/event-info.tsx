@@ -13,13 +13,16 @@ import {
   Sparkles,
   ArrowRight,
   CalendarDays,
+  Beer,
 } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
+import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const INFOS = [
   { icon: MapPin, text: "Start/Ziel & Orga: Sportheim Obermögersheim" },
   { icon: Ticket, text: "Startnummern Do/Fr 17–20 Uhr empfohlen, am Eventtag ab 12:00 Uhr" },
+  { icon: Beer, text: `${VEREINS_WERTUNG.kurz} (Ausrichter außer Wertung)` },
   { icon: Utensils, text: "Verpflegung während der Läufe und im Ziel; Essen & Trinken am Sportheim" },
   { icon: Car, text: "Parkmöglichkeiten vor Ort vorhanden" },
   { icon: ShowerHead, text: "Duschen im Sportheim möglich" },
@@ -112,8 +115,9 @@ export function EventInfo() {
                 {EVENT.strecken.length} Strecken
               </strong>{" "}
               inklusive der neuen „Spielerei“ und der Koderrunde als Lauf und
-              Walking (eigene Wertung). Und das Beste: Der Koderlauf ist
-              eingebettet in das Jubiläum{" "}
+              Walking (eigene Wertung). Neu:{" "}
+              <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong> Und:
+              Der Koderlauf ist eingebettet in das Jubiläum{" "}
               <strong className="text-foreground">{EVENT.jubilaeum}</strong>.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-4 text-sm font-semibold">

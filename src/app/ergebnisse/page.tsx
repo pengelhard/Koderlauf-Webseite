@@ -15,6 +15,7 @@ import {
   Users,
   Footprints,
   Route,
+  Beer,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErgebnisseResultsPanel } from "@/components/ergebnisse/results-panel";
@@ -22,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { YearSwitcher } from "@/components/ui/year-switcher";
 import { EVENT } from "@/lib/event-config";
 import { getAltersklassenDlv, type AltersklasseMeta } from "@/lib/data/altersklassen";
+import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 
 const AK_GRUPPEN: {
   id: AltersklasseMeta["gruppe"];
@@ -464,6 +466,16 @@ export default function ErgebnissePage() {
                           die{" "}
                           <strong className="text-foreground">drei Schnellsten je Altersklasse</strong>{" "}
                           erhalten aber eine <strong className="text-foreground">Urkunde</strong>.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 rounded-xl border border-koder-orange/30 bg-koder-orange/5 p-4">
+                      <Beer className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                      <div>
+                        <p className="font-semibold">{VEREINS_WERTUNG.titel}</p>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          {VEREINS_WERTUNG.kurz} {VEREINS_WERTUNG.ausrichterCanonical} ist als
+                          Ausrichter nicht in der Wertung. Stand und Details: Seite Teilnehmer.
                         </p>
                       </div>
                     </div>

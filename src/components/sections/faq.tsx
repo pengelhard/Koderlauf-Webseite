@@ -34,11 +34,11 @@ const FAQS = [
   },
   {
     frage: "Welche Altersklassen gibt es?",
-    antwort: `${formatAltersklassenKurz()} Die Zuordnung erfolgt über das Geburtsjahr bei der Anmeldung. Bei der Siegerehrung werden die drei schnellsten Männer und die drei schnellsten Frauen je Strecke geehrt. Eine separate Altersklassen-Ehrung gibt es nicht – die drei Schnellsten je Altersklasse bekommen aber eine Urkunde.`,
+    antwort: `${formatAltersklassenKurz()} Die Zuordnung erfolgt über das Geburtsjahr bei der Anmeldung. Bei der Siegerehrung werden die drei schnellsten Männer und die drei schnellsten Frauen je Strecke geehrt. Eine separate Altersklassen-Ehrung gibt es nicht – die drei Schnellsten je Altersklasse bekommen aber eine Urkunde. Zusätzlich: ${VEREINS_WERTUNG.kurz}`,
   },
   {
     frage: "Gibt es eine Vereinswertung?",
-    antwort: `Ja. Bitte bei der Anmeldung den offiziellen Vereinsnamen angeben, damit die Zuordnung stimmt. Der Verein mit den meisten Teilnehmern gewinnt ${VEREINS_WERTUNG.preis}. ${VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung. Den aktuellen Stand findet ihr unter Teilnehmer.`,
+    antwort: `Ja. ${VEREINS_WERTUNG.kurz} Bitte bei der Anmeldung den offiziellen Vereinsnamen angeben, damit die Zuordnung stimmt. ${VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung. Den aktuellen Stand findet ihr unter Teilnehmer.`,
   },
   {
     frage: "Für wen ist der Kinderlauf?",

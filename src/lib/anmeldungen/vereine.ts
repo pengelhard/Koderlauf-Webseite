@@ -4,10 +4,15 @@
  */
 
 export const VEREINS_WERTUNG = {
+  /** Kurztitel für Überschriften */
+  titel: "Vereinswertung",
   preis: "ein Fass Bier",
+  /** Klarer Einzeiler */
+  kurz:
+    "Der Verein mit den meisten Teilnehmern gewinnt ein Fass Bier.",
   ausrichterCanonical: "SV Obermögersheim",
   hinweis:
-    "Bei der Anmeldung bitte den offiziellen Vereinsnamen angeben, damit die Zuordnung stimmt. Der Verein mit den meisten Teilnehmern gewinnt ein Fass Bier. SV Obermögersheim ist als Ausrichter nicht in der Wertung.",
+    "Bitte bei der Anmeldung den offiziellen Vereinsnamen angeben, damit die Zuordnung stimmt. Der Verein mit den meisten Teilnehmern gewinnt ein Fass Bier. SV Obermögersheim ist als Ausrichter nicht in der Wertung.",
 } as const;
 
 /** Kanonische Vereinsnamen → bekannte Schreibweisen (kleingeschrieben, normalisiert). */
