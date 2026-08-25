@@ -38,7 +38,7 @@ const FAQS = [
   },
   {
     frage: "Gibt es eine Vereinswertung?",
-    antwort: `Ja. Bitte bei der Anmeldung den Verein angeben. Der Verein mit den meisten Teilnehmern gewinnt ${VEREINS_WERTUNG.preis}. ${VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung. Tipp: Schreibt den Vereinsnamen möglichst einheitlich (z. B. immer „TSV Musterstadt“). Den aktuellen Stand findet ihr unter Teilnehmer.`,
+    antwort: `Ja. Bitte bei der Anmeldung den offiziellen Vereinsnamen angeben, damit die Zuordnung stimmt. Der Verein mit den meisten Teilnehmern gewinnt ${VEREINS_WERTUNG.preis}. ${VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung. Den aktuellen Stand findet ihr unter Teilnehmer.`,
   },
   {
     frage: "Für wen ist der Kinderlauf?",

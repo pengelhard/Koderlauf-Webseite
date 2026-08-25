@@ -58,10 +58,11 @@ export default function AnmeldungPage() {
                 <div>
                   <p className="font-semibold text-foreground">Vereinswertung: {VEREINS_WERTUNG.preis}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Bitte bei der Anmeldung den <strong className="text-foreground">Verein</strong>{" "}
-                    angeben – am besten immer gleich schreiben. Der Verein mit den meisten
-                    Teilnehmern gewinnt {VEREINS_WERTUNG.preis}.{" "}
-                    {VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung.
+                    Bitte bei der Anmeldung den{" "}
+                    <strong className="text-foreground">offiziellen Vereinsnamen</strong> angeben,
+                    damit die Zuordnung stimmt. Der Verein mit den meisten Teilnehmern gewinnt{" "}
+                    {VEREINS_WERTUNG.preis}. {VEREINS_WERTUNG.ausrichterCanonical} ist als
+                    Ausrichter nicht in der Wertung.
                   </p>
                   <Link
                     href="/teilnehmer"
