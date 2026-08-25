@@ -7,7 +7,6 @@ import {
   MapPin,
   Navigation,
   Award,
-  Megaphone,
   Accessibility,
   Shirt,
   Ticket,
@@ -16,15 +15,15 @@ import {
 import { EVENT } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
 import { StartnummernAusgabe } from "@/components/sections/startnummern-ausgabe";
+import { RaceResultAnmeldung } from "@/components/anmeldung/race-result-anmeldung";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
 export default function AnmeldungPage() {
-  const fruehbucher = EVENT.preise.phasen[0];
   const staticReveal = useStaticReveal();
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <motion.div
           {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="text-center"
@@ -36,36 +35,28 @@ export default function AnmeldungPage() {
             Anmeldung
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Infos zum nächsten Koderlauf am {EVENT.datumFormatiert} in {EVENT.ort}.
+            Online-Anmeldung zum Koderlauf am {EVENT.datumFormatiert} in {EVENT.ort}.
           </p>
         </motion.div>
 
-        {!EVENT.anmeldungOffen && (
+        {EVENT.anmeldungOffen && (
           <motion.div
-            {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.15 })}
-            className="glow-orange mt-8 rounded-3xl border border-koder-orange/40 bg-koder-orange/20 p-8 text-center sm:p-10"
+            {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.12 })}
+            className="mt-8"
           >
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-koder-orange/20 text-koder-orange">
-              <Megaphone className="h-7 w-7" aria-hidden />
+            <h2 className="text-2xl font-extrabold tracking-tight">Jetzt anmelden</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Wählt Einzel- oder Sammel-Anmeldung. Abwicklung über {EVENT.anmeldePartner.name}.
+            </p>
+            <div className="mt-4">
+              <RaceResultAnmeldung />
             </div>
-            <h2 className="mt-4 text-2xl font-extrabold text-foreground sm:text-3xl">
-              Vorverkauf startet in Kürze
-            </h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Die Online-Anmeldung läuft über {EVENT.anmeldePartner.name}. Sobald der
-              Vorverkauf startet, geben wir das{" "}
-              <strong className="font-semibold text-foreground">hier auf dieser Seite</strong>{" "}
-              bekannt – inklusive optionalem T-Shirt und günstigerer Abendkarte für Tape Jam.
-            </p>
-            <p className="mx-auto mt-4 inline-flex rounded-full border border-koder-orange/30 bg-background/60 px-4 py-1.5 text-xs font-semibold text-koder-orange sm:text-sm">
-              Tipp: Frühbucherpreise gelten {fruehbucher.hinweis}
-            </p>
           </motion.div>
         )}
 
         <motion.div
           {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.2 })}
-          className="mt-8"
+          className="mt-10"
         >
           <StartnummernAusgabe />
         </motion.div>

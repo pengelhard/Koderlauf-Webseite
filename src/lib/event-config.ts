@@ -51,7 +51,7 @@ export const EVENT = {
     "https://maps.google.com/?q=Sportheim+Obermögersheim+91717+Wassertrüdingen",
   claim: "Lauf mit Herz durch den Wald",
   /** Steuert Vorverkaufs-Banner und Sticky-CTA */
-  anmeldungOffen: false,
+  anmeldungOffen: true,
   jubilaeum: "50 Jahre SV Obermögersheim",
   kontaktEmail: "info@koderlauf.de",
   /** Online-Anmeldung & Zeitmessung */
