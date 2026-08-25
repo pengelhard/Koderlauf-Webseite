@@ -102,7 +102,11 @@ export function Stats() {
       label: `Anmeldungen ${EVENT.jahr}`,
       href: "/anmeldungen" as string | undefined,
     },
-    { value: EVENT.strecken.length, label: `Strecken ${EVENT.jahr}` },
+    {
+      value: EVENT.strecken.length,
+      label: `Strecken ${EVENT.jahr}`,
+      href: "/strecken" as string | undefined,
+    },
     { value: daysLeft, label: "Tage bis zum Start" },
     { value: 50, label: "Jahre SV Obermögersheim" },
   ];
@@ -126,7 +130,7 @@ export function Stats() {
                 <Link
                   href={stat.href}
                   className="group block rounded-xl transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange"
-                  aria-label={`${stat.value} ${stat.label} – zur Anmeldestatistik`}
+                  aria-label={`${stat.value} ${stat.label} – Seite öffnen`}
                 >
                   {number}
                   <p className="mt-2 text-xs font-medium uppercase tracking-widest text-white/60 underline-offset-4 group-hover:underline sm:text-sm">
