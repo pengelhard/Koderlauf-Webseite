@@ -11,12 +11,15 @@ import {
   Shirt,
   Ticket,
   CheckCircle2,
+  Beer,
 } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
 import { StartnummernAusgabe } from "@/components/sections/startnummern-ausgabe";
 import { AnmeldungAuswahl } from "@/components/anmeldung/race-result-anmeldung";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
+import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
+import Link from "next/link";
 
 export default function AnmeldungPage() {
   const staticReveal = useStaticReveal();
@@ -47,6 +50,27 @@ export default function AnmeldungPage() {
             <h2 className="text-2xl font-extrabold tracking-tight">Jetzt anmelden</h2>
             <div className="mt-6">
               <AnmeldungAuswahl />
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-koder-orange/40 bg-koder-orange/5 p-4 sm:p-5">
+              <div className="flex items-start gap-3">
+                <Beer className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" aria-hidden />
+                <div>
+                  <p className="font-semibold text-foreground">Vereinswertung: {VEREINS_WERTUNG.preis}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Bitte bei der Anmeldung den <strong className="text-foreground">Verein</strong>{" "}
+                    angeben – am besten immer gleich schreiben. Der Verein mit den meisten
+                    Teilnehmern gewinnt {VEREINS_WERTUNG.preis}.{" "}
+                    {VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung.
+                  </p>
+                  <Link
+                    href="/teilnehmer"
+                    className="mt-2 inline-block text-sm font-semibold text-koder-orange hover:underline"
+                  >
+                    Aktuellen Stand ansehen →
+                  </Link>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

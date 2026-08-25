@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { EVENT, getErsterStart } from "@/lib/event-config";
 import { formatAltersklassenKurz } from "@/lib/data/altersklassen";
+import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import { cn } from "@/lib/utils";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
@@ -34,6 +35,10 @@ const FAQS = [
   {
     frage: "Welche Altersklassen gibt es?",
     antwort: `${formatAltersklassenKurz()} Die Zuordnung erfolgt über das Geburtsjahr bei der Anmeldung. Bei der Siegerehrung werden die drei schnellsten Männer und die drei schnellsten Frauen je Strecke geehrt. Eine separate Altersklassen-Ehrung gibt es nicht – die drei Schnellsten je Altersklasse bekommen aber eine Urkunde.`,
+  },
+  {
+    frage: "Gibt es eine Vereinswertung?",
+    antwort: `Ja. Bitte bei der Anmeldung den Verein angeben. Der Verein mit den meisten Teilnehmern gewinnt ${VEREINS_WERTUNG.preis}. ${VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung. Tipp: Schreibt den Vereinsnamen möglichst einheitlich (z. B. immer „TSV Musterstadt“). Den aktuellen Stand findet ihr unter Teilnehmer.`,
   },
   {
     frage: "Für wen ist der Kinderlauf?",

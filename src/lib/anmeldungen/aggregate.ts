@@ -4,6 +4,7 @@ import type {
   RaceResultParticipantRaw,
   StreckeCount,
 } from "@/lib/anmeldungen/types";
+import { resolveVerein, rankVereine } from "@/lib/anmeldungen/vereine";
 
 /** Anzeige-Reihenfolge der Strecken 2027 */
 export const STRECKEN_ORDER_2027 = [
@@ -57,6 +58,7 @@ export function emptyStats2027(): AnmeldungenStats {
     lastUpdated: "",
     participants: [],
     source: "empty",
+    vereine: { ranking: [], ausrichter: null, ohneAngabe: 0 },
   };
 }
 
@@ -103,6 +105,8 @@ export function normalizeContest(raw: string): string {
 }
 
 export function mapRaceResultRow(row: RaceResultParticipantRaw): AnmeldungParticipant {
+  const vereinRaw = pickString(row, ["Club", "Verein", "Team"]) || undefined;
+  const vereinResolved = resolveVerein(vereinRaw);
   return {
     nachname: pickString(row, ["LastName", "Nachname", "Name", "FamilyName"]),
     vorname: pickString(row, ["FirstName", "Vorname", "GivenName"]),
@@ -113,7 +117,7 @@ export function mapRaceResultRow(row: RaceResultParticipantRaw): AnmeldungPartic
       pickString(row, ["Contest", "ContestName", "Wettbewerb", "Competition", "Event"]),
     ),
     jahrgang: pickString(row, ["YB", "YearOfBirth", "Jahrgang", "DateOfBirth", "DOB"]) || undefined,
-    verein: pickString(row, ["Club", "Verein", "Team"]) || undefined,
+    verein: vereinResolved.empty ? undefined : vereinResolved.display,
     nation: pickString(row, ["Nation", "Nationality", "Country"]) || undefined,
   };
 }
@@ -165,6 +169,8 @@ export function aggregateFromRaceResultJson(payload: unknown): AnmeldungenStats 
     return a.vorname.localeCompare(b.vorname, "de");
   });
 
+  const vereinStats = rankVereine(sorted);
+
   return {
     total: participants.length,
     gender: { m, w },
@@ -172,5 +178,12 @@ export function aggregateFromRaceResultJson(payload: unknown): AnmeldungenStats 
     lastUpdated: new Date().toISOString(),
     participants: sorted,
     source: "race-result",
+    vereine: {
+      ranking: vereinStats.ranking.map(({ name, total }) => ({ name, total })),
+      ausrichter: vereinStats.ausrichter
+        ? { name: vereinStats.ausrichter.name, total: vereinStats.ausrichter.total }
+        : null,
+      ohneAngabe: vereinStats.ohneAngabe,
+    },
   };
 }

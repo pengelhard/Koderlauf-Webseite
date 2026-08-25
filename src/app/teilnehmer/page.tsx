@@ -2,11 +2,12 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useLayoutEffect, useMemo, useCallback } from "react";
-import { Users, TrendingUp, RefreshCw, List } from "lucide-react";
+import { Users, TrendingUp, RefreshCw, List, Beer } from "lucide-react";
 import { STRECKEN_COLORS } from "@/lib/strecken-config";
 import { STRECKEN_ORDER as STRECKEN_2026 } from "@/lib/data/anmeldungen-2026";
 import { STRECKEN_ORDER_2027 } from "@/lib/anmeldungen/aggregate";
 import type { AnmeldungParticipant, AnmeldungenStats } from "@/lib/anmeldungen/types";
+import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import { cn } from "@/lib/utils";
 
 type Jahr = "2027" | "2026";
@@ -297,6 +298,83 @@ export default function AnmeldungenPage() {
             })}
           </div>
         </motion.div>
+
+        {isLive && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-8"
+          >
+            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
+              <Beer size={14} /> Vereinswertung – {VEREINS_WERTUNG.preis}
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Der Verein mit den meisten Teilnehmern gewinnt {VEREINS_WERTUNG.preis}.{" "}
+              {VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung.
+            </p>
+
+            <div className="mt-4 space-y-2">
+              {(stats.vereine?.ranking.length ?? 0) === 0 ? (
+                <div className="rounded-2xl border border-border bg-card px-4 py-6 text-center text-sm text-muted-foreground">
+                  {waitingForJson
+                    ? "Vereinswertung erscheint mit den Live-Daten."
+                    : "Noch keine Vereinsangaben – bei der Anmeldung Verein eintragen!"}
+                </div>
+              ) : (
+                stats.vereine!.ranking.slice(0, 15).map((v, i) => {
+                  const max = stats.vereine!.ranking[0]?.total || 1;
+                  const pct = (v.total / max) * 100;
+                  return (
+                    <div
+                      key={v.name}
+                      className="rounded-2xl border border-border bg-card px-4 py-3"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0 flex items-center gap-3">
+                          <span
+                            className={cn(
+                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-extrabold",
+                              i === 0
+                                ? "bg-koder-orange text-white"
+                                : "bg-muted text-muted-foreground",
+                            )}
+                          >
+                            {i + 1}
+                          </span>
+                          <span className="truncate font-semibold">{v.name}</span>
+                        </div>
+                        <span className="shrink-0 text-xl font-black tabular-nums text-koder-orange">
+                          {v.total}
+                        </span>
+                      </div>
+                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-koder-orange"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {(stats.vereine?.ausrichter || (stats.vereine?.ohneAngabe ?? 0) > 0) && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                {stats.vereine?.ausrichter && (
+                  <>
+                    Ausrichter {stats.vereine.ausrichter.name}: {stats.vereine.ausrichter.total}{" "}
+                    Teilnehmer (außer Wertung).{" "}
+                  </>
+                )}
+                {(stats.vereine?.ohneAngabe ?? 0) > 0 && (
+                  <>Ohne Vereinsangabe: {stats.vereine!.ohneAngabe}</>
+                )}
+              </p>
+            )}
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
