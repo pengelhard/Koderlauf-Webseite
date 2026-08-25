@@ -52,13 +52,6 @@ export default function AnmeldungPage() {
         )}
 
         <motion.div
-          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.2 })}
-          className="mt-10"
-        >
-          <StartnummernAusgabe />
-        </motion.div>
-
-        <motion.div
           {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.25 })}
           className="mt-8"
         >
@@ -258,6 +251,13 @@ export default function AnmeldungPage() {
               </p>
             </div>
           </a>
+        </motion.div>
+
+        <motion.div
+          {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.4 })}
+          className="mt-10"
+        >
+          <StartnummernAusgabe />
         </motion.div>
       </div>
     </div>
