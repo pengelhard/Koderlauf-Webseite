@@ -304,15 +304,35 @@ function buildEmbedSrcDoc(formId: RaceResultFormId): string {
       }, 250);
 
       var done = false;
+      var sawOpenForm = false;
+      function isVisible(el) {
+        if (!el) return false;
+        var style = window.getComputedStyle(el);
+        if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) {
+          return false;
+        }
+        var rect = el.getBoundingClientRect();
+        return rect.width > 8 && rect.height > 8;
+      }
       function notifyComplete() {
         if (done) return;
-        if (!document.querySelector(".RRReg_Confirmation")) return;
+        var conf = document.querySelector(".RRReg_Confirmation");
+        var main = document.querySelector(".RRReg_Main") || document.querySelector(".RRReg");
+        var confVisible = isVisible(conf);
+        var details =
+          document.querySelector(".RRReg_Confirmation_PaymentDetails") ||
+          document.querySelector(".RRReg_Confirmation_StartOver");
+        var hasText = !!(conf && (conf.innerText || "").trim().length > 30);
+        var confLooksComplete = confVisible && (isVisible(details) || hasText);
+        // Erst normales Formular ohne echte Bestätigung gesehen haben
+        if (main && !confLooksComplete) sawOpenForm = true;
+        if (!sawOpenForm || !confLooksComplete) return;
         done = true;
         try {
           parent.postMessage(${JSON.stringify(COMPLETE_MESSAGE)}, "*");
         } catch (e) {}
       }
-      setInterval(notifyComplete, 400);
+      setInterval(notifyComplete, 600);
     })();
   `;
 
@@ -383,22 +403,19 @@ export function AnmeldungAuswahl({ className = "" }: { className?: string }) {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 sm:max-w-xl">
         {RACE_RESULT.forms.map((f) => {
           const Icon = FORM_ICONS[f.id];
           return (
             <Link
               key={f.id}
               href={FORM_HREF[f.id]}
-              className="group flex flex-col rounded-3xl border border-koder-orange/50 bg-koder-orange p-6 text-left text-white shadow-lg shadow-koder-orange/20 transition-all duration-200 hover:bg-[#FF9F1C] hover:shadow-koder-orange/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="group flex items-center gap-3 rounded-2xl border border-koder-orange/50 bg-koder-orange px-4 py-3.5 text-left text-white shadow-md shadow-koder-orange/15 transition-all duration-200 hover:bg-[#FF9F1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20">
-                <Icon className="h-5 w-5" aria-hidden />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/20">
+                <Icon className="h-4 w-4" aria-hidden />
               </span>
-              <span className="mt-5 text-xl font-extrabold tracking-tight">{f.label}</span>
-              <span className="mt-5 text-sm font-semibold transition-transform group-hover:translate-x-0.5">
-                Weiter →
-              </span>
+              <span className="text-base font-extrabold tracking-tight">{f.label}</span>
             </Link>
           );
         })}
@@ -437,7 +454,10 @@ export function RaceResultFormular({
   }, []);
 
   useEffect(() => {
+    let redirectTimer = 0;
     function onMessage(event: MessageEvent) {
+      // Nur Nachrichten aus unserem Embed-iframe (srcDoc = same origin)
+      if (event.origin !== window.location.origin) return;
       const data = event.data;
       if (
         data &&
@@ -445,13 +465,17 @@ export function RaceResultFormular({
         data.source === COMPLETE_MESSAGE.source &&
         data.type === COMPLETE_MESSAGE.type
       ) {
-        window.setTimeout(() => {
+        window.clearTimeout(redirectTimer);
+        redirectTimer = window.setTimeout(() => {
           router.push("/anmeldung?ok=1");
-        }, 2800);
+        }, 2500);
       }
     }
     window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
+    return () => {
+      window.clearTimeout(redirectTimer);
+      window.removeEventListener("message", onMessage);
+    };
   }, [router]);
 
   return (
