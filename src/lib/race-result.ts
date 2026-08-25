@@ -8,6 +8,8 @@ export type RaceResultFormId = "einzeln" | "sammel";
 export interface RaceResultForm {
   id: RaceResultFormId;
   label: string;
+  /** Kurzer Untertitel für die Auswahlkarte */
+  description: string;
   /** RRReg_name aus dem Embed-Code */
   name: string;
   /** RRReg_key aus dem Embed-Code */
@@ -21,13 +23,15 @@ export const RACE_RESULT = {
   forms: [
     {
       id: "einzeln",
-      label: "Einzel-Anmeldung",
+      label: "Einzelanmeldung",
+      description: "Du meldest dich allein an – Strecke, Daten und Zahlung in wenigen Schritten.",
       name: "Einzel-Anmeldung",
       key: "CCOCd0GqD8Fj",
     },
     {
       id: "sammel",
-      label: "Sammel-Anmeldung",
+      label: "Sammelanmeldung",
+      description: "Mehrere Personen in einem Durchgang – ideal für Vereine, Familien und Gruppen.",
       name: "Sammel-Anmeldung",
       key: "byl3kiDDa1BT",
     },

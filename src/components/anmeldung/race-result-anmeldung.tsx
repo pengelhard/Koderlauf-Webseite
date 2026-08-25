@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   RACE_RESULT,
@@ -280,7 +281,6 @@ html {
 
 function buildEmbedSrcDoc(formId: RaceResultFormId): string {
   const form = getRaceResultForm(formId);
-  // Theme-CSS nach RR-Stylesheets injizieren (sonst gewinnen deren :root-Variablen).
   const injectScript = `
     (function () {
       var css = ${JSON.stringify(EMBED_THEME_CSS)};
@@ -323,20 +323,44 @@ function buildEmbedSrcDoc(formId: RaceResultFormId): string {
 </html>`;
 }
 
+const FORM_ICONS = {
+  einzeln: User,
+  sammel: Users,
+} as const;
+
+function isFormId(value: string | null): value is RaceResultFormId {
+  return value === "einzeln" || value === "sammel";
+}
+
 /**
- * Bindet das Race-Result-Anmeldeformular ein (Einzel- oder Sammelanmeldung).
- * Zuerst nur Auswahl; Formular erst nach Klick.
+ * Bindet das Race-Result-Anmeldeformular ein.
+ * Schritt 1: Anmeldeart · Schritt 2: Formular (erst nach Klick).
  */
 export function RaceResultAnmeldung({ className = "" }: { className?: string }) {
   const [formId, setFormId] = useState<RaceResultFormId | null>(null);
   const [iframeReady, setIframeReady] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const srcDoc = useMemo(
     () => (formId ? buildEmbedSrcDoc(formId) : ""),
     [formId],
   );
 
+  // Deep-Link / Refresh: ?typ=einzeln|sammel
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const typ = params.get("typ");
+    if (isFormId(typ)) setFormId(typ);
+  }, []);
+
   useEffect(() => {
     setIframeReady(false);
+  }, [formId]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (formId) url.searchParams.set("typ", formId);
+    else url.searchParams.delete("typ");
+    window.history.replaceState({}, "", url.pathname + url.search + url.hash);
   }, [formId]);
 
   useEffect(() => {
@@ -355,70 +379,97 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
     };
   }, []);
 
+  function selectForm(id: RaceResultFormId) {
+    setFormId(id);
+    requestAnimationFrame(() => {
+      rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   if (!formId) {
     return (
-      <div className={cn("space-y-4", className)}>
-        <p className="text-sm text-muted-foreground">Wie möchtet ihr euch anmelden?</p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {RACE_RESULT.forms.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              onClick={() => setFormId(f.id)}
-              className="rounded-2xl border border-border bg-card px-5 py-6 text-left transition-colors hover:border-koder-orange/50 hover:bg-koder-orange/5"
-            >
-              <span className="block text-lg font-extrabold text-foreground">{f.label}</span>
-              <span className="mt-1 block text-sm text-muted-foreground">
-                {f.id === "einzeln" ? "Für eine Person" : "Mehrere Personen auf einmal"}
-              </span>
-            </button>
-          ))}
+      <div ref={rootRef} className={cn("space-y-6", className)}>
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-koder-orange text-[11px] text-white">
+            1
+          </span>
+          Anmeldeart wählen
         </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {RACE_RESULT.forms.map((f) => {
+            const Icon = FORM_ICONS[f.id];
+            return (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => selectForm(f.id)}
+                className="group flex flex-col rounded-3xl border border-border bg-card p-6 text-left transition-all duration-200 hover:border-koder-orange/55 hover:bg-koder-orange/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-koder-orange/15 text-koder-orange transition-colors group-hover:bg-koder-orange group-hover:text-white">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <span className="mt-5 text-xl font-extrabold tracking-tight text-foreground">
+                  {f.label}
+                </span>
+                <span className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {f.description}
+                </span>
+                <span className="mt-5 text-sm font-semibold text-koder-orange transition-transform group-hover:translate-x-0.5">
+                  Weiter →
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         <p className="text-xs text-muted-foreground">
-          Abwicklung über Race Result / RaceSolution.
+          Sichere Abwicklung über Race Result / RaceSolution – Zahlung und Bestätigung
+          direkt im Formular.
         </p>
       </div>
     );
   }
 
   const activeForm = getRaceResultForm(formId);
+  const otherForm = RACE_RESULT.forms.find((f) => f.id !== formId)!;
 
   return (
-    <div className={cn("space-y-4", className)}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-foreground">{activeForm.label}</p>
-        <div className="flex flex-wrap gap-2">
-          {RACE_RESULT.forms.map((f) => {
-            const active = f.id === formId;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => setFormId(f.id)}
-                className={cn(
-                  "rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors sm:text-sm",
-                  active
-                    ? "border-koder-orange bg-koder-orange text-white"
-                    : "border-border bg-card text-foreground hover:border-koder-orange/40",
-                )}
-              >
-                {f.label}
-              </button>
-            );
-          })}
+    <div ref={rootRef} className={cn("space-y-4 scroll-mt-28", className)}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-koder-orange text-[11px] text-white">
+              2
+            </span>
+            Formular
+          </div>
+          <h3 className="mt-2 text-xl font-extrabold tracking-tight sm:text-2xl">
+            {activeForm.label}
+          </h3>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setFormId(null)}
-            className="rounded-xl border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:border-koder-orange/40 hover:text-foreground sm:text-sm"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-koder-orange/40 hover:text-foreground"
           >
-            Zurück
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Zur Auswahl
+          </button>
+          <button
+            type="button"
+            onClick={() => selectForm(otherForm.id)}
+            className="rounded-xl border border-border px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:border-koder-orange/40"
+          >
+            Zu {otherForm.label}
           </button>
         </div>
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Die Anmeldung und Zahlung laufen über Race Result / RaceSolution. Personenbezogene
-        Daten werden dort verarbeitet.
+        Anmeldung und Zahlung laufen über Race Result / RaceSolution.
       </p>
 
       <div className="relative overflow-hidden rounded-2xl border border-border bg-[#0A0A0A]">
@@ -428,7 +479,7 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
             aria-live="polite"
           >
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-koder-orange border-t-transparent" />
-            <p className="text-sm text-muted-foreground">Anmeldeformular wird geladen…</p>
+            <p className="text-sm text-muted-foreground">Formular wird geladen…</p>
           </div>
         )}
         <iframe
