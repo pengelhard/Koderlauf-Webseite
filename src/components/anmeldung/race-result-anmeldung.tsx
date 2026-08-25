@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle2, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -340,50 +342,83 @@ const FORM_ICONS = {
   sammel: Users,
 } as const;
 
-function isFormId(value: string | null): value is RaceResultFormId {
-  return value === "einzeln" || value === "sammel";
-}
-
-type Props = {
-  className?: string;
-  /** true = Formular aktiv (Schritt 2) – Seite kann Infos ausblenden */
-  onFormActiveChange?: (active: boolean) => void;
+const FORM_HREF: Record<RaceResultFormId, string> = {
+  einzeln: "/anmeldung/einzeln",
+  sammel: "/anmeldung/sammel",
 };
 
-/**
- * Schritt 1: Anmeldeart · Schritt 2: nur Race-Result-Formular.
- * Nach erfolgreicher Anmeldung zurück zu Schritt 1.
- */
-export function RaceResultAnmeldung({ className = "", onFormActiveChange }: Props) {
-  const [formId, setFormId] = useState<RaceResultFormId | null>(null);
-  const [iframeReady, setIframeReady] = useState(false);
+/** Orangene Auswahlkarten auf /anmeldung → eigene Formular-Seiten. */
+export function AnmeldungAuswahl({ className = "" }: { className?: string }) {
   const [justCompleted, setJustCompleted] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const srcDoc = useMemo(
-    () => (formId ? buildEmbedSrcDoc(formId) : ""),
-    [formId],
-  );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const typ = params.get("typ");
-    if (isFormId(typ)) setFormId(typ);
+    if (params.get("ok") !== "1") return;
+    setJustCompleted(true);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("ok");
+    window.history.replaceState({}, "", url.pathname + url.search + url.hash);
   }, []);
 
   useEffect(() => {
-    setIframeReady(false);
-  }, [formId]);
+    if (!justCompleted) return;
+    const t = window.setTimeout(() => setJustCompleted(false), 8000);
+    return () => window.clearTimeout(t);
+  }, [justCompleted]);
 
-  useEffect(() => {
-    onFormActiveChange?.(formId !== null);
-  }, [formId, onFormActiveChange]);
+  return (
+    <div className={cn("space-y-6", className)}>
+      {justCompleted && (
+        <div
+          className="flex items-start gap-3 rounded-2xl border border-koder-orange/40 bg-koder-orange/10 px-4 py-3"
+          role="status"
+        >
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" aria-hidden />
+          <div>
+            <p className="font-semibold text-foreground">Anmeldung erfolgreich</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Du erhältst eine Bestätigung per E-Mail.
+            </p>
+          </div>
+        </div>
+      )}
 
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (formId) url.searchParams.set("typ", formId);
-    else url.searchParams.delete("typ");
-    window.history.replaceState({}, "", url.pathname + url.search + url.hash);
-  }, [formId]);
+      <div className="grid gap-4 sm:grid-cols-2">
+        {RACE_RESULT.forms.map((f) => {
+          const Icon = FORM_ICONS[f.id];
+          return (
+            <Link
+              key={f.id}
+              href={FORM_HREF[f.id]}
+              className="group flex flex-col rounded-3xl border border-koder-orange/50 bg-koder-orange p-6 text-left text-white shadow-lg shadow-koder-orange/20 transition-all duration-200 hover:bg-[#FF9F1C] hover:shadow-koder-orange/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20">
+                <Icon className="h-5 w-5" aria-hidden />
+              </span>
+              <span className="mt-5 text-xl font-extrabold tracking-tight">{f.label}</span>
+              <span className="mt-5 text-sm font-semibold transition-transform group-hover:translate-x-0.5">
+                Weiter →
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** Nur Formular – eigene Seite für Einzel- oder Sammelanmeldung. */
+export function RaceResultFormular({
+  formId,
+  className = "",
+}: {
+  formId: RaceResultFormId;
+  className?: string;
+}) {
+  const router = useRouter();
+  const [iframeReady, setIframeReady] = useState(false);
+  const srcDoc = useMemo(() => buildEmbedSrcDoc(formId), [formId]);
+  const activeForm = getRaceResultForm(formId);
 
   useEffect(() => {
     const link = document.createElement("link");
@@ -401,9 +436,7 @@ export function RaceResultAnmeldung({ className = "", onFormActiveChange }: Prop
     };
   }, []);
 
-  // Erfolgreiche Anmeldung (Bestätigung im Embed) → zurück zu Schritt 1
   useEffect(() => {
-    if (!formId) return;
     function onMessage(event: MessageEvent) {
       const data = event.data;
       if (
@@ -413,120 +446,27 @@ export function RaceResultAnmeldung({ className = "", onFormActiveChange }: Prop
         data.type === COMPLETE_MESSAGE.type
       ) {
         window.setTimeout(() => {
-          setFormId(null);
-          setJustCompleted(true);
-          requestAnimationFrame(() => {
-            rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-          });
+          router.push("/anmeldung?ok=1");
         }, 2800);
       }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [formId]);
-
-  useEffect(() => {
-    if (!justCompleted) return;
-    const t = window.setTimeout(() => setJustCompleted(false), 8000);
-    return () => window.clearTimeout(t);
-  }, [justCompleted]);
-
-  function selectForm(id: RaceResultFormId) {
-    setJustCompleted(false);
-    setFormId(id);
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-
-  function goBack() {
-    setFormId(null);
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-
-  if (!formId) {
-    return (
-      <div ref={rootRef} className={cn("space-y-6 scroll-mt-28", className)}>
-        {justCompleted && (
-          <div
-            className="flex items-start gap-3 rounded-2xl border border-koder-orange/40 bg-koder-orange/10 px-4 py-3"
-            role="status"
-          >
-            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" aria-hidden />
-            <div>
-              <p className="font-semibold text-foreground">Anmeldung erfolgreich</p>
-              <p className="mt-0.5 text-sm text-muted-foreground">
-                Du erhältst eine Bestätigung per E-Mail. Willkommen beim Koderlauf!
-              </p>
-            </div>
-          </div>
-        )}
-
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-koder-orange text-[11px] text-white">
-            1
-          </span>
-          Anmeldeart wählen
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          {RACE_RESULT.forms.map((f) => {
-            const Icon = FORM_ICONS[f.id];
-            return (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => selectForm(f.id)}
-                className="group flex flex-col rounded-3xl border border-koder-orange/50 bg-koder-orange p-6 text-left text-white shadow-lg shadow-koder-orange/20 transition-all duration-200 hover:bg-[#FF9F1C] hover:shadow-koder-orange/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </span>
-                <span className="mt-5 text-xl font-extrabold tracking-tight">{f.label}</span>
-                <span className="mt-2 text-sm leading-relaxed text-white/85">{f.description}</span>
-                <span className="mt-5 text-sm font-semibold transition-transform group-hover:translate-x-0.5">
-                  Weiter →
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <p className="text-xs text-muted-foreground">
-          Sichere Abwicklung über Race Result / RaceSolution – Zahlung und Bestätigung
-          direkt im Formular.
-        </p>
-      </div>
-    );
-  }
-
-  const activeForm = getRaceResultForm(formId);
+  }, [router]);
 
   return (
-    <div ref={rootRef} className={cn("space-y-4 scroll-mt-24", className)}>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-koder-orange text-[11px] text-white">
-              2
-            </span>
-            Formular
-          </div>
-          <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
-            {activeForm.label}
-          </h1>
-        </div>
-
-        <button
-          type="button"
-          onClick={goBack}
-          className="inline-flex w-fit items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-koder-orange/40 hover:text-foreground"
+    <div className={cn("space-y-4", className)}>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+          {activeForm.label}
+        </h1>
+        <Link
+          href="/anmeldung"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-koder-orange/40 hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
           Zurück
-        </button>
+        </Link>
       </div>
 
       <div className="relative overflow-hidden rounded-2xl border border-border bg-[#0A0A0A]">

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -16,60 +15,42 @@ import {
 import { EVENT } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
 import { StartnummernAusgabe } from "@/components/sections/startnummern-ausgabe";
-import { RaceResultAnmeldung } from "@/components/anmeldung/race-result-anmeldung";
+import { AnmeldungAuswahl } from "@/components/anmeldung/race-result-anmeldung";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 
 export default function AnmeldungPage() {
   const staticReveal = useStaticReveal();
-  const [formActive, setFormActive] = useState(false);
-
-  useEffect(() => {
-    const typ = new URLSearchParams(window.location.search).get("typ");
-    if (typ === "einzeln" || typ === "sammel") setFormActive(true);
-  }, []);
 
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        {!formActive && (
-          <motion.div
-            {...fadeReveal(staticReveal, { duration: 0.6 })}
-            className="text-center"
-          >
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
-              Koderlauf {EVENT.jahr}
-            </p>
-            <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
-              Anmeldung
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-              Online-Anmeldung zum Koderlauf am {EVENT.datumFormatiert} in {EVENT.ort}.
-            </p>
-          </motion.div>
-        )}
+        <motion.div
+          {...fadeReveal(staticReveal, { duration: 0.6 })}
+          className="text-center"
+        >
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
+            Koderlauf {EVENT.jahr}
+          </p>
+          <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
+            Anmeldung
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            Online-Anmeldung zum Koderlauf am {EVENT.datumFormatiert} in {EVENT.ort}.
+          </p>
+        </motion.div>
 
         {EVENT.anmeldungOffen && (
           <motion.div
-            {...fadeReveal(staticReveal, { duration: 0.6, delay: formActive ? 0 : 0.12 })}
-            className={formActive ? "mt-0" : "mt-8"}
+            {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.12 })}
+            className="mt-8"
           >
-            {!formActive && (
-              <>
-                <h2 className="text-2xl font-extrabold tracking-tight">Jetzt anmelden</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Wähle Einzel- oder Sammelanmeldung – das Formular erscheint erst danach.
-                  Partner: {EVENT.anmeldePartner.name}.
-                </p>
-              </>
-            )}
-            <div className={formActive ? undefined : "mt-6"}>
-              <RaceResultAnmeldung onFormActiveChange={setFormActive} />
+            <h2 className="text-2xl font-extrabold tracking-tight">Jetzt anmelden</h2>
+            <div className="mt-6">
+              <AnmeldungAuswahl />
             </div>
           </motion.div>
         )}
 
-        {!formActive && (
-          <>
         <motion.div
           {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.2 })}
           className="mt-10"
@@ -278,8 +259,6 @@ export default function AnmeldungPage() {
             </div>
           </a>
         </motion.div>
-          </>
-        )}
       </div>
     </div>
   );
