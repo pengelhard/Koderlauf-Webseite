@@ -72,11 +72,10 @@ export const EVENT = {
     { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "16:40", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx", minAlter: 8 },
   ] satisfies EventStrecke[],
   /**
-   * Wer das Mindestalter einer Strecke unterschreitet, braucht eine
-   * Einverständniserklärung der Eltern (Details bei der Anmeldung).
+   * Variante A: hartes Mindestalter; unter 18 immer Eltern-Einverständnis.
    */
   elternEinverstaendnis:
-    "Wer jünger als das Mindestalter der gewählten Strecke ist und trotzdem mitlaufen möchte, benötigt eine Einverständniserklärung der Eltern.",
+    "Das Mindestalter gilt verbindlich – darunter ist kein Start möglich. Alle Teilnehmerinnen und Teilnehmer unter 18 Jahren brauchen bei der Anmeldung das Einverständnis der Erziehungsberechtigten (Checkbox sowie Name und Telefon der Eltern).",
   zeitplan: [
     { zeit: "13:00", titel: "Startnummernausgabe am Eventtag" },
     { zeit: "15:00", titel: "Start Spielerei", streckeId: "spielerei" },

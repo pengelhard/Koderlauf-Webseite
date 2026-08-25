@@ -37,11 +37,16 @@ const FAQS = [
   },
   {
     frage: "Für wen ist der Kinderlauf?",
-    antwort: "Der Kinderlauf (800 m) ist für Kinder bis maximal 8 Jahre.",
+    antwort:
+      "Der Kinderlauf (800 m) ist für Kinder bis maximal 8 Jahre. Die Anmeldung erfolgt über die Erziehungsberechtigten.",
   },
   {
     frage: "Ab welchem Alter darf ich welche Strecke laufen?",
-    antwort: `Mindestalter: Kurz und knackig ab 8, Koderrunde (Lauf & Walking) ab 12, Trailrun ab 16, Spielerei ab 18 Jahren. ${EVENT.elternEinverstaendnis}`,
+    antwort: `Mindestalter (verbindlich, kein Start darunter): Kurz und knackig ab 8, Koderrunde (Lauf & Walking) ab 12, Trailrun ab 16, Spielerei ab 18 Jahren. Kinderlauf bis max. 8 Jahre.`,
+  },
+  {
+    frage: "Brauchen Minderjährige eine Einverständniserklärung der Eltern?",
+    antwort: `Ja. ${EVENT.elternEinverstaendnis} Eine Ausnahme unter dem Mindestalter (z. B. „außer Wertung“) gibt es nicht.`,
   },
   {
     frage: "Können geistig oder körperlich beeinträchtigte Personen früher starten?",
