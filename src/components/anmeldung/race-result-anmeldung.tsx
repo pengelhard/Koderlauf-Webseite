@@ -281,6 +281,61 @@ html {
 `;
 
 const COMPLETE_MESSAGE = { source: "koder-rr", type: "complete" } as const;
+const SUCCESS_STORAGE_KEY = "koder-anmeldung-ok";
+
+function markAnmeldungErfolgreich() {
+  try {
+    sessionStorage.setItem(SUCCESS_STORAGE_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+function consumeAnmeldungErfolgreich(): boolean {
+  try {
+    if (sessionStorage.getItem(SUCCESS_STORAGE_KEY) !== "1") return false;
+    sessionStorage.removeItem(SUCCESS_STORAGE_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Kleines Erfolgsbanner nach abgeschlossener Anmeldung. */
+function AnmeldungErfolgBanner({
+  onDismiss,
+  className,
+}: {
+  onDismiss?: () => void;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-start gap-3 rounded-2xl border border-koder-orange/45 bg-koder-orange/15 px-4 py-3 shadow-sm shadow-koder-orange/10",
+        className,
+      )}
+      role="status"
+    >
+      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" aria-hidden />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-foreground">Anmeldung erfolgreich</p>
+        <p className="mt-0.5 text-sm text-muted-foreground">
+          Du bist angemeldet. Die Bestätigung kommt per E-Mail.
+        </p>
+      </div>
+      {onDismiss && (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="shrink-0 text-xs font-semibold text-muted-foreground hover:text-foreground"
+        >
+          Schließen
+        </button>
+      )}
+    </div>
+  );
+}
 
 function buildEmbedSrcDoc(formId: RaceResultFormId): string {
   const form = getRaceResultForm(formId);
@@ -373,34 +428,27 @@ export function AnmeldungAuswahl({ className = "" }: { className?: string }) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("ok") !== "1") return;
+    const fromQuery = params.get("ok") === "1";
+    const fromStorage = consumeAnmeldungErfolgreich();
+    if (!fromQuery && !fromStorage) return;
     setJustCompleted(true);
-    const url = new URL(window.location.href);
-    url.searchParams.delete("ok");
-    window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+    if (fromQuery) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("ok");
+      window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+    }
   }, []);
 
   useEffect(() => {
     if (!justCompleted) return;
-    const t = window.setTimeout(() => setJustCompleted(false), 8000);
+    const t = window.setTimeout(() => setJustCompleted(false), 12000);
     return () => window.clearTimeout(t);
   }, [justCompleted]);
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn("space-y-4", className)}>
       {justCompleted && (
-        <div
-          className="flex items-start gap-3 rounded-2xl border border-koder-orange/40 bg-koder-orange/10 px-4 py-3"
-          role="status"
-        >
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" aria-hidden />
-          <div>
-            <p className="font-semibold text-foreground">Anmeldung erfolgreich</p>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              Du erhältst eine Bestätigung per E-Mail.
-            </p>
-          </div>
-        </div>
+        <AnmeldungErfolgBanner onDismiss={() => setJustCompleted(false)} />
       )}
 
       <div className="grid gap-3 sm:grid-cols-2 sm:max-w-xl">
@@ -434,6 +482,7 @@ export function RaceResultFormular({
 }) {
   const router = useRouter();
   const [iframeReady, setIframeReady] = useState(false);
+  const [completed, setCompleted] = useState(false);
   const srcDoc = useMemo(() => buildEmbedSrcDoc(formId), [formId]);
   const activeForm = getRaceResultForm(formId);
 
@@ -465,10 +514,13 @@ export function RaceResultFormular({
         data.source === COMPLETE_MESSAGE.source &&
         data.type === COMPLETE_MESSAGE.type
       ) {
+        markAnmeldungErfolgreich();
+        setCompleted(true);
         window.clearTimeout(redirectTimer);
+        // Kurz Bestätigung zeigen, dann zurück zur Auswahl mit Banner
         redirectTimer = window.setTimeout(() => {
           router.push("/anmeldung?ok=1");
-        }, 2500);
+        }, 2200);
       }
     }
     window.addEventListener("message", onMessage);
@@ -480,12 +532,17 @@ export function RaceResultFormular({
 
   return (
     <div className={cn("space-y-4", className)}>
+      {completed && <AnmeldungErfolgBanner />}
+
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
           {activeForm.label}
         </h1>
         <Link
-          href="/anmeldung"
+          href={completed ? "/anmeldung?ok=1" : "/anmeldung"}
+          onClick={() => {
+            if (completed) markAnmeldungErfolgreich();
+          }}
           className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-koder-orange/40 hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
@@ -494,7 +551,7 @@ export function RaceResultFormular({
       </div>
 
       <div className="relative overflow-hidden rounded-2xl border border-border bg-[#0A0A0A]">
-        {!iframeReady && (
+        {!iframeReady && !completed && (
           <div
             className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0A0A0A] p-8"
             aria-live="polite"
