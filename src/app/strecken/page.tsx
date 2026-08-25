@@ -248,27 +248,14 @@ function StreckenContent() {
         ) : (
           <div className="mx-auto mt-8 max-w-2xl space-y-3 text-center text-sm text-muted-foreground sm:text-base">
             <p>
-              Für den 2. Koderlauf im Rahmen unseres 50-jährigen SVO-Jubiläums haben wir wieder
-              richtig tolle Strecken für euch vorbereitet!
+              Zum 50-jährigen SVO-Jubiläum: bekannte Favoriten plus die neue{" "}
+              <strong className="font-semibold text-foreground">Spielerei</strong> als
+              Trail-Highlight.
             </p>
             <p>
-              Neben den beliebten Routen vom letzten Jahr erwartet euch ein absolutes Trail-Highlight
-              für alle Trailfreaks da draußen – ein echtes Abenteuer durch den Wald, das ihr nicht
-              verpassen solltet.
-            </p>
-            <p>
-              <strong className="font-semibold text-foreground">Wichtig für alle:</strong> Der Start-
-              und Zielbereich wurde auf den oberen Fußballplatz verlegt. Außerdem haben wir manche
-              Strecken leicht angepasst. Die Läufe verlaufen teilweise im öffentlichen Verkehr –
-              es gilt die StVO, Teilnehmende haben kein Vorrecht und starten auf eigene Gefahr.
-              Streckenposten unterstützen euch; besondere Vorsicht an Kreuzungen und der
-              Bundesstraße. Die Koderrunde gibt es als Lauf und als Walking (gleicher Start,
-              eigene Wertung).
-            </p>
-            <p>
-              <strong className="font-semibold text-foreground">Mindestalter:</strong> Kurz und
-              knackig ab 8, Koderrunde ab 12, Trailrun ab 16, Spielerei ab 18 Jahre. Kinderlauf bis
-              max. 8 Jahre. {EVENT.elternEinverstaendnis}
+              <strong className="font-semibold text-foreground">Start &amp; Ziel</strong> am oberen
+              Fußballplatz. Manche Strecken leicht angepasst. Koderrunde als Lauf und Walking
+              (gleicher Start, eigene Wertung).
             </p>
           </div>
         )}
@@ -484,6 +471,30 @@ function StreckenContent() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {yearTab === "2027" && (
+          <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-border bg-card px-4 py-4 text-sm text-muted-foreground sm:px-5">
+            <p className="font-semibold text-foreground">Hinweise</p>
+            <ul className="mt-2 list-disc space-y-1.5 pl-5 leading-relaxed">
+              <li>
+                Teilstrecken im öffentlichen Verkehr – es gilt die StVO, kein Vorrecht für
+                Teilnehmende. Vorsicht an Kreuzungen und der Bundesstraße.{" "}
+                <a href="/#faq" className="underline hover:text-foreground">
+                  Mehr in der FAQ
+                </a>
+                .
+              </li>
+              <li>
+                Mindestalter steht bei jeder Strecke – darunter kein Start. Unter 18: Eltern-
+                Einverständnis bei der Anmeldung.{" "}
+                <a href="/#faq" className="underline hover:text-foreground">
+                  Details
+                </a>
+                .
+              </li>
+            </ul>
+          </div>
+        )}
 
         {/* Anmelden button at the bottom, under the route */}
         <div className="mt-8 flex justify-center pb-12">
