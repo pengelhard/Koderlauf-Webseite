@@ -2,14 +2,11 @@ export const DEMO_EVENT_2027 = {
   id: "demo-2027",
   name: "Koderlauf 2027",
   slug: "koderlauf-2027",
-  date: "2027-06-15T09:00:00+02:00",
+  date: "2027-05-29T15:00:00+02:00",
   location: "Obermögersheim",
   description: "Der jährliche Koderlauf in Obermögersheim.",
-  max_participants_5km: 200,
-  max_participants_10km: 150,
-  max_participants_kids: 100,
   registration_open: true,
-  early_bird_deadline: "2027-02-28T23:59:59+01:00",
+  early_bird_deadline: "2026-11-30T23:59:59+01:00",
   created_at: new Date().toISOString(),
 };
 

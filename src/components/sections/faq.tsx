@@ -42,11 +42,20 @@ const FAQS = [
   },
   {
     frage: "Ab welchem Alter darf ich welche Strecke laufen?",
-    antwort: `Mindestalter (verbindlich, kein Start darunter): Kurz und knackig ab 8, Koderrunde (Lauf & Walking) ab 12, Trailrun ab 16, Spielerei ab 18 Jahren. Kinderlauf bis max. 8 Jahre.`,
+    antwort: `Das Mindestalter gilt fest – darunter kein Start und keine Ausnahme:
+
+• Kinderlauf: bis max. 8 Jahre
+• Kurz und knackig: ab 8 Jahren
+• Koderrunde (Lauf & Walking): ab 12 Jahren
+• Trailrun: ab 16 Jahren
+• Spielerei: ab 18 Jahren
+
+Zusätzlich brauchen alle unter 18 Jahren bei der Anmeldung das Einverständnis der Erziehungsberechtigten.`,
   },
   {
     frage: "Brauchen Minderjährige eine Einverständniserklärung der Eltern?",
-    antwort: `Ja. ${EVENT.elternEinverstaendnis} Eine Ausnahme unter dem Mindestalter (z. B. „außer Wertung“) gibt es nicht.`,
+    antwort:
+      "Ja. Alle Teilnehmerinnen und Teilnehmer unter 18 Jahren brauchen bei der Anmeldung das Einverständnis der Erziehungsberechtigten (Checkbox sowie Name und Telefon der Eltern). Das Mindestalter der gewählten Strecke gilt trotzdem verbindlich.",
   },
   {
     frage: "Können geistig oder körperlich beeinträchtigte Personen früher starten?",

@@ -38,6 +38,9 @@ const CONTEST_ALIASES: Record<string, Strecke2027> = {
   "10,5 km": "Trailrun",
   spielerei: "Spielerei",
   "25 km": "Spielerei",
+  "24 km": "Spielerei",
+  "24,7 km": "Spielerei",
+  "24.7 km": "Spielerei",
 };
 
 function emptyStrecken(): Record<string, StreckeCount> {

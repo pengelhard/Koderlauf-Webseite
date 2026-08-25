@@ -1,31 +1,35 @@
-export type Distance = "5km" | "10km" | "kids";
-export type PriceTier = "early_bird" | "normal" | "nachmeldung";
+/**
+ * Hilfspreise / Legacy-Stripe.
+ * Öffentliche Preise und Anmeldung laufen über EVENT + RaceSolution.
+ * Diese Datei bleibt nur für optionale Legacy-Checkout-Aufrufe konsistent zu EVENT.
+ */
+
+import { EVENT, getAktuellePreisPhase } from "@/lib/event-config";
+
+export type Distance =
+  | "kinderlauf"
+  | "kurz-knackig"
+  | "koderrunde"
+  | "koderrunde-walking"
+  | "trailrun"
+  | "spielerei"
+  /** @deprecated Legacy-Aliases */
+  | "5km"
+  | "10km"
+  | "kids";
+
+export type PriceTier = "early_bird" | "normal" | "nachmeldung" | "vor_ort";
 
 export interface PriceInfo {
-  amount: number;
+  amount: number; // Cent
   label: string;
   tier: PriceTier;
 }
 
-const EARLY_BIRD_DEADLINE = new Date("2027-02-28T23:59:59");
-const EVENT_DATE = new Date("2027-06-15T09:00:00");
-
-const PRICES: Record<Distance, Record<PriceTier, number>> = {
-  "5km": { early_bird: 1800, normal: 2300, nachmeldung: 3300 },
-  "10km": { early_bird: 2800, normal: 3300, nachmeldung: 4300 },
-  kids: { early_bird: 1100, normal: 1300, nachmeldung: 2300 },
-};
-
-const TIER_LABELS: Record<PriceTier, string> = {
-  early_bird: "Early Bird",
-  normal: "Normalpreis",
-  nachmeldung: "Nachmeldung",
-};
-
-export const DISTANCE_LABELS: Record<Distance, string> = {
-  "5km": "5 km (Erwachsene)",
-  "10km": "10 km (Erwachsene)",
-  kids: "Kids-Lauf (~2 km, bis 14 Jahre)",
+const LEGACY_DISTANCE_MAP: Record<string, string> = {
+  "5km": "kurz-knackig",
+  "10km": "trailrun",
+  kids: "kinderlauf",
 };
 
 /** T-Shirt-Größen 2027 (Kinder + Erwachsene). */
@@ -52,23 +56,37 @@ export const GENDER_OPTIONS = [
 ] as const;
 export type Gender = (typeof GENDER_OPTIONS)[number]["value"];
 
+export const DISTANCE_LABELS: Record<string, string> = Object.fromEntries(
+  EVENT.strecken.map((s) => [s.id, `${s.name} (${s.distanz})`]),
+);
+
 export function getCurrentTier(date: Date = new Date()): PriceTier {
-  if (date <= EARLY_BIRD_DEADLINE) return "early_bird";
-  if (date < EVENT_DATE) return "normal";
-  return "nachmeldung";
+  const phase = getAktuellePreisPhase(date);
+  if (phase.id === "fruehbucher") return "early_bird";
+  if (phase.id === "normal") return "normal";
+  if (phase.id === "spaet") return "nachmeldung";
+  return "vor_ort";
 }
 
 export function getPrice(distance: Distance, date?: Date): PriceInfo {
-  const tier = getCurrentTier(date);
+  const streckeId = LEGACY_DISTANCE_MAP[distance] ?? distance;
+  const phase = getAktuellePreisPhase(date);
+  const euros = streckeId === "kinderlauf" ? phase.kinderlauf : phase.andere;
   return {
-    amount: PRICES[distance][tier],
-    label: TIER_LABELS[tier],
-    tier,
+    amount: euros * 100,
+    label: phase.name,
+    tier: getCurrentTier(date),
   };
 }
 
-export function getAllPrices(distance: Distance): Record<PriceTier, number> {
-  return PRICES[distance];
+export function getAllPrices(distance: Distance): Record<string, number> {
+  const streckeId = LEGACY_DISTANCE_MAP[distance] ?? distance;
+  const out: Record<string, number> = {};
+  for (const phase of EVENT.preise.phasen) {
+    const euros = streckeId === "kinderlauf" ? phase.kinderlauf : phase.andere;
+    out[phase.id] = euros * 100;
+  }
+  return out;
 }
 
 export function formatPrice(cents: number): string {
@@ -78,10 +96,16 @@ export function formatPrice(cents: number): string {
   }).format(cents / 100);
 }
 
-export function isKidsAgeValid(birthDate: Date, eventDate: Date = EVENT_DATE): boolean {
+export function isKidsAgeValid(
+  birthDate: Date,
+  eventDate: Date = new Date(EVENT.datum),
+): boolean {
   const age =
     eventDate.getFullYear() -
     birthDate.getFullYear() -
-    (eventDate < new Date(eventDate.getFullYear(), birthDate.getMonth(), birthDate.getDate()) ? 1 : 0);
-  return age < 15;
+    (eventDate <
+    new Date(eventDate.getFullYear(), birthDate.getMonth(), birthDate.getDate())
+      ? 1
+      : 0);
+  return age <= 8;
 }
