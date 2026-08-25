@@ -69,7 +69,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/anmeldungen" className="transition-colors hover:text-white">
-                  Anmeldezahlen 2026 (Archiv)
+                  Anmeldungen
                 </Link>
               </li>
             </ul>
