@@ -69,7 +69,7 @@ export function Stats() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Live-Anmeldezahlen 2027 (gleiche Quelle wie /anmeldungen)
+  // Live-Teilnehmerzahlen 2027 (gleiche Quelle wie /teilnehmer)
   useEffect(() => {
     let cancelled = false;
 
@@ -99,8 +99,8 @@ export function Stats() {
   const stats = [
     {
       value: anmeldungen,
-      label: `Anmeldungen ${EVENT.jahr}`,
-      href: "/anmeldungen" as string | undefined,
+      label: `Teilnehmer ${EVENT.jahr}`,
+      href: "/teilnehmer" as string | undefined,
     },
     {
       value: EVENT.strecken.length,

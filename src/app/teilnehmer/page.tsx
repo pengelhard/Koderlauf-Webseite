@@ -175,9 +175,9 @@ export default function AnmeldungenPage() {
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
             Koderlauf {jahr}
           </p>
-          <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Anmeldungen</h1>
+          <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">Teilnehmer</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {isLive ? "Live-Statistik & Teilnehmerliste" : "Finale Zahlen – Archiv"}
+            {isLive ? "Statistik & Teilnehmerliste" : "Finale Zahlen – Archiv"}
           </p>
 
           <div className="mt-5 inline-flex rounded-xl border border-border bg-card p-1">
@@ -218,8 +218,8 @@ export default function AnmeldungenPage() {
           )}
           {waitingForJson && (
             <p className="mx-auto mt-4 max-w-2xl rounded-lg border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm text-muted-foreground">
-              Noch keine Live-Daten angebunden. Sobald die Race-Result-JSON-URL hinterlegt ist,
-              erscheinen Statistik und Teilnehmerliste automatisch.
+              Noch keine Live-Daten. Sobald die Teilnehmerliste von RaceSolution freigeschaltet
+              ist, erscheinen Statistik und Namen automatisch.
             </p>
           )}
         </motion.div>
@@ -234,7 +234,7 @@ export default function AnmeldungenPage() {
           <p className="mt-3 text-6xl font-black tabular-nums text-koder-orange sm:text-7xl">
             {stats.total}
           </p>
-          <p className="mt-1 text-lg font-medium text-muted-foreground">Anmeldungen gesamt</p>
+          <p className="mt-1 text-lg font-medium text-muted-foreground">Teilnehmer gesamt</p>
           <div className="mt-3 flex items-center justify-center gap-6 text-sm">
             <span>
               <span className="font-bold">{stats.gender.m}</span>{" "}
@@ -255,7 +255,7 @@ export default function AnmeldungenPage() {
           className="mt-8"
         >
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
-            <TrendingUp size={14} /> Anmeldungen pro Strecke
+            <TrendingUp size={14} /> Teilnehmer pro Strecke
           </h2>
           <div className="mt-4 space-y-3">
             {displayStrecken.map((name) => {

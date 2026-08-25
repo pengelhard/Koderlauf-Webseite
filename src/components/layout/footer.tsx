@@ -68,8 +68,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/anmeldungen" className="transition-colors hover:text-white">
-                  Anmeldungen
+                <Link href="/teilnehmer" className="transition-colors hover:text-white">
+                  Teilnehmer
                 </Link>
               </li>
             </ul>
