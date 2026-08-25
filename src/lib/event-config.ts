@@ -77,7 +77,7 @@ export const EVENT = {
   elternEinverstaendnis:
     "Das Mindestalter gilt verbindlich – darunter ist kein Start möglich. Alle Teilnehmerinnen und Teilnehmer unter 18 Jahren brauchen bei der Anmeldung das Einverständnis der Erziehungsberechtigten (Checkbox sowie Name und Telefon der Eltern).",
   zeitplan: [
-    { zeit: "13:00", titel: "Startnummernausgabe am Eventtag" },
+    { zeit: "12:00", titel: "Startnummernausgabe am Eventtag" },
     { zeit: "15:00", titel: "Start Spielerei", streckeId: "spielerei" },
     { zeit: "15:10", titel: "Start Kinderlauf", streckeId: "kinderlauf" },
     { zeit: "16:20", titel: "Start Trailrun", streckeId: "trailrun" },
@@ -92,7 +92,7 @@ export const EVENT = {
       { tag: "Donnerstag", datum: "27. Mai 2027", zeit: "17:00–20:00 Uhr" },
       { tag: "Freitag", datum: "28. Mai 2027", zeit: "17:00–20:00 Uhr" },
     ],
-    eventtag: "Samstag, 29. Mai 2027 ab 13:00 Uhr",
+    eventtag: "Samstag, 29. Mai 2027 ab 12:00 Uhr",
     hinweis:
       "Empfohlen für alle mit kurzer Anreise: Holt Startnummer und bestellte T-Shirts schon Donnerstag oder Freitag ab – weniger Stress am Eventtag.",
   },

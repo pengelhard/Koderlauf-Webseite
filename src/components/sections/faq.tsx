@@ -16,7 +16,7 @@ const vorOrt = EVENT.preise.phasen.find((p) => p.id === "vor_ort");
 const FAQS = [
   {
     frage: "Wann und wo findet der Koderlauf statt?",
-    antwort: `Am ${EVENT.datumKurz} rund um das ${EVENT.ortDetail}. Der erste Start (${ersterStart.name}) ist um ${ersterStart.startzeit} Uhr. Startnummern gibt es am Eventtag ab 13:00 Uhr – und schon Do/Fr von 17–20 Uhr (empfohlen).`,
+    antwort: `Am ${EVENT.datumKurz} rund um das ${EVENT.ortDetail}. Der erste Start (${ersterStart.name}) ist um ${ersterStart.startzeit} Uhr. Startnummern gibt es am Eventtag ab 12:00 Uhr – und schon Do/Fr von 17–20 Uhr (empfohlen).`,
   },
   {
     frage: "Was ist in der Startgebühr enthalten?",

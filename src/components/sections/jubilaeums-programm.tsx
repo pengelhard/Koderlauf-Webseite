@@ -17,7 +17,7 @@ import { EVENT } from "@/lib/event-config";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const SAMSTAG_PROGRAMM = [
-  { zeit: "13:00", text: "Startnummernausgabe am Eventtag", icon: Ticket },
+  { zeit: "12:00", text: "Startnummernausgabe am Eventtag", icon: Ticket },
   { zeit: EVENT.zeitplan.find((z) => z.streckeId === "spielerei")?.zeit ?? "15:00", text: "Koderlauf – Start der Strecken (Spielerei zuerst)", icon: Route },
   { zeit: EVENT.zeitplan.find((z) => z.titel.includes("Siegerehrung"))?.zeit ?? "18:30", text: "Siegerehrung am Sportheim", icon: Trophy },
   { zeit: "21:30", text: "Live: Tape Jam – Tribute to 80's Rock", icon: Music },
