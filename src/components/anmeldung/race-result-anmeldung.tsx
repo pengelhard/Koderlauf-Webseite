@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, User, Users } from "lucide-react";
+import { ArrowLeft, CheckCircle2, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   RACE_RESULT,
@@ -245,7 +245,6 @@ html, body {
   color: #E5E7EB !important;
 }
 
-/* Scrollbar im Koderlauf-Stil */
 html {
   scrollbar-width: thin;
   scrollbar-color: #FF6B00 #1a1a1a;
@@ -279,6 +278,8 @@ html {
 }
 `;
 
+const COMPLETE_MESSAGE = { source: "koder-rr", type: "complete" } as const;
+
 function buildEmbedSrcDoc(formId: RaceResultFormId): string {
   const form = getRaceResultForm(formId);
   const injectScript = `
@@ -299,6 +300,17 @@ function buildEmbedSrcDoc(formId: RaceResultFormId): string {
         applyTheme();
         if (document.querySelector(".RRReg") || tries > 40) clearInterval(timer);
       }, 250);
+
+      var done = false;
+      function notifyComplete() {
+        if (done) return;
+        if (!document.querySelector(".RRReg_Confirmation")) return;
+        done = true;
+        try {
+          parent.postMessage(${JSON.stringify(COMPLETE_MESSAGE)}, "*");
+        } catch (e) {}
+      }
+      setInterval(notifyComplete, 400);
     })();
   `;
 
@@ -332,20 +344,26 @@ function isFormId(value: string | null): value is RaceResultFormId {
   return value === "einzeln" || value === "sammel";
 }
 
+type Props = {
+  className?: string;
+  /** true = Formular aktiv (Schritt 2) – Seite kann Infos ausblenden */
+  onFormActiveChange?: (active: boolean) => void;
+};
+
 /**
- * Bindet das Race-Result-Anmeldeformular ein.
- * Schritt 1: Anmeldeart · Schritt 2: Formular (erst nach Klick).
+ * Schritt 1: Anmeldeart · Schritt 2: nur Race-Result-Formular.
+ * Nach erfolgreicher Anmeldung zurück zu Schritt 1.
  */
-export function RaceResultAnmeldung({ className = "" }: { className?: string }) {
+export function RaceResultAnmeldung({ className = "", onFormActiveChange }: Props) {
   const [formId, setFormId] = useState<RaceResultFormId | null>(null);
   const [iframeReady, setIframeReady] = useState(false);
+  const [justCompleted, setJustCompleted] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const srcDoc = useMemo(
     () => (formId ? buildEmbedSrcDoc(formId) : ""),
     [formId],
   );
 
-  // Deep-Link / Refresh: ?typ=einzeln|sammel
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const typ = params.get("typ");
@@ -355,6 +373,10 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
   useEffect(() => {
     setIframeReady(false);
   }, [formId]);
+
+  useEffect(() => {
+    onFormActiveChange?.(formId !== null);
+  }, [formId, onFormActiveChange]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -379,16 +401,69 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
     };
   }, []);
 
+  // Erfolgreiche Anmeldung (Bestätigung im Embed) → zurück zu Schritt 1
+  useEffect(() => {
+    if (!formId) return;
+    function onMessage(event: MessageEvent) {
+      const data = event.data;
+      if (
+        data &&
+        typeof data === "object" &&
+        data.source === COMPLETE_MESSAGE.source &&
+        data.type === COMPLETE_MESSAGE.type
+      ) {
+        window.setTimeout(() => {
+          setFormId(null);
+          setJustCompleted(true);
+          requestAnimationFrame(() => {
+            rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }, 2800);
+      }
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [formId]);
+
+  useEffect(() => {
+    if (!justCompleted) return;
+    const t = window.setTimeout(() => setJustCompleted(false), 8000);
+    return () => window.clearTimeout(t);
+  }, [justCompleted]);
+
   function selectForm(id: RaceResultFormId) {
+    setJustCompleted(false);
     setFormId(id);
     requestAnimationFrame(() => {
-      rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  function goBack() {
+    setFormId(null);
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
 
   if (!formId) {
     return (
-      <div ref={rootRef} className={cn("space-y-6", className)}>
+      <div ref={rootRef} className={cn("space-y-6 scroll-mt-28", className)}>
+        {justCompleted && (
+          <div
+            className="flex items-start gap-3 rounded-2xl border border-koder-orange/40 bg-koder-orange/10 px-4 py-3"
+            role="status"
+          >
+            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" aria-hidden />
+            <div>
+              <p className="font-semibold text-foreground">Anmeldung erfolgreich</p>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                Du erhältst eine Bestätigung per E-Mail. Willkommen beim Koderlauf!
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-koder-orange text-[11px] text-white">
             1
@@ -404,18 +479,14 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
                 key={f.id}
                 type="button"
                 onClick={() => selectForm(f.id)}
-                className="group flex flex-col rounded-3xl border border-border bg-card p-6 text-left transition-all duration-200 hover:border-koder-orange/55 hover:bg-koder-orange/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-koder-orange"
+                className="group flex flex-col rounded-3xl border border-koder-orange/50 bg-koder-orange p-6 text-left text-white shadow-lg shadow-koder-orange/20 transition-all duration-200 hover:bg-[#FF9F1C] hover:shadow-koder-orange/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-koder-orange/15 text-koder-orange transition-colors group-hover:bg-koder-orange group-hover:text-white">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
-                <span className="mt-5 text-xl font-extrabold tracking-tight text-foreground">
-                  {f.label}
-                </span>
-                <span className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {f.description}
-                </span>
-                <span className="mt-5 text-sm font-semibold text-koder-orange transition-transform group-hover:translate-x-0.5">
+                <span className="mt-5 text-xl font-extrabold tracking-tight">{f.label}</span>
+                <span className="mt-2 text-sm leading-relaxed text-white/85">{f.description}</span>
+                <span className="mt-5 text-sm font-semibold transition-transform group-hover:translate-x-0.5">
                   Weiter →
                 </span>
               </button>
@@ -432,10 +503,9 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
   }
 
   const activeForm = getRaceResultForm(formId);
-  const otherForm = RACE_RESULT.forms.find((f) => f.id !== formId)!;
 
   return (
-    <div ref={rootRef} className={cn("space-y-4 scroll-mt-28", className)}>
+    <div ref={rootRef} className={cn("space-y-4 scroll-mt-24", className)}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -444,33 +514,20 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
             </span>
             Formular
           </div>
-          <h3 className="mt-2 text-xl font-extrabold tracking-tight sm:text-2xl">
+          <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
             {activeForm.label}
-          </h3>
+          </h1>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setFormId(null)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-koder-orange/40 hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden />
-            Zur Auswahl
-          </button>
-          <button
-            type="button"
-            onClick={() => selectForm(otherForm.id)}
-            className="rounded-xl border border-border px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:border-koder-orange/40"
-          >
-            Zu {otherForm.label}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={goBack}
+          className="inline-flex w-fit items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-koder-orange/40 hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          Zurück
+        </button>
       </div>
-
-      <p className="text-xs text-muted-foreground">
-        Anmeldung und Zahlung laufen über Race Result / RaceSolution.
-      </p>
 
       <div className="relative overflow-hidden rounded-2xl border border-border bg-[#0A0A0A]">
         {!iframeReady && (
@@ -487,7 +544,7 @@ export function RaceResultAnmeldung({ className = "" }: { className?: string }) 
           title={activeForm.label}
           srcDoc={srcDoc}
           className={cn(
-            "h-[min(90vh,1100px)] w-full bg-[#0A0A0A] transition-opacity duration-300",
+            "h-[min(92vh,1200px)] w-full bg-[#0A0A0A] transition-opacity duration-300",
             iframeReady ? "opacity-100" : "opacity-0",
           )}
           onLoad={() => {
