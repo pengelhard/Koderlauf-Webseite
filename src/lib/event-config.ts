@@ -108,7 +108,7 @@ export const EVENT = {
       { id: "fruehbucher", name: "Frühbucher", bis: "2026-11-30T23:59:59", hinweis: "online bis 30.11.2026", kinderlauf: 5, andere: 8 },
       { id: "normal", name: "Normalpreis", bis: "2027-03-31T23:59:59", hinweis: "online bis 31.03.2027", kinderlauf: 7, andere: 12 },
       { id: "spaet", name: "Spätmeldung", bis: "2027-05-28T23:59:59", hinweis: "online bis 28.05.2027", kinderlauf: 10, andere: 16 },
-      { id: "vor_ort", name: "Nachmeldung vor Ort", bis: null, hinweis: "am Eventtag bis 14:30 Uhr am Sportheim", kinderlauf: 15, andere: 21 },
+      { id: "vor_ort", name: "Nachmeldung vor Ort", bis: null, hinweis: "am Eventtag bis 14:30 Uhr am Sportheim", kinderlauf: 15, andere: 25 },
     ] satisfies PreisPhase[],
     /** Senioren ab 70 zahlen auf allen Strecken und in allen Phasen diesen Preis */
     seniorenAb70: 5,
@@ -123,10 +123,12 @@ export const EVENT = {
     },
     abendkarte: {
       name: "Abendkarte Tape Jam",
-      /** Reduzierter Teilnehmerpreis – genauer Betrag folgt nach Abstimmung */
-      preisHinweis: "günstiger Teilnehmerpreis",
+      /** Mit Startplatz (bei der Anmeldung mitbestellen) */
+      teilnehmerPreis: 5,
+      /** Reguläre Abendkarte ohne Startplatz */
+      regulaerPreis: 10,
       beschreibung:
-        "Als Läuferin oder Läufer könnt ihr bei der Anmeldung eine günstigere Abendkarte für Tape Jam (Tribute to 80's Rock) mitbestellen – ab 21:30 Uhr am Sportheim.",
+        "Als Läuferin oder Läufer die Abendkarte für Tape Jam (Tribute to 80's Rock) bei der Anmeldung mitbestellen: 5 € statt 10 € – also 50 % günstiger. Live ab 21:30 Uhr am Sportheim.",
     },
   },
 };
@@ -180,4 +182,10 @@ export function getAktuellerPreis(streckeId: string, now?: Date): string {
   const phase = getAktuellePreisPhase(now);
   const preis = streckeId === "kinderlauf" ? phase.kinderlauf : phase.andere;
   return `${preis} €`;
+}
+
+/** Rabatt auf die Tape-Jam-Abendkarte mit Startplatz, z. B. 50. */
+export function getAbendkarteRabattProzent(): number {
+  const { teilnehmerPreis, regulaerPreis } = EVENT.extras.abendkarte;
+  return Math.round((1 - teilnehmerPreis / regulaerPreis) * 100);
 }
