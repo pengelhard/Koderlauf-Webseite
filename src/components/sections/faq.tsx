@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { EVENT, getErsterStart } from "@/lib/event-config";
+import { EVENT, getAbendkarteRabattProzent, getErsterStart } from "@/lib/event-config";
 import { formatAltersklassenKurz } from "@/lib/data/altersklassen";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import { cn } from "@/lib/utils";
@@ -193,13 +193,25 @@ const FAQS: FaqItem[] = [
       "Ja. Jeder Finisher erhält eine exklusive KoderMedaille – egal auf welcher Strecke.",
   },
   {
+    frage: "Ist der Eintritt am Freitag frei?",
+    antwort: (
+      <>
+        Ja. Am Freitag, 28. Mai 2027, gilt <strong className="text-foreground">freier Eintritt</strong>{" "}
+        zum Auftakt: Elf- und Neunmeterturnier, Kinder- und Jugenddisco, Plattenparty und
+        Barbetrieb – einfach vorbeikommen. Das Programm steht auf der{" "}
+        <FaqLink href="/">Startseite</FaqLink>.
+      </>
+    ),
+  },
+  {
     frage: "Kann ich ein T-Shirt oder eine Abendkarte mitbestellen?",
     antwort: (
       <>
         Ja, bei der <FaqLink href="/anmeldung">Online-Anmeldung</FaqLink> optional:{" "}
         {EVENT.extras.tshirt.name} für {EVENT.extras.tshirt.preis} € (Größen 116–164, S–XXL, 3XL,
-        4XL) sowie eine {EVENT.extras.abendkarte.name} zum {EVENT.extras.abendkarte.preisHinweis} für
-        Tape Jam ab 21:30 Uhr.
+        4XL) sowie eine {EVENT.extras.abendkarte.name} für{" "}
+        {EVENT.extras.abendkarte.teilnehmerPreis} € statt {EVENT.extras.abendkarte.regulaerPreis} €
+        – {getAbendkarteRabattProzent()}&nbsp;% günstiger mit Startplatz. Tape Jam live ab 21:30 Uhr.
       </>
     ),
   },

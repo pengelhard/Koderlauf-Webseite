@@ -13,7 +13,7 @@ import {
   CheckCircle2,
   Beer,
 } from "lucide-react";
-import { EVENT } from "@/lib/event-config";
+import { EVENT, getAbendkarteRabattProzent } from "@/lib/event-config";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
 import { StartnummernAusgabe } from "@/components/sections/startnummern-ausgabe";
 import { AnmeldungAuswahl } from "@/components/anmeldung/race-result-anmeldung";
@@ -203,8 +203,17 @@ export default function AnmeldungPage() {
                   <p className="text-xs font-semibold uppercase tracking-widest">Teilnehmer-Vorteil</p>
                 </div>
                 <h3 className="mt-2 text-xl font-extrabold">{EVENT.extras.abendkarte.name}</h3>
-                <p className="mt-1 text-lg font-extrabold text-koder-orange">
-                  {EVENT.extras.abendkarte.preisHinweis}
+                <p className="mt-2 inline-flex rounded-full bg-koder-orange px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-white">
+                  {getAbendkarteRabattProzent()}&nbsp;% günstiger mit Ticket
+                </p>
+                <p className="mt-3 flex flex-wrap items-baseline gap-2">
+                  <span className="text-3xl font-extrabold text-koder-orange">
+                    {EVENT.extras.abendkarte.teilnehmerPreis} €
+                  </span>
+                  <span className="text-sm text-muted-foreground line-through">
+                    {EVENT.extras.abendkarte.regulaerPreis} €
+                  </span>
+                  <span className="text-sm text-muted-foreground">Abendkarte</span>
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {EVENT.extras.abendkarte.beschreibung}

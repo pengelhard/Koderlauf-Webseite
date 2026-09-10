@@ -13,7 +13,7 @@ import {
   Ticket,
   ArrowRight,
 } from "lucide-react";
-import { EVENT } from "@/lib/event-config";
+import { EVENT, getAbendkarteRabattProzent } from "@/lib/event-config";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
 
 const SAMSTAG_PROGRAMM = [
@@ -29,11 +29,13 @@ const RAHMENPROGRAMM = [
     datum: "28. Mai 2027",
     akzent: "Auftakt",
     icon: PartyPopper,
+    freierEintritt: true,
     punkte: [
+      "Freier Eintritt – einfach vorbeikommen",
       "ab 17 Uhr Elf- & Neunmeterturnier für Kinder",
       "ab 19 Uhr Kinder- und Jugenddisco mit Siegerehrung",
       "Übergang zur Plattenparty",
-      "Barbetrieb ab 23 Uhr",
+      "Barbetrieb",
     ],
   },
   {
@@ -41,6 +43,7 @@ const RAHMENPROGRAMM = [
     datum: "30. Mai 2027",
     akzent: "Festsonntag",
     icon: Cross,
+    freierEintritt: false,
     punkte: [
       "9 Uhr Totenehrung",
       "10 Uhr Gottesdienst",
@@ -73,8 +76,8 @@ export function JubilaeumsProgramm() {
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-white/65 sm:text-base">
             Drei Tage feiert Obermögersheim 50 Jahre Sportverein. Das Herzstück:
-            der Koderlauf am Samstag – eingerahmt von Auftakt am Freitag und
-            Festsonntag.
+            der Koderlauf am Samstag – eingerahmt von Auftakt am Freitag mit
+            freiem Eintritt und Festsonntag.
           </p>
         </motion.div>
 
@@ -143,15 +146,25 @@ export function JubilaeumsProgramm() {
                 className="object-contain object-center lg:object-cover lg:object-top"
                 sizes="(min-width: 1024px) 45vw, 100vw"
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-5 sm:p-6">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-5 sm:p-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-koder-orange">
                   Abendprogramm · ab 21:30 Uhr
                 </p>
                 <p className="mt-1 text-lg font-extrabold sm:text-xl">
                   Tape Jam – Tribute to 80&apos;s Rock
                 </p>
-                <p className="mt-2 text-xs leading-relaxed text-white/80 sm:text-sm">
-                  Als Teilnehmer: günstigere Abendkarte bei der Anmeldung mitbestellen.
+                <p className="mt-3 inline-flex rounded-full bg-koder-orange px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-white">
+                  {getAbendkarteRabattProzent()}&nbsp;% günstiger mit Ticket
+                </p>
+                <p className="mt-2 text-sm font-semibold text-white sm:text-base">
+                  Mit Startplatz {EVENT.extras.abendkarte.teilnehmerPreis}&nbsp;€
+                  <span className="mx-1.5 text-white/50">·</span>
+                  <span className="text-white/70">
+                    Abendkarte {EVENT.extras.abendkarte.regulaerPreis}&nbsp;€
+                  </span>
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-white/75 sm:text-sm">
+                  Abendkarte bei der Anmeldung mitbestellen – halb so teuer wie an der Abendkasse.
                 </p>
               </div>
             </div>
@@ -181,6 +194,11 @@ export function JubilaeumsProgramm() {
                       <CalendarDays size={14} />
                       {tag.datum}
                     </p>
+                    {tag.freierEintritt && (
+                      <p className="mt-3 inline-flex rounded-full bg-koder-orange px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-white">
+                        Freier Eintritt
+                      </p>
+                    )}
                   </div>
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-koder-orange">
                     <Icon size={22} />
