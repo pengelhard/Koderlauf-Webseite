@@ -163,6 +163,7 @@ export default function AnmeldungenPage() {
 
   const isLive = jahr === "2027";
   const waitingForJson = isLive && stats.source === "empty" && !fetchError;
+  const liveEmpty = isLive && stats.source === "race-result" && stats.total === 0 && !fetchError;
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -219,8 +220,13 @@ export default function AnmeldungenPage() {
           )}
           {waitingForJson && (
             <p className="mx-auto mt-4 max-w-2xl rounded-lg border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm text-muted-foreground">
-              Noch keine Live-Daten. Sobald die Teilnehmerliste von RaceSolution freigeschaltet
-              ist, erscheinen Statistik und Namen automatisch.
+              Live-Daten von RaceSolution konnten noch nicht geladen werden.
+            </p>
+          )}
+          {liveEmpty && (
+            <p className="mx-auto mt-4 max-w-2xl rounded-lg border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm text-muted-foreground">
+              Aktuell keine Anmeldungen in der RaceSolution-Teilnehmerliste. Neue
+              Meldungen erscheinen hier automatisch.
             </p>
           )}
         </motion.div>
@@ -319,7 +325,9 @@ export default function AnmeldungenPage() {
                 <div className="rounded-2xl border border-border bg-card px-4 py-6 text-center text-sm text-muted-foreground">
                   {waitingForJson
                     ? "Vereinswertung erscheint mit den Live-Daten."
-                    : "Noch keine Vereinsangaben – bei der Anmeldung Verein eintragen!"}
+                    : liveEmpty
+                      ? "Vereinswertung erscheint mit den ersten Anmeldungen."
+                      : "Noch keine Vereinsangaben – bei der Anmeldung Verein eintragen!"}
                 </div>
               ) : (
                 stats.vereine!.ranking.slice(0, 15).map((v, i) => {
@@ -466,8 +474,10 @@ export default function AnmeldungenPage() {
                       <tr>
                         <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground">
                           {waitingForJson
-                            ? "Teilnehmer erscheinen, sobald die JSON-Liste angebunden ist."
-                            : "Keine Einträge für diese Filter."}
+                            ? "Noch keine Live-Daten."
+                            : liveEmpty
+                              ? "Noch keine Anmeldungen – die Liste aktualisiert sich automatisch."
+                              : "Keine Einträge für diese Filter."}
                         </td>
                       </tr>
                     ) : (

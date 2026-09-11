@@ -34,6 +34,10 @@ const CONTEST_ALIASES: Record<string, Strecke2027> = {
   "koderrunde (walking)": "Koderrunde (Walking)",
   "koderrunde walking": "Koderrunde (Walking)",
   walking: "Koderrunde (Walking)",
+  "koderunde ( walking)": "Koderrunde (Walking)",
+  "koderunde (walking)": "Koderrunde (Walking)",
+  "koderunde ( lauf)": "Koderrunde (Lauf)",
+  "koderunde (lauf)": "Koderrunde (Lauf)",
   trailrun: "Trailrun",
   "trail run": "Trailrun",
   "10,5 km": "Trailrun",
@@ -94,7 +98,7 @@ function normalizeGender(raw: string): AnmeldungParticipant["geschlecht"] {
 
 export function normalizeContest(raw: string): string {
   const key = raw.trim().toLowerCase().replace(/\s+/g, " ");
-  if (!key) return "Unbekannt";
+  if (!key) return "";
   if (CONTEST_ALIASES[key]) return CONTEST_ALIASES[key];
   // Teiltreffer
   for (const [alias, label] of Object.entries(CONTEST_ALIASES)) {
@@ -104,30 +108,89 @@ export function normalizeContest(raw: string): string {
   return raw.trim();
 }
 
-export function mapRaceResultRow(row: RaceResultParticipantRaw): AnmeldungParticipant {
-  const vereinRaw = pickString(row, ["Club", "Verein", "Team"]) || undefined;
+/** RR-Listenfeld „Nachname, Vorname“ oder „Vorname Nachname“. */
+export function splitAnzeigeName(raw: string): { nachname: string; vorname: string } {
+  const s = raw.trim();
+  if (!s) return { nachname: "", vorname: "" };
+  if (s.includes(",")) {
+    const [nachname, ...rest] = s.split(",");
+    return { nachname: nachname.trim(), vorname: rest.join(",").trim() };
+  }
+  const parts = s.split(/\s+/);
+  if (parts.length === 1) return { nachname: parts[0], vorname: "" };
+  return { nachname: parts[parts.length - 1], vorname: parts.slice(0, -1).join(" ") };
+}
+
+export function mapRaceResultRow(
+  row: RaceResultParticipantRaw,
+  contestById?: Record<string, string>,
+): AnmeldungParticipant {
+  const vereinRaw = pickString(row, ["Club", "CLUB", "Verein", "Team"]) || undefined;
   const vereinResolved = resolveVerein(vereinRaw);
+
+  let nachname = pickString(row, ["LastName", "Nachname", "FamilyName"]);
+  let vorname = pickString(row, ["FirstName", "Vorname", "GivenName"]);
+  if (!nachname && !vorname) {
+    const split = splitAnzeigeName(pickString(row, ["AnzeigeName", "DisplayName", "Name"]));
+    nachname = split.nachname;
+    vorname = split.vorname;
+  }
+
+  const contestRaw = pickString(row, [
+    "Contest",
+    "CONTEST",
+    "CONTEST.NAME",
+    "ContestName",
+    "Wettbewerb",
+    "Competition",
+    "Event",
+  ]);
+  const contestNamed =
+    (contestRaw && contestById?.[contestRaw]) || contestById?.[contestRaw.replace(/^0+/, "")] || contestRaw;
+
   return {
-    nachname: pickString(row, ["LastName", "Nachname", "Name", "FamilyName"]),
-    vorname: pickString(row, ["FirstName", "Vorname", "GivenName"]),
+    nachname,
+    vorname,
     geschlecht: normalizeGender(
-      pickString(row, ["Gender", "Sex", "Geschlecht", "MaleFemale", "MF"]),
+      pickString(row, ["Gender", "Sex", "Geschlecht", "GeschlechtMW", "MaleFemale", "MF"]),
     ),
-    strecke: normalizeContest(
-      pickString(row, ["Contest", "ContestName", "Wettbewerb", "Competition", "Event"]),
-    ),
-    jahrgang: pickString(row, ["YB", "YearOfBirth", "Jahrgang", "DateOfBirth", "DOB"]) || undefined,
+    strecke: normalizeContest(contestNamed),
+    jahrgang:
+      pickString(row, ["YB", "YEAR", "YearOfBirth", "Jahrgang", "DateOfBirth", "DOB"]) || undefined,
     verein: vereinResolved.empty ? undefined : vereinResolved.display,
     nation: pickString(row, ["Nation", "Nationality", "Country"]) || undefined,
   };
 }
 
 function asRowArray(payload: unknown): RaceResultParticipantRaw[] {
-  if (Array.isArray(payload)) return payload as RaceResultParticipantRaw[];
-  if (payload && typeof payload === "object") {
-    const obj = payload as Record<string, unknown>;
-    for (const key of ["data", "participants", "Participants", "list", "rows", "Items"]) {
-      if (Array.isArray(obj[key])) return obj[key] as RaceResultParticipantRaw[];
+  if (Array.isArray(payload)) {
+    return payload as RaceResultParticipantRaw[];
+  }
+  if (!payload || typeof payload !== "object") return [];
+
+  const obj = payload as Record<string, unknown>;
+  const fields = Array.isArray(obj.DataFields) ? obj.DataFields.map(String) : [];
+  if (Array.isArray(obj.data) && fields.length > 0) {
+    return obj.data.map((row) => {
+      if (Array.isArray(row)) {
+        const rec: RaceResultParticipantRaw = {};
+        fields.forEach((f, i) => {
+          rec[f] = row[i];
+        });
+        return rec;
+      }
+      if (row && typeof row === "object") return row as RaceResultParticipantRaw;
+      return {};
+    });
+  }
+
+  for (const key of ["data", "participants", "Participants", "list", "rows", "Items"]) {
+    if (Array.isArray(obj[key])) {
+      const arr = obj[key] as unknown[];
+      if (arr.length === 0) return [];
+      if (arr[0] && typeof arr[0] === "object" && !Array.isArray(arr[0])) {
+        return arr as RaceResultParticipantRaw[];
+      }
     }
   }
   return [];
@@ -135,29 +198,34 @@ function asRowArray(payload: unknown): RaceResultParticipantRaw[] {
 
 /**
  * Baut Statistik (+ normalisierte Teilnehmer) aus einer RR-JSON-Liste.
+ * `contestById` mappt RR-Contest-IDs (z. B. "1") auf Namen aus der Publish-Config.
  */
-export function aggregateFromRaceResultJson(payload: unknown): AnmeldungenStats {
+export function aggregateFromRaceResultJson(
+  payload: unknown,
+  contestById?: Record<string, string>,
+): AnmeldungenStats {
   const rows = asRowArray(payload);
-  const participants = rows.map(mapRaceResultRow).filter((p) => p.nachname || p.vorname || p.strecke);
+  const participants = rows
+    .map((row) => mapRaceResultRow(row, contestById))
+    .filter((p) => p.nachname || p.vorname || p.strecke);
 
   const strecken = emptyStrecken();
   let m = 0;
   let w = 0;
 
   for (const p of participants) {
+    if (p.geschlecht === "m") m += 1;
+    else if (p.geschlecht === "w") w += 1;
+
+    if (!p.strecke) continue;
     const label = STRECKEN_ORDER_2027.includes(p.strecke as Strecke2027)
       ? p.strecke
-      : p.strecke || "Unbekannt";
+      : p.strecke;
 
     if (!strecken[label]) strecken[label] = { total: 0, m: 0, w: 0 };
     strecken[label].total += 1;
-    if (p.geschlecht === "m") {
-      strecken[label].m += 1;
-      m += 1;
-    } else if (p.geschlecht === "w") {
-      strecken[label].w += 1;
-      w += 1;
-    }
+    if (p.geschlecht === "m") strecken[label].m += 1;
+    else if (p.geschlecht === "w") strecken[label].w += 1;
   }
 
   // Sortierte Participants für die Liste
