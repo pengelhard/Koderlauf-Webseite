@@ -6,8 +6,9 @@ import { Users, TrendingUp, RefreshCw, List, Beer } from "lucide-react";
 import { STRECKEN_COLORS } from "@/lib/strecken-config";
 import { STRECKEN_ORDER as STRECKEN_2026 } from "@/lib/data/anmeldungen-2026";
 import { STRECKEN_ORDER_2027 } from "@/lib/anmeldungen/aggregate";
-import type { AnmeldungParticipant, AnmeldungenStats } from "@/lib/anmeldungen/types";
+import type { AnmeldungenStats } from "@/lib/anmeldungen/types";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
+import { RaceResultTeilnehmerListe } from "@/components/teilnehmer/race-result-liste";
 import { cn } from "@/lib/utils";
 
 type Jahr = "2027" | "2026";
@@ -48,21 +49,12 @@ function writeCache(jahr: Jahr, stats: AnmeldungenStats) {
   }
 }
 
-function genderLabel(g: AnmeldungParticipant["geschlecht"]) {
-  if (g === "m") return "M";
-  if (g === "w") return "W";
-  if (g === "d") return "D";
-  return "–";
-}
-
 export default function AnmeldungenPage() {
   const [jahr, setJahr] = useState<Jahr>("2027");
   const [stats, setStats] = useState<AnmeldungenStats>(() => emptyFor("2027"));
   const [initialLoad, setInitialLoad] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [streckeFilter, setStreckeFilter] = useState<string>("alle");
-  const [suche, setSuche] = useState("");
 
   const streckenOrder = jahr === "2027" ? [...STRECKEN_ORDER_2027] : [...STRECKEN_2026];
 
@@ -104,8 +96,6 @@ export default function AnmeldungenPage() {
       setStats(emptyFor(jahr));
       setInitialLoad(true);
     }
-    setStreckeFilter("alle");
-    setSuche("");
   }, [jahr]);
 
   useEffect(() => {
@@ -142,18 +132,7 @@ export default function AnmeldungenPage() {
     return Math.max(...displayStrecken.map((n) => stats.strecken[n]?.total ?? 0), 1);
   }, [displayStrecken, stats.strecken]);
 
-  const participants = useMemo(() => {
-    const list = stats.participants ?? [];
-    const q = suche.trim().toLowerCase();
-    return list.filter((p) => {
-      if (streckeFilter !== "alle" && p.strecke !== streckeFilter) return false;
-      if (!q) return true;
-      const hay = `${p.nachname} ${p.vorname} ${p.verein ?? ""} ${p.strecke}`.toLowerCase();
-      return hay.includes(q);
-    });
-  }, [stats.participants, streckeFilter, suche]);
-
-  if (initialLoad && stats.total === 0 && !fetchError) {
+  if (jahr === "2026" && initialLoad && stats.total === 0 && !fetchError) {
     return (
       <div className="flex min-h-screen items-center justify-center pt-24">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />
@@ -435,78 +414,11 @@ export default function AnmeldungenPage() {
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange">
               <List size={14} /> Teilnehmerliste
             </h2>
-
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-              <input
-                type="search"
-                value={suche}
-                onChange={(e) => setSuche(e.target.value)}
-                placeholder="Suche Name / Verein…"
-                className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-sm outline-none focus:border-koder-orange"
-              />
-              <select
-                value={streckeFilter}
-                onChange={(e) => setStreckeFilter(e.target.value)}
-                className="rounded-xl border border-border bg-card px-3 py-2 text-sm outline-none focus:border-koder-orange"
-              >
-                <option value="alle">Alle Strecken</option>
-                {streckenOrder.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mt-4 overflow-hidden rounded-2xl border border-border">
-              <div className="max-h-[min(70vh,720px)] overflow-auto">
-                <table className="w-full text-left text-sm">
-                  <thead className="sticky top-0 bg-muted/95 backdrop-blur">
-                    <tr className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground">
-                      <th className="px-3 py-2 font-semibold">Name</th>
-                      <th className="px-3 py-2 font-semibold">Strecke</th>
-                      <th className="px-3 py-2 font-semibold">M/W</th>
-                      <th className="hidden px-3 py-2 font-semibold sm:table-cell">Verein</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {participants.length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground">
-                          {waitingForJson
-                            ? "Noch keine Live-Daten."
-                            : liveEmpty
-                              ? "Noch keine Anmeldungen – die Liste aktualisiert sich automatisch."
-                              : "Keine Einträge für diese Filter."}
-                        </td>
-                      </tr>
-                    ) : (
-                      participants.map((p, i) => (
-                        <tr key={`${p.nachname}-${p.vorname}-${p.strecke}-${i}`} className="bg-card">
-                          <td className="px-3 py-2 font-medium">
-                            {p.nachname}
-                            {p.nachname && p.vorname ? ", " : ""}
-                            {p.vorname}
-                          </td>
-                          <td className="px-3 py-2 text-muted-foreground">{p.strecke}</td>
-                          <td className="px-3 py-2 tabular-nums">{genderLabel(p.geschlecht)}</td>
-                          <td className="hidden px-3 py-2 text-muted-foreground sm:table-cell">
-                            {p.verein || "–"}
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              {(stats.participants?.length ?? 0) > 0 && (
-                <p className="border-t border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-                  {participants.length} von {stats.participants?.length} angezeigt
-                  {stats.lastUpdated
-                    ? ` · Stand ${new Date(stats.lastUpdated).toLocaleString("de-DE")}`
-                    : ""}
-                </p>
-              )}
+            <p className="mt-2 text-sm text-muted-foreground">
+              Live von Race Result – dieselbe Liste wie auf my.raceresult.com.
+            </p>
+            <div className="mt-4">
+              <RaceResultTeilnehmerListe />
             </div>
           </motion.div>
         )}

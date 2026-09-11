@@ -20,6 +20,13 @@ export const RACE_RESULT = {
   eventId: "391760",
   server: "https://events2.raceresult.com",
   initScript: "https://events2.raceresult.com/registrations/init.js?lang=de-de",
+  /** Öffentliche Listen (Teilnehmer / Live / Ergebnisse) – wie auf my.raceresult.com */
+  publish: {
+    origin: "https://my.raceresult.com",
+    script: "https://my.raceresult.com/RRPublish/load.js?lang=de",
+    /** Tab-Name aus dem RR-Embed: participants | live | results */
+    teilnehmerTab: "participants",
+  },
   forms: [
     {
       id: "einzeln",
