@@ -18,22 +18,6 @@ const nextConfig: NextConfig = {
       { source: "/anmeldungen", destination: "/teilnehmer", permanent: true },
     ];
   },
-  async rewrites() {
-    return [
-      {
-        source: "/RRPublish/:path*",
-        destination: "https://my.raceresult.com/RRPublish/:path*",
-      },
-      {
-        source: "/RRComponents/:path*",
-        destination: "https://my.raceresult.com/RRComponents/:path*",
-      },
-      {
-        source: "/391760/:path*",
-        destination: "https://my.raceresult.com/391760/:path*",
-      },
-    ];
-  },
 };
 
 export default nextConfig;
