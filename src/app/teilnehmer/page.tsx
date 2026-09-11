@@ -420,6 +420,10 @@ export default function AnmeldungenPage() {
             <div className="mt-4">
               <RaceResultTeilnehmerListe />
             </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Steht dort „keine Listen veröffentlicht“, muss in Race Result der Tab
+              „Teilnehmer“ aktiv sein (Anzeigezeitraum bis nach dem Eventtag).
+            </p>
           </motion.div>
         )}
       </div>
