@@ -17,6 +17,8 @@ export interface RaceResultForm {
 }
 
 export const RACE_RESULT = {
+  /** Zahl in https://my.raceresult.com/{eventId}/ — nicht der `key` aus /config */
+
   eventId: "391760",
   server: "https://events2.raceresult.com",
   initScript: "https://events2.raceresult.com/registrations/init.js?lang=de-de",
