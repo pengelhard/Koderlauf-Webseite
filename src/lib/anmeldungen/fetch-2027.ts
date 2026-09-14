@@ -17,7 +17,8 @@ async function parseJsonResponse(res: Response, label: string): Promise<unknown>
 /**
  * Lädt Live-Anmeldungen 2027.
  * 1) Optionaler Simple-API-Link (Env)
- * 2) Öffentliche RRPublish-Teilnehmerliste (Event 391760)
+ * 2) RRPublish: Config unter /{eventId}/participants/config
+ *    (key + listname; Strecke aus Gruppenköpfen oder Listen-Contest)
  */
 export async function fetchAnmeldungen2027(): Promise<AnmeldungenStats> {
   const url = process.env.RACE_RESULT_PARTICIPANTS_JSON_URL?.trim();

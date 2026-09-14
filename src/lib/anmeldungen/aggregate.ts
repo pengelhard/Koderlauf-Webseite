@@ -144,6 +144,9 @@ export function mapRaceResultRow(
     "Wettbewerb",
     "Competition",
     "Event",
+    // Aus Listen-Metadaten bzw. RR-Gruppenkopf (#1_Trailrun)
+    "__listContest",
+    "__groupContest",
   ]);
   const contestNamed =
     (contestRaw && contestById?.[contestRaw]) || contestById?.[contestRaw.replace(/^0+/, "")] || contestRaw;
@@ -162,6 +165,59 @@ export function mapRaceResultRow(
   };
 }
 
+/** RR-Gruppenkopf z. B. `#1_Trailrun` → `Trailrun`. */
+export function parseRrGroupLabel(key: string): string {
+  const match = key.match(/^#\d+_(.*)$/);
+  return (match?.[1] ?? key).trim();
+}
+
+function isCountOnlyRow(row: unknown[], fieldCount: number): boolean {
+  return fieldCount > 0 && row.length > 0 && row.length !== fieldCount;
+}
+
+/**
+ * RR liefert `data` oft gruppiert: `{ "#1_Trailrun": { "#1_Männlich": [rows] } }`.
+ * Die erste Gruppe ist der Wettbewerb/die Strecke.
+ */
+export function flattenRrListData(
+  data: unknown,
+  fields: string[],
+  groups: string[] = [],
+): RaceResultParticipantRaw[] {
+  if (Array.isArray(data)) {
+    const rows: RaceResultParticipantRaw[] = [];
+    for (const row of data) {
+      if (Array.isArray(row)) {
+        if (isCountOnlyRow(row, fields.length)) continue;
+        const rec: RaceResultParticipantRaw = {};
+        fields.forEach((f, i) => {
+          rec[f] = row[i];
+        });
+        if (groups[0]) rec.__groupContest = groups[0];
+        rows.push(rec);
+        continue;
+      }
+      if (row && typeof row === "object") {
+        const rec = { ...(row as RaceResultParticipantRaw) };
+        if (groups[0] && rec.__groupContest == null) rec.__groupContest = groups[0];
+        rows.push(rec);
+      }
+    }
+    return rows;
+  }
+
+  if (data && typeof data === "object") {
+    const out: RaceResultParticipantRaw[] = [];
+    for (const [key, value] of Object.entries(data)) {
+      const label = parseRrGroupLabel(key);
+      out.push(...flattenRrListData(value, fields, [...groups, label]));
+    }
+    return out;
+  }
+
+  return [];
+}
+
 function asRowArray(payload: unknown): RaceResultParticipantRaw[] {
   if (Array.isArray(payload)) {
     return payload as RaceResultParticipantRaw[];
@@ -170,18 +226,8 @@ function asRowArray(payload: unknown): RaceResultParticipantRaw[] {
 
   const obj = payload as Record<string, unknown>;
   const fields = Array.isArray(obj.DataFields) ? obj.DataFields.map(String) : [];
-  if (Array.isArray(obj.data) && fields.length > 0) {
-    return obj.data.map((row) => {
-      if (Array.isArray(row)) {
-        const rec: RaceResultParticipantRaw = {};
-        fields.forEach((f, i) => {
-          rec[f] = row[i];
-        });
-        return rec;
-      }
-      if (row && typeof row === "object") return row as RaceResultParticipantRaw;
-      return {};
-    });
+  if (obj.data !== undefined && fields.length > 0) {
+    return flattenRrListData(obj.data, fields);
   }
 
   for (const key of ["data", "participants", "Participants", "list", "rows", "Items"]) {
