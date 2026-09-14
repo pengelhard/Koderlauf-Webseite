@@ -48,7 +48,7 @@ const FAQS: FaqItem[] = [
         Am {EVENT.datumKurz} rund um das {EVENT.ortDetail}. Der erste Start ({ersterStart.name}) ist
         um {ersterStart.startzeit} Uhr. Details zu den Läufen:{" "}
         <FaqLink href="/strecken">Strecken</FaqLink>. Startnummern Do/Fr 17–20 Uhr (empfohlen) und am
-        Eventtag ab 12:00 Uhr.
+        Eventtag ab {EVENT.zeitplan.find((z) => z.titel.includes("Startnummern"))?.zeit ?? "13:00"} Uhr.
       </>
     ),
   },
@@ -76,7 +76,7 @@ const FAQS: FaqItem[] = [
       <>
         Gleiche Strecke ({EVENT.strecken.find((s) => s.id === "koderrunde")?.distanz ?? "8,5 km"}) und
         gleicher Start um{" "}
-        {EVENT.strecken.find((s) => s.id === "koderrunde")?.startzeit ?? "16:30"} Uhr – aber getrennte
+        {EVENT.strecken.find((s) => s.id === "koderrunde")?.startzeit ?? "17:30"} Uhr – aber getrennte
         Wertung. Meldet euch entweder als Lauf oder als Walking an. Übersicht:{" "}
         <FaqLink href="/strecken">Strecken</FaqLink>.
       </>

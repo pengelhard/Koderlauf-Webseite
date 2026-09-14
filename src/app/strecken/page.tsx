@@ -89,11 +89,14 @@ const STRECKEN: Strecke[] = [
 
 // Difficulty labels removed per user request
 
+const koderrundeStart =
+  getStrecke("koderrunde")?.startzeit ?? "17:30";
+
 const STRECKEN_2027: (Strecke & { startTime: string })[] = [
   {
     id: "spielerei",
     name: "Spielerei",
-    startTime: "15:00",
+    startTime: getStrecke("spielerei")?.startzeit ?? "16:00",
     difficulty: "extrem",
     description:
       "Die Spielerei wartet auf die, die es wirklich wissen wollen. Unsere längste und forderndste Strecke führt hoch zur Wachtlerspitze, weiter über den Spielberg zum Gelben Berg und zurück zum Ziel – mit ordentlich Höhenmetern und echten Trail-Passagen. Das ist keine harmlose Spielerei, sondern deine Chance, dich richtig zu fordern und neue Grenzen zu erleben. Wer es ernst meint, ist hier genau richtig. Wichtig: Die Route kreuzt öffentliche Straßen – es gilt die StVO, Teilnehmende haben kein Vorrecht im Verkehr. Streckenposten sind vor Ort; besondere Vorsicht an Kreuzungen und der Bundesstraße.",
@@ -104,7 +107,7 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
   {
     id: "kinderlauf",
     name: "Kinderlauf",
-    startTime: "15:10",
+    startTime: getStrecke("kinderlauf")?.startzeit ?? "16:10",
     difficulty: "leicht",
     description:
       "Der Kinderlauf (800 m) ist für Kinder bis maximal 8 Jahre – ein echtes Highlight für die ganze Familie!",
@@ -115,7 +118,7 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
   {
     id: "trailrun",
     name: "Trailrun",
-    startTime: "16:20",
+    startTime: getStrecke("trailrun")?.startzeit ?? "17:20",
     difficulty: "schwer",
     description:
       "Dieser besondere Teil des Koderlaufs macht ihn einzigartig – die Wegführung geht in Teilen ähnlich wie die Koderrunde, allerdings mit größeren Offroad-Anteilen. Die Wachtlerspitze auf 587 m inmitten unseres wunderschönen Wachtlerwaldes bildet wortwörtlich den Höhepunkt des Trailruns. Es geht steil bergauf und bergab quer durch den Wald. Achtung! Der Streckenverlauf wurde etwas angepasst.",
@@ -126,11 +129,11 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
   {
     id: "koderrunde",
     name: "Koderrunde (Lauf)",
-    startTime: "16:30",
+    startTime: getStrecke("koderrunde")?.startzeit ?? "17:30",
     difficulty: "mittel",
     badge: "eigene Wertung",
     description:
-      "Die Koderrunde als Laufrunde: abwechslungsreich über den Sportplatz, am Ortsrand entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene zurück zum Sportheim. Start gemeinsam mit dem Walking um 16:30 Uhr – aber mit eigener Wertung für Läuferinnen und Läufer.",
+      `Die Koderrunde als Laufrunde: abwechslungsreich über den Sportplatz, am Ortsrand entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene zurück zum Sportheim. Start gemeinsam mit dem Walking um ${koderrundeStart} Uhr – aber mit eigener Wertung für Läuferinnen und Läufer.`,
     icon: TreePine,
     color: "#EAB308",
     gpxFile: "/2027-koderrunde.gpx",
@@ -138,11 +141,11 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
   {
     id: "koderrunde-walking",
     name: "Koderrunde (Walking)",
-    startTime: "16:30",
+    startTime: getStrecke("koderrunde-walking")?.startzeit ?? "17:30",
     difficulty: "mittel",
     badge: "eigene Wertung",
     description:
-      "Dieselbe schöne Strecke wie die Koderrunde (Lauf) – aber im Walking-Tempo. Perfekt für alle, die lieber walken als laufen. Start gemeinsam mit dem Lauf um 16:30 Uhr, eigene Wertung für Walkerinnen und Walker.",
+      `Dieselbe schöne Strecke wie die Koderrunde (Lauf) – aber im Walking-Tempo. Perfekt für alle, die lieber walken als laufen. Start gemeinsam mit dem Lauf um ${koderrundeStart} Uhr, eigene Wertung für Walkerinnen und Walker.`,
     icon: Footprints,
     color: "#EAB308",
     gpxFile: "/2027-koderrunde.gpx",
@@ -150,7 +153,7 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
   {
     id: "kurz-knackig",
     name: "Kurz und knackig",
-    startTime: "16:40",
+    startTime: getStrecke("kurz-knackig")?.startzeit ?? "17:40",
     difficulty: "mittel",
     description:
       "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der „Ebene“ weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",

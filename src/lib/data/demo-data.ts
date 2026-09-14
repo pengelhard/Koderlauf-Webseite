@@ -2,7 +2,7 @@ export const DEMO_EVENT_2027 = {
   id: "demo-2027",
   name: "Koderlauf 2027",
   slug: "koderlauf-2027",
-  date: "2027-05-29T15:00:00+02:00",
+  date: "2027-05-29T16:00:00+02:00",
   location: "Obermögersheim",
   description: "Der jährliche Koderlauf in Obermögersheim.",
   registration_open: true,
