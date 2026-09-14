@@ -42,7 +42,7 @@ export const EVENT = {
   /** Wievielter Koderlauf (Ausgabe) */
   ausgabe: 2,
   /** Erster Start (Spielerei) */
-  datum: "2027-05-29T15:00:00",
+  datum: "2027-05-29T16:00:00",
   datumFormatiert: "29. Mai 2027",
   datumKurz: "Sa, 29. Mai 2027",
   ort: "Obermögersheim",
@@ -64,12 +64,12 @@ export const EVENT = {
     anmeldungen: 399,
   },
   strecken: [
-    { id: "spielerei", name: "Spielerei", distanz: "25 km", startzeit: "15:00", farbe: "#7C3AED", gpxFile: "/2027-spielerei.gpx", minAlter: 18 },
-    { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "15:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx", maxAlter: 8 },
-    { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "16:20", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx", minAlter: 16 },
-    { id: "koderrunde", name: "Koderrunde (Lauf)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung", minAlter: 12 },
-    { id: "koderrunde-walking", name: "Koderrunde (Walking)", distanz: "8,5 km", startzeit: "16:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung", minAlter: 12 },
-    { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "16:40", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx", minAlter: 8 },
+    { id: "spielerei", name: "Spielerei", distanz: "25 km", startzeit: "16:00", farbe: "#7C3AED", gpxFile: "/2027-spielerei.gpx", minAlter: 18 },
+    { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "16:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx", maxAlter: 8 },
+    { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "17:20", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx", minAlter: 16 },
+    { id: "koderrunde", name: "Koderrunde (Lauf)", distanz: "8,5 km", startzeit: "17:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung", minAlter: 12 },
+    { id: "koderrunde-walking", name: "Koderrunde (Walking)", distanz: "8,5 km", startzeit: "17:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung", minAlter: 12 },
+    { id: "kurz-knackig", name: "Kurz und knackig", distanz: "4 km", startzeit: "17:40", farbe: "#22C55E", gpxFile: "/2027-kurz-knackig.gpx", minAlter: 8 },
   ] satisfies EventStrecke[],
   /**
    * Variante A: hartes Mindestalter; unter 18 immer Eltern-Einverständnis.
@@ -77,13 +77,13 @@ export const EVENT = {
   elternEinverstaendnis:
     "Das Mindestalter gilt verbindlich – darunter ist kein Start möglich. Alle Teilnehmerinnen und Teilnehmer unter 18 Jahren brauchen bei der Anmeldung das Einverständnis der Erziehungsberechtigten (Checkbox sowie Name und Telefon der Eltern).",
   zeitplan: [
-    { zeit: "12:00", titel: "Startnummernausgabe am Eventtag" },
-    { zeit: "15:00", titel: "Start Spielerei", streckeId: "spielerei" },
-    { zeit: "15:10", titel: "Start Kinderlauf", streckeId: "kinderlauf" },
-    { zeit: "16:20", titel: "Start Trailrun", streckeId: "trailrun" },
-    { zeit: "16:30", titel: "Start Koderrunde (Lauf & Walking)", streckeId: "koderrunde" },
-    { zeit: "16:40", titel: "Start Kurz und knackig", streckeId: "kurz-knackig" },
-    { zeit: "18:30", titel: "Siegerehrung" },
+    { zeit: "13:00", titel: "Startnummernausgabe am Eventtag" },
+    { zeit: "16:00", titel: "Start Spielerei", streckeId: "spielerei" },
+    { zeit: "16:10", titel: "Start Kinderlauf", streckeId: "kinderlauf" },
+    { zeit: "17:20", titel: "Start Trailrun", streckeId: "trailrun" },
+    { zeit: "17:30", titel: "Start Koderrunde (Lauf & Walking)", streckeId: "koderrunde" },
+    { zeit: "17:40", titel: "Start Kurz und knackig", streckeId: "kurz-knackig" },
+    { zeit: "19:30", titel: "Siegerehrung" },
   ] satisfies ZeitplanEintrag[],
   /** Vorab-Ausgabe Startnummern & T-Shirts (empfohlen) */
   startnummernAusgabe: {
@@ -92,7 +92,7 @@ export const EVENT = {
       { tag: "Donnerstag", datum: "27. Mai 2027", zeit: "17:00–20:00 Uhr" },
       { tag: "Freitag", datum: "28. Mai 2027", zeit: "17:00–20:00 Uhr" },
     ],
-    eventtag: "Samstag, 29. Mai 2027 ab 12:00 Uhr",
+    eventtag: "Samstag, 29. Mai 2027 ab 13:00 Uhr",
     hinweis:
       "Empfohlen für alle mit kurzer Anreise: Holt Startnummer und bestellte T-Shirts schon Donnerstag oder Freitag ab – weniger Stress am Eventtag.",
   },
@@ -108,7 +108,7 @@ export const EVENT = {
       { id: "fruehbucher", name: "Frühbucher", bis: "2026-11-30T23:59:59", hinweis: "online bis 30.11.2026", kinderlauf: 5, andere: 8 },
       { id: "normal", name: "Normalpreis", bis: "2027-03-31T23:59:59", hinweis: "online bis 31.03.2027", kinderlauf: 7, andere: 12 },
       { id: "spaet", name: "Spätmeldung", bis: "2027-05-27T23:59:59", hinweis: "online bis 27.05.2027", kinderlauf: 10, andere: 16 },
-      { id: "vor_ort", name: "Nachmeldung vor Ort", bis: null, hinweis: "am Eventtag bis 14:30 Uhr am Sportheim", kinderlauf: 15, andere: 25 },
+      { id: "vor_ort", name: "Nachmeldung vor Ort", bis: null, hinweis: "am Eventtag bis 15:30 Uhr am Sportheim", kinderlauf: 15, andere: 25 },
     ] satisfies PreisPhase[],
     /** Senioren ab 70 zahlen auf allen Strecken und in allen Phasen diesen Preis */
     seniorenAb70: 5,

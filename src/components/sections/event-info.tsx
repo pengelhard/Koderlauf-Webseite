@@ -21,7 +21,7 @@ import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-
 
 const INFOS = [
   { icon: MapPin, text: "Start/Ziel & Orga: Sportheim Obermögersheim" },
-  { icon: Ticket, text: "Startnummern Do/Fr 17–20 Uhr empfohlen, am Eventtag ab 12:00 Uhr" },
+  { icon: Ticket, text: `Startnummern Do/Fr 17–20 Uhr empfohlen, am Eventtag ab ${EVENT.zeitplan.find((z) => z.titel.includes("Startnummern"))?.zeit ?? "13:00"} Uhr` },
   { icon: Beer, text: `${VEREINS_WERTUNG.kurz} (Ausrichter außer Wertung)` },
   { icon: Utensils, text: "Verpflegung während der Läufe und im Ziel; Essen & Trinken am Sportheim" },
   { icon: Car, text: "Parkmöglichkeiten vor Ort vorhanden" },
