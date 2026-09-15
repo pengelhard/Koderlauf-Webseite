@@ -48,9 +48,29 @@ A `.env.local` file is required with:
 - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon/publishable key
 - `STRIPE_SECRET_KEY` — Required for `/api/checkout` (payment route)
-- `NEXT_PUBLIC_SITE_URL` — Used for OG metadata base URL
+- `NEXT_PUBLIC_SITE_URL` — Public site URL (`https://koderlauf.de` prod, `https://test.koderlauf.de` test)
 
 The dev server starts fine with placeholder Supabase values (demo data is shown as fallback). Stripe requires a real key only when the checkout API is called.
+
+### Testdomain (test.koderlauf.de)
+
+Separate test URL for reviewers; production stays on `koderlauf.de`.
+
+| Domain | Branch (Vercel) | Purpose |
+|---|---|---|
+| `test.koderlauf.de` | `main` | Latest version for testers |
+| `koderlauf.de` | `production` | Official live site |
+
+**DNS:** CNAME `test` → `cname.vercel-dns.com`
+
+**Setup script:** `powershell -File scripts/setup-test-domain.ps1` (after `npx vercel login`)
+
+**Code behaviour on test domain:**
+- Amber banner „Testumgebung“
+- `noindex` via middleware + metadata (not indexed by Google)
+- Dynamic `metadataBase` from request host
+
+**Recommended Git workflow:** develop on `main` → testers use test domain → merge `main` into `production` when going live on koderlauf.de.
 
 ### Database setup
 

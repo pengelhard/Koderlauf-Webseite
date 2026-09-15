@@ -10,15 +10,40 @@ import {
   Award,
   Medal,
   Gift,
-  Users,
   ChevronRight,
-  ExternalLink,
-  Radio,
   Trophy,
+  Users,
+  Footprints,
+  Route,
+  Beer,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErgebnisseResultsPanel } from "@/components/ergebnisse/results-panel";
 import { cn } from "@/lib/utils";
+import { YearSwitcher } from "@/components/ui/year-switcher";
+import { EVENT } from "@/lib/event-config";
+import { getAltersklassenDlv, type AltersklasseMeta } from "@/lib/data/altersklassen";
+import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
+
+const AK_GRUPPEN: {
+  id: AltersklasseMeta["gruppe"];
+  label: string;
+}[] = [
+  { id: "kinder", label: "Kinder" },
+  { id: "jugend", label: "Jugend" },
+  { id: "junioren", label: "Junioren" },
+  { id: "erwachsene", label: "Erwachsene" },
+  { id: "senioren", label: "Senioren" },
+];
+
+const STRECKEN_ICONS: Record<string, typeof Baby> = {
+  kinderlauf: Baby,
+  "kurz-knackig": Zap,
+  koderrunde: TreePine,
+  "koderrunde-walking": Footprints,
+  trailrun: Mountain,
+  spielerei: Route,
+};
 
 /** Farben analog zu Strecken-Seite */
 const STRECKEN = [
@@ -69,15 +94,20 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 };
 
-/** Live-Ergebnisse (RaceSolution) – 1. Obermögersheimer Koderlauf */
-const RACESOLUTION_LIVE_URL =
-  "https://www.racesolution.de/ergebnisse.html?event=id-1obermoegersheimer-koderlauf";
+
 
 export default function ErgebnissePage() {
-  const [selectedStrecke, setSelectedStrecke] = useState<string | null>(null);
+  const [selectedStrecke, setSelectedStrecke] = useState<string | null>("kinderlauf");
+  const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
   const panelContainerRef = useRef<HTMLDivElement>(null);
+  const skipInitialScroll = useRef(true);
+  const altersklassen2027 = getAltersklassenDlv(EVENT.jahr);
 
   useEffect(() => {
+    if (skipInitialScroll.current) {
+      skipInitialScroll.current = false;
+      return;
+    }
     if (selectedStrecke && panelContainerRef.current) {
       requestAnimationFrame(() => {
         panelContainerRef.current?.scrollIntoView({
@@ -115,40 +145,32 @@ export default function ErgebnissePage() {
           className="mb-12 text-center sm:mb-16"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-koder-orange">
-            Koderlauf 2026
+            Koderlauf {yearTab}
           </p>
           <h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
             Ergebnisse &amp; Ehrungen
           </h1>
+
+          <YearSwitcher
+            value={yearTab}
+            onChange={(year) => {
+              setYearTab(year);
+              setSelectedStrecke(year === "2026" ? "kinderlauf" : null);
+            }}
+          />
         </motion.header>
 
-        {/* Live-Ergebnisse RaceSolution */}
-        <motion.section
-          {...fadeUp}
-          transition={{ duration: 0.45, delay: 0 }}
-          className="mb-12 flex justify-center sm:mb-16"
-          aria-label="Live-Ergebnisse bei RaceSolution"
-        >
-          <a
-            href={RACESOLUTION_LIVE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Live-Ergebnisse bei RaceSolution öffnen (öffnet neues Fenster)"
-            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl border-2 border-koder-orange bg-koder-orange px-8 py-3 text-sm font-semibold uppercase tracking-widest text-white shadow-sm transition hover:bg-koder-orange-bright"
-          >
-            <Radio className="h-4 w-4 shrink-0" aria-hidden />
-            Live verfolgen
-            <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-90" aria-hidden />
-          </a>
-        </motion.section>
 
-        {/* Strecken-Kacheln + Ergebnis-Panel */}
-        <motion.section
-          {...fadeUp}
-          transition={{ duration: 0.45, delay: 0.08 }}
-          className="mt-16"
-          aria-label="Strecke wählen"
-        >
+
+        {yearTab === "2026" ? (
+          <>
+            {/* Strecken-Kacheln + Ergebnis-Panel (2026) */}
+            <motion.section
+              {...fadeUp}
+              transition={{ duration: 0.45, delay: 0.08 }}
+              className="mt-8"
+              aria-label="Strecke wählen"
+            >
           <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
             {STRECKEN.map((s, i) => {
               const active = selectedStrecke === s.id;
@@ -210,117 +232,259 @@ export default function ErgebnissePage() {
           </AnimatePresence>
           </div>
         </motion.section>
-
-        {/* Ehrungsregeln */}
-        <motion.section
-          {...fadeUp}
-          transition={{ duration: 0.45, delay: 0.12 }}
-          className="mt-20"
-          aria-labelledby="ehrungen-heading"
-        >
-          <div className="mb-8 border-b border-border pb-4">
-            <h2
-              id="ehrungen-heading"
-              className="text-xl font-bold tracking-tight sm:text-2xl"
+          </>
+        ) : (
+          <>
+            <motion.div
+              {...fadeUp}
+              transition={{ duration: 0.4 }}
+              className="mt-8 rounded-3xl border border-border bg-card p-6 text-center sm:p-8"
             >
-              Wertung &amp; Ehrungen
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Kurz erklärt – wer wird wie ausgezeichnet?
-            </p>
-          </div>
+              <p className="text-lg text-muted-foreground">
+                Für den <strong className="font-semibold text-foreground">Koderlauf 2027</strong> liegen
+                noch keine Ergebnisse vor.
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Hier schon die Übersicht: Strecken, Altersklassen und Ehrungsregeln.
+              </p>
+            </motion.div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
-            {/* Kinderlauf */}
-            <Card className="overflow-hidden border-2 border-koder-orange/25 bg-gradient-to-b from-koder-orange/[0.06] to-card shadow-md">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-koder-orange/15 text-koder-orange">
-                    <Baby className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Kinderlauf</CardTitle>
-                    <p className="text-sm text-muted-foreground">800&nbsp;m</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-5 pt-0">
-                <div className="rounded-xl border border-border/80 bg-card/80 p-4">
-                  <div className="flex items-start gap-3">
-                    <Gift className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                    <div>
-                      <p className="font-semibold">Alle Teilnehmenden</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        Jede Teilnehmerin und jeder Teilnehmer am Kinderlauf erhält
-                        eine <strong className="text-foreground">Urkunde</strong> und
-                        einen <strong className="text-foreground">kleinen Preis</strong>.
+            {/* Strecken-Übersicht 2027 */}
+            <motion.section
+              {...fadeUp}
+              transition={{ duration: 0.45, delay: 0.08 }}
+              className="mt-12"
+              aria-labelledby="strecken-2027-heading"
+            >
+              <div className="mb-6 border-b border-border pb-4">
+                <h2
+                  id="strecken-2027-heading"
+                  className="text-xl font-bold tracking-tight sm:text-2xl"
+                >
+                  Strecken {EVENT.jahr}
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Ergebnisse erscheinen hier nach dem Event – getrennt je Strecke und Wertung.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3">
+                {EVENT.strecken.map((s) => {
+                  const Icon = STRECKEN_ICONS[s.id] ?? Trophy;
+                  return (
+                    <div
+                      key={s.id}
+                      className="rounded-2xl border border-border bg-card p-4"
+                    >
+                      <div
+                        className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl"
+                        style={{ backgroundColor: `${s.farbe}22`, color: s.farbe }}
+                      >
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <p className="font-semibold leading-snug">{s.name}</p>
+                      {s.badge && (
+                        <p className="mt-0.5 text-xs font-medium text-koder-orange">{s.badge}</p>
+                      )}
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {s.distanz} · Start {s.startzeit} Uhr
                       </p>
                     </div>
-                  </div>
-                </div>
-                <div className="rounded-xl border border-border/80 bg-card/80 p-4">
-                  <div className="flex items-start gap-3">
-                    <Medal className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                    <div>
-                      <p className="font-semibold">Platzierungspreise</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        Die <strong className="text-foreground">drei schnellsten
-                        Mädchen</strong> und die{" "}
-                        <strong className="text-foreground">drei schnellsten Jungen</strong>{" "}
-                        werden gesondert geehrt und erhalten einen Platzierungspreis.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  );
+                })}
+              </div>
+            </motion.section>
 
-            {/* Kurz, Koderrunde, Trailrun */}
-            <Card className="border shadow-md">
-              <CardHeader className="pb-2">
+            {/* Altersklassen-Übersicht 2027 */}
+            <motion.section
+              {...fadeUp}
+              transition={{ duration: 0.45, delay: 0.1 }}
+              className="mt-16"
+              aria-labelledby="altersklassen-heading"
+            >
+              <div className="mb-6 border-b border-border pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/10 text-secondary">
-                    <Award className="h-6 w-6" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-koder-orange/15 text-koder-orange">
+                    <Users className="h-5 w-5" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg">
-                      Kurz und knackig, Koderrunde &amp; Trailrun
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      4&nbsp;km · 8,5&nbsp;km · 11,25&nbsp;km
+                    <h2
+                      id="altersklassen-heading"
+                      className="text-xl font-bold tracking-tight sm:text-2xl"
+                    >
+                      Altersklassen {EVENT.jahr}
+                    </h2>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      Nach DLV/DLO in 5-Jahres-Schritten · maßgeblich ist das Geburtsjahr
                     </p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4 pt-0">
-                <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
-                  <Trophy className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                  <div>
-                    <p className="font-semibold">Gesamtwertung</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                      Platzierungen <strong className="text-foreground">1. bis 3.</strong>{" "}
-                      für <strong className="text-foreground">männlich</strong> und{" "}
-                      <strong className="text-foreground">weiblich</strong> – jeweils
-                      getrennt ausgewiesen.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
-                  <Users className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
-                  <div>
-                    <p className="font-semibold">Altersklassenwertung</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                      In jeder Altersklasse wird der{" "}
-                      <strong className="text-foreground">1. Platz männlich</strong> und
-                      der <strong className="text-foreground">1. Platz weiblich</strong>{" "}
-                      gewertet und geehrt.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </motion.section>
+              </div>
+
+              <div className="mb-6 rounded-2xl border border-koder-orange/25 bg-koder-orange/5 p-4 sm:p-5">
+                <p className="font-semibold">Kinderlauf</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Eigene Wertung für Kinder bis maximal <strong className="text-foreground">8 Jahre</strong> –
+                  getrennt von den DLV-Altersklassen der anderen Strecken.
+                </p>
+              </div>
+
+              <div className="space-y-8">
+                {AK_GRUPPEN.map((gruppe) => {
+                  const items = altersklassen2027.filter((a) => a.gruppe === gruppe.id);
+                  if (items.length === 0) return null;
+                  return (
+                    <div key={gruppe.id}>
+                      <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-koder-orange">
+                        {gruppe.label}
+                      </h3>
+                      <div className="overflow-hidden rounded-2xl border border-border">
+                        <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 bg-muted/40 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground sm:grid-cols-[1.2fr_1fr_1.2fr] sm:px-4">
+                          <span>Klasse</span>
+                          <span className="text-right sm:text-left">Alter</span>
+                          <span className="text-right sm:text-left">Jahrgang {EVENT.jahr}</span>
+                        </div>
+                        <ul className="divide-y divide-border">
+                          {items.map((ak) => (
+                            <li
+                              key={ak.name}
+                              className="grid grid-cols-[1fr_auto_auto] items-center gap-x-3 px-3 py-2.5 text-sm sm:grid-cols-[1.2fr_1fr_1.2fr] sm:px-4"
+                            >
+                              <span className="font-semibold">{ak.name}</span>
+                              <span className="text-right tabular-nums text-muted-foreground sm:text-left">
+                                {ak.alterSpan} J.
+                              </span>
+                              <span className="text-right tabular-nums text-muted-foreground sm:text-left">
+                                {ak.jahrgang}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-4 text-xs text-muted-foreground">
+                M/W = männlich / weiblich getrennt. Die drei Schnellsten je Altersklasse erhalten eine
+                Urkunde; bei der Siegerehrung werden die Top&nbsp;3 Männer und Frauen je Strecke geehrt.
+              </p>
+            </motion.section>
+
+            {/* Ehrungsregeln */}
+            <motion.section
+              {...fadeUp}
+              transition={{ duration: 0.45, delay: 0.12 }}
+              className="mt-20"
+              aria-labelledby="ehrungen-heading"
+            >
+              <div className="mb-8 border-b border-border pb-4">
+                <h2
+                  id="ehrungen-heading"
+                  className="text-xl font-bold tracking-tight sm:text-2xl"
+                >
+                  Wertung &amp; Ehrungen
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Kurz erklärt – wer wird wie ausgezeichnet?
+                </p>
+              </div>
+
+              <div className="grid gap-8 lg:grid-cols-2">
+                {/* Kinderlauf */}
+                <Card className="overflow-hidden border-2 border-koder-orange/25 bg-gradient-to-b from-koder-orange/[0.06] to-card shadow-md">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-koder-orange/15 text-koder-orange">
+                        <Baby className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">Kinderlauf</CardTitle>
+                        <p className="text-sm text-muted-foreground">800&nbsp;m</p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-5 pt-0">
+                    <div className="rounded-xl border border-border/80 bg-card/80 p-4">
+                      <div className="flex items-start gap-3">
+                        <Gift className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                        <div>
+                          <p className="font-semibold">Alle Teilnehmenden</p>
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                            Jede Teilnehmerin und jeder Teilnehmer am Kinderlauf erhält
+                            eine <strong className="text-foreground">Urkunde</strong> und
+                            einen <strong className="text-foreground">kleinen Preis</strong>.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-border/80 bg-card/80 p-4">
+                      <div className="flex items-start gap-3">
+                        <Medal className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                        <div>
+                          <p className="font-semibold">Platzierungspreise</p>
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                            Die <strong className="text-foreground">drei schnellsten
+                            Mädchen</strong> und die{" "}
+                            <strong className="text-foreground">drei schnellsten Jungen</strong>{" "}
+                            werden gesondert geehrt und erhalten einen Platzierungspreis.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Kurz, Koderrunde, Trailrun */}
+                <Card className="border shadow-md">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/10 text-secondary">
+                        <Award className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">
+                          Alle weiteren Strecken
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          4&nbsp;km · 8,5&nbsp;km (Lauf &amp; Walking) · 10,5&nbsp;km · 25&nbsp;km
+                        </p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-0">
+                    <div className="flex gap-3 rounded-xl border border-border bg-muted/30 p-4">
+                      <Trophy className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                      <div>
+                        <p className="font-semibold">Ehrung pro Strecke</p>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          Bei der Siegerehrung werden die{" "}
+                          <strong className="text-foreground">drei schnellsten Männer</strong> und
+                          die{" "}
+                          <strong className="text-foreground">drei schnellsten Frauen</strong>{" "}
+                          je Lauf ausgezeichnet (Platz&nbsp;1–3). Koderrunde Lauf und Walking zählen
+                          als eigene Wertungen. Eine separate Altersklassen-Ehrung gibt es nicht –
+                          die{" "}
+                          <strong className="text-foreground">drei Schnellsten je Altersklasse</strong>{" "}
+                          erhalten aber eine <strong className="text-foreground">Urkunde</strong>.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 rounded-xl border border-koder-orange/30 bg-koder-orange/5 p-4">
+                      <Beer className="mt-0.5 h-5 w-5 shrink-0 text-koder-orange" />
+                      <div>
+                        <p className="font-semibold">{VEREINS_WERTUNG.titel}</p>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          {VEREINS_WERTUNG.kurz} {VEREINS_WERTUNG.ausrichterCanonical} ist als
+                          Ausrichter nicht in der Wertung. Stand und Details: Seite Teilnehmer.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.section>
+          </>
+        )}
       </div>
     </div>
   );

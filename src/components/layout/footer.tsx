@@ -67,6 +67,11 @@ export function Footer() {
                   Anmeldung
                 </Link>
               </li>
+              <li>
+                <Link href="/teilnehmer" className="transition-colors hover:text-white">
+                  Teilnehmer
+                </Link>
+              </li>
             </ul>
           </div>
 

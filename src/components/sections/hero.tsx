@@ -1,21 +1,58 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CountdownTimer } from "@/components/sections/countdown";
+import { EVENT } from "@/lib/event-config";
 
 const HERO_VIDEO_SRC = "https://videos.pexels.com/video-files/2711092/2711092-hd_1920_1080_24fps.mp4";
 const HERO_FALLBACK_IMG = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80";
 
+/** Parallax nur auf Desktop mit Maus – auf Touch-Geräten verursacht das scroll-gekoppelte
+ *  Transform sichtbare Rendering-Artefakte (Ghosting) und Jank. */
+function useParallaxEnabled() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px) and (pointer: fine)");
+    const update = () => setEnabled(mq.matches);
+    const id = requestAnimationFrame(update);
+    mq.addEventListener("change", update);
+    return () => {
+      cancelAnimationFrame(id);
+      mq.removeEventListener("change", update);
+    };
+  }, []);
+  return enabled;
+}
+
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [videoError, setVideoError] = useState(false);
+  const parallaxEnabled = useParallaxEnabled();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
+
+  /* Video pausieren, sobald der Hero aus dem Viewport gescrollt ist: Ein weiter
+     laufendes Video erzeugt dauerhafte Compositing-Updates, die auf Mobil-GPUs
+     beim Scrollen Ghosting verursachen (und unnötig Akku kosten). */
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        vid.play().catch(() => {});
+      } else {
+        vid.pause();
+      }
+    });
+    observer.observe(vid);
+    return () => observer.disconnect();
+  }, [videoError]);
 
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
@@ -23,13 +60,14 @@ export function Hero() {
   // mitunter sofort progress≈1 → Opacity 0 → nur dunkles Video/Overlay sichtbar („schwarzer Bildschirm“).
 
   return (
-    <section ref={ref} className="relative h-screen w-full overflow-hidden">
+    <section ref={ref} className="relative h-[100svh] w-full overflow-hidden">
       <motion.div
-        style={{ y: bgY, scale: bgScale }}
+        style={parallaxEnabled ? { y: bgY, scale: bgScale } : undefined}
         className="absolute inset-0 z-0"
       >
         {!videoError ? (
           <video
+            ref={videoRef}
             autoPlay
             muted
             loop
@@ -81,9 +119,9 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-4 rounded-lg bg-black/50 px-5 py-2.5 text-base font-extrabold uppercase tracking-[0.18em] text-koder-orange-bright shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/10 backdrop-blur-sm sm:text-lg sm:tracking-[0.22em] md:text-xl md:tracking-[0.25em] [text-shadow:0_1px_2px_rgba(0,0,0,0.9)]"
+          className="mb-4 rounded-lg bg-black/50 px-5 py-2.5 text-base font-extrabold uppercase tracking-[0.18em] text-koder-orange-bright shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/10 lg:backdrop-blur-sm sm:text-lg sm:tracking-[0.22em] md:text-xl md:tracking-[0.25em] [text-shadow:0_1px_2px_rgba(0,0,0,0.9)]"
         >
-          29. Mai 2027 &middot; Obermögersheim
+          {EVENT.datumFormatiert} &middot; {EVENT.ort}
         </motion.p>
 
         <motion.h1
@@ -94,7 +132,7 @@ export function Hero() {
         >
           KODERLAUF
           <br />
-          <span className="text-gradient-orange">2027</span>
+          <span className="text-gradient-orange">{EVENT.jahr}</span>
         </motion.h1>
 
         <motion.p
@@ -103,7 +141,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-6 max-w-lg text-lg font-medium text-white/80 md:text-xl"
         >
-          Lauf mit Herz durch den Wald
+          {EVENT.claim}
         </motion.p>
 
         <motion.div
@@ -112,7 +150,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-8"
         >
-          <CountdownTimer targetDate="2027-05-29T14:00:00" />
+          <CountdownTimer targetDate={EVENT.datum} />
         </motion.div>
 
         <motion.div
@@ -123,13 +161,13 @@ export function Hero() {
         >
           <Link
             href="/strecken"
-            className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/20"
+            className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white lg:backdrop-blur-sm transition-colors hover:border-white/40 hover:bg-white/20"
           >
             Strecken
           </Link>
           <Link
             href="/galerie"
-            className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/20"
+            className="rounded-2xl border-2 border-white/20 bg-white/10 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white lg:backdrop-blur-sm transition-colors hover:border-white/40 hover:bg-white/20"
           >
             Galerie
           </Link>

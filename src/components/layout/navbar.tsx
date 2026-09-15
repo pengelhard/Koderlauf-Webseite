@@ -11,7 +11,7 @@ import { Logo } from "@/components/ui/logo";
 
 const navLinks = [
   { href: "/strecken", label: "Strecken" },
-  { href: "/anmeldungen", label: "Anmeldungen" },
+  { href: "/teilnehmer", label: "Teilnehmer" },
   { href: "/ergebnisse", label: "Ergebnisse" },
   { href: "/galerie", label: "Galerie" },
   { href: "/sponsoren", label: "Sponsoren" },
@@ -39,23 +39,40 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 cursor-default border-0 bg-black/45 backdrop-blur-[2px]"
+            className="fixed inset-0 z-40 cursor-default border-0 bg-black/45"
             aria-label="Menü schließen"
             onClick={() => setMobileOpen(false)}
           />
         )}
       </AnimatePresence>
 
+      {/* Mobile: komplett statischer, deckender Header. Der Klassenwechsel beim
+          Überschreiten der Scroll-Schwelle löst sonst mitten im Scrollen einen
+          Repaint aus → Ghosting auf Mali-GPUs. Blur/Transparenz-Effekte und die
+          Transition gibt es deshalb nur auf Desktop (lg+). */}
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          "fixed top-0 left-0 right-0 z-50 bg-forest-deep shadow-lg lg:transition-all lg:duration-300",
           scrolled
-            ? "bg-forest-deep/95 backdrop-blur-md shadow-lg"
-            : "bg-forest-deep/70 backdrop-blur-sm"
+            ? "lg:bg-forest-deep/95 lg:backdrop-blur-md"
+            : "lg:bg-forest-deep/70 lg:backdrop-blur-sm lg:shadow-none"
         )}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
           <Logo size="md" />
+
+          {/* Desktop navigation links */}
+          <div className="hidden md:flex items-center gap-6 text-sm font-semibold uppercase tracking-widest text-white/90">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition-colors hover:text-koder-orange"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
 
           <div className="flex items-center gap-3">
             {mounted && (
@@ -70,6 +87,16 @@ export function Navbar() {
               </button>
             )}
 
+            {/* Desktop Anmelden button - always visible on md+ */}
+            <Link
+              href="/anmeldung"
+              className="hidden md:inline-flex rounded-xl bg-koder-orange px-5 py-2 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-koder-orange/90"
+            >
+              Jetzt anmelden
+            </Link>
+
+            {/* Hamburger always visible so the dropdown for other pages is available at the top */}
+            {/* Hamburger always visible so the dropdown for other pages is available at the top */}
             <button
               type="button"
               suppressHydrationWarning
@@ -90,7 +117,7 @@ export function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               role="presentation"
-              className="cursor-pointer overflow-hidden bg-forest-deep/98 backdrop-blur-xl"
+              className="cursor-pointer overflow-hidden bg-forest-deep"
               onClick={() => setMobileOpen(false)}
             >
               <div className="flex flex-col gap-4 px-6 py-8">

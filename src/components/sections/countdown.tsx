@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
 interface CountdownTimerProps {
   targetDate: string;
@@ -18,14 +18,32 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
     minutes: 0,
     seconds: 0,
   });
+  const [finished, setFinished] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  /* Nur ticken, wenn der Countdown sichtbar ist: sekündliche DOM-Updates
+     invalidieren sonst auch beim Scrollen Render-Tiles (Mobile-Ghosting). */
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setVisible(entry.isIntersecting);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (!visible) return;
     function update() {
       const diff = new Date(targetDate).getTime() - Date.now();
       if (diff <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setFinished(true);
         return;
       }
+      setFinished(false);
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -36,7 +54,24 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [targetDate, visible]);
+
+  if (finished) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="rounded-2xl border border-koder-orange/30 bg-koder-orange/15 px-6 py-4 text-center lg:backdrop-blur-sm sm:px-10 sm:py-5"
+      >
+        <p className="text-xl font-extrabold text-koder-orange sm:text-3xl">
+          Heute ist es soweit! 🎉
+        </p>
+        <p className="mt-1 text-xs font-medium uppercase tracking-widest text-white/70 sm:text-sm">
+          Wir sehen uns am Sportheim Obermögersheim
+        </p>
+      </motion.div>
+    );
+  }
 
   const blocks = [
     { label: "Tage", value: timeLeft.days },
@@ -46,24 +81,17 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
   ];
 
   return (
-    <div className="flex gap-2 sm:gap-4">
+    <div ref={rootRef} className="flex gap-2 sm:gap-4">
       {blocks.map((block) => (
         <div
           key={block.label}
-          className="flex w-16 flex-col items-center rounded-xl border border-koder-orange/20 bg-koder-orange/10 py-2 backdrop-blur-sm sm:w-24 sm:rounded-2xl sm:py-4"
+          className="flex w-16 flex-col items-center rounded-xl border border-koder-orange/20 bg-koder-orange/10 py-2 lg:backdrop-blur-sm sm:w-24 sm:rounded-2xl sm:py-4"
         >
-          <AnimatePresence mode="popLayout">
-            <motion.span
-              key={block.value}
-              initial={{ y: -10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 10, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="text-2xl font-extrabold tabular-nums text-koder-orange sm:text-4xl"
-            >
-              {pad(block.value)}
-            </motion.span>
-          </AnimatePresence>
+          {/* Bewusst ohne Animation: sekündliche Animationen erzeugen auf Mobile
+              dauerhafte Rendering-Last und tragen zum Scroll-Ghosting bei. */}
+          <span className="text-2xl font-extrabold tabular-nums text-koder-orange sm:text-4xl">
+            {pad(block.value)}
+          </span>
           <span className="mt-1 text-[10px] font-medium uppercase tracking-widest text-white/50 sm:text-xs">
             {block.label}
           </span>

@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,16 +12,25 @@ import {
   ArrowDownToLine,
   TrendingUp,
   TrendingDown,
-  MapPin,
   TreePine,
   Zap,
   Baby,
   Route,
+  Clock,
+  Footprints,
+  CupSoda,
 } from "lucide-react";
 import { parseGpx, type GpxTrack } from "@/lib/gpx";
+import { EVENT, formatAlterHinweis, getAktuellerPreis, getStrecke } from "@/lib/event-config";
+import {
+  formatVerpflegungKm,
+  getAbstandZurVorherigen,
+  getVerpflegungForStrecke,
+} from "@/lib/verpflegung";
 import { RouteMap } from "@/components/map/route-map";
 import { ElevationProfile } from "@/components/map/elevation-profile";
 import { cn } from "@/lib/utils";
+import { YearSwitcher } from "@/components/ui/year-switcher";
 
 interface Strecke {
   id: string;
@@ -30,14 +40,14 @@ interface Strecke {
   icon: typeof Route;
   color: string;
   gpxFile: string;
-  startgebuehr: string;
+  startTime?: string;
+  badge?: string;
 }
 
 const STRECKEN: Strecke[] = [
   {
     id: "kinderlauf",
     name: "Kinderlauf",
-    startgebuehr: "10 €",
     difficulty: "leicht",
     description:
       "Vom Start am Sportheim geht\u2019s über den Sportplatz auf asphaltierten Weg bis zum Wendepunkt, Ziel ist wieder am Sportplatz.",
@@ -48,7 +58,6 @@ const STRECKEN: Strecke[] = [
   {
     id: "kurz-knackig",
     name: "Kurz und knackig",
-    startgebuehr: "15 €",
     difficulty: "mittel",
     description:
       "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der \u201eEbene\u201c weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",
@@ -59,7 +68,6 @@ const STRECKEN: Strecke[] = [
   {
     id: "koderrunde",
     name: "Koderrunde",
-    startgebuehr: "15 €",
     difficulty: "mittel",
     description:
       "Diese Runde ist prädestiniert für alle, die gerne in traumhafter Umgebung walken oder laufen. Die abwechslungsreiche Strecke führt über den Sportplatz, dann am Rande der Ortschaft entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene entlang zurück zum Sportheim und damit direkt ins Ziel.",
@@ -70,7 +78,6 @@ const STRECKEN: Strecke[] = [
   {
     id: "trailrun",
     name: "Trailrun",
-    startgebuehr: "15 €",
     difficulty: "schwer",
     description:
       "Dieser besondere Teil des Koderlaufs macht ihn einzigartig \u2013 die Wegführung geht in Teilen ähnlich wie die Koderrunde, allerdings mit größeren Offroad-Anteilen. Die Wachtlerspitze auf 587\u00a0m inmitten unseres wunderschönen Wachtlerwaldes bildet wortwörtlich den Höhepunkt des Trailruns. Es geht steil bergauf und bergab quer durch den Wald, weshalb hier ganz besonders auf passende Laufausstattung geachtet werden sollte.",
@@ -82,41 +89,137 @@ const STRECKEN: Strecke[] = [
 
 // Difficulty labels removed per user request
 
+const koderrundeStart =
+  getStrecke("koderrunde")?.startzeit ?? "17:30";
+
+const STRECKEN_2027: (Strecke & { startTime: string })[] = [
+  {
+    id: "spielerei",
+    name: "Spielerei",
+    startTime: getStrecke("spielerei")?.startzeit ?? "16:00",
+    difficulty: "extrem",
+    description:
+      "Die Spielerei wartet auf die, die es wirklich wissen wollen. Unsere längste und forderndste Strecke führt hoch zur Wachtlerspitze, weiter über den Spielberg zum Gelben Berg und zurück zum Ziel – mit ordentlich Höhenmetern und echten Trail-Passagen. Das ist keine harmlose Spielerei, sondern deine Chance, dich richtig zu fordern und neue Grenzen zu erleben. Wer es ernst meint, ist hier genau richtig. Wichtig: Die Route kreuzt öffentliche Straßen – es gilt die StVO, Teilnehmende haben kein Vorrecht im Verkehr. Streckenposten sind vor Ort; besondere Vorsicht an Kreuzungen und der Bundesstraße.",
+    icon: Route,
+    color: "#7C3AED",
+    gpxFile: "/2027-spielerei.gpx",
+  },
+  {
+    id: "kinderlauf",
+    name: "Kinderlauf",
+    startTime: getStrecke("kinderlauf")?.startzeit ?? "16:10",
+    difficulty: "leicht",
+    description:
+      "Der Kinderlauf (800 m) ist für Kinder bis maximal 8 Jahre – ein echtes Highlight für die ganze Familie!",
+    icon: Baby,
+    color: "#FF6B00",
+    gpxFile: "/2027-kinderlauf.gpx",
+  },
+  {
+    id: "trailrun",
+    name: "Trailrun",
+    startTime: getStrecke("trailrun")?.startzeit ?? "17:20",
+    difficulty: "schwer",
+    description:
+      "Dieser besondere Teil des Koderlaufs macht ihn einzigartig – die Wegführung geht in Teilen ähnlich wie die Koderrunde, allerdings mit größeren Offroad-Anteilen. Die Wachtlerspitze auf 587 m inmitten unseres wunderschönen Wachtlerwaldes bildet wortwörtlich den Höhepunkt des Trailruns. Es geht steil bergauf und bergab quer durch den Wald. Achtung! Der Streckenverlauf wurde etwas angepasst.",
+    icon: Mountain,
+    color: "#3B82F6",
+    gpxFile: "/2027-trailrun.gpx",
+  },
+  {
+    id: "koderrunde",
+    name: "Koderrunde (Lauf)",
+    startTime: getStrecke("koderrunde")?.startzeit ?? "17:30",
+    difficulty: "mittel",
+    badge: "eigene Wertung",
+    description:
+      `Die Koderrunde als Laufrunde: abwechslungsreich über den Sportplatz, am Ortsrand entlang und hinein in unseren Wachtlerwald. Nach munterem Auf und Ab führt der Weg über die Ebene zurück zum Sportheim. Start gemeinsam mit dem Walking um ${koderrundeStart} Uhr – aber mit eigener Wertung für Läuferinnen und Läufer.`,
+    icon: TreePine,
+    color: "#EAB308",
+    gpxFile: "/2027-koderrunde.gpx",
+  },
+  {
+    id: "koderrunde-walking",
+    name: "Koderrunde (Walking)",
+    startTime: getStrecke("koderrunde-walking")?.startzeit ?? "17:30",
+    difficulty: "mittel",
+    badge: "eigene Wertung",
+    description:
+      `Dieselbe schöne Strecke wie die Koderrunde (Lauf) – aber im Walking-Tempo. Perfekt für alle, die lieber walken als laufen. Start gemeinsam mit dem Lauf um ${koderrundeStart} Uhr, eigene Wertung für Walkerinnen und Walker.`,
+    icon: Footprints,
+    color: "#EAB308",
+    gpxFile: "/2027-koderrunde.gpx",
+  },
+  {
+    id: "kurz-knackig",
+    name: "Kurz und knackig",
+    startTime: getStrecke("kurz-knackig")?.startzeit ?? "17:40",
+    difficulty: "mittel",
+    description:
+      "Die Strecke führt über den Sportplatz auf einen asphaltierten Weg. Nach kurzer Steigung geht es auf der „Ebene“ weiter, ehe eine Schleife über einen Feld- und Wiesenweg schon auf die leicht abfallende Zielgerade führt. Zieleinlauf am Sportplatz.",
+    icon: Zap,
+    color: "#22C55E",
+    gpxFile: "/2027-kurz-knackig.gpx",
+  },
+];
+
 type HoverPoint = { lat: number; lon: number; ele: number; distance: number } | null;
 
 function StreckenContent() {
   const searchParams = useSearchParams();
   const paramRoute = searchParams.get("route");
-  const allowedIds = new Set(STRECKEN.map((s) => s.id));
-  const initialRoute = paramRoute && allowedIds.has(paramRoute) ? paramRoute : "trailrun";
-  const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
+  const [yearTab, setYearTab] = useState<"2026" | "2027">("2027");
+
+  const currentRoutes = yearTab === "2026" ? STRECKEN : STRECKEN_2027;
+  const allowedIds = new Set(currentRoutes.map((s) => s.id));
+  const initialRoute = paramRoute && allowedIds.has(paramRoute) ? paramRoute : currentRoutes[0].id;
+
   const [selected, setSelected] = useState<string>(initialRoute);
   const [gpxTracks, setGpxTracks] = useState<Record<string, GpxTrack>>({});
-  const [loading, setLoading] = useState(false);
   const [hoverPoint, setHoverPoint] = useState<HoverPoint>(null);
 
-  const activeStrecke = STRECKEN.find((s) => s.id === selected)!;
-  const gpxTrack = gpxTracks[selected] || null;
+  // Always guarantee a valid selected route for the current year (prevents crashes during HMR / tab switch)
+  const safeSelected = currentRoutes.some((r) => r.id === selected)
+    ? selected
+    : currentRoutes[0].id;
 
+  const activeStrecke = currentRoutes.find((s) => s.id === safeSelected)!;
+  const gpxTrack = gpxTracks[safeSelected] || null;
+  const eventStrecke = yearTab === "2027" ? getStrecke(safeSelected) : undefined;
+  const alterHinweis = eventStrecke ? formatAlterHinweis(eventStrecke) : null;
+  const verpflegung = useMemo(
+    () => (yearTab === "2027" ? getVerpflegungForStrecke(safeSelected) : []),
+    [yearTab, safeSelected],
+  );
+
+  // Reset selection when switching year (only if current selection is invalid for the new year)
   useEffect(() => {
-    if (yearTab !== "2026") return;
-    if (gpxTracks[selected]) return;
+    const newRoutes = yearTab === "2026" ? STRECKEN : STRECKEN_2027;
+    if (!newRoutes.some((r) => r.id === selected)) {
+      setSelected(newRoutes[0].id);
+      setHoverPoint(null);
+    }
+  }, [yearTab, selected]);
 
+  // Preload GPX for all routes so cards show km/Hm without clicking
+  useEffect(() => {
     let cancelled = false;
-    requestAnimationFrame(() => { if (!cancelled) setLoading(true); });
+    const routes = yearTab === "2026" ? STRECKEN : STRECKEN_2027;
 
-    fetch(activeStrecke.gpxFile)
-      .then((r) => r.text())
-      .then((xml) => {
-        if (cancelled) return;
-        const track = parseGpx(xml);
-        setGpxTracks((prev) => ({ ...prev, [selected]: track }));
-        setLoading(false);
-      })
-      .catch(() => { if (!cancelled) setLoading(false); });
+    setGpxTracks({});
+
+    for (const strecke of routes) {
+      fetch(strecke.gpxFile)
+        .then((r) => r.text())
+        .then((xml) => {
+          if (cancelled) return;
+          setGpxTracks((prev) => ({ ...prev, [strecke.id]: parseGpx(xml) }));
+        })
+        .catch(() => {});
+    }
 
     return () => { cancelled = true; };
-  }, [yearTab, selected, activeStrecke.gpxFile, gpxTracks]);
+  }, [yearTab]);
 
   const handleProfileHover = useCallback((point: HoverPoint) => {
     setHoverPoint(point);
@@ -129,73 +232,56 @@ function StreckenContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
-            Koderlauf
+            Koderlauf {yearTab}
           </p>
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
             Strecken
           </h1>
-          <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-border bg-muted/40 p-1">
-            {(["2026", "2027"] as const).map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => setYearTab(y)}
-                className={cn(
-                  "rounded-xl px-5 py-2.5 text-sm font-semibold transition-all sm:px-8",
-                  yearTab === y
-                    ? "bg-koder-orange text-white shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Strecken {y}
-              </button>
-            ))}
-          </div>
+          <YearSwitcher value={yearTab} onChange={setYearTab} />
         </motion.div>
 
-        {yearTab === "2027" ? (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mt-10 rounded-3xl border border-border bg-card p-6 sm:p-8"
-          >
-            <p className="text-base leading-relaxed text-muted-foreground">
-              Für den <strong className="font-semibold text-foreground">Koderlauf 2027</strong> am{" "}
-              <strong className="font-semibold text-foreground">29. Mai 2027</strong> wird es{" "}
-              <strong className="font-semibold text-foreground">neue Strecken</strong> geben. Sobald
-              diese endgültig feststehen, werden sie hier mit Beschreibungen, Streckenverlauf und
-              Karten angezeigt.
-            </p>
-          </motion.div>
+        {yearTab === "2026" ? (
+          <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-muted-foreground sm:text-base">
+            Vier Distanzen durch die Wälder rund um Obermögersheim – von kinderleicht bis
+            Trailrun-Abenteuer. Start am Sportheim (Stand 2026).
+          </p>
         ) : (
-          <>
-        <p className="mt-8 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          Vier Distanzen durch die Wälder rund um Obermögersheim – von kinderleicht bis
-          Trailrun-Abenteuer. Start am Sportheim (Stand 2026).
-        </p>
+          <div className="mx-auto mt-8 max-w-2xl space-y-3 text-center text-sm text-muted-foreground sm:text-base">
+            <p>
+              Zum 50-jährigen SVO-Jubiläum: bekannte Favoriten plus die neue{" "}
+              <strong className="font-semibold text-foreground">Spielerei</strong> als
+              Trail-Highlight.
+            </p>
+            <p>
+              <strong className="font-semibold text-foreground">Start &amp; Ziel</strong> am oberen
+              Fußballplatz. Manche Strecken leicht angepasst. Koderrunde als Lauf und Walking
+              (gleicher Start, eigene Wertung).
+            </p>
+          </div>
+        )}
 
         {/* Route selector cards */}
-        <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 sm:mt-8">
-          {STRECKEN.map((strecke) => {
+        <div className="mobile-gpu-layer mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3 sm:mt-8">
+          {currentRoutes.map((strecke) => {
             const track = gpxTracks[strecke.id];
             return (
-              <motion.button
+              <button
                 key={strecke.id}
                 id={strecke.id}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
                 onClick={() => { setSelected(strecke.id); setHoverPoint(null); }}
-                className={`group rounded-2xl border-2 p-3 text-left transition-all sm:p-4 ${
+                /* Keine Scale-Transforms und keine Alpha-Gradients: beide triggern
+                   auf Mali-GPUs (z. B. Huawei P30) Scroll-Ghosting in Chrome. */
+                className={`group rounded-2xl border-2 p-3.5 text-left transition-colors sm:p-4 touch-manipulation ${
                   selected === strecke.id
                     ? "shadow-lg"
                     : "border-border hover:border-koder-orange/30"
                 }`}
                 style={{
                   borderColor: selected === strecke.id ? strecke.color : undefined,
-                  background: `linear-gradient(to bottom right, ${strecke.color}33, ${strecke.color}0D)`,
+                  backgroundColor: `${strecke.color}1F`,
                 }}
               >
                 <div className="flex items-center gap-2">
@@ -205,22 +291,47 @@ function StreckenContent() {
                   >
                     <strecke.icon size={16} />
                   </div>
-                  <h3 className="truncate text-sm font-bold">{strecke.name}</h3>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-bold leading-tight">{strecke.name}</h3>
+                    {strecke.badge && (
+                      <p className="text-[10px] font-medium text-muted-foreground">{strecke.badge}</p>
+                    )}
+                  </div>
                 </div>
+
+                {/* Start time prominently per route (2027 only) */}
+                {yearTab === "2027" && strecke.startTime && (
+                  <div
+                    className="mt-1.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                    style={{ backgroundColor: `${strecke.color}15`, color: strecke.color }}
+                  >
+                    <Clock size={13} />
+                    Start {strecke.startTime}
+                  </div>
+                )}
+
                 <div className="mt-2 flex flex-wrap items-baseline gap-2">
                   <span className="text-lg font-extrabold sm:text-xl" style={{ color: strecke.color }}>
-                    {track ? `${track.distance.toFixed(1)} km` : "..."}
+                    {yearTab === "2027"
+                      ? (getStrecke(strecke.id)?.distanz ??
+                        (track ? `${track.distance.toFixed(1)} km` : "…"))
+                      : track
+                        ? `${track.distance.toFixed(1)} km`
+                        : "…"}
                   </span>
                   {track && (
                     <span className="text-[10px] text-muted-foreground sm:text-xs">
                       ↑ {track.elevationGain} Hm
                     </span>
                   )}
-                  <span className="text-[10px] text-muted-foreground sm:text-xs">
-                    Startgebühr {strecke.startgebuehr}
-                  </span>
+                  {/* 2026: event is over → hide price. 2027: show dynamic current price */}
+                  {yearTab === "2027" && (
+                    <span className="text-[10px] text-muted-foreground sm:text-xs">
+                      Startgebühr {getAktuellerPreis(strecke.id)}
+                    </span>
+                  )}
                 </div>
-              </motion.button>
+              </button>
             );
           })}
         </div>
@@ -233,6 +344,27 @@ function StreckenContent() {
           transition={{ duration: 0.3 }}
           className="mt-6 rounded-2xl border border-border bg-card px-4 py-3 sm:px-6 sm:py-4"
         >
+          {yearTab === "2027" && activeStrecke.startTime && (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <div
+                className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold"
+                style={{ backgroundColor: `${activeStrecke.color}15`, color: activeStrecke.color }}
+              >
+                <Clock size={15} />
+                Start {activeStrecke.startTime} Uhr
+              </div>
+              {alterHinweis && (
+                <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  {alterHinweis}
+                </div>
+              )}
+              {activeStrecke.badge && (
+                <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  {activeStrecke.badge}
+                </div>
+              )}
+            </div>
+          )}
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{activeStrecke.description}</p>
         </motion.div>
 
@@ -246,30 +378,63 @@ function StreckenContent() {
         >
           <Card className="overflow-hidden rounded-3xl border-border">
             <CardContent className="p-0">
-              <div className="relative [&_.maplibregl-ctrl-attrib]:!hidden">
-                {loading ? (
-                  <div className="flex h-[500px] items-center justify-center bg-muted">
+              <div className="relative h-[320px] overflow-hidden sm:h-[400px] lg:h-[500px] [&_.maplibregl-ctrl-attrib]:!hidden">
+                {!gpxTrack ? (
+                  <div className="flex h-[320px] sm:h-[400px] lg:h-[500px] items-center justify-center bg-muted">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-koder-orange border-t-transparent" />
                   </div>
-                ) : gpxTrack ? (
+                ) : (
                   <RouteMap
+                    key={`${safeSelected}-${yearTab}`}
                     points={gpxTrack.points}
                     highlightPoint={hoverPoint}
                     routeColor={activeStrecke.color}
+                    stations={verpflegung}
                     className="rounded-none border-0"
                   />
-                ) : (
-                  <div className="flex h-[500px] flex-col items-center justify-center bg-gradient-to-br from-forest-deep/20 to-forest-deep/5">
-                    <MapPin size={48} className="text-koder-orange/40" />
-                    <p className="mt-4 text-lg font-semibold text-muted-foreground">Laden...</p>
-                  </div>
                 )}
               </div>
 
+              {verpflegung.length > 0 && (
+                <div className="border-t border-border px-4 py-3 sm:px-6">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <CupSoda size={16} className="text-teal-600 dark:text-teal-400" aria-hidden />
+                    Verpflegung auf dieser Strecke
+                  </div>
+                  <ul className="mt-2 space-y-2">
+                    {verpflegung.map((s, i) => {
+                      const abstand = getAbstandZurVorherigen(verpflegung, i);
+                      return (
+                        <li key={s.id} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white">
+                            {s.nr}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="font-medium text-foreground">{s.name}</span>
+                            {" – "}
+                            {s.hint}
+                            <span className="mt-0.5 block text-xs">
+                              bei {formatVerpflegungKm(s.km)}
+                              {" · "}
+                              {i === 0
+                                ? `${formatVerpflegungKm(abstand)} ab Start`
+                                : `${formatVerpflegungKm(abstand)} seit Station ${verpflegung[i - 1].nr}`}
+                            </span>
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Zusätzlich Verpflegung im Ziel am Sportheim.
+                  </p>
+                </div>
+              )}
+
               {/* Elevation profile directly under map */}
               {gpxTrack && (
-                <div className="border-t border-border px-4 py-3 sm:px-6">
-                  <ElevationProfile points={gpxTrack.points} onHover={handleProfileHover} />
+                <div className="border-t border-border px-3 py-2 sm:px-6 sm:py-3">
+                  <ElevationProfile points={gpxTrack.points} onHover={handleProfileHover} color={activeStrecke.color} />
                 </div>
               )}
 
@@ -309,8 +474,40 @@ function StreckenContent() {
             </CardContent>
           </Card>
         </motion.div>
-          </>
+
+        {yearTab === "2027" && (
+          <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-border bg-card px-4 py-4 text-sm text-muted-foreground sm:px-5">
+            <p className="font-semibold text-foreground">Hinweise</p>
+            <ul className="mt-2 list-disc space-y-1.5 pl-5 leading-relaxed">
+              <li>
+                Teilstrecken im öffentlichen Verkehr – es gilt die StVO, kein Vorrecht für
+                Teilnehmende. Vorsicht an Kreuzungen und der Bundesstraße.{" "}
+                <a href="/#faq" className="underline hover:text-foreground">
+                  Mehr in der FAQ
+                </a>
+                .
+              </li>
+              <li>
+                Mindestalter steht bei jeder Strecke – darunter kein Start. Unter 18: Eltern-
+                Einverständnis bei der Anmeldung.{" "}
+                <a href="/#faq" className="underline hover:text-foreground">
+                  Details
+                </a>
+                .
+              </li>
+            </ul>
+          </div>
         )}
+
+        {/* Anmelden button at the bottom, under the route */}
+        <div className="mt-8 flex justify-center pb-12">
+          <Link
+            href="/anmeldung"
+            className="rounded-2xl bg-koder-orange px-8 py-3 text-sm font-semibold uppercase tracking-widest text-white shadow-sm transition-colors hover:bg-koder-orange/90"
+          >
+            Jetzt anmelden
+          </Link>
+        </div>
       </div>
     </div>
   );
