@@ -117,9 +117,9 @@ export const EVENT = {
     tshirt: {
       name: "Koderlauf-T-Shirt",
       preis: 25,
-      bild: "/tshirt-koderlauf.png",
+      bild: "/tshirt-koderlauf.webp",
       hinweis:
-        "Motiv vom letzten Jahr – neues Motiv folgt. Größen: 116, 128, 140, 152, 164, S–XXL, 3XL, 4XL.",
+        "Motiv 2027. Größen: 116, 128, 140, 152, 164, S–XXL, 3XL, 4XL.",
     },
     abendkarte: {
       name: "Abendkarte Tape Jam",
