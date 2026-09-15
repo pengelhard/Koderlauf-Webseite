@@ -162,7 +162,7 @@ export default function AnmeldungPage() {
               <div className="relative aspect-[4/3] bg-muted">
                 <Image
                   src={EVENT.extras.tshirt.bild}
-                  alt="Koderlauf-T-Shirt – Motiv 2026"
+                  alt="Koderlauf-T-Shirt 2027 – Motiv auf der Rückseite"
                   fill
                   className="object-cover"
                   sizes="(min-width: 640px) 50vw, 100vw"
