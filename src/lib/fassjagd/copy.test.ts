@@ -33,14 +33,14 @@ test("WhatsApp-Text hat https-URL in eigener Zeile", () => {
   const url = "https://test.koderlauf.de/fassjagd/tv-1860-gunzenhausen?v=4";
   const text = whatsappText(club, url);
   assert.match(text, /\nhttps:\/\/test\.koderlauf\.de\/fassjagd\/tv-1860-gunzenhausen\?v=4$/);
-  assert.equal(text.includes("Platz 1"), true);
-  assert.equal(text.split("\n").length, 2);
+  assert.equal(text.startsWith("1. Platz: TV 1860 Gunzenhausen\n12 Starter"), true);
+  assert.equal(text.split("\n").length, 3);
 });
 
 test("Hausherr-WhatsApp-Text ebenfalls mit URL-Zeile", () => {
   const url = "https://test.koderlauf.de/fassjagd/sv-obermoegersheim?v=4";
   const text = whatsappText(hausherr, url);
-  assert.match(text, /^Fassjagd: SV Obermögersheim ist Hausherr/);
+  assert.match(text, /^Hausherr: SV Obermögersheim\n3 Starter · außer Wertung/);
   assert.equal(text.endsWith(`\n${url}`), true);
 });
 

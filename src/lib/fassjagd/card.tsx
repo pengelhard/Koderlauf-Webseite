@@ -239,8 +239,8 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
   const week = weekLine(club);
   const pad = story ? 68 : 48;
   const longName = club.name.length > 20;
-  const nameSize = story ? (longName ? 70 : 86) : longName ? 52 : 66;
-  const kickerSize = story ? 32 : 26;
+  const nameSize = story ? (longName ? 76 : 92) : longName ? 58 : 72;
+  const kickerSize = story ? 34 : 28;
   const roleLabel = club.hausherr ? "HAUSHERR" : "TEAM";
   const textMax = story ? 980 : 720;
 
@@ -280,7 +280,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
             <div
               style={{
                 ...flex,
-                fontSize: story ? 36 : 24,
+                fontSize: story ? 38 : 26,
                 color: "rgba(255,255,255,0.78)",
                 fontWeight: 600,
                 marginTop: 8,
@@ -300,7 +300,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
                 background: club.hausherr ? "rgba(0,0,0,0.62)" : ORANGE,
                 color: "white",
                 padding: story ? "10px 22px" : "8px 18px",
-                fontSize: story ? 26 : 20,
+                fontSize: story ? 28 : 22,
                 fontWeight: 800,
                 letterSpacing: 3,
               }}
@@ -328,7 +328,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
                 <div
                   style={{
                     ...flex,
-                    fontSize: story ? 50 : 38,
+                    fontSize: story ? 54 : 42,
                     fontWeight: 800,
                     color: ORANGE_SOFT,
                   }}
@@ -339,7 +339,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
               <div
                 style={{
                   ...flex,
-                  fontSize: story ? 44 : 34,
+                  fontSize: story ? 48 : 38,
                   color: "rgba(255,255,255,0.86)",
                   fontWeight: 700,
                   marginLeft: club.hausherr ? 0 : 16,
@@ -361,7 +361,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
                 color: variant === "lead" ? "white" : ORANGE_SOFT,
                 border: variant === "lead" ? "none" : "1px solid rgba(255,107,0,0.45)",
                 padding: story ? "16px 30px" : "12px 26px",
-                fontSize: story ? (headline.length > 28 ? 34 : 40) : headline.length > 28 ? 26 : 30,
+                fontSize: story ? (headline.length > 28 ? 36 : 42) : headline.length > 28 ? 28 : 32,
                 fontWeight: 800,
               }}
             >
@@ -371,7 +371,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
               <div
                 style={{
                   ...flex,
-                  fontSize: story ? 30 : 24,
+                  fontSize: story ? 32 : 26,
                   color: "rgba(255,255,255,0.78)",
                   fontWeight: 700,
                   marginTop: 12,
@@ -385,7 +385,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
                 ...flex,
                 justifyContent: "space-between",
                 marginTop: story ? 32 : 18,
-                fontSize: story ? 28 : 22,
+                fontSize: story ? 30 : 24,
                 color: "rgba(255,255,255,0.7)",
                 fontWeight: 600,
                 letterSpacing: 0.6,
