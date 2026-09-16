@@ -16,7 +16,7 @@ export interface AnmeldungenStats {
   /** optional Rohdaten für Teilnehmerliste */
   participants?: AnmeldungParticipant[];
   source?: "race-result" | "frozen-2026" | "empty";
-  /** Vereinswertung (Fass Bier), ohne Ausrichter in ranking */
+  /** Teamwertung (Fass Bier), ohne Ausrichter in ranking */
   vereine?: {
     ranking: { name: string; total: number }[];
     ausrichter: { name: string; total: number } | null;
