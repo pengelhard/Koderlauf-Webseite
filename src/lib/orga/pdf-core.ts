@@ -1,0 +1,398 @@
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+
+export const A4_PORTRAIT: [number, number] = [595.28, 841.89];
+export const A4_LANDSCAPE: [number, number] = [841.89, 595.28];
+
+const FOREST = rgb(0.04, 0.24, 0.16);
+const ORANGE = rgb(1, 0.42, 0);
+const LINE = rgb(0.82, 0.84, 0.86);
+const MUTED = rgb(0.35, 0.4, 0.45);
+const BLACK = rgb(0.1, 0.1, 0.1);
+
+export function winAnsi(text: string): string {
+  return text
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201c\u201d]/g, '"')
+    .replace(/\u00a0/g, " ")
+    .replace(/\u2026/g, "...")
+    .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, "?");
+}
+
+export function formatStand(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString("de-DE", {
+    timeZone: "Europe/Berlin",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function wrap(font: PDFFont, text: string, size: number, maxWidth: number): string[] {
+  const safe = winAnsi(text);
+  if (!safe) return [""];
+  const words = safe.split(/\s+/);
+  const lines: string[] = [];
+  let cur = "";
+  for (const w of words) {
+    const next = cur ? `${cur} ${w}` : w;
+    if (font.widthOfTextAtSize(next, size) <= maxWidth) {
+      cur = next;
+    } else {
+      if (cur) lines.push(cur);
+      cur = w;
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines.length ? lines : [""];
+}
+
+export type Col = { key: string; header: string; width: number; align?: "left" | "right" };
+
+export type PdfWriterOptions = {
+  landscape?: boolean;
+  compact?: boolean;
+  margin?: number;
+};
+
+export class PdfWriter {
+  doc!: PDFDocument;
+  font!: PDFFont;
+  bold!: PDFFont;
+  page!: PDFPage;
+  y = 0;
+  pageNo = 0;
+  footer = "";
+  pageSize: [number, number];
+  margin: number;
+  compact: boolean;
+  bodySize: number;
+  headerSize: number;
+  rowHeight: number;
+  lineHeight: number;
+
+  constructor(options: PdfWriterOptions = {}) {
+    this.pageSize = options.landscape ? A4_LANDSCAPE : A4_PORTRAIT;
+    this.margin = options.margin ?? 40;
+    this.compact = options.compact ?? false;
+    this.bodySize = this.compact ? 7.5 : 9;
+    this.headerSize = this.compact ? 7 : 8;
+    this.rowHeight = this.compact ? 13 : 16;
+    this.lineHeight = this.compact ? 10.5 : 12;
+  }
+
+  get pageWidth() {
+    return this.pageSize[0];
+  }
+
+  get pageHeight() {
+    return this.pageSize[1];
+  }
+
+  get contentWidth() {
+    return this.pageWidth - this.margin * 2;
+  }
+
+  async init(footer: string) {
+    this.doc = await PDFDocument.create();
+    this.font = await this.doc.embedFont(StandardFonts.Helvetica);
+    this.bold = await this.doc.embedFont(StandardFonts.HelveticaBold);
+    this.footer = footer;
+    this.newPage();
+  }
+
+  newPage() {
+    this.page = this.doc.addPage(this.pageSize);
+    this.pageNo += 1;
+    this.y = this.pageHeight - this.margin;
+    this.page.drawLine({
+      start: { x: this.margin, y: 32 },
+      end: { x: this.pageWidth - this.margin, y: 32 },
+      thickness: 0.5,
+      color: LINE,
+    });
+    this.page.drawText(winAnsi(this.footer), {
+      x: this.margin,
+      y: 18,
+      size: 7,
+      font: this.font,
+      color: MUTED,
+    });
+    const pn = `Seite ${this.pageNo}`;
+    this.page.drawText(pn, {
+      x: this.pageWidth - this.margin - this.font.widthOfTextAtSize(pn, 7),
+      y: 18,
+      size: 7,
+      font: this.font,
+      color: MUTED,
+    });
+  }
+
+  ensure(h: number) {
+    if (this.y - h < 48) this.newPage();
+  }
+
+  title(text: string) {
+    const size = this.compact ? 14 : 16;
+    this.page.drawText(winAnsi(text), {
+      x: this.margin,
+      y: this.y - 14,
+      size,
+      font: this.bold,
+      color: FOREST,
+    });
+    this.y -= this.compact ? 22 : 28;
+  }
+
+  subtitle(text: string) {
+    this.page.drawText(winAnsi(text), {
+      x: this.margin,
+      y: this.y - 9,
+      size: this.compact ? 9 : 10,
+      font: this.font,
+      color: MUTED,
+    });
+    this.y -= this.compact ? 14 : 18;
+  }
+
+  metaLine(text: string) {
+    this.page.drawText(winAnsi(text), {
+      x: this.margin,
+      y: this.y - 9,
+      size: 8,
+      font: this.font,
+      color: MUTED,
+    });
+    this.y -= 13;
+  }
+
+  paragraph(text: string, size?: number) {
+    const fs = size ?? (this.compact ? 7.5 : 9);
+    const width = this.contentWidth;
+    for (const line of wrap(this.font, text, fs, width)) {
+      this.ensure(this.lineHeight + 2);
+      this.page.drawText(winAnsi(line), {
+        x: this.margin,
+        y: this.y - fs,
+        size: fs,
+        font: this.font,
+        color: BLACK,
+      });
+      this.y -= this.lineHeight + 2;
+    }
+  }
+
+  heading(text: string) {
+    this.ensure(24);
+    this.y -= 6;
+    this.page.drawText(winAnsi(text), {
+      x: this.margin,
+      y: this.y - 11,
+      size: this.compact ? 10.5 : 12,
+      font: this.bold,
+      color: ORANGE,
+    });
+    this.y -= this.compact ? 16 : 20;
+  }
+
+  table(cols: Col[], rows: Record<string, string>[]) {
+    const headerH = this.compact ? 15 : 18;
+    const drawHeader = () => {
+      this.ensure(headerH + 4);
+      let x = this.margin;
+      this.page.drawRectangle({
+        x: this.margin - 2,
+        y: this.y - headerH,
+        width: this.contentWidth + 4,
+        height: headerH,
+        color: rgb(0.94, 0.96, 0.95),
+      });
+      for (const col of cols) {
+        this.page.drawText(winAnsi(col.header), {
+          x: x + 2,
+          y: this.y - headerH + 4,
+          size: this.headerSize,
+          font: this.bold,
+          color: FOREST,
+        });
+        x += col.width;
+      }
+      this.y -= headerH;
+    };
+
+    drawHeader();
+    if (rows.length === 0) {
+      this.ensure(this.rowHeight);
+      this.page.drawText(winAnsi("Keine Einträge."), {
+        x: this.margin + 2,
+        y: this.y - 10,
+        size: this.bodySize,
+        font: this.font,
+        color: MUTED,
+      });
+      this.y -= this.rowHeight;
+      return;
+    }
+
+    for (const row of rows) {
+      const cellLines = cols.map((col) =>
+        wrap(this.font, row[col.key] ?? "", this.bodySize, col.width - 4),
+      );
+      const lines = Math.max(1, ...cellLines.map((l) => l.length));
+      const h = Math.max(this.rowHeight, lines * this.lineHeight + 4);
+      if (this.y - h < 48) {
+        this.newPage();
+        drawHeader();
+      }
+      let x = this.margin;
+      this.page.drawLine({
+        start: { x: this.margin, y: this.y },
+        end: { x: this.pageWidth - this.margin, y: this.y },
+        thickness: 0.3,
+        color: LINE,
+      });
+      for (let i = 0; i < cols.length; i++) {
+        const col = cols[i];
+        cellLines[i].forEach((line, li) => {
+          const tw = this.font.widthOfTextAtSize(winAnsi(line), this.bodySize);
+          const tx = col.align === "right" ? x + col.width - 3 - tw : x + 2;
+          this.page.drawText(winAnsi(line), {
+            x: tx,
+            y: this.y - this.bodySize - 1 - li * this.lineHeight,
+            size: this.bodySize,
+            font: this.font,
+            color: BLACK,
+          });
+        });
+        x += col.width;
+      }
+      this.y -= h;
+    }
+  }
+
+  /** Zwei Gruppen-Überschriften mit vertikaler Trennlinie (Variante B). */
+  tableWithDivider(
+    cols: Col[],
+    rows: Record<string, string>[],
+    dividerAfterCol: number,
+    leftLabel: string,
+    rightLabel: string,
+  ) {
+    const headerH = this.compact ? 24 : 28;
+    const drawHeader = () => {
+      this.ensure(headerH + 4);
+      const tableW = cols.reduce((s, c) => s + c.width, 0);
+      const leftW = cols.slice(0, dividerAfterCol).reduce((s, c) => s + c.width, 0);
+
+      this.page.drawRectangle({
+        x: this.margin - 2,
+        y: this.y - headerH,
+        width: tableW + 4,
+        height: headerH,
+        color: rgb(0.94, 0.96, 0.95),
+      });
+
+      this.page.drawText(winAnsi(leftLabel), {
+        x: this.margin + 4,
+        y: this.y - 11,
+        size: this.headerSize,
+        font: this.bold,
+        color: FOREST,
+      });
+      this.page.drawText(winAnsi(rightLabel), {
+        x: this.margin + leftW + 6,
+        y: this.y - 11,
+        size: this.headerSize,
+        font: this.bold,
+        color: FOREST,
+      });
+
+      let x = this.margin;
+      for (const col of cols) {
+        this.page.drawText(winAnsi(col.header), {
+          x: x + 2,
+          y: this.y - headerH + 5,
+          size: this.headerSize,
+          font: this.bold,
+          color: FOREST,
+        });
+        x += col.width;
+      }
+
+      const dividerX = this.margin + leftW;
+      this.page.drawLine({
+        start: { x: dividerX, y: this.y - headerH },
+        end: { x: dividerX, y: this.y },
+        thickness: 0.6,
+        color: LINE,
+      });
+
+      this.y -= headerH;
+    };
+
+    drawHeader();
+
+    for (const row of rows) {
+      const cellLines = cols.map((col) =>
+        wrap(this.font, row[col.key] ?? "", this.bodySize, col.width - 4),
+      );
+      const lines = Math.max(1, ...cellLines.map((l) => l.length));
+      const h = Math.max(this.rowHeight, lines * this.lineHeight + 4);
+      if (this.y - h < 48) {
+        this.newPage();
+        drawHeader();
+      }
+
+      const leftW = cols.slice(0, dividerAfterCol).reduce((s, c) => s + c.width, 0);
+      const dividerX = this.margin + leftW;
+
+      let x = this.margin;
+      this.page.drawLine({
+        start: { x: this.margin, y: this.y },
+        end: { x: this.margin + cols.reduce((s, c) => s + c.width, 0), y: this.y },
+        thickness: 0.3,
+        color: LINE,
+      });
+      this.page.drawLine({
+        start: { x: dividerX, y: this.y },
+        end: { x: dividerX, y: this.y - h },
+        thickness: 0.4,
+        color: LINE,
+      });
+
+      for (let i = 0; i < cols.length; i++) {
+        const col = cols[i];
+        cellLines[i].forEach((line, li) => {
+          const tw = this.font.widthOfTextAtSize(winAnsi(line), this.bodySize);
+          const tx = col.align === "right" ? x + col.width - 3 - tw : x + 2;
+          this.page.drawText(winAnsi(line), {
+            x: tx,
+            y: this.y - this.bodySize - 1 - li * this.lineHeight,
+            size: this.bodySize,
+            font: this.font,
+            color: BLACK,
+          });
+        });
+        x += col.width;
+      }
+      this.y -= h;
+    }
+  }
+
+  async save(): Promise<Uint8Array> {
+    return this.doc.save();
+  }
+}
+
+export function footerNote(jahr = 0): string {
+  const y = jahr || new Date().getFullYear();
+  return `Koderlauf ${y} · intern · Sportheim Obermögersheim`;
+}
+
+export function bibLabel(bib: string): string {
+  return bib || "–";
+}
