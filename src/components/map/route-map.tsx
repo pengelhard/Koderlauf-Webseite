@@ -14,7 +14,7 @@ import {
   type TrackIndex,
 } from "@/lib/gpx";
 import type { VerpflegungsStation } from "@/lib/verpflegung";
-import { formatVerpflegungKm, getMapMarkersForStations } from "@/lib/verpflegung";
+import { getMapMarkersForStations } from "@/lib/verpflegung";
 
 type FlightUi = "idle" | "running" | "paused" | "done";
 
@@ -112,7 +112,6 @@ export function RouteMap({
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState(false);
   const [flightUi, setFlightUi] = useState<FlightUi>("idle");
-  const [stationChip, setStationChip] = useState<string | null>(null);
   const reducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
     getReducedMotionSnapshot,
@@ -212,7 +211,6 @@ export function RouteMap({
       mapRef.current?.stop();
       setMapInteraction(true);
       closeStationPopups();
-      if (next !== "paused") setStationChip(null);
       setFlightUi(next);
     },
     [clearFlightTimers, closeStationPopups, setMapInteraction],
@@ -239,11 +237,9 @@ export function RouteMap({
         nextStationIdxRef.current = sIdx + 1;
         distanceKmRef.current = station.km;
         applyCamera(station.km, true, dt);
-        setStationChip(`${station.name} · ${station.hint} · ${formatVerpflegungKm(station.km)}`);
         openStationPopup(station);
         holdTimerRef.current = window.setTimeout(() => {
           holdTimerRef.current = null;
-          setStationChip(null);
           closeStationPopups();
           lastTsRef.current = 0;
           if (!pausedRef.current) {
@@ -287,7 +283,6 @@ export function RouteMap({
     nextStationIdxRef.current = 0;
     lastTsRef.current = 0;
     pausedRef.current = false;
-    setStationChip(null);
     setFlightUi("running");
 
     const durationMs = Math.min(55_000, Math.max(24_000, index.totalKm * 1800));
@@ -328,7 +323,6 @@ export function RouteMap({
     setMapInteraction(false);
     setFlightUi("running");
     closeStationPopups();
-    setStationChip(null);
     startLoop();
   }, [closeStationPopups, flightUi, setMapInteraction, startLoop]);
 
@@ -586,7 +580,7 @@ export function RouteMap({
 
       {showFlightUi && (
         <div className="pointer-events-none absolute inset-0 z-10" data-flight-state={flightUi}>
-          {(stationChip || flightUi === "done") && (
+          {flightUi === "done" && (
             <div className="absolute top-3 left-0 right-3 pr-12 sm:right-14">
               <div className="flex justify-center">
                 <div
@@ -595,9 +589,7 @@ export function RouteMap({
                   data-flight-chip=""
                   className="max-w-[min(100%,22rem)] rounded-full border border-white/25 bg-black/65 px-3 py-1.5 text-center text-xs font-semibold text-white shadow-sm"
                 >
-                  {flightUi === "done"
-                    ? "Ziel erreicht – Flug beendet."
-                    : stationChip}
+                  Ziel erreicht – Flug beendet.
                 </div>
               </div>
             </div>
