@@ -4,13 +4,18 @@ import { useState } from "react";
 import { Download, Share2 } from "lucide-react";
 import { instagramCaption, whatsappText } from "@/lib/fassjagd/copy";
 import type { FassjagdClub } from "@/lib/fassjagd/types";
+import { getSiteUrl } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 
-function pageUrl(slug: string) {
+function canonicalTeamUrl(slug: string) {
+  return `${getSiteUrl()}/fassjagd/${slug}`;
+}
+
+function liveTeamUrl(slug: string) {
   if (typeof window !== "undefined") {
     return `${window.location.origin}/fassjagd/${slug}`;
   }
-  return `https://koderlauf.de/fassjagd/${slug}`;
+  return canonicalTeamUrl(slug);
 }
 
 function isAndroid() {
@@ -62,7 +67,7 @@ export function FassjagdShareButtons({
   club: FassjagdClub;
   className?: string;
 }) {
-  const url = pageUrl(club.slug);
+  const url = canonicalTeamUrl(club.slug);
   const text = whatsappText(club, url);
   const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
   const storyPath = `/api/fassjagd/card/${club.slug}?format=story`;
@@ -70,27 +75,30 @@ export function FassjagdShareButtons({
   const [igBusy, setIgBusy] = useState(false);
 
   async function nativeShare() {
+    const live = liveTeamUrl(club.slug);
+    const liveText = whatsappText(club, live);
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: `Fassjagd: ${club.name}`, text, url });
+        await navigator.share({ title: `Fassjagd: ${club.name}`, text: liveText, url: live });
         return;
       } catch {
         /* user cancelled */
       }
     }
-    window.open(wa, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/?text=${encodeURIComponent(liveText)}`, "_blank", "noopener,noreferrer");
   }
 
   async function instagramStory() {
     setIgBusy(true);
-    const caption = instagramCaption(club, url);
+    const live = liveTeamUrl(club.slug);
+    const caption = instagramCaption(club, live);
     try {
       const res = await fetch(storyPath);
       if (!res.ok) throw new Error("card");
       const blob = await res.blob();
       await downloadBlob(blob, `fassjagd-${club.slug}-story.png`);
       try {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(live);
       } catch {
         try {
           await navigator.clipboard.writeText(caption);
