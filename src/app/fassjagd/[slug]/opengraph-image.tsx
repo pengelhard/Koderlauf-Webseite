@@ -3,6 +3,7 @@ import { loadFassjagdBoard } from "@/lib/fassjagd/load";
 import { findFassjagdClub } from "@/lib/fassjagd/ranking";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 export const alt = "Fassjagd Teamkarte";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

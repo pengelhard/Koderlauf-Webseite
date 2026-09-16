@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Download, Share2 } from "lucide-react";
-import { instagramCaption, whatsappText } from "@/lib/fassjagd/copy";
+import { instagramCaption, teamShareUrl, whatsappShareHref, whatsappText } from "@/lib/fassjagd/copy";
 import type { FassjagdClub } from "@/lib/fassjagd/types";
-import { getSiteUrl } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 import {
   cacheStoryJpeg,
@@ -20,15 +19,12 @@ import {
   type ShareChainResult,
 } from "@/lib/fassjagd/web-share";
 
-function canonicalTeamUrl(slug: string) {
-  return `${getSiteUrl()}/fassjagd/${slug}`;
+function liveOrigin(): string {
+  return window.location.origin;
 }
 
 function liveTeamUrl(slug: string) {
-  if (typeof window !== "undefined") {
-    return `${window.location.origin}/fassjagd/${slug}`;
-  }
-  return canonicalTeamUrl(slug);
+  return `${liveOrigin()}/fassjagd/${slug}`;
 }
 
 function hasNavigatorShare() {
@@ -94,15 +90,13 @@ export function FassjagdShareButtons({
   club: FassjagdClub;
   className?: string;
 }) {
-  const url = canonicalTeamUrl(club.slug);
-  const text = whatsappText(club, url);
-  const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
   const storyPath = `/api/fassjagd/card/${club.slug}?format=story`;
   const pngName = `fassjagd-${club.slug}-story.png`;
   const jpgName = `fassjagd-${club.slug}-story.jpg`;
   const [igHint, setIgHint] = useState<string | null>(null);
   const [igBusy, setIgBusy] = useState(false);
   const [pendingShare, setPendingShare] = useState<{ caption: string } | null>(null);
+  const [waHref, setWaHref] = useState<string>();
 
   async function warmJpeg(path: string) {
     const blob = peekStoryBlob(path);
@@ -120,6 +114,13 @@ export function FassjagdShareButtons({
     // storyPath/pngName binden an club.slug
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storyPath, pngName, jpgName]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      setWaHref(whatsappShareHref(club, liveOrigin()));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [club]);
 
   function shareTitle() {
     return `Fassjagd: ${club.name}`;
@@ -232,8 +233,12 @@ export function FassjagdShareButtons({
       });
   }
 
+  function openWhatsApp() {
+    window.open(whatsappShareHref(club, liveOrigin()), "_blank", "noopener,noreferrer");
+  }
+
   async function nativeShare() {
-    const live = liveTeamUrl(club.slug);
+    const live = teamShareUrl(liveOrigin(), club.slug);
     const liveText = whatsappText(club, live);
     if (hasNavigatorShare()) {
       try {
@@ -243,22 +248,34 @@ export function FassjagdShareButtons({
         /* user cancelled */
       }
     }
-    window.open(`https://wa.me/?text=${encodeURIComponent(liveText)}`, "_blank", "noopener,noreferrer");
+    openWhatsApp();
   }
 
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex flex-wrap gap-2">
-        <a
-          href={wa}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/whatsapp.png" alt="" width={20} height={20} className="h-5 w-5" />
-          WhatsApp
-        </a>
+        {waHref ? (
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/whatsapp.png" alt="" width={20} height={20} className="h-5 w-5" />
+            WhatsApp
+          </a>
+        ) : (
+          <button
+            type="button"
+            onClick={openWhatsApp}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/whatsapp.png" alt="" width={20} height={20} className="h-5 w-5" />
+            WhatsApp
+          </button>
+        )}
         <button
           type="button"
           onPointerDown={prefetchNow}
