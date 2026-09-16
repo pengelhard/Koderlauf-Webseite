@@ -40,7 +40,7 @@ const FASS_LAYOUT: Record<
   { box: number; right: number; bottom: number; glow: number }
 > = {
   og: { box: 430, right: -64, bottom: -96, glow: 300 },
-  story: { box: 680, right: -80, bottom: -40, glow: 480 },
+  story: { box: 560, right: -24, bottom: 400, glow: 400 },
   week: { box: 400, right: -56, bottom: -80, glow: 280 },
 };
 
@@ -202,7 +202,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
   const nameSize = story ? (longName ? 58 : 74) : longName ? 42 : 54;
   const kickerSize = story ? 26 : 20;
   const roleLabel = club.hausherr ? "HAUSHERR" : "TEAM";
-  const textMax = story ? 720 : 700;
+  const textMax = story ? 960 : 700;
 
   return new ImageResponse(
     (
