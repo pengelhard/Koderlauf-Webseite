@@ -1,0 +1,202 @@
+import { TSHIRT_SIZES } from "@/lib/pricing";
+import type {
+  AbendkarteRecipient,
+  OrgaAdminPayload,
+  OrgaFields,
+  OrgaParticipant,
+  OrgaStats,
+  ShirtRecipient,
+  SizeCount,
+} from "@/lib/orga/types";
+
+const SIZE_RANK = new Map<string, number>(
+  TSHIRT_SIZES.map((s, i) => [s, i]),
+);
+
+function sizeRank(size: string): number {
+  if (size === "ohne Größe") return 1000;
+  return SIZE_RANK.get(size) ?? 500;
+}
+
+function cmpName(
+  a: { nachname: string; vorname: string; name: string },
+  b: { nachname: string; vorname: string; name: string },
+): number {
+  const n = a.nachname.localeCompare(b.nachname, "de", { sensitivity: "base" });
+  if (n !== 0) return n;
+  const v = a.vorname.localeCompare(b.vorname, "de", { sensitivity: "base" });
+  if (v !== 0) return v;
+  return a.name.localeCompare(b.name, "de", { sensitivity: "base" });
+}
+
+export function emptyOrgaStats(error?: string): OrgaStats {
+  return {
+    fetchedAt: new Date().toISOString(),
+    source: "empty",
+    error,
+    rowCount: 0,
+    fields: {
+      present: [],
+      mail: false,
+      tshirt: false,
+      abendkarte: false,
+      bib: false,
+      payment: false,
+    },
+    hinweise: error ? [error] : [],
+    tshirtTotal: 0,
+    tshirtBySize: [],
+    tshirtOhneGroesse: 0,
+    tshirtRecipients: [],
+    abendkartenTotal: 0,
+    abendkartenPersonen: 0,
+    abendkartenRecipients: [],
+    mailCount: 0,
+  };
+}
+
+function detectFields(present: string[], cols: {
+  mail?: number;
+  tshirt?: number;
+  abendkarte?: number;
+  bib?: number;
+  payment?: number;
+}): OrgaFields {
+  return {
+    present,
+    mail: cols.mail != null,
+    tshirt: cols.tshirt != null,
+    abendkarte: cols.abendkarte != null,
+    bib: cols.bib != null,
+    payment: cols.payment != null,
+  };
+}
+
+export function buildOrgaStats(
+  participants: OrgaParticipant[],
+  present: string[],
+  cols: {
+    mail?: number;
+    tshirt?: number;
+    abendkarte?: number;
+    bib?: number;
+    payment?: number;
+  },
+  fetchedAt = new Date().toISOString(),
+): OrgaStats {
+  const fields = detectFields(present, cols);
+  const hinweise: string[] = [];
+
+  if (!fields.tshirt) {
+    hinweise.push(
+      "Spalte T-Shirt fehlt in der Race-Result-Liste. In RR die Ausgabeliste „Adressliste“ um das Feld TShirt / Größe erweitern.",
+    );
+  }
+  if (!fields.abendkarte) {
+    hinweise.push(
+      "Spalte Abendkarte / Tape Jam fehlt. In RR das Anmeldefeld in die Adressliste aufnehmen.",
+    );
+  }
+  if (!fields.mail) {
+    hinweise.push(
+      "Keine Mail-Spalte in der Liste – Kontakt-CSV ist dann leer.",
+    );
+  }
+  if (!fields.payment) {
+    hinweise.push(
+      "Kein Bezahlstatus in der Adressliste (Spalte z. B. Bezahlt/Status). Ausgabe-PDF zeigt ihn daher nicht.",
+    );
+  }
+
+  const counts = new Map<string, number>();
+  const tshirtRecipients: ShirtRecipient[] = [];
+  for (const p of participants) {
+    if (!p.tshirtSize) continue;
+    counts.set(p.tshirtSize, (counts.get(p.tshirtSize) ?? 0) + 1);
+    tshirtRecipients.push({
+      bib: p.bib,
+      name: p.name,
+      nachname: p.nachname,
+      vorname: p.vorname,
+      size: p.tshirtSize,
+      paymentStatus: p.paymentStatus,
+    });
+  }
+
+  const tshirtBySize: SizeCount[] = [...counts.entries()]
+    .map(([size, count]) => ({ size, count }))
+    .sort((a, b) => {
+      const r = sizeRank(a.size) - sizeRank(b.size);
+      if (r !== 0) return r;
+      return a.size.localeCompare(b.size, "de");
+    });
+
+  const abendkartenRecipients: AbendkarteRecipient[] = participants
+    .filter((p) => p.abendkarten > 0)
+    .map((p) => ({
+      bib: p.bib,
+      name: p.name,
+      nachname: p.nachname,
+      vorname: p.vorname,
+      anzahl: p.abendkarten,
+    }))
+    .sort(cmpName);
+
+  tshirtRecipients.sort(cmpName);
+
+  return {
+    fetchedAt,
+    source: "raceresult",
+    rowCount: participants.length,
+    fields,
+    hinweise,
+    tshirtTotal: tshirtRecipients.length,
+    tshirtBySize,
+    tshirtOhneGroesse: counts.get("ohne Größe") ?? 0,
+    tshirtRecipients,
+    abendkartenTotal: abendkartenRecipients.reduce((s, r) => s + r.anzahl, 0),
+    abendkartenPersonen: abendkartenRecipients.length,
+    abendkartenRecipients,
+    mailCount: participants.filter((p) => p.mail.includes("@")).length,
+  };
+}
+
+export function shirtsBySizeThenName(stats: OrgaStats): ShirtRecipient[] {
+  return [...stats.tshirtRecipients].sort((a, b) => {
+    const r = sizeRank(a.size) - sizeRank(b.size);
+    if (r !== 0) return r;
+    return cmpName(a, b);
+  });
+}
+
+export function toAdminPayload(stats: OrgaStats): OrgaAdminPayload {
+  return {
+    fetchedAt: stats.fetchedAt,
+    source: stats.source,
+    error: stats.error,
+    rowCount: stats.rowCount,
+    fields: stats.fields,
+    hinweise: stats.hinweise,
+    tshirt: {
+      total: stats.tshirtTotal,
+      bySize: stats.tshirtBySize,
+      ohneGroesse: stats.tshirtOhneGroesse,
+      recipients: stats.tshirtRecipients.map((r) => ({
+        bib: r.bib,
+        name: r.name,
+        size: r.size,
+        paymentStatus: r.paymentStatus,
+      })),
+    },
+    abendkarten: {
+      totalKarten: stats.abendkartenTotal,
+      personen: stats.abendkartenPersonen,
+      recipients: stats.abendkartenRecipients.map((r) => ({
+        bib: r.bib,
+        name: r.name,
+        anzahl: r.anzahl,
+      })),
+    },
+    mailCount: stats.mailCount,
+  };
+}
