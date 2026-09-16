@@ -4,7 +4,7 @@ import { isTestHost, PROD_SITE_HOST } from "@/lib/site-url";
 
 const WWW_HOST = `www.${PROD_SITE_HOST}`;
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
 
   if (host === WWW_HOST) {
