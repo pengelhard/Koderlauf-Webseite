@@ -63,10 +63,10 @@ export default function AnmeldungPage() {
                     Ausrichter nicht in der Wertung.
                   </p>
                   <Link
-                    href="/teilnehmer"
+                    href="/fassjagd"
                     className="mt-2 inline-block text-sm font-semibold text-koder-orange hover:underline"
                   >
-                    Aktuellen Stand ansehen →
+                    Zur Fassjagd →
                   </Link>
                 </div>
               </div>

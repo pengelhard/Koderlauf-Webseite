@@ -91,7 +91,7 @@ const FAQS: FaqItem[] = [
         geehrt. Eine separate Altersklassen-Ehrung gibt es nicht – die drei Schnellsten je
         Altersklasse bekommen aber eine Urkunde. Details:{" "}
         <FaqLink href="/ergebnisse">Ergebnisse &amp; Ehrungen</FaqLink>. Zusätzlich gibt es eine{" "}
-        <FaqLink href="/teilnehmer">{VEREINS_WERTUNG.titel}</FaqLink>.
+        <FaqLink href="/fassjagd">{VEREINS_WERTUNG.titel}</FaqLink>.
       </>
     ),
   },
@@ -103,7 +103,7 @@ const FAQS: FaqItem[] = [
         <FaqLink href="/anmeldung">Anmeldung</FaqLink> denselben Namen für Verein, Gruppe oder Firma
         angeben, damit alle zusammengezählt werden. {VEREINS_WERTUNG.ausrichterCanonical} ist als
         Ausrichter nicht in der Wertung. Aktueller Stand:{" "}
-        <FaqLink href="/teilnehmer">Teilnehmer</FaqLink>.
+        <FaqLink href="/fassjagd">Fassjagd</FaqLink>.
       </>
     ),
   },

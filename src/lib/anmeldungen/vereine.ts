@@ -5,17 +5,17 @@
 
 export const VEREINS_WERTUNG = {
   /** Kurztitel für Überschriften */
-  titel: "Teamwertung",
+  titel: "Fassjagd",
   preis: "ein Fass Bier",
   /** Klarer Einzeiler */
   kurz:
-    "Das Team mit den meisten Teilnehmern gewinnt ein Fass Bier – Verein, Gruppe oder Firma.",
+    "Der Verein mit den meisten bezahlten Startern gewinnt ein Fass Bier. 1 Person = 1 Stimme – Kinderlauf und Walking zählen.",
   ausrichterCanonical: "SV Obermögersheim",
   /** Wie der Name bei der Anmeldung eingetragen werden soll */
   angabe:
-    "Bei der Anmeldung denselben Namen für Verein, Gruppe oder Firma eintragen, damit alle zusammengezählt werden.",
+    "Bei der Anmeldung denselben Vereinsnamen wählen (Combobox). Ohne einheitlichen Namen zählt die Meldung nicht für die Fassjagd.",
   hinweis:
-    "Bei der Anmeldung denselben Namen für Verein, Gruppe oder Firma eintragen, damit alle zusammengezählt werden. Das Team mit den meisten Teilnehmern gewinnt ein Fass Bier. SV Obermögersheim ist als Ausrichter nicht in der Wertung.",
+    "Bei der Anmeldung denselben Vereinsnamen wählen. Der Verein mit den meisten bezahlten Startern gewinnt ein Fass Bier. SV Obermögersheim ist als Ausrichter (Hausherr) sichtbar, aber nicht in der Wertung. Nach dem Online-Anmeldeschluss friert die Fassjagd ein – Nachmeldungen vor Ort zählen nicht.",
 } as const;
 
 /** Kanonische Vereinsnamen → bekannte Schreibweisen (kleingeschrieben, normalisiert). */
@@ -36,8 +36,13 @@ const VEREIN_ALIASES: Record<string, string[]> = {
     "s.v. obermogersheim",
     "s.v. obermögersheim",
   ],
-  // Weitere Vereine bei Bedarf ergänzen, sobald Schreibweisen auftauchen:
-  // "TSV Wassertrüdingen": ["tsv wassertrüdingen", "tsv wt", ...],
+  "TV 1860 Gunzenhausen": [
+    "tv 1860 gz",
+    "tv 1860 gunzenhausen",
+    "tv1860 gunzenhausen",
+    "tv 1860 gunzenhausen e.v",
+    "turnverein 1860 gunzenhausen",
+  ],
 };
 
 export function normalizeVereinKey(raw: string): string {
@@ -68,7 +73,10 @@ const ALIAS_TO_CANONICAL = (() => {
   return map;
 })();
 
-export function resolveVerein(raw: string | undefined | null): {
+export function resolveVerein(
+  raw: string | undefined | null,
+  extraAliases?: Record<string, string>,
+): {
   display: string;
   canonical: string;
   isAusrichter: boolean;
@@ -79,7 +87,10 @@ export function resolveVerein(raw: string | undefined | null): {
     return { display: "", canonical: "", isAusrichter: false, empty: true };
   }
   const key = normalizeVereinKey(trimmed);
-  const canonical = ALIAS_TO_CANONICAL.get(key) ?? trimmed.replace(/\s+/g, " ").trim();
+  const canonical =
+    extraAliases?.[key] ||
+    ALIAS_TO_CANONICAL.get(key) ||
+    trimmed.replace(/\s+/g, " ").trim();
   const isAusrichter = canonical === VEREINS_WERTUNG.ausrichterCanonical;
   return {
     display: canonical,
@@ -102,12 +113,13 @@ export type VereinRankEntry = {
  */
 export function rankVereine(
   participants: { verein?: string }[],
+  extraAliases?: Record<string, string>,
 ): { ranking: VereinRankEntry[]; ausrichter: VereinRankEntry | null; ohneAngabe: number } {
   const counts = new Map<string, number>();
   let ohneAngabe = 0;
 
   for (const p of participants) {
-    const r = resolveVerein(p.verein);
+    const r = resolveVerein(p.verein, extraAliases);
     if (r.empty) {
       ohneAngabe += 1;
       continue;

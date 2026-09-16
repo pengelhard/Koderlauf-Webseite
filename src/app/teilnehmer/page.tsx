@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useState, useEffect, useLayoutEffect, useMemo, useCallback } from "react";
 import { Users, TrendingUp, RefreshCw, List, Beer } from "lucide-react";
 import { STRECKEN_COLORS } from "@/lib/strecken-config";
@@ -317,7 +318,7 @@ export default function AnmeldungenPage() {
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong>{" "}
-              {VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der Wertung.
+              {VEREINS_WERTUNG.ausrichterCanonical} ist als Hausherr außer Wertung.
             </p>
 
             <div className="mt-4 space-y-2">
@@ -327,10 +328,10 @@ export default function AnmeldungenPage() {
                     ? `${VEREINS_WERTUNG.titel} erscheint mit den Live-Daten.`
                     : liveEmpty
                       ? `${VEREINS_WERTUNG.titel} erscheint mit den ersten Anmeldungen.`
-                      : "Noch keine Angaben – bei der Anmeldung Verein, Gruppe oder Firma eintragen!"}
+                      : "Noch keine Angaben – bei der Anmeldung den Vereinsnamen wählen."}
                 </div>
               ) : (
-                stats.vereine!.ranking.slice(0, 15).map((v, i) => {
+                stats.vereine!.ranking.slice(0, 5).map((v, i) => {
                   const max = stats.vereine!.ranking[0]?.total || 1;
                   const pct = (v.total / max) * 100;
                   return (
@@ -367,6 +368,13 @@ export default function AnmeldungenPage() {
                 })
               )}
             </div>
+
+            <Link
+              href="/fassjagd"
+              className="mt-4 inline-flex text-sm font-semibold text-koder-orange hover:underline"
+            >
+              Ganze Fassjagd →
+            </Link>
 
             {(stats.vereine?.ausrichter || (stats.vereine?.ohneAngabe ?? 0) > 0) && (
               <p className="mt-3 text-xs text-muted-foreground">
