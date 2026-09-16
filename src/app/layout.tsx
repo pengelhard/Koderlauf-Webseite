@@ -55,16 +55,17 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `Koderlauf ${EVENT.jahr}`,
       description: `Koderlauf am ${EVENT.datumFormatiert} in ${EVENT.ort}`,
     },
-    // Neue Dateinamen + Query, damit Browser nicht das gecachte Vercel-Dreieck unter /favicon.ico halten.
+    // Echtes Maskottchen aus public/mascot-koderlauf.png (transparent).
+    // Kein SVG in der Liste: Chrome würde sonst ein anderes Icon bevorzugen.
+    // Keine app/icon.png+icon.svg (Next 16 Turbopack-Crash). Query gegen Browser-Cache.
     icons: {
       icon: [
-        { url: "/koder-icon.svg?v=20260916", type: "image/svg+xml" },
-        { url: "/koder-icon.png?v=20260916", type: "image/png", sizes: "32x32" },
-        { url: "/koder-icon-192.png?v=20260916", type: "image/png", sizes: "192x192" },
-        { url: "/favicon.ico?v=20260916", type: "image/x-icon", sizes: "48x48" },
+        { url: "/koder-icon.png?v=20260916-2", type: "image/png", sizes: "32x32" },
+        { url: "/koder-icon-192.png?v=20260916-2", type: "image/png", sizes: "192x192" },
+        { url: "/favicon.ico?v=20260916-2", type: "image/x-icon", sizes: "16x16 32x32 48x48" },
       ],
-      shortcut: "/koder-icon.png?v=20260916",
-      apple: [{ url: "/apple-touch-icon.png?v=20260916", sizes: "180x180" }],
+      shortcut: "/koder-icon.png?v=20260916-2",
+      apple: [{ url: "/apple-touch-icon.png?v=20260916-2", sizes: "180x180" }],
     },
   };
 }
