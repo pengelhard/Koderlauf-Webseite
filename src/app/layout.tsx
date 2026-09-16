@@ -9,6 +9,7 @@ import { TestBanner } from "@/components/layout/test-banner";
 import { MobileMotionConfig } from "@/components/mobile-motion-config";
 import { EVENT } from "@/lib/event-config";
 import { getCanonicalUrl, getSiteUrlFromHost, hostFromHeaders, isTestHost, PROD_SITE_URL } from "@/lib/site-url";
+import { isSocialCrawler } from "@/lib/social-crawler";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,6 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = hostFromHeaders(headersList);
   const siteUrl = getSiteUrlFromHost(host);
   const isTest = isTestHost(host);
+  const social = isSocialCrawler(headersList.get("user-agent"));
   const pathname = headersList.get("x-pathname") || "/";
   const canonical = getCanonicalUrl(pathname);
 
@@ -35,13 +37,15 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: `Der jährliche Koderlauf in Obermögersheim. Strecken, Galerie und Anmeldung für den Koderlauf ${EVENT.jahr} am ${EVENT.datumFormatiert}.`,
     metadataBase: new URL(isTest ? siteUrl : PROD_SITE_URL),
-    ...(isTest
+    ...(isTest && !social
       ? { robots: { index: false, follow: false } }
-      : {
-          alternates: {
-            canonical,
-          },
-        }),
+      : isTest
+        ? {}
+        : {
+            alternates: {
+              canonical,
+            },
+          }),
     openGraph: {
       title: `Koderlauf ${EVENT.jahr} – ${EVENT.claim}`,
       description: `Koderlauf in ${EVENT.ort} am ${EVENT.datumFormatiert}. ${streckenListe}.`,

@@ -398,7 +398,13 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
         </div>
       </ForestStage>
     ),
-    { ...size },
+    {
+      ...size,
+      headers:
+        format === "og"
+          ? { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" }
+          : undefined,
+    },
   );
 }
 

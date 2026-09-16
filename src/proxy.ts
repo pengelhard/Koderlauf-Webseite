@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isTestHost, PROD_SITE_HOST } from "@/lib/site-url";
+import { isSocialCrawler } from "@/lib/social-crawler";
 
 const WWW_HOST = `www.${PROD_SITE_HOST}`;
 
@@ -22,7 +23,11 @@ export function proxy(request: NextRequest) {
     request: { headers: requestHeaders },
   });
 
-  if (isTestHost(host)) {
+  const path = request.nextUrl.pathname;
+  const social = isSocialCrawler(request.headers.get("user-agent"));
+  const ogImage = path.includes("/opengraph-image") || path.includes("/twitter-image");
+  // Google bleibt draußen; WhatsApp/Facebook brauchen die OG-Karte ohne noindex.
+  if (isTestHost(host) && !social && !ogImage) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 

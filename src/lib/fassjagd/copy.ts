@@ -51,7 +51,7 @@ function shareDiff(club: FassjagdClub): string {
 }
 
 /** Cache-Bust für WhatsApp-Linkvorschau (Crawler cached aggressiv). */
-export const WHATSAPP_PREVIEW_VERSION = "2";
+export const WHATSAPP_PREVIEW_VERSION = "3";
 
 export function teamShareUrl(origin: string, slug: string): string {
   const base = `${origin.replace(/\/$/, "")}/fassjagd/${slug}`;
