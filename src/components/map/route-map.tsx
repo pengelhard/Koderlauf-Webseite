@@ -226,8 +226,9 @@ export function RouteMap({
       if (!map || pausedRef.current || index.points.length === 0) return;
 
       if (lastTsRef.current === 0) lastTsRef.current = ts;
-      const dt = Math.min(100, ts - lastTsRef.current);
+      const dt = ts - lastTsRef.current;
       lastTsRef.current = ts;
+      if (dt <= 0 || dt > 2000) return void (rafRef.current = requestAnimationFrame((t) => tickRef.current(t)));
 
       distanceKmRef.current += speedKmPerMsRef.current * dt;
 
