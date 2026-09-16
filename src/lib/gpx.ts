@@ -84,6 +84,77 @@ function toRad(deg: number): number {
   return (deg * Math.PI) / 180;
 }
 
+/** Cumulative distances along a GPX line (same idea as Turf `along` / `length`). */
+export type TrackIndex = {
+  points: GpxPoint[];
+  cumKm: number[];
+  totalKm: number;
+};
+
+export function buildTrackIndex(points: GpxPoint[]): TrackIndex {
+  const cumKm: number[] = [0];
+  for (let i = 1; i < points.length; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    cumKm.push(cumKm[i - 1] + haversine(prev.lat, prev.lon, curr.lat, curr.lon));
+  }
+  return { points, cumKm, totalKm: cumKm[cumKm.length - 1] ?? 0 };
+}
+
+/** Point at `km` along the track (linear interpolation between GPX vertices). */
+export function alongTrack(index: TrackIndex, km: number): GpxPoint & { km: number } {
+  const { points, cumKm, totalKm } = index;
+  if (points.length === 0) {
+    return { lat: 0, lon: 0, ele: 0, km: 0 };
+  }
+  const d = Math.max(0, Math.min(km, totalKm));
+  if (points.length === 1 || d <= 0) {
+    return { ...points[0], km: 0 };
+  }
+  if (d >= totalKm) {
+    return { ...points[points.length - 1], km: totalKm };
+  }
+
+  let lo = 0;
+  let hi = cumKm.length - 1;
+  while (lo < hi - 1) {
+    const mid = (lo + hi) >> 1;
+    if (cumKm[mid] <= d) lo = mid;
+    else hi = mid;
+  }
+
+  const seg = cumKm[lo + 1] - cumKm[lo];
+  const t = seg > 0 ? (d - cumKm[lo]) / seg : 0;
+  const a = points[lo];
+  const b = points[lo + 1];
+  return {
+    lat: a.lat + t * (b.lat - a.lat),
+    lon: a.lon + t * (b.lon - a.lon),
+    ele: a.ele + t * (b.ele - a.ele),
+    km: d,
+  };
+}
+
+/** Compass bearing in degrees (0 = north) from A to B. */
+export function bearingDegrees(
+  from: { lat: number; lon: number },
+  to: { lat: number; lon: number },
+): number {
+  const φ1 = toRad(from.lat);
+  const φ2 = toRad(to.lat);
+  const Δλ = toRad(to.lon - from.lon);
+  const y = Math.sin(Δλ) * Math.cos(φ2);
+  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
+/** Shortest-path interpolation between two bearings. */
+export function lerpBearing(from: number, to: number, t: number): number {
+  const clamped = Math.max(0, Math.min(1, t));
+  const diff = ((to - from + 540) % 360) - 180;
+  return (from + diff * clamped + 360) % 360;
+}
+
 export function toGeoJson(points: GpxPoint[]) {
   return {
     type: "Feature" as const,

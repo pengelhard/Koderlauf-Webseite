@@ -14,6 +14,7 @@ import {
   ArrowRight,
   CalendarDays,
   Beer,
+  BedDouble,
 } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
@@ -22,9 +23,9 @@ import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-
 const INFOS = [
   { icon: MapPin, text: "Start/Ziel & Orga: Sportheim Obermögersheim" },
   { icon: Ticket, text: `Startnummern Do/Fr 17–20 Uhr empfohlen, am Eventtag ab ${EVENT.zeitplan.find((z) => z.titel.includes("Startnummern"))?.zeit ?? "13:00"} Uhr` },
-  { icon: Beer, text: `${VEREINS_WERTUNG.kurz} (Ausrichter außer Wertung)` },
+  { icon: Beer, text: `${VEREINS_WERTUNG.kurz} ${VEREINS_WERTUNG.ausrichterHinweis}` },
   { icon: Utensils, text: "Verpflegung während der Läufe und im Ziel; Essen & Trinken am Sportheim" },
-  { icon: Car, text: "Parkmöglichkeiten vor Ort vorhanden" },
+  { icon: Car, text: `Parkplätze am Sportheim. ${EVENT.anreise.wohnmobil}` },
   { icon: ShowerHead, text: "Duschen im Sportheim möglich" },
   { icon: Flag, text: "StVO gilt – kein Vorrecht im Straßenverkehr (Details: Strecken / FAQ)" },
 ];
@@ -116,7 +117,8 @@ export function EventInfo() {
               </strong>{" "}
               inklusive der neuen „Spielerei“ und der Koderrunde als Lauf und
               Walking (eigene Wertung). Neu:{" "}
-              <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong> Und:
+              <strong className="text-foreground">{VEREINS_WERTUNG.titel}:</strong>{" "}
+              {VEREINS_WERTUNG.kurz} Und:
               Der Koderlauf ist eingebettet in das Jubiläum{" "}
               <strong className="text-foreground">{EVENT.jubilaeum}</strong>.
             </p>
@@ -126,6 +128,12 @@ export function EventInfo() {
                 className="inline-flex items-center gap-1 text-koder-orange transition-colors hover:text-koder-orange-bright"
               >
                 Zu den Strecken <ArrowRight size={14} />
+              </Link>
+              <Link
+                href="/fassjagd"
+                className="inline-flex items-center gap-1 text-koder-orange transition-colors hover:text-koder-orange-bright"
+              >
+                Zur Fassjagd <ArrowRight size={14} />
               </Link>
               <span className="inline-flex items-center gap-1 text-muted-foreground">
                 <CalendarDays size={14} /> {EVENT.datumKurz}
@@ -152,6 +160,34 @@ export function EventInfo() {
               <span className="text-sm">{info.text}</span>
             </motion.div>
           ))}
+          <motion.div
+            variants={item}
+            className="mt-2 rounded-xl border border-border bg-card px-4 py-3"
+          >
+            <p className="flex items-center gap-2 text-sm font-semibold">
+              <BedDouble size={16} className="shrink-0 text-forest-light" />
+              Unterkunft
+            </p>
+            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+              {EVENT.anreise.touristinfo.hinweis}{" "}
+              <a
+                href={EVENT.anreise.touristinfo.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-koder-orange hover:underline"
+              >
+                {EVENT.anreise.touristinfo.name}
+              </a>
+              , {EVENT.anreise.touristinfo.adresse}, Tel.{" "}
+              <a
+                href={EVENT.anreise.touristinfo.telefonHref}
+                className="font-semibold text-foreground hover:underline"
+              >
+                {EVENT.anreise.touristinfo.telefon}
+              </a>
+              .
+            </p>
+          </motion.div>
           <p className="mt-2 text-center text-xs text-muted-foreground">
             Mehr Infos zu Startgebühr, Altersklassen, Storno und frühem Start in den{" "}
             <Link href="/#faq" className="text-koder-orange hover:underline">

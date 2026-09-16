@@ -5,11 +5,22 @@ import { isTestHost, PROD_SITE_HOST, PROD_SITE_URL } from "@/lib/site-url";
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const host = (await headers()).get("host");
   if (isTestHost(host)) {
-    return { rules: { userAgent: "*", disallow: "/" } };
+    return {
+      rules: [
+        { userAgent: "Googlebot", disallow: "/" },
+        { userAgent: "Googlebot-Image", disallow: "/" },
+        { userAgent: "Bingbot", disallow: "/" },
+        { userAgent: "facebookexternalhit", allow: "/" },
+        { userAgent: "Facebot", allow: "/" },
+        { userAgent: "WhatsApp", allow: "/" },
+        { userAgent: "Twitterbot", allow: "/" },
+        { userAgent: "*", disallow: "/" },
+      ],
+    };
   }
 
   return {
-    rules: { userAgent: "*", allow: "/" },
+    rules: { userAgent: "*", allow: "/", disallow: ["/fassjagd/admin", "/admin"] },
     sitemap: `${PROD_SITE_URL}/sitemap.xml`,
     host: PROD_SITE_HOST,
   };

@@ -12,6 +12,7 @@ import { Logo } from "@/components/ui/logo";
 const navLinks = [
   { href: "/strecken", label: "Strecken" },
   { href: "/teilnehmer", label: "Teilnehmer" },
+  { href: "/fassjagd", label: "Fassjagd" },
   { href: "/ergebnisse", label: "Ergebnisse" },
   { href: "/galerie", label: "Galerie" },
   { href: "/sponsoren", label: "Sponsoren" },
@@ -62,7 +63,7 @@ export function Navbar() {
           <Logo size="md" />
 
           {/* Desktop navigation links */}
-          <div className="hidden md:flex items-center gap-6 text-sm font-semibold uppercase tracking-widest text-white/90">
+          <div className="hidden lg:flex items-center gap-5 text-sm font-semibold uppercase tracking-widest text-white/90">
             {navLinks.map((link) => (
               <Link
                 key={link.href}

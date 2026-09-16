@@ -96,7 +96,20 @@ export const EVENT = {
     hinweis:
       "Empfohlen für alle mit kurzer Anreise: Holt Startnummer und bestellte T-Shirts schon Donnerstag oder Freitag ab – weniger Stress am Eventtag.",
   },
-  /** Was in der Startgebühr enthalten ist */
+  /** Anreise von weiter weg: Unterkunft + Wohnmobil */
+  anreise: {
+    wohnmobil:
+      "Wohnmobile dürfen kostenlos auf dem Festparkplatz übernachten.",
+    touristinfo: {
+      name: "Touristikservice Wassertrüdingen",
+      adresse: "Marktstraße 19, 91717 Wassertrüdingen",
+      telefon: "09832 6822-46",
+      telefonHref: "tel:+499832682246",
+      website: "https://www.wassertruedingen.de/besucherinformationen-stadtmarketing-und-tourismus",
+      hinweis:
+        "Wer von weiter her anreist und eine Unterkunft sucht, wird dort gerne beraten.",
+    },
+  },
   startgebuehrEnthaelt: [
     "Startnummer mit Timing-Chip",
     "Exklusive KoderMedaille für jeden Finisher",
@@ -117,7 +130,7 @@ export const EVENT = {
     tshirt: {
       name: "Koderlauf-T-Shirt",
       preis: 25,
-      bild: "/tshirt-koderlauf.webp",
+      bild: "/tshirt-2027.webp",
       hinweis:
         "Motiv 2027. Größen: 116, 128, 140, 152, 164, S–XXL, 3XL, 4XL.",
     },

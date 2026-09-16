@@ -81,7 +81,7 @@ export default function DatenschutzPage() {
             <p>
               Auf der Website können eine öffentliche Teilnehmerliste und aggregierte
               Anmeldestatistiken angezeigt werden (z. B. Vorname, Nachname, Geschlecht, Strecke,
-              ggf. Verein). Persönliche Kontaktdaten wie E-Mail-Adresse, Anschrift oder Telefon
+              ggf. Verein, Gruppe oder Firma). Persönliche Kontaktdaten wie E-Mail-Adresse, Anschrift oder Telefon
               werden nicht veröffentlicht. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO
               (berechtigtes Interesse an transparenter Event-Information) bzw. Einwilligung im
               Rahmen der Anmeldung.

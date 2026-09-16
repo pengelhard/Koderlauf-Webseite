@@ -8,7 +8,8 @@ import { StickyCta } from "@/components/layout/sticky-cta";
 import { TestBanner } from "@/components/layout/test-banner";
 import { MobileMotionConfig } from "@/components/mobile-motion-config";
 import { EVENT } from "@/lib/event-config";
-import { getCanonicalUrl, getSiteUrlFromHost, isTestHost, PROD_SITE_URL } from "@/lib/site-url";
+import { getCanonicalUrl, getSiteUrlFromHost, hostFromHeaders, isTestHost, PROD_SITE_URL } from "@/lib/site-url";
+import { isSocialCrawler } from "@/lib/social-crawler";
 import "./globals.css";
 
 const inter = Inter({
@@ -22,9 +23,10 @@ const streckenListe = EVENT.strecken.map((s) => s.name).join(", ");
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const host = headersList.get("host");
+  const host = hostFromHeaders(headersList);
   const siteUrl = getSiteUrlFromHost(host);
   const isTest = isTestHost(host);
+  const social = isSocialCrawler(headersList.get("user-agent"));
   const pathname = headersList.get("x-pathname") || "/";
   const canonical = getCanonicalUrl(pathname);
 
@@ -35,13 +37,15 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: `Der jährliche Koderlauf in Obermögersheim. Strecken, Galerie und Anmeldung für den Koderlauf ${EVENT.jahr} am ${EVENT.datumFormatiert}.`,
     metadataBase: new URL(isTest ? siteUrl : PROD_SITE_URL),
-    ...(isTest
+    ...(isTest && !social
       ? { robots: { index: false, follow: false } }
-      : {
-          alternates: {
-            canonical,
-          },
-        }),
+      : isTest
+        ? {}
+        : {
+            alternates: {
+              canonical,
+            },
+          }),
     openGraph: {
       title: `Koderlauf ${EVENT.jahr} – ${EVENT.claim}`,
       description: `Koderlauf in ${EVENT.ort} am ${EVENT.datumFormatiert}. ${streckenListe}.`,
@@ -49,11 +53,32 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: "de_DE",
       siteName: "Koderlauf",
       url: isTest ? siteUrl : canonical,
+      images: [
+        {
+          url: `${siteUrl}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: `Koderlauf ${EVENT.jahr} – ${EVENT.claim}`,
+          type: "image/png",
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: `Koderlauf ${EVENT.jahr}`,
       description: `Koderlauf am ${EVENT.datumFormatiert} in ${EVENT.ort}`,
+    },
+    // Echtes Maskottchen aus public/mascot-koderlauf.png (transparent).
+    // Kein SVG in der Liste: Chrome würde sonst ein anderes Icon bevorzugen.
+    // Keine app/icon.png+icon.svg (Next 16 Turbopack-Crash). Query gegen Browser-Cache.
+    icons: {
+      icon: [
+        { url: "/koder-icon.png?v=20260916-2", type: "image/png", sizes: "32x32" },
+        { url: "/koder-icon-192.png?v=20260916-2", type: "image/png", sizes: "192x192" },
+        { url: "/favicon.ico?v=20260916-2", type: "image/x-icon", sizes: "16x16 32x32 48x48" },
+      ],
+      shortcut: "/koder-icon.png?v=20260916-2",
+      apple: [{ url: "/apple-touch-icon.png?v=20260916-2", sizes: "180x180" }],
     },
   };
 }

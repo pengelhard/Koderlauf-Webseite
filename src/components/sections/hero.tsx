@@ -178,6 +178,19 @@ export function Hero() {
             Zur Anmeldung
           </Link>
         </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.75 }}
+          className="mt-5"
+        >
+          <Link
+            href="/fassjagd"
+            className="text-sm font-semibold uppercase tracking-widest text-koder-orange-bright hover:underline [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]"
+          >
+            Fassjagd · Wer holt das Fass?
+          </Link>
+        </motion.div>
       </motion.div>
 
       {/* No bottom fade — avoids flicker line at video-to-content transition */}

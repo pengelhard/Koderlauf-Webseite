@@ -91,18 +91,18 @@ const FAQS: FaqItem[] = [
         geehrt. Eine separate Altersklassen-Ehrung gibt es nicht – die drei Schnellsten je
         Altersklasse bekommen aber eine Urkunde. Details:{" "}
         <FaqLink href="/ergebnisse">Ergebnisse &amp; Ehrungen</FaqLink>. Zusätzlich gibt es eine{" "}
-        <FaqLink href="/teilnehmer">Vereinswertung</FaqLink>.
+        <FaqLink href="/fassjagd">{VEREINS_WERTUNG.titel}</FaqLink>.
       </>
     ),
   },
   {
-    frage: "Gibt es eine Vereinswertung?",
+    frage: "Gibt es eine Wertung für Vereine, Gruppen und Firmen?",
     antwort: (
       <>
-        Ja. <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong> Bitte bei der{" "}
-        <FaqLink href="/anmeldung">Anmeldung</FaqLink> den offiziellen Vereinsnamen angeben, damit die
-        Zuordnung stimmt. {VEREINS_WERTUNG.ausrichterCanonical} ist als Ausrichter nicht in der
-        Wertung. Aktueller Stand: <FaqLink href="/teilnehmer">Teilnehmer</FaqLink>.
+        Ja – die Fassjagd ist die Teamwertung für Verein, Firma oder Gruppe.{" "}
+        {VEREINS_WERTUNG.kurz} {VEREINS_WERTUNG.stimme} {VEREINS_WERTUNG.angabe}{" "}
+        {VEREINS_WERTUNG.ausrichterHinweis} Aktueller Stand:{" "}
+        <FaqLink href="/fassjagd">Fassjagd</FaqLink>.
       </>
     ),
   },
@@ -182,8 +182,24 @@ const FAQS: FaqItem[] = [
     antwort: (
       <>
         Ja: Parkplätze am Sportheim, Duschen im Sportheim, Verpflegung während der Läufe und im Ziel
-        sowie Essen und Trinken den ganzen Tag vor Ort. Mehr zum Ablauf auf der{" "}
-        <FaqLink href="/">Startseite</FaqLink>.
+        sowie Essen und Trinken den ganzen Tag vor Ort. {EVENT.anreise.wohnmobil} Mehr zum Ablauf auf
+        der <FaqLink href="/">Startseite</FaqLink>.
+      </>
+    ),
+  },
+  {
+    frage: "Wo finde ich eine Unterkunft, wenn ich von weiter her anreise?",
+    antwort: (
+      <>
+        {EVENT.anreise.touristinfo.hinweis} Der{" "}
+        <FaqLink href={EVENT.anreise.touristinfo.website} external>
+          {EVENT.anreise.touristinfo.name}
+        </FaqLink>{" "}
+        berät zu Hotels, Pensionen und Ferienwohnungen: {EVENT.anreise.touristinfo.adresse}, Tel.{" "}
+        <FaqLink href={EVENT.anreise.touristinfo.telefonHref} external>
+          {EVENT.anreise.touristinfo.telefon}
+        </FaqLink>
+        . Mit dem Wohnmobil geht’s auch ohne Hotel: {EVENT.anreise.wohnmobil}
       </>
     ),
   },

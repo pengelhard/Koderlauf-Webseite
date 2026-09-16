@@ -1,18 +1,29 @@
 /**
- * Vereinsnamen normalisieren + Vereinswertung (Fass Bier).
+ * Teamnamen normalisieren + Wertung (Fass Bier).
  * SV Obermögersheim ist Ausrichter und nicht in der Wertung.
+ * Teamwertung gilt für Verein, Firma und andere Gruppen.
  */
 
 export const VEREINS_WERTUNG = {
   /** Kurztitel für Überschriften */
-  titel: "Vereinswertung",
+  titel: "Fassjagd",
   preis: "ein Fass Bier",
   /** Klarer Einzeiler */
-  kurz:
-    "Der Verein mit den meisten Teilnehmern gewinnt ein Fass Bier.",
+  kurz: "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe.",
+  stimme: "1 Person = 1 Stimme, auch Kinderlauf und Walking.",
   ausrichterCanonical: "SV Obermögersheim",
+  /** Wie der Name bei der Anmeldung eingetragen werden soll */
+  angabe: "Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht.",
+  ausrichterHinweis: "SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
+  /** Gleiche Kurzregeln für FAQ, Anmeldung und Tafel */
+  punkte: [
+    "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe.",
+    "1 Person = 1 Stimme, auch Kinderlauf und Walking.",
+    "Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht.",
+    "SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
+  ],
   hinweis:
-    "Bitte bei der Anmeldung den offiziellen Vereinsnamen angeben, damit die Zuordnung stimmt. Der Verein mit den meisten Teilnehmern gewinnt ein Fass Bier. SV Obermögersheim ist als Ausrichter nicht in der Wertung.",
+    "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe. 1 Person = 1 Stimme, auch Kinderlauf und Walking. Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht. SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
 } as const;
 
 /** Kanonische Vereinsnamen → bekannte Schreibweisen (kleingeschrieben, normalisiert). */
@@ -33,8 +44,13 @@ const VEREIN_ALIASES: Record<string, string[]> = {
     "s.v. obermogersheim",
     "s.v. obermögersheim",
   ],
-  // Weitere Vereine bei Bedarf ergänzen, sobald Schreibweisen auftauchen:
-  // "TSV Wassertrüdingen": ["tsv wassertrüdingen", "tsv wt", ...],
+  "TV 1860 Gunzenhausen": [
+    "tv 1860 gz",
+    "tv 1860 gunzenhausen",
+    "tv1860 gunzenhausen",
+    "tv 1860 gunzenhausen e.v",
+    "turnverein 1860 gunzenhausen",
+  ],
 };
 
 export function normalizeVereinKey(raw: string): string {
@@ -65,7 +81,10 @@ const ALIAS_TO_CANONICAL = (() => {
   return map;
 })();
 
-export function resolveVerein(raw: string | undefined | null): {
+export function resolveVerein(
+  raw: string | undefined | null,
+  extraAliases?: Record<string, string>,
+): {
   display: string;
   canonical: string;
   isAusrichter: boolean;
@@ -76,7 +95,10 @@ export function resolveVerein(raw: string | undefined | null): {
     return { display: "", canonical: "", isAusrichter: false, empty: true };
   }
   const key = normalizeVereinKey(trimmed);
-  const canonical = ALIAS_TO_CANONICAL.get(key) ?? trimmed.replace(/\s+/g, " ").trim();
+  const canonical =
+    extraAliases?.[key] ||
+    ALIAS_TO_CANONICAL.get(key) ||
+    trimmed.replace(/\s+/g, " ").trim();
   const isAusrichter = canonical === VEREINS_WERTUNG.ausrichterCanonical;
   return {
     display: canonical,
@@ -94,17 +116,18 @@ export type VereinRankEntry = {
 };
 
 /**
- * Zählt Vereine; sortiert Wertung (ohne Ausrichter) nach Teilnehmerzahl.
+ * Zählt Teams (Verein, Firma, Gruppe); sortiert Wertung (ohne Ausrichter) nach Teilnehmerzahl.
  * Ausrichter wird separat zurückgegeben (nur Info).
  */
 export function rankVereine(
   participants: { verein?: string }[],
+  extraAliases?: Record<string, string>,
 ): { ranking: VereinRankEntry[]; ausrichter: VereinRankEntry | null; ohneAngabe: number } {
   const counts = new Map<string, number>();
   let ohneAngabe = 0;
 
   for (const p of participants) {
-    const r = resolveVerein(p.verein);
+    const r = resolveVerein(p.verein, extraAliases);
     if (r.empty) {
       ohneAngabe += 1;
       continue;

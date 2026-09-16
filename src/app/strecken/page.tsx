@@ -390,6 +390,12 @@ function StreckenContent() {
                     highlightPoint={hoverPoint}
                     routeColor={activeStrecke.color}
                     stations={verpflegung}
+                    flightEnabled={
+                      yearTab === "2027" &&
+                      (safeSelected === "spielerei" || safeSelected === "trailrun")
+                    }
+                    gpxDownloadHref={activeStrecke.gpxFile}
+                    gpxDownloadName={`koderlauf-${safeSelected}.gpx`}
                     className="rounded-none border-0"
                   />
                 )}

@@ -5,6 +5,7 @@ import type {
   StreckeCount,
 } from "@/lib/anmeldungen/types";
 import { resolveVerein, rankVereine } from "@/lib/anmeldungen/vereine";
+import { getFassjagdOverrides } from "@/lib/fassjagd/store";
 
 /** Anzeige-Reihenfolge der Strecken 2027 */
 export const STRECKEN_ORDER_2027 = [
@@ -64,6 +65,13 @@ export function emptyStats2027(): AnmeldungenStats {
     source: "empty",
     vereine: { ranking: [], ausrichter: null, ohneAngabe: 0 },
   };
+}
+
+function pickNumber(row: RaceResultParticipantRaw, keys: string[]): number | undefined {
+  const s = pickString(row, keys);
+  if (!s) return undefined;
+  const n = Number.parseInt(s.replace(/[^\d]/g, ""), 10);
+  return Number.isFinite(n) ? n : undefined;
 }
 
 function pickString(row: RaceResultParticipantRaw, keys: string[]): string {
@@ -162,6 +170,8 @@ export function mapRaceResultRow(
       pickString(row, ["YB", "YEAR", "YearOfBirth", "Jahrgang", "DateOfBirth", "DOB"]) || undefined,
     verein: vereinResolved.empty ? undefined : vereinResolved.display,
     nation: pickString(row, ["Nation", "Nationality", "Country"]) || undefined,
+    bib: pickNumber(row, ["BIB", "Bib", "Startnummer", "StartNo", "Startnumber"]),
+    rrId: pickNumber(row, ["ID", "Id", "ContestantId", "PID"]),
   };
 }
 
@@ -283,7 +293,7 @@ export function aggregateFromRaceResultJson(
     return a.vorname.localeCompare(b.vorname, "de");
   });
 
-  const vereinStats = rankVereine(sorted);
+  const vereinStats = rankVereine(sorted, getFassjagdOverrides().aliases);
 
   return {
     total: participants.length,

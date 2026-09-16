@@ -72,6 +72,11 @@ export function Footer() {
                   Teilnehmer
                 </Link>
               </li>
+              <li>
+                <Link href="/fassjagd" className="transition-colors hover:text-white">
+                  Fassjagd
+                </Link>
+              </li>
             </ul>
           </div>
 
