@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Mountain,
   ArrowDownToLine,
+  Download,
   TrendingUp,
   TrendingDown,
   TreePine,
@@ -344,8 +345,8 @@ function StreckenContent() {
           transition={{ duration: 0.3 }}
           className="mt-6 rounded-2xl border border-border bg-card px-4 py-3 sm:px-6 sm:py-4"
         >
-          {yearTab === "2027" && activeStrecke.startTime && (
-            <div className="mb-3 flex flex-wrap items-center gap-2">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            {yearTab === "2027" && activeStrecke.startTime && (
               <div
                 className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold"
                 style={{ backgroundColor: `${activeStrecke.color}15`, color: activeStrecke.color }}
@@ -353,18 +354,26 @@ function StreckenContent() {
                 <Clock size={15} />
                 Start {activeStrecke.startTime} Uhr
               </div>
-              {alterHinweis && (
-                <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
-                  {alterHinweis}
-                </div>
-              )}
-              {activeStrecke.badge && (
-                <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
-                  {activeStrecke.badge}
-                </div>
-              )}
-            </div>
-          )}
+            )}
+            {alterHinweis && (
+              <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+                {alterHinweis}
+              </div>
+            )}
+            {activeStrecke.badge && (
+              <div className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+                {activeStrecke.badge}
+              </div>
+            )}
+            <a
+              href={activeStrecke.gpxFile}
+              download={`koderlauf-${safeSelected}.gpx`}
+              className="inline-flex items-center gap-2 rounded-xl border border-koder-orange/40 bg-koder-orange/10 px-3 py-1.5 text-sm font-semibold text-koder-orange transition-colors hover:bg-koder-orange hover:text-white"
+            >
+              <Download size={15} aria-hidden />
+              GPX herunterladen
+            </a>
+          </div>
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{activeStrecke.description}</p>
         </motion.div>
 
