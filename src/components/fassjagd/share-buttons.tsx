@@ -18,35 +18,24 @@ function liveTeamUrl(slug: string) {
   return canonicalTeamUrl(slug);
 }
 
-function isAndroid() {
-  return /Android/i.test(navigator.userAgent);
+function isAbortError(err: unknown): boolean {
+  return typeof err === "object" && err !== null && "name" in err && err.name === "AbortError";
 }
 
-function isIOS() {
-  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+function canShareFiles(file: File): boolean {
+  try {
+    return Boolean(navigator.canShare?.({ files: [file] }));
+  } catch {
+    return false;
+  }
 }
 
-/** Instagram hat keine offizielle Web-Story-API. Deep-Link in die App, sonst instagram.com. */
-function openInstagramApp() {
-  if (isAndroid()) {
-    window.location.href =
-      "intent://story-camera#Intent;scheme=instagram;package=com.instagram.android;S.browser_fallback_url=https%3A%2F%2Fwww.instagram.com%2F;end";
-    return;
+async function copyCaption(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    /* Zwischenablage ist optional */
   }
-  if (isIOS()) {
-    window.location.href = "instagram://story-camera";
-    window.setTimeout(() => {
-      if (document.visibilityState !== "visible") return;
-      window.location.href = "instagram://app";
-      window.setTimeout(() => {
-        if (document.visibilityState === "visible") {
-          window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
-        }
-      }, 700);
-    }, 900);
-    return;
-  }
-  window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
 }
 
 async function downloadBlob(blob: Blob, filename: string) {
@@ -58,6 +47,15 @@ async function downloadBlob(blob: Blob, filename: string) {
   a.click();
   a.remove();
   window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+}
+
+function triggerDownloadHref(href: string, filename: string) {
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }
 
 export function FassjagdShareButtons({
@@ -90,27 +88,35 @@ export function FassjagdShareButtons({
 
   async function instagramStory() {
     setIgBusy(true);
+    setIgHint(null);
     const live = liveTeamUrl(club.slug);
     const caption = instagramCaption(club, live);
+    const filename = `fassjagd-${club.slug}-story.png`;
     try {
       const res = await fetch(storyPath);
       if (!res.ok) throw new Error("card");
       const blob = await res.blob();
-      await downloadBlob(blob, `fassjagd-${club.slug}-story.png`);
-      try {
-        await navigator.clipboard.writeText(live);
-      } catch {
+      const file = new File([blob], filename, { type: "image/png" });
+      await copyCaption(caption);
+
+      if (canShareFiles(file)) {
         try {
-          await navigator.clipboard.writeText(caption);
-        } catch {
-          /* clipboard optional */
+          await navigator.share({
+            files: [file],
+            title: `Fassjagd: ${club.name}`,
+            text: caption,
+          });
+          return;
+        } catch (err) {
+          if (isAbortError(err)) return;
         }
       }
-      setIgHint("Bild ist gespeichert – in Instagram als Story posten. Link ist kopiert.");
-      window.setTimeout(() => openInstagramApp(), 350);
+
+      await downloadBlob(blob, filename);
+      setIgHint("Bild gespeichert. Auf dem Handy: Teilen → Instagram-Story.");
     } catch {
-      window.location.href = storyPath;
-      setIgHint("Bild ist gespeichert – in Instagram als Story posten.");
+      triggerDownloadHref(storyPath, filename);
+      setIgHint("Bild gespeichert. Auf dem Handy: Teilen → Instagram-Story.");
     } finally {
       setIgBusy(false);
     }
@@ -156,16 +162,7 @@ export function FassjagdShareButtons({
         </button>
       </div>
       <p className="text-xs text-muted-foreground">
-        Instagram-Story speichert das Bild und versucht, die App zu öffnen. Es gibt keine offizielle
-        Web-Story-Funktion – danach in Instagram als Story posten.{" "}
-        <a
-          href="https://www.instagram.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-semibold text-koder-orange hover:underline"
-        >
-          Instagram öffnen
-        </a>
+        Öffnet Teilen – Instagram wählen, das Bild kommt mit.
       </p>
       {igHint && <p className="text-sm font-medium text-foreground">{igHint}</p>}
     </div>
