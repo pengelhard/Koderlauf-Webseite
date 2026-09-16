@@ -46,6 +46,16 @@ export interface AbendkarteRecipient {
   anzahl: number;
 }
 
+export interface StartunterlagenStreckeSummary {
+  label: string;
+  slug: string;
+  teilnehmer: number;
+  shirts: number;
+  karten: number;
+  distanz: string;
+  startzeit: string;
+}
+
 export interface OrgaStats {
   fetchedAt: string;
   source: "raceresult" | "empty";
@@ -53,6 +63,8 @@ export interface OrgaStats {
   rowCount: number;
   fields: OrgaFields;
   hinweise: string[];
+  participants: OrgaParticipant[];
+  startunterlagen: StartunterlagenStreckeSummary[];
   tshirtTotal: number;
   tshirtBySize: SizeCount[];
   tshirtOhneGroesse: number;
@@ -82,6 +94,7 @@ export interface OrgaAdminPayload {
     personen: number;
     recipients: { bib: string; name: string; anzahl: number }[];
   };
+  startunterlagen: StartunterlagenStreckeSummary[];
   mailCount: number;
 }
 

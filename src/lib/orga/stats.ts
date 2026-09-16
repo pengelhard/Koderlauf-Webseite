@@ -1,4 +1,11 @@
 import { TSHIRT_SIZES } from "@/lib/pricing";
+import {
+  groupStartunterlagen,
+  listStreckenWithParticipants,
+  streckeMeta,
+  streckeSlug,
+  summarizeStrecke,
+} from "@/lib/orga/startunterlagen";
 import type {
   AbendkarteRecipient,
   OrgaAdminPayload,
@@ -7,6 +14,7 @@ import type {
   OrgaStats,
   ShirtRecipient,
   SizeCount,
+  StartunterlagenStreckeSummary,
 } from "@/lib/orga/types";
 
 const SIZE_RANK = new Map<string, number>(
@@ -44,6 +52,8 @@ export function emptyOrgaStats(error?: string): OrgaStats {
       payment: false,
     },
     hinweise: error ? [error] : [],
+    participants: [],
+    startunterlagen: [],
     tshirtTotal: 0,
     tshirtBySize: [],
     tshirtOhneGroesse: 0,
@@ -144,12 +154,31 @@ export function buildOrgaStats(
 
   tshirtRecipients.sort(cmpName);
 
+  const groups = groupStartunterlagen(participants);
+  const startunterlagen: StartunterlagenStreckeSummary[] =
+    listStreckenWithParticipants(groups).map((label) => {
+      const rows = groups.get(label) ?? [];
+      const meta = streckeMeta(label);
+      const summary = summarizeStrecke(rows);
+      return {
+        label,
+        slug: streckeSlug(label),
+        teilnehmer: summary.teilnehmer,
+        shirts: summary.shirts,
+        karten: summary.karten,
+        distanz: meta.distanz,
+        startzeit: meta.startzeit,
+      };
+    });
+
   return {
     fetchedAt,
     source: "raceresult",
     rowCount: participants.length,
     fields,
     hinweise,
+    participants,
+    startunterlagen,
     tshirtTotal: tshirtRecipients.length,
     tshirtBySize,
     tshirtOhneGroesse: counts.get("ohne Größe") ?? 0,
@@ -197,6 +226,7 @@ export function toAdminPayload(stats: OrgaStats): OrgaAdminPayload {
         anzahl: r.anzahl,
       })),
     },
+    startunterlagen: stats.startunterlagen,
     mailCount: stats.mailCount,
   };
 }
