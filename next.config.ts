@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
       "/koder-icon-192.png",
       "/koder-icon.svg",
       "/apple-touch-icon.png",
+      "/mascot-koderlauf.png",
     ].map((source) => ({ source, headers: noStoreIcon }));
   },
 };
