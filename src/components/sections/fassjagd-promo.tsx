@@ -39,7 +39,6 @@ export function FassjagdPromo() {
                 {VEREINS_WERTUNG.punkte.slice(1).map((punkt) => (
                   <li key={punkt}>{punkt}</li>
                 ))}
-                <li>Tafel bis zum Online-Anmeldeschluss, danach Freeze</li>
               </ul>
               <div className="mt-6 flex flex-col gap-4">
                 <Link
