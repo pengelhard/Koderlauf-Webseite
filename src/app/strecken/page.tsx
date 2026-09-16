@@ -31,6 +31,7 @@ import {
 import { RouteMap } from "@/components/map/route-map";
 import { ElevationProfile } from "@/components/map/elevation-profile";
 import { cn } from "@/lib/utils";
+import { AnmeldeLink } from "@/components/anmeldung/anmelde-link";
 import { YearSwitcher } from "@/components/ui/year-switcher";
 
 interface Strecke {
@@ -516,12 +517,11 @@ function StreckenContent() {
 
         {/* Anmelden button at the bottom, under the route */}
         <div className="mt-8 flex justify-center pb-12">
-          <Link
-            href="/anmeldung"
+          <AnmeldeLink
             className="rounded-2xl bg-koder-orange px-8 py-3 text-sm font-semibold uppercase tracking-widest text-white shadow-sm transition-colors hover:bg-koder-orange/90"
           >
             Jetzt anmelden
-          </Link>
+          </AnmeldeLink>
         </div>
       </div>
     </div>

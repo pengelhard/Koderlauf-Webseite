@@ -16,6 +16,7 @@ import {
   Beer,
   BedDouble,
 } from "lucide-react";
+import { AnmeldeLink } from "@/components/anmeldung/anmelde-link";
 import { EVENT } from "@/lib/event-config";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-reveal";
@@ -201,12 +202,14 @@ export function EventInfo() {
           {...fadeReveal(staticReveal, { duration: 0.6 })}
           className="mt-8 text-center"
         >
-          <Link
-            href="/anmeldung"
+          <AnmeldeLink
             className="glow-orange inline-flex rounded-2xl bg-koder-orange px-10 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright"
           >
             Zur Anmeldung
-          </Link>
+          </AnmeldeLink>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Online-Anmeldeschluss: {EVENT.onlineAnmeldeschlussAnzeige}
+          </p>
         </motion.div>
       </div>
     </section>

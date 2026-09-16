@@ -1,3 +1,5 @@
+import { EVENT } from "@/lib/event-config";
+
 /**
  * Teamnamen normalisieren + Wertung (Fass Bier).
  * SV Obermögersheim ist Ausrichter und nicht in der Wertung.
@@ -19,7 +21,7 @@ export const VEREINS_WERTUNG = {
   punkte: [
     "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe.",
     "1 Person = 1 Stimme, auch Kinderlauf und Walking.",
-    "Zählt bis zum Online-Anmeldeschluss – danach bleibt der Stand stehen.",
+    `Zählt bis zum Online-Anmeldeschluss (${EVENT.onlineAnmeldeschlussAnzeige}) – danach bleibt der Stand stehen.`,
     "SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
   ],
   hinweis:

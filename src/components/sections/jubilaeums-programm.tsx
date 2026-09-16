@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { AnmeldeLink } from "@/components/anmeldung/anmelde-link";
 import { motion } from "framer-motion";
 import {
   CalendarDays,
@@ -128,12 +129,12 @@ export function JubilaeumsProgramm() {
                 >
                   Strecken entdecken <ArrowRight size={16} />
                 </Link>
-                <Link
-                  href="/anmeldung"
+                <AnmeldeLink
                   className="inline-flex items-center gap-2 rounded-2xl border border-white/25 px-6 py-3 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:border-koder-orange hover:text-koder-orange"
+                  disabledClassName="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-6 py-3 text-sm font-bold uppercase tracking-widest text-white/40"
                 >
                   Zur Anmeldung
-                </Link>
+                </AnmeldeLink>
               </div>
             </div>
 

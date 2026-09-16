@@ -1,5 +1,7 @@
-import Link from "next/link";
+"use client";
+
 import { User, Users } from "lucide-react";
+import { AnmeldeLink } from "@/components/anmeldung/anmelde-link";
 import { cn } from "@/lib/utils";
 
 const CTA =
@@ -8,14 +10,14 @@ const CTA =
 export function FassjagdAnmeldeButtons({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col gap-3 sm:flex-row", className)}>
-      <Link href="/anmeldung/einzeln" className={CTA}>
+      <AnmeldeLink href="/anmeldung/einzeln" className={CTA}>
         <User className="h-4 w-4" aria-hidden />
         Einzelanmeldung
-      </Link>
-      <Link href="/anmeldung/sammel" className={CTA}>
+      </AnmeldeLink>
+      <AnmeldeLink href="/anmeldung/sammel" className={CTA}>
         <Users className="h-4 w-4" aria-hidden />
         Sammelanmeldung
-      </Link>
+      </AnmeldeLink>
     </div>
   );
 }
