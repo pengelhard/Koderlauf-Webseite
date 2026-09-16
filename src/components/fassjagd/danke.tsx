@@ -38,12 +38,12 @@ export function FassjagdDanke({ justRegistered }: { justRegistered: boolean }) {
 
   return (
     <div className="mt-3 space-y-3 border-t border-koder-orange/25 pt-3">
-      <p className="text-sm font-semibold">Fassjagd – nur mit Vereinsname</p>
+      <p className="text-sm font-semibold">Fassjagd – nur mit Teamname</p>
       <VereinCombobox
         names={names}
         value={verein}
         onChange={setVerein}
-        placeholder="Welchen Verein hast du angegeben?"
+        placeholder="Welchen Teamnamen hast du angegeben?"
       />
       {club && !club.hausherr && (
         <>
@@ -52,7 +52,7 @@ export function FassjagdDanke({ justRegistered }: { justRegistered: boolean }) {
             href={`/fassjagd/${club.slug}`}
             className="inline-flex rounded-xl bg-koder-orange px-4 py-2 text-sm font-semibold text-white"
           >
-            Vereinskarte in den Chat
+            Teamkarte in den Chat
           </Link>
         </>
       )}

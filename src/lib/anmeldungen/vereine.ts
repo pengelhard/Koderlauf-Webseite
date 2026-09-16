@@ -1,6 +1,7 @@
 /**
  * Teamnamen normalisieren + Wertung (Fass Bier).
  * SV Obermögersheim ist Ausrichter und nicht in der Wertung.
+ * Teamwertung gilt für Verein, Firma und andere Gruppen.
  */
 
 export const VEREINS_WERTUNG = {
@@ -9,13 +10,13 @@ export const VEREINS_WERTUNG = {
   preis: "ein Fass Bier",
   /** Klarer Einzeiler */
   kurz:
-    "Der Verein mit den meisten bezahlten Startern gewinnt ein Fass Bier. 1 Person = 1 Stimme – Kinderlauf und Walking zählen.",
+    "Das Team mit den meisten bezahlten Startern gewinnt ein Fass Bier – Verein, Firma oder Gruppe. 1 Person = 1 Stimme – Kinderlauf und Walking zählen.",
   ausrichterCanonical: "SV Obermögersheim",
   /** Wie der Name bei der Anmeldung eingetragen werden soll */
   angabe:
-    "Bei der Anmeldung denselben Vereinsnamen wählen (Combobox). Ohne einheitlichen Namen zählt die Meldung nicht für die Fassjagd.",
+    "Bei der Anmeldung denselben Teamnamen wählen (Combobox: Verein, Firma oder Gruppe). Ohne einheitlichen Namen zählt die Meldung nicht für die Fassjagd.",
   hinweis:
-    "Bei der Anmeldung denselben Vereinsnamen wählen. Der Verein mit den meisten bezahlten Startern gewinnt ein Fass Bier. SV Obermögersheim ist als Ausrichter (Hausherr) sichtbar, aber nicht in der Wertung. Nach dem Online-Anmeldeschluss friert die Fassjagd ein – Nachmeldungen vor Ort zählen nicht.",
+    "Bei der Anmeldung denselben Teamnamen wählen. Das Team mit den meisten bezahlten Startern gewinnt ein Fass Bier – Verein, Firma oder Gruppe. SV Obermögersheim ist als Ausrichter (Hausherr) sichtbar, aber nicht in der Wertung. Nach dem Online-Anmeldeschluss friert die Fassjagd ein – Nachmeldungen vor Ort zählen nicht.",
 } as const;
 
 /** Kanonische Vereinsnamen → bekannte Schreibweisen (kleingeschrieben, normalisiert). */
@@ -108,7 +109,7 @@ export type VereinRankEntry = {
 };
 
 /**
- * Zählt Vereine; sortiert Wertung (ohne Ausrichter) nach Teilnehmerzahl.
+ * Zählt Teams (Verein, Firma, Gruppe); sortiert Wertung (ohne Ausrichter) nach Teilnehmerzahl.
  * Ausrichter wird separat zurückgegeben (nur Info).
  */
 export function rankVereine(

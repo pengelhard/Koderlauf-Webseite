@@ -61,12 +61,17 @@ function compareClubs(a: FassjagdClub, b: FassjagdClub): number {
   return a.name.localeCompare(b.name, "de");
 }
 
+/** Starter zum Allein-Führen: Gleichstand reicht nicht, daher +1. */
+export function startersToLeadAlone(leaderTotal: number, clubTotal: number): number {
+  return Math.max(0, leaderTotal - clubTotal) + 1;
+}
+
 function decoratePlaces(ranked: FassjagdClub[]): FassjagdClub[] {
   const leader = ranked[0];
   return ranked.map((club, i) => {
     const above = i > 0 ? ranked[i - 1] : null;
     const below = ranked[i + 1] ?? null;
-    const gapToLeader = leader ? Math.max(0, leader.total - club.total) : 0;
+    const gapToLeader = i === 0 || !leader ? 0 : startersToLeadAlone(leader.total, club.total);
     return {
       ...club,
       place: i + 1,

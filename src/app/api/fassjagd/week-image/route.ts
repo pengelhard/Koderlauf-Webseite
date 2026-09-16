@@ -3,6 +3,7 @@ import { isFassjagdAdmin } from "@/lib/fassjagd/admin-auth";
 import { loadFassjagdBoard } from "@/lib/fassjagd/load";
 import { fassjagdWeekResponse } from "@/lib/fassjagd/card";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
@@ -10,7 +11,7 @@ export async function GET() {
     return NextResponse.json({ error: "Nicht angemeldet" }, { status: 401 });
   }
   const board = await loadFassjagdBoard();
-  const img = fassjagdWeekResponse(board.ranking);
+  const img = await fassjagdWeekResponse(board.ranking);
   img.headers.set("Content-Disposition", 'attachment; filename="fassjagd-wochenstand.png"');
   return img;
 }

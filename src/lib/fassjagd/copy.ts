@@ -9,12 +9,17 @@ export function cardVariant(club: FassjagdClub): CardVariant {
   return "hunt";
 }
 
+/** Jagd-Gap: einer mehr als der Führende, sonst nur Gleichstand. */
+export function huntGapText(n: number, capitalize = false): string {
+  const noch = capitalize ? "Noch" : "noch";
+  if (n === 1) return `${noch} 1 Starter bis zum Fass`;
+  return `${noch} ${n} Starter bis zum Fass`;
+}
+
 export function gapHeadline(club: FassjagdClub): string {
   if (club.hausherr) return "Hausherr · außer Wertung";
-  const variant = cardVariant(club);
-  if (variant === "lead") return "sitzen auf dem Fass";
-  if (variant === "chase") return `+${club.weekDelta} diese Woche`;
-  return club.gapToLeader > 0 ? `noch ${club.gapToLeader}` : "noch 0";
+  if (club.place === 1) return "sitzen auf dem Fass";
+  return huntGapText(club.gapToLeader);
 }
 
 export function gapLine(club: FassjagdClub): string {
@@ -23,20 +28,39 @@ export function gapLine(club: FassjagdClub): string {
     const lead = club.leadBy ?? 0;
     return lead > 0 ? `führt mit +${lead}` : "führt die Fassjagd an";
   }
-  return club.gapToLeader > 0
-    ? `noch ${club.gapToLeader} bis zum Fass`
-    : "noch 0 bis zum Fass";
+  return huntGapText(club.gapToLeader);
+}
+
+export function weekLine(club: FassjagdClub): string | null {
+  if (club.hausherr) return null;
+  if (club.weekDelta > 0) return `+${club.weekDelta} diese Woche`;
+  return null;
+}
+
+function shareDiff(club: FassjagdClub): string {
+  if (club.hausherr) return "Hausherr, außer Wertung";
+  if (club.place === 1) {
+    return club.leadBy && club.leadBy > 0
+      ? `führt mit +${club.leadBy}`
+      : "sitzen auf dem Fass";
+  }
+  return huntGapText(club.gapToLeader, true);
 }
 
 export function whatsappText(club: FassjagdClub, url: string): string {
+  if (club.hausherr) {
+    return `Fassjagd: ${club.name} ist Hausherr und außer Wertung · ${club.total} Starter. ${url}`;
+  }
   const place = club.place ?? "–";
-  const diffPart =
-    club.place === 1
-      ? club.leadBy && club.leadBy > 0
-        ? `führt mit +${club.leadBy}`
-        : "sitzen auf dem Fass"
-      : `Noch ${club.gapToLeader} bis zum Fass`;
-  return `Fassjagd: ${club.name} Platz ${place} · ${club.total} Starter. ${diffPart}. ${url}`;
+  return `Fassjagd: ${club.name} Platz ${place} · ${club.total} Starter. ${shareDiff(club)}. ${url}`;
+}
+
+export function instagramCaption(club: FassjagdClub, url: string): string {
+  if (club.hausherr) {
+    return `Fassjagd 2027 · ${club.name} (Hausherr, außer Wertung) · ${club.total} Starter\n${url}`;
+  }
+  const place = club.place ?? "–";
+  return `Fassjagd 2027 · ${club.name} · Platz ${place} · ${club.total} Starter. ${shareDiff(club)}.\n${url}`;
 }
 
 export function dankeText(club: FassjagdClub, starterNr: number): string {

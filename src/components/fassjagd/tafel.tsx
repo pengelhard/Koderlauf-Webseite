@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Beer, Users } from "lucide-react";
+import { FassjagdAnmeldeButtons } from "@/components/fassjagd/anmelde-buttons";
+import { FassjagdFassBild } from "@/components/fassjagd/fass-bild";
 import { FassjagdFlame, FassjagdLiveBadge, useFassjagdBoard } from "@/components/fassjagd/live";
 import { FassjagdShareButtons } from "@/components/fassjagd/share-buttons";
 import { gapLine } from "@/lib/fassjagd/copy";
@@ -65,26 +66,30 @@ export function FassjagdTafel({ initial }: { initial: FassjagdBoard }) {
         )}
       </div>
 
-      <div className="rounded-3xl border border-koder-orange/35 bg-gradient-to-br from-koder-orange/15 to-forest-deep/10 p-6 text-center sm:p-8">
-        <Beer className="mx-auto h-8 w-8 text-koder-orange" />
-        <h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">Fassjagd 2027</h1>
-        <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          {VEREINS_WERTUNG.kurz} {VEREINS_WERTUNG.ausrichterCanonical} ist als Hausherr sichtbar,
-          aber außer Wertung. Wertung bis Online-Anmeldeschluss, danach Freeze.
-        </p>
-        {leader && (
-          <p className="mt-4 text-sm font-semibold text-foreground">
-            Auf dem Fass: {leader.name} · {leader.total} Starter
-            {leader.leadBy ? ` · führt mit +${leader.leadBy}` : ""}
-          </p>
-        )}
+      <div className="overflow-hidden rounded-3xl border border-koder-orange/35 bg-gradient-to-br from-koder-orange/15 to-forest-deep/10">
+        <div className="flex flex-col items-center gap-5 p-6 text-center sm:flex-row sm:items-center sm:text-left sm:p-8">
+          <FassjagdFassBild size={168} priority className="h-36 w-36 shrink-0 object-contain sm:h-40 sm:w-40" />
+          <div className="min-w-0">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Fassjagd 2027</h1>
+            <p className="mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
+              {VEREINS_WERTUNG.kurz} {VEREINS_WERTUNG.ausrichterCanonical} ist als Hausherr sichtbar,
+              aber außer Wertung. Wertung bis Online-Anmeldeschluss, danach Freeze.
+            </p>
+            {leader && (
+              <p className="mt-4 text-sm font-semibold text-foreground">
+                Auf dem Fass: {leader.name} · {leader.total} Starter
+                {leader.leadBy ? ` · führt mit +${leader.leadBy}` : ""}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="space-y-2">
         {board.ranking.length === 0 ? (
           <div className="rounded-2xl border border-border bg-card px-4 py-8 text-center text-sm text-muted-foreground">
-            Noch keine Vereine in der Wertung. Bei der Anmeldung den Vereinsnamen in der Combobox
-            wählen – sonst zählt die Meldung nicht für die Fassjagd.
+            Noch keine Teams in der Wertung. Bei der Anmeldung den Teamnamen in der Combobox
+            wählen (Verein, Firma oder Gruppe) – sonst zählt die Meldung nicht für die Fassjagd.
           </div>
         ) : (
           board.ranking.map((club) => <ClubRow key={club.slug} club={club} max={max} />)
@@ -106,33 +111,24 @@ export function FassjagdTafel({ initial }: { initial: FassjagdBoard }) {
       )}
 
       {board.ohneAngabe > 0 && (
-        <p className="text-xs text-muted-foreground">Ohne Vereinsangabe: {board.ohneAngabe} (zählen nicht)</p>
+        <p className="text-xs text-muted-foreground">Ohne Teamangabe: {board.ohneAngabe} (zählen nicht)</p>
       )}
 
       {leader && (
         <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="mb-3 text-sm font-semibold">Vereinskarte teilen ({leader.name})</p>
+          <p className="mb-3 text-sm font-semibold">Teamkarte teilen ({leader.name})</p>
           <FassjagdShareButtons club={leader} />
           <p className="mt-2 text-xs text-muted-foreground">
-            Nur Vereins-Sharecards – keine privaten „Ich bin dabei“-Karten.
+            Nur Team-Sharecards – keine privaten „Ich bin dabei“-Karten.
           </p>
         </div>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Link
-          href="/anmeldung/sammel"
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-koder-orange px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white hover:bg-koder-orange/90"
-        >
-          <Users className="h-4 w-4" aria-hidden />
-          Sammelanmeldung
-        </Link>
-        <Link
-          href="/anmeldung"
-          className="inline-flex flex-1 items-center justify-center rounded-2xl border-2 border-border px-5 py-3 text-sm font-semibold uppercase tracking-widest hover:border-koder-orange/40"
-        >
-          Zur Anmeldung
-        </Link>
+      <div className="space-y-3">
+        <p className="text-center text-sm font-semibold uppercase tracking-widest text-koder-orange">
+          Starter für dein Team anmelden
+        </p>
+        <FassjagdAnmeldeButtons />
       </div>
     </div>
   );

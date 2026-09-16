@@ -328,7 +328,7 @@ export default function AnmeldungenPage() {
                     ? `${VEREINS_WERTUNG.titel} erscheint mit den Live-Daten.`
                     : liveEmpty
                       ? `${VEREINS_WERTUNG.titel} erscheint mit den ersten Anmeldungen.`
-                      : "Noch keine Angaben – bei der Anmeldung den Vereinsnamen wählen."}
+                      : "Noch keine Angaben – bei der Anmeldung den Teamnamen wählen."}
                 </div>
               ) : (
                 stats.vereine!.ranking.slice(0, 5).map((v, i) => {

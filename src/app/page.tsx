@@ -1,5 +1,6 @@
 import { Hero } from "@/components/sections/hero";
 import { EventInfo } from "@/components/sections/event-info";
+import { FassjagdPromo } from "@/components/sections/fassjagd-promo";
 import { JubilaeumsProgramm } from "@/components/sections/jubilaeums-programm";
 import { Features } from "@/components/sections/features";
 import { Zeitplan } from "@/components/sections/zeitplan";
@@ -11,6 +12,7 @@ export default function Home() {
     <>
       <Hero />
       <EventInfo />
+      <FassjagdPromo />
       <JubilaeumsProgramm />
       <Features />
       <Zeitplan />
