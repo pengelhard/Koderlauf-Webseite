@@ -324,10 +324,10 @@ export default function AnmeldungenPage() {
               {(stats.vereine?.ranking.length ?? 0) === 0 ? (
                 <div className="rounded-2xl border border-border bg-card px-4 py-6 text-center text-sm text-muted-foreground">
                   {waitingForJson
-                    ? "Vereinswertung erscheint mit den Live-Daten."
+                    ? `${VEREINS_WERTUNG.titel} erscheint mit den Live-Daten.`
                     : liveEmpty
-                      ? "Vereinswertung erscheint mit den ersten Anmeldungen."
-                      : "Noch keine Vereinsangaben – bei der Anmeldung Verein eintragen!"}
+                      ? `${VEREINS_WERTUNG.titel} erscheint mit den ersten Anmeldungen.`
+                      : "Noch keine Angaben – bei der Anmeldung Verein, Gruppe oder Firma eintragen!"}
                 </div>
               ) : (
                 stats.vereine!.ranking.slice(0, 15).map((v, i) => {
@@ -377,7 +377,7 @@ export default function AnmeldungenPage() {
                   </>
                 )}
                 {(stats.vereine?.ohneAngabe ?? 0) > 0 && (
-                  <>Ohne Vereinsangabe: {stats.vereine!.ohneAngabe}</>
+                  <>Ohne Teamangabe: {stats.vereine!.ohneAngabe}</>
                 )}
               </p>
             )}
@@ -441,7 +441,7 @@ export default function AnmeldungenPage() {
                 type="search"
                 value={suche}
                 onChange={(e) => setSuche(e.target.value)}
-                placeholder="Suche Name / Verein…"
+                placeholder="Suche Name / Team…"
                 className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-sm outline-none focus:border-koder-orange"
               />
               <select
@@ -466,7 +466,7 @@ export default function AnmeldungenPage() {
                       <th className="px-3 py-2 font-semibold">Name</th>
                       <th className="px-3 py-2 font-semibold">Strecke</th>
                       <th className="px-3 py-2 font-semibold">M/W</th>
-                      <th className="hidden px-3 py-2 font-semibold sm:table-cell">Verein</th>
+                      <th className="hidden px-3 py-2 font-semibold sm:table-cell">Team</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
