@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { loadFassjagdBoard } from "@/lib/fassjagd/load";
 import { fassjagdWeekResponse } from "@/lib/fassjagd/card";
 import {
-  FASSJAGD_ADMIN_COOKIE,
   fassjagdAdminSecret,
-  fassjagdAdminToken,
   isFassjagdAdmin,
+  setAdminCookie,
+  clearAdminCookie,
 } from "@/lib/fassjagd/admin-auth";
 import {
   exportOverrides,
@@ -44,13 +44,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Passwort falsch" }, { status: 401 });
     }
     const res = NextResponse.json({ ok: true });
-    res.cookies.set(FASSJAGD_ADMIN_COOKIE, fassjagdAdminToken(s), {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 14,
-    });
+    setAdminCookie(res, s);
     return res;
   }
 
@@ -58,7 +52,7 @@ export async function POST(request: Request) {
 
   if (action === "logout") {
     const res = NextResponse.json({ ok: true });
-    res.cookies.set(FASSJAGD_ADMIN_COOKIE, "", { path: "/", maxAge: 0 });
+    clearAdminCookie(res);
     return res;
   }
 
@@ -88,7 +82,7 @@ export async function POST(request: Request) {
 
   if (action === "week-image") {
     const board = await loadFassjagdBoard();
-    return fassjagdWeekResponse(board.ranking);
+    return await fassjagdWeekResponse(board.ranking);
   }
 
   return NextResponse.json({ error: "Unbekannte Aktion" }, { status: 400 });

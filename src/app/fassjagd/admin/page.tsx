@@ -68,7 +68,7 @@ export default function FassjagdAdminPage() {
       <div className="mx-auto max-w-md px-4 pt-28 pb-16">
         <h1 className="text-3xl font-extrabold">Fassjagd Admin</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Vereine mergen, aus Wertung nehmen, Freeze, Wochenstand-Bild.
+          Vereine, Firmen und Gruppen mergen, aus Wertung nehmen, Freeze, Wochenstand-Bild.
         </p>
         <form
           className="mt-6 space-y-3"
@@ -107,13 +107,18 @@ export default function FassjagdAdminPage() {
             {board?.frozen ? " (eingefroren)" : ""}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void post({ action: "logout" })}
-          className="text-sm text-muted-foreground hover:text-foreground"
-        >
-          Abmelden
-        </button>
+        <div className="flex flex-col items-end gap-2">
+          <button
+            type="button"
+            onClick={() => void post({ action: "logout" })}
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Abmelden
+          </button>
+          <a href="/admin" className="text-xs text-koder-orange hover:underline">
+            T-Shirt &amp; Abendkarten
+          </a>
+        </div>
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
 
