@@ -157,11 +157,20 @@ test("Story-Cache hält PNG und JPEG getrennt", () => {
 
 test("Share-Buttons bleiben ohne instagram:// und ohne canShare-Frühreturn", () => {
   assert.equal(shareButtonsSrc.includes("instagram://"), false);
+  assert.equal(shareButtonsSrc.includes("intent://"), false);
+  assert.equal(shareButtonsSrc.includes("story-camera"), false);
   assert.equal(/canShareFiles\(/.test(shareButtonsSrc), false);
   assert.match(shareButtonsSrc, /Jetzt teilen/);
   assert.match(shareButtonsSrc, /onPointerDown/);
   assert.match(shareButtonsSrc, /onTouchStart/);
   assert.match(shareButtonsSrc, /prefetchStoryPng/);
+});
+
+test("Instagram-Button verspricht kein direktes Öffnen der App", () => {
+  assert.match(shareButtonsSrc, /\{igBusy \? "Bild…" : "Instagram"\}/);
+  assert.match(shareButtonsSrc, /Teilen → Instagram \(Bild ist dabei\)/);
+  assert.equal(shareButtonsSrc.includes("Instagram-Story"), false);
+  assert.equal(shareButtonsSrc.includes("com.instagram.android"), false);
 });
 
 test("WhatsApp-href kommt erst nach Mount von window.location.origin", () => {

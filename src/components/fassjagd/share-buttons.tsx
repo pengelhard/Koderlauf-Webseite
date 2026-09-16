@@ -130,7 +130,7 @@ export function FassjagdShareButtons({
     const blob = peekStoryBlob(storyPath);
     if (!blob) return false;
     downloadBlob(blob, filename);
-    setIgHint("Bild gespeichert. Auf dem Handy: Teilen → Instagram-Story.");
+    setIgHint("Bild gespeichert. Auf dem Handy: Teilen → Instagram (Bild ist dabei).");
     return true;
   }
 
@@ -169,7 +169,7 @@ export function FassjagdShareButtons({
       return;
     }
     setPendingShare({ caption });
-    setIgHint("Tippe Jetzt teilen – dann Instagram wählen.");
+    setIgHint("Tippe Jetzt teilen – dann im Menü Instagram wählen (Bild ist dabei).");
   }
 
   /** Frische Geste: File liegt schon im Cache, share() ohne Fetch. */
@@ -186,6 +186,14 @@ export function FassjagdShareButtons({
     void sharePromise.then((result) => onShareSettled(result, caption));
   }
 
+  /**
+   * Instagram aus dem Browser: nur System-Teilen mit File.
+   * Deep-Links in die Story-Kamera öffnen leer. Ein Android-SHARE-Intent
+   * direkt an die Instagram-App braucht eine content://-URI (Content-Provider) –
+   * Blob-URLs gehen nicht, Chrome-Intent-URLs können kein File anhängen.
+   * Web Share mit `files` ist der dokumentierte Weg (Android: ACTION_SEND).
+   * iOS: Share-Sheet, kein Deep-Link-Fallback.
+   */
   function onInstagramClick() {
     setIgHint(null);
     const caption = instagramCaption(club, liveTeamUrl(club.slug));
@@ -218,7 +226,7 @@ export function FassjagdShareButtons({
         // Nach await ist die Geste auf iOS oft weg – zweiten Button zeigen
         // und Share trotzdem versuchen (Android erlaubt das manchmal noch).
         setPendingShare({ caption });
-        setIgHint("Tippe Jetzt teilen – dann Instagram wählen.");
+        setIgHint("Tippe Jetzt teilen – dann im Menü Instagram wählen (Bild ist dabei).");
         void tryShare(filesShareData(file, shareTitle(), caption)).then((result) => {
           if (result === "ok" || result === "abort") {
             setPendingShare(null);
@@ -286,7 +294,7 @@ export function FassjagdShareButtons({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/instagram.png" alt="" width={20} height={20} className="h-5 w-5 rounded-[5px]" />
-          {igBusy ? "Story…" : "Instagram-Story"}
+          {igBusy ? "Bild…" : "Instagram"}
         </button>
         {pendingShare && (
           <button
@@ -316,8 +324,7 @@ export function FassjagdShareButtons({
         </button>
       </div>
       <p className="text-xs text-muted-foreground">
-        Instagram öffnet Teilen mit dem Bild – Instagram wählen. Falls nichts passiert: „Jetzt
-        teilen“.
+        Teilen → Instagram (Bild ist dabei). Falls nichts passiert: „Jetzt teilen“.
       </p>
       {igHint && <p className="text-sm font-medium text-foreground">{igHint}</p>}
     </div>

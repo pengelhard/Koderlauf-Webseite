@@ -71,7 +71,7 @@ export function FassjagdVerein({
       <div className="rounded-2xl border border-border bg-card p-4">
         <p className="text-sm font-semibold">Karte für Instagram oder WhatsApp teilen</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          WhatsApp schickt den Text. Instagram öffnet Teilen mit dem Bild – Instagram wählen.
+          WhatsApp schickt den Link. Instagram: Teilen → Instagram (Bild ist dabei).
           Falls nichts passiert: „Jetzt teilen“ tippen.
         </p>
         <div className="mt-3">
