@@ -7,6 +7,7 @@ const PATHS = [
   "/teilnehmer",
   "/ergebnisse",
   "/galerie",
+  "/fassjagd",
   "/anmeldung",
   "/anmeldung/einzeln",
   "/anmeldung/sammel",

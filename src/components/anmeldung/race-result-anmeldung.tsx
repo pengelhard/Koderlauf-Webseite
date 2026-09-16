@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle2, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FassjagdDanke } from "@/components/fassjagd/danke";
 import {
   RACE_RESULT,
   getRaceResultForm,
@@ -323,6 +324,7 @@ function AnmeldungErfolgBanner({
         <p className="mt-0.5 text-sm text-muted-foreground">
           Du bist angemeldet. Die Bestätigung kommt per E-Mail.
         </p>
+        <FassjagdDanke justRegistered />
       </div>
       {onDismiss && (
         <button

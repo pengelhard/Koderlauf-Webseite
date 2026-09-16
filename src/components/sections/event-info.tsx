@@ -128,6 +128,12 @@ export function EventInfo() {
               >
                 Zu den Strecken <ArrowRight size={14} />
               </Link>
+              <Link
+                href="/fassjagd"
+                className="inline-flex items-center gap-1 text-koder-orange transition-colors hover:text-koder-orange-bright"
+              >
+                Zur Fassjagd <ArrowRight size={14} />
+              </Link>
               <span className="inline-flex items-center gap-1 text-muted-foreground">
                 <CalendarDays size={14} /> {EVENT.datumKurz}
               </span>

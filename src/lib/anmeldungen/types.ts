@@ -32,6 +32,9 @@ export interface AnmeldungParticipant {
   jahrgang?: string;
   verein?: string;
   nation?: string;
+  /** Startnummer falls in der Liste, für Gleichstand (frühere Anmeldung) */
+  bib?: number;
+  rrId?: number;
 }
 
 /** Erwartete Felder einer Race-Result JSON-Liste (flexibel benannt). */

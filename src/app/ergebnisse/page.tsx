@@ -24,6 +24,7 @@ import { YearSwitcher } from "@/components/ui/year-switcher";
 import { EVENT } from "@/lib/event-config";
 import { getAltersklassenDlv, type AltersklasseMeta } from "@/lib/data/altersklassen";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
+import Link from "next/link";
 
 const AK_GRUPPEN: {
   id: AltersklasseMeta["gruppe"];
@@ -475,7 +476,11 @@ export default function ErgebnissePage() {
                         <p className="font-semibold">{VEREINS_WERTUNG.titel}</p>
                         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                           {VEREINS_WERTUNG.kurz} {VEREINS_WERTUNG.ausrichterCanonical} ist als
-                          Ausrichter nicht in der Wertung. Stand und Details: Seite Teilnehmer.
+                          Ausrichter nicht in der Wertung. Live-Tafel:{" "}
+                          <Link href="/fassjagd" className="font-semibold text-koder-orange hover:underline">
+                            Fassjagd
+                          </Link>
+                          .
                         </p>
                       </div>
                     </div>
