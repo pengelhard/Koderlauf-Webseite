@@ -18,6 +18,21 @@ const nextConfig: NextConfig = {
       { source: "/anmeldungen", destination: "/teilnehmer", permanent: true },
     ];
   },
+  async headers() {
+    const noStoreIcon = [
+      { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
+    ];
+    return [
+      "/favicon.ico",
+      "/icon.png",
+      "/icon.svg",
+      "/apple-icon.png",
+      "/koder-icon.png",
+      "/koder-icon-192.png",
+      "/koder-icon.svg",
+      "/apple-touch-icon.png",
+    ].map((source) => ({ source, headers: noStoreIcon }));
+  },
 };
 
 export default nextConfig;

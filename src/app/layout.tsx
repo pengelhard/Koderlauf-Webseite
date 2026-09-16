@@ -55,6 +55,17 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `Koderlauf ${EVENT.jahr}`,
       description: `Koderlauf am ${EVENT.datumFormatiert} in ${EVENT.ort}`,
     },
+    // Neue Dateinamen + Query, damit Browser nicht das gecachte Vercel-Dreieck unter /favicon.ico halten.
+    icons: {
+      icon: [
+        { url: "/koder-icon.svg?v=20260916", type: "image/svg+xml" },
+        { url: "/koder-icon.png?v=20260916", type: "image/png", sizes: "32x32" },
+        { url: "/koder-icon-192.png?v=20260916", type: "image/png", sizes: "192x192" },
+        { url: "/favicon.ico?v=20260916", type: "image/x-icon", sizes: "48x48" },
+      ],
+      shortcut: "/koder-icon.png?v=20260916",
+      apple: [{ url: "/apple-touch-icon.png?v=20260916", sizes: "180x180" }],
+    },
   };
 }
 
