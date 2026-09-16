@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { AnmeldeLink } from "@/components/anmeldung/anmelde-link";
 import { CountdownTimer } from "@/components/sections/countdown";
 import { EVENT } from "@/lib/event-config";
 
@@ -171,13 +172,20 @@ export function Hero() {
           >
             Galerie
           </Link>
-          <Link
-            href="/anmeldung"
+          <AnmeldeLink
             className="glow-orange rounded-2xl bg-koder-orange px-8 py-3.5 text-sm font-semibold uppercase tracking-widest text-white transition-all hover:bg-koder-orange-bright"
           >
             Zur Anmeldung
-          </Link>
+          </AnmeldeLink>
         </motion.div>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.68 }}
+          className="mt-4 text-sm text-white/80 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]"
+        >
+          Online-Anmeldeschluss: {EVENT.onlineAnmeldeschlussAnzeige}
+        </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

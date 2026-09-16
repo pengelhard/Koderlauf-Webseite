@@ -12,7 +12,9 @@ import {
   Ticket,
   CheckCircle2,
 } from "lucide-react";
+import { AnmeldungGeschlossenHinweis } from "@/components/anmeldung/anmeldung-geschlossen";
 import { EVENT, getAbendkarteRabattProzent } from "@/lib/event-config";
+import { useOnlineAnmeldungOffen } from "@/hooks/use-online-anmeldung-offen";
 import { StartzeitenTimeline } from "@/components/sections/startzeiten-timeline";
 import { StartnummernAusgabe } from "@/components/sections/startnummern-ausgabe";
 import { AnmeldungAuswahl } from "@/components/anmeldung/race-result-anmeldung";
@@ -21,6 +23,7 @@ import { FassjagdHinweisKasten } from "@/components/fassjagd/hinweis-kasten";
 
 export default function AnmeldungPage() {
   const staticReveal = useStaticReveal();
+  const anmeldungOffen = useOnlineAnmeldungOffen();
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -37,10 +40,20 @@ export default function AnmeldungPage() {
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
             Online-Anmeldung zum Koderlauf am {EVENT.datumFormatiert} in {EVENT.ort}.
+            <span className="mt-2 block text-base">
+              Online-Anmeldeschluss:{" "}
+              <strong className="text-foreground">{EVENT.onlineAnmeldeschlussAnzeige}</strong>
+            </span>
           </p>
         </motion.div>
 
-        {EVENT.anmeldungOffen && (
+        {!anmeldungOffen && (
+          <motion.div {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.1 })} className="mt-8">
+            <AnmeldungGeschlossenHinweis />
+          </motion.div>
+        )}
+
+        {anmeldungOffen && (
           <motion.div
             {...fadeReveal(staticReveal, { duration: 0.6, delay: 0.12 })}
             className="mt-8"

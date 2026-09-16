@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { AnmeldeLink } from "@/components/anmeldung/anmelde-link";
 import { Logo } from "@/components/ui/logo";
 
 const navLinks = [
@@ -89,12 +90,11 @@ export function Navbar() {
             )}
 
             {/* Desktop Anmelden button - always visible on md+ */}
-            <Link
-              href="/anmeldung"
+            <AnmeldeLink
               className="hidden md:inline-flex rounded-xl bg-koder-orange px-5 py-2 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-koder-orange/90"
             >
               Jetzt anmelden
-            </Link>
+            </AnmeldeLink>
 
             {/* Hamburger always visible so the dropdown for other pages is available at the top */}
             {/* Hamburger always visible so the dropdown for other pages is available at the top */}
@@ -138,13 +138,12 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
-                <Link
-                  href="/anmeldung"
+                <AnmeldeLink
                   onClick={() => setMobileOpen(false)}
                   className="mt-4 rounded-2xl bg-koder-orange px-6 py-3 text-center text-sm font-semibold uppercase tracking-widest text-white"
                 >
                   Jetzt anmelden
-                </Link>
+                </AnmeldeLink>
               </div>
             </motion.div>
           )}
