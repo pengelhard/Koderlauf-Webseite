@@ -110,6 +110,7 @@ export function RouteMap({
   stationsRef.current = stations;
 
   const [mapReady, setMapReady] = useState(false);
+  const [mapError, setMapError] = useState(false);
   const [flightUi, setFlightUi] = useState<FlightUi>("idle");
   const [stationChip, setStationChip] = useState<string | null>(null);
   const reducedMotion = useSyncExternalStore(
@@ -386,8 +387,10 @@ export function RouteMap({
     const centerLat = (bounds.minLat + bounds.maxLat) / 2;
     let cancelled = false;
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
+    let map: maplibregl.Map;
+    try {
+      map = new maplibregl.Map({
+        container: containerRef.current,
       style: {
         version: 8,
         sources: {
@@ -431,6 +434,10 @@ export function RouteMap({
       maxPitch: 85,
       attributionControl: false,
     });
+    } catch {
+      setMapError(true);
+      return;
+    }
 
     map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "© OSM | Esri" }), "bottom-right");
 
@@ -560,6 +567,11 @@ export function RouteMap({
         ref={containerRef}
         className={`h-full w-full overflow-hidden rounded-3xl border border-border ${className}`}
       />
+      {mapError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted px-4 text-center text-sm text-muted-foreground">
+          3D-Karte braucht WebGL – bitte einen aktuellen Browser verwenden.
+        </div>
+      )}
 
       {showFlightUi && (
         <div className="pointer-events-none absolute inset-0 z-10" data-flight-state={flightUi}>
