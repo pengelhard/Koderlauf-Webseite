@@ -12,13 +12,13 @@
       "source": "/",
       "has": [{ "type": "host", "value": "www.koderlauf.de" }],
       "destination": "https://koderlauf.de/",
-      "permanent": true
+      "statusCode": 301
     },
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "www.koderlauf.de" }],
       "destination": "https://koderlauf.de/:path*",
-      "permanent": true
+      "statusCode": 301
     }
   ]
 }
