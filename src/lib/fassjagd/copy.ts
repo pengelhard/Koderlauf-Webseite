@@ -65,8 +65,8 @@ export function teamOgImageUrl(origin: string, slug: string): string {
 
 export function whatsappText(club: FassjagdClub, url: string): string {
   const body = club.hausherr
-    ? `Fassjagd: ${club.name} ist Hausherr und außer Wertung · ${club.total} Starter.`
-    : `Fassjagd: ${club.name} Platz ${club.place ?? "–"} · ${club.total} Starter. ${shareDiff(club)}.`;
+    ? `Hausherr: ${club.name}\n${club.total} Starter · außer Wertung`
+    : `${club.place ?? "–"}. Platz: ${club.name}\n${club.total} Starter`;
   // WhatsApp crawlt nur https-URLs in einer eigenen Zeile.
   return `${body}\n${url}`;
 }
