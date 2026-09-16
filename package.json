@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/fassjagd/*.test.ts src/lib/site-url.test.ts src/lib/social-crawler.test.ts"
+    "test": "node --experimental-strip-types --test src/lib/fassjagd/*.test.ts src/lib/event-config.anmeldung.test.ts src/lib/site-url.test.ts src/lib/social-crawler.test.ts"
   },
   "dependencies": {
     "@maplibre/maplibre-gl-style-spec": "^24.5.0",

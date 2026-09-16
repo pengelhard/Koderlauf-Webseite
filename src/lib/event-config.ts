@@ -50,8 +50,9 @@ export const EVENT = {
   mapsUrl:
     "https://maps.google.com/?q=Sportheim+Obermögersheim+91717+Wassertrüdingen",
   claim: "Lauf mit Herz durch den Wald",
-  /** Steuert Vorverkaufs-Banner und Sticky-CTA */
-  anmeldungOffen: true,
+  /** Online-Anmeldeschluss (Europe/Berlin, MESZ) – Fassjagd-Freeze und Buttons */
+  onlineAnmeldeschluss: "2027-05-27T08:00:00",
+  onlineAnmeldeschlussAnzeige: "27.05.2027 um 8:00 Uhr",
   jubilaeum: "50 Jahre SV Obermögersheim",
   kontaktEmail: "info@koderlauf.de",
   /** Online-Anmeldung & Zeitmessung */
@@ -120,7 +121,14 @@ export const EVENT = {
     phasen: [
       { id: "fruehbucher", name: "Frühbucher", bis: "2026-11-30T23:59:59", hinweis: "online bis 30.11.2026", kinderlauf: 5, andere: 8 },
       { id: "normal", name: "Normalpreis", bis: "2027-03-31T23:59:59", hinweis: "online bis 31.03.2027", kinderlauf: 7, andere: 12 },
-      { id: "spaet", name: "Spätmeldung", bis: "2027-05-27T23:59:59", hinweis: "online bis 27.05.2027", kinderlauf: 10, andere: 16 },
+      {
+        id: "spaet",
+        name: "Spätmeldung",
+        bis: "2027-05-27T08:00:00",
+        hinweis: "online bis 27.05.2027, 8:00 Uhr",
+        kinderlauf: 10,
+        andere: 16,
+      },
       { id: "vor_ort", name: "Nachmeldung vor Ort", bis: null, hinweis: "am Eventtag bis 15:30 Uhr am Sportheim", kinderlauf: 15, andere: 25 },
     ] satisfies PreisPhase[],
     /** Senioren ab 70 zahlen auf allen Strecken und in allen Phasen diesen Preis */
@@ -184,9 +192,24 @@ export function getErsterStart(): EventStrecke {
   );
 }
 
+/** Datum/Zeit in EVENT ohne Offset → Europe/Berlin (MESZ im Mai). */
+export function parseEventLocalDateTime(raw: string): Date {
+  if (/[zZ]|[+-]\d{2}:\d{2}$/.test(raw)) return new Date(raw);
+  return new Date(`${raw}+02:00`);
+}
+
+export function getOnlineAnmeldeschlussAt(): Date {
+  return parseEventLocalDateTime(EVENT.onlineAnmeldeschluss);
+}
+
+export function isOnlineAnmeldungOffen(now: Date = new Date()): boolean {
+  return now < getOnlineAnmeldeschlussAt();
+}
+
 export function getAktuellePreisPhase(now: Date = new Date()): PreisPhase {
   for (const phase of EVENT.preise.phasen) {
-    if (phase.bis === null || now <= new Date(phase.bis)) return phase;
+    if (phase.bis === null) continue;
+    if (now <= parseEventLocalDateTime(phase.bis)) return phase;
   }
   return EVENT.preise.phasen[EVENT.preise.phasen.length - 1];
 }

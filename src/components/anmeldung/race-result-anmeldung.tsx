@@ -4,6 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle2, User, Users } from "lucide-react";
+import { AnmeldungGeschlossenHinweis } from "@/components/anmeldung/anmeldung-geschlossen";
+import { AnmeldeLink } from "@/components/anmeldung/anmelde-link";
+import { useOnlineAnmeldungOffen } from "@/hooks/use-online-anmeldung-offen";
 import { cn } from "@/lib/utils";
 import { FassjagdDanke } from "@/components/fassjagd/danke";
 import {
@@ -457,7 +460,7 @@ export function AnmeldungAuswahl({ className = "" }: { className?: string }) {
         {RACE_RESULT.forms.map((f) => {
           const Icon = FORM_ICONS[f.id];
           return (
-            <Link
+            <AnmeldeLink
               key={f.id}
               href={FORM_HREF[f.id]}
               className="group flex items-center gap-3 rounded-2xl border border-koder-orange/50 bg-koder-orange px-4 py-3.5 text-left text-white shadow-md shadow-koder-orange/15 transition-all duration-200 hover:bg-[#FF9F1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -466,7 +469,7 @@ export function AnmeldungAuswahl({ className = "" }: { className?: string }) {
                 <Icon className="h-4 w-4" aria-hidden />
               </span>
               <span className="text-base font-extrabold tracking-tight">{f.label}</span>
-            </Link>
+            </AnmeldeLink>
           );
         })}
       </div>
@@ -483,6 +486,7 @@ export function RaceResultFormular({
   className?: string;
 }) {
   const router = useRouter();
+  const anmeldungOffen = useOnlineAnmeldungOffen();
   const [iframeReady, setIframeReady] = useState(false);
   const [completed, setCompleted] = useState(false);
   const srcDoc = useMemo(() => buildEmbedSrcDoc(formId), [formId]);
@@ -552,6 +556,9 @@ export function RaceResultFormular({
         </Link>
       </div>
 
+      {!anmeldungOffen && <AnmeldungGeschlossenHinweis />}
+
+      {anmeldungOffen && (
       <div className="relative overflow-hidden rounded-2xl border border-border bg-[#0A0A0A]">
         {!iframeReady && !completed && (
           <div
@@ -576,6 +583,7 @@ export function RaceResultFormular({
           referrerPolicy="no-referrer-when-downgrade"
         />
       </div>
+      )}
     </div>
   );
 }
