@@ -9,12 +9,17 @@ export function cardVariant(club: FassjagdClub): CardVariant {
   return "hunt";
 }
 
+/** Jagd-Gap: einer mehr als der Führende, sonst nur Gleichstand. */
+export function huntGapText(n: number, capitalize = false): string {
+  const noch = capitalize ? "Noch" : "noch";
+  if (n === 1) return `${noch} 1 Starter bis zum Fass`;
+  return `${noch} ${n} Starter bis zum Fass`;
+}
+
 export function gapHeadline(club: FassjagdClub): string {
   if (club.hausherr) return "Hausherr · außer Wertung";
   if (club.place === 1) return "sitzen auf dem Fass";
-  return club.gapToLeader > 0
-    ? `noch ${club.gapToLeader} bis zum Fass`
-    : "noch 0 bis zum Fass";
+  return huntGapText(club.gapToLeader);
 }
 
 export function gapLine(club: FassjagdClub): string {
@@ -23,9 +28,7 @@ export function gapLine(club: FassjagdClub): string {
     const lead = club.leadBy ?? 0;
     return lead > 0 ? `führt mit +${lead}` : "führt die Fassjagd an";
   }
-  return club.gapToLeader > 0
-    ? `noch ${club.gapToLeader} bis zum Fass`
-    : "noch 0 bis zum Fass";
+  return huntGapText(club.gapToLeader);
 }
 
 export function weekLine(club: FassjagdClub): string | null {
@@ -41,7 +44,7 @@ function shareDiff(club: FassjagdClub): string {
       ? `führt mit +${club.leadBy}`
       : "sitzen auf dem Fass";
   }
-  return `Noch ${club.gapToLeader} bis zum Fass`;
+  return huntGapText(club.gapToLeader, true);
 }
 
 export function whatsappText(club: FassjagdClub, url: string): string {

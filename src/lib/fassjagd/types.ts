@@ -16,7 +16,7 @@ export type FassjagdClub = {
   firstReg: number;
   weekDelta: number;
   flaming: boolean;
-  /** Abstand auf Platz 1 (0 wenn selbst führend) */
+  /** Abstand auf Platz 1: Starter zum Allein-Führen, (Leader − Team) + 1; 0 wenn selbst führend */
   gapToLeader: number;
   /** Starter, die zum Team davor fehlen */
   gapToAbove: number | null;
