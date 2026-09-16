@@ -178,12 +178,16 @@ export function RouteMap({
     const alpha = 1 - Math.exp(-(dtMs || 16) / 220);
     bearingRef.current = snapBearing ? target : lerpBearing(bearingRef.current, target, alpha);
 
-    map.jumpTo({
-      center: [pos.lon, pos.lat],
-      bearing: bearingRef.current,
-      pitch: FLIGHT_PITCH,
-      zoom: mobile ? ZOOM_MOBILE : ZOOM_DESKTOP,
-    });
+    try {
+      map.jumpTo({
+        center: [pos.lon, pos.lat],
+        bearing: bearingRef.current,
+        pitch: FLIGHT_PITCH,
+        zoom: mobile ? ZOOM_MOBILE : ZOOM_DESKTOP,
+      });
+    } catch {
+      // WebGL/terrain hiccup – next frame retries
+    }
   }, []);
 
   const clearFlightTimers = useCallback(() => {
@@ -216,12 +220,13 @@ export function RouteMap({
 
   useEffect(() => {
     tickRef.current = (ts: number) => {
+      try {
       const map = mapRef.current;
       const index = trackIndexRef.current;
       if (!map || pausedRef.current || index.points.length === 0) return;
 
       if (lastTsRef.current === 0) lastTsRef.current = ts;
-      const dt = Math.min(48, ts - lastTsRef.current);
+      const dt = Math.min(100, ts - lastTsRef.current);
       lastTsRef.current = ts;
 
       distanceKmRef.current += speedKmPerMsRef.current * dt;
@@ -256,6 +261,11 @@ export function RouteMap({
 
       applyCamera(distanceKmRef.current, false, dt);
       rafRef.current = requestAnimationFrame((t) => tickRef.current(t));
+      } catch {
+        if (!pausedRef.current) {
+          rafRef.current = requestAnimationFrame((t) => tickRef.current(t));
+        }
+      }
     };
   }, [applyCamera, closeStationPopups, openStationPopup, stopFlight]);
 
@@ -279,7 +289,7 @@ export function RouteMap({
     setStationChip(null);
     setFlightUi("running");
 
-    const durationMs = Math.min(90_000, Math.max(30_000, index.totalKm * 2800));
+    const durationMs = Math.min(55_000, Math.max(24_000, index.totalKm * 1800));
     speedKmPerMsRef.current = index.totalKm / durationMs;
 
     const start = alongTrack(index, 0);
@@ -581,6 +591,7 @@ export function RouteMap({
                 <div
                   role="status"
                   aria-live="polite"
+                  data-flight-chip=""
                   className="max-w-[min(100%,22rem)] rounded-full border border-white/25 bg-black/65 px-3 py-1.5 text-center text-xs font-semibold text-white shadow-sm"
                 >
                   {flightUi === "done"
