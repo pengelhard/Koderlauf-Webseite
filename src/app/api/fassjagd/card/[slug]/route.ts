@@ -1,4 +1,4 @@
-import { DEMO_TEAM_CLUB, fassjagdCardResponse } from "@/lib/fassjagd/card";
+import { DEMO_PLACE2_CLUB, DEMO_TEAM_CLUB, fassjagdCardResponse } from "@/lib/fassjagd/card";
 import { loadFassjagdBoard } from "@/lib/fassjagd/load";
 import { findFassjagdClub } from "@/lib/fassjagd/ranking";
 
@@ -7,14 +7,19 @@ export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ slug: string }> };
 
+function demoClub(demo: string | null) {
+  if (demo === "team") return DEMO_TEAM_CLUB;
+  if (demo === "place2") return DEMO_PLACE2_CLUB;
+  return null;
+}
+
 export async function GET(request: Request, { params }: Params) {
   const { slug } = await params;
   const { searchParams } = new URL(request.url);
   const format = searchParams.get("format") === "story" ? "story" : "og";
   const club =
-    searchParams.get("demo") === "team"
-      ? DEMO_TEAM_CLUB
-      : findFassjagdClub(await loadFassjagdBoard(), slug);
+    demoClub(searchParams.get("demo")) ??
+    findFassjagdClub(await loadFassjagdBoard(), slug);
   if (!club) {
     return new Response("Team nicht gefunden", { status: 404 });
   }

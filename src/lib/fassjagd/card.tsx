@@ -83,6 +83,26 @@ export const DEMO_TEAM_CLUB: FassjagdClub = {
   starters: [],
 };
 
+/** Preview 2. Platz — Gap zum Fass, nicht Hausherr. */
+export const DEMO_PLACE2_CLUB: FassjagdClub = {
+  name: "TV 1860 Gunzenhausen",
+  slug: "tv-1860-gunzenhausen",
+  total: 8,
+  place: 2,
+  ausgeschlossen: false,
+  hausherr: false,
+  trailSpielerei: 1,
+  firstReg: 12,
+  weekDelta: 0,
+  flaming: false,
+  gapToLeader: 4,
+  gapToAbove: 4,
+  gapToBelow: 2,
+  leadBy: null,
+  strecken: {},
+  starters: [],
+};
+
 const flex: CSSProperties = { display: "flex" };
 
 function FassPrize({ src, layout }: { src: string; layout: FassLayout }) {
