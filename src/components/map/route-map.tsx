@@ -32,7 +32,7 @@ interface RouteMapProps {
 }
 
 const FLIGHT_PITCH = 60;
-const STATION_HOLD_MS = 2200;
+const STATION_HOLD_MS = 3000;
 const INTRO_MS = 1200;
 const LOOKAHEAD_KM_DESKTOP = 0.08;
 const LOOKAHEAD_KM_MOBILE = 0.14;
@@ -112,6 +112,7 @@ export function RouteMap({
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState(false);
   const [flightUi, setFlightUi] = useState<FlightUi>("idle");
+  const [holdStation, setHoldStation] = useState<string | null>(null);
   const reducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
     getReducedMotionSnapshot,
@@ -146,17 +147,21 @@ export function RouteMap({
   const closeStationPopups = useCallback(() => {
     for (const m of stationMarkersRef.current) {
       const popup = m.getPopup();
-      if (popup?.isOpen()) m.togglePopup();
+      if (popup?.isOpen()) popup.remove();
     }
   }, []);
 
   const openStationPopup = useCallback((station: VerpflegungsStation) => {
+    const map = mapRef.current;
+    if (!map) return;
     closeStationPopups();
     for (const m of stationMarkersRef.current) {
       const ll = m.getLngLat();
       if (Math.abs(ll.lat - station.lat) < 1e-4 && Math.abs(ll.lng - station.lon) < 1e-4) {
         const popup = m.getPopup();
-        if (popup && !popup.isOpen()) m.togglePopup();
+        if (!popup) return;
+        popup.setLngLat([ll.lng, ll.lat]);
+        if (!popup.isOpen()) popup.addTo(map);
         return;
       }
     }
@@ -211,6 +216,7 @@ export function RouteMap({
       mapRef.current?.stop();
       setMapInteraction(true);
       closeStationPopups();
+      setHoldStation(null);
       setFlightUi(next);
     },
     [clearFlightTimers, closeStationPopups, setMapInteraction],
@@ -237,9 +243,11 @@ export function RouteMap({
         nextStationIdxRef.current = sIdx + 1;
         distanceKmRef.current = station.km;
         applyCamera(station.km, true, dt);
+        setHoldStation(station.name);
         openStationPopup(station);
         holdTimerRef.current = window.setTimeout(() => {
           holdTimerRef.current = null;
+          setHoldStation(null);
           closeStationPopups();
           lastTsRef.current = 0;
           if (!pausedRef.current) {
@@ -279,6 +287,7 @@ export function RouteMap({
 
     clearFlightTimers();
     closeStationPopups();
+    setHoldStation(null);
     distanceKmRef.current = 0;
     nextStationIdxRef.current = 0;
     lastTsRef.current = 0;
@@ -488,7 +497,7 @@ export function RouteMap({
         const html = `<strong>${station.name}</strong><br/><span style="opacity:.85">${station.hint}</span><br/><span style="opacity:.85">bei ${station.kmLabel}</span>`;
         return new maplibregl.Marker({ element: createAidMarkerElement(station.label) })
           .setLngLat([station.lon, station.lat])
-          .setPopup(new maplibregl.Popup({ offset: 22, className: "koder-popup" }).setHTML(html))
+          .setPopup(new maplibregl.Popup({ offset: 22, closeOnClick: false, className: "koder-popup" }).setHTML(html))
           .addTo(map);
       });
 
@@ -579,7 +588,11 @@ export function RouteMap({
       )}
 
       {showFlightUi && (
-        <div className="pointer-events-none absolute inset-0 z-10" data-flight-state={flightUi}>
+        <div
+          className="pointer-events-none absolute inset-0 z-10"
+          data-flight-state={flightUi}
+          data-flight-hold={holdStation ?? ""}
+        >
           {flightUi === "done" && (
             <div className="absolute top-3 left-0 right-3 pr-12 sm:right-14">
               <div className="flex justify-center">
