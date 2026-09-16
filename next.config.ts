@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
       { source: "/anmeldungen", destination: "/teilnehmer", permanent: true },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/fassjagd/:slug/og.jpg",
+        destination: "/api/fassjagd/og/:slug",
+      },
+    ];
+  },
   async headers() {
     const noStoreIcon = [
       { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },

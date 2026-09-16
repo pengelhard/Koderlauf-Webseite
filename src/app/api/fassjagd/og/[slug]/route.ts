@@ -6,7 +6,6 @@ import { findFassjagdClub } from "@/lib/fassjagd/ranking";
 export const runtime = "nodejs";
 export const revalidate = 120;
 
-/** JPEG mit .jpg-Endung – WhatsApp erkennt opengraph-image?v= oft nicht als Bild. */
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> },
