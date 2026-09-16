@@ -43,3 +43,10 @@ export function getPublicDomainLabel(url: string = getSiteUrl()): string {
     return PROD_SITE_HOST;
   }
 }
+
+/** Kanonische Produktions-URL ohne Query/Hash, ohne trailing Slash (außer Startseite). */
+export function getCanonicalUrl(pathname: string): string {
+  const raw = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  const path = raw === "/" ? "/" : raw.replace(/\/+$/, "") || "/";
+  return `${PROD_SITE_URL}${path}`;
+}
