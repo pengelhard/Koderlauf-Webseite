@@ -53,6 +53,15 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: "de_DE",
       siteName: "Koderlauf",
       url: isTest ? siteUrl : canonical,
+      images: [
+        {
+          url: `${siteUrl}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: `Koderlauf ${EVENT.jahr} – ${EVENT.claim}`,
+          type: "image/png",
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",

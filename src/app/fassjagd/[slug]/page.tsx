@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     width: 1200,
     height: 630,
     alt: `${club.name} · Fassjagd`,
-    type: "image/png" as const,
+    type: "image/jpeg" as const,
   };
   return {
     title,

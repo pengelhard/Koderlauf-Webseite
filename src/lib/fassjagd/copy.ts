@@ -51,7 +51,7 @@ function shareDiff(club: FassjagdClub): string {
 }
 
 /** Cache-Bust für WhatsApp-Linkvorschau (Crawler cached aggressiv). */
-export const WHATSAPP_PREVIEW_VERSION = "3";
+export const WHATSAPP_PREVIEW_VERSION = "4";
 
 export function teamShareUrl(origin: string, slug: string): string {
   const base = `${origin.replace(/\/$/, "")}/fassjagd/${slug}`;
@@ -59,8 +59,8 @@ export function teamShareUrl(origin: string, slug: string): string {
 }
 
 export function teamOgImageUrl(origin: string, slug: string): string {
-  const base = `${origin.replace(/\/$/, "")}/fassjagd/${slug}/opengraph-image`;
-  return `${base}?v=${WHATSAPP_PREVIEW_VERSION}`;
+  // Dateiendung .jpg: WhatsApp ignoriert Routen ohne Bild-Suffix oft komplett.
+  return `${origin.replace(/\/$/, "")}/fassjagd/${slug}/og.jpg`;
 }
 
 export function whatsappText(club: FassjagdClub, url: string): string {
