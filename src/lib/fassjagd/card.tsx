@@ -3,7 +3,10 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import type { CSSProperties, ReactElement } from "react";
 import type { FassjagdClub } from "@/lib/fassjagd/types";
-import { cardVariant, gapHeadline, gapLine, weekLine } from "@/lib/fassjagd/copy";
+import { cardVariant, gapHeadline, weekLine } from "@/lib/fassjagd/copy";
+
+/* Satori/ImageResponse braucht <img>, nicht next/image. */
+/* eslint-disable @next/next/no-img-element */
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const STORY_SIZE = { width: 1080, height: 1920 };
@@ -136,7 +139,6 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
   const variant = cardVariant(club);
   const place = club.place ?? "–";
   const headline = gapHeadline(club);
-  const sub = gapLine(club);
   const week = weekLine(club);
   const pad = story ? 72 : 52;
   const longName = club.name.length > 22;
@@ -292,19 +294,6 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
                 }}
               >
                 {week}
-              </div>
-            )}
-            {club.hausherr && (
-              <div
-                style={{
-                  ...flex,
-                  fontSize: story ? 26 : 20,
-                  color: "rgba(255,255,255,0.72)",
-                  fontWeight: 600,
-                  marginTop: 12,
-                }}
-              >
-                {sub}
               </div>
             )}
             <div
