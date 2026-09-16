@@ -182,8 +182,24 @@ const FAQS: FaqItem[] = [
     antwort: (
       <>
         Ja: Parkplätze am Sportheim, Duschen im Sportheim, Verpflegung während der Läufe und im Ziel
-        sowie Essen und Trinken den ganzen Tag vor Ort. Mehr zum Ablauf auf der{" "}
-        <FaqLink href="/">Startseite</FaqLink>.
+        sowie Essen und Trinken den ganzen Tag vor Ort. {EVENT.anreise.wohnmobil} Mehr zum Ablauf auf
+        der <FaqLink href="/">Startseite</FaqLink>.
+      </>
+    ),
+  },
+  {
+    frage: "Wo finde ich eine Unterkunft, wenn ich von weiter her anreise?",
+    antwort: (
+      <>
+        {EVENT.anreise.touristinfo.hinweis} Der{" "}
+        <FaqLink href={EVENT.anreise.touristinfo.website} external>
+          {EVENT.anreise.touristinfo.name}
+        </FaqLink>{" "}
+        berät zu Hotels, Pensionen und Ferienwohnungen: {EVENT.anreise.touristinfo.adresse}, Tel.{" "}
+        <FaqLink href={EVENT.anreise.touristinfo.telefonHref} external>
+          {EVENT.anreise.touristinfo.telefon}
+        </FaqLink>
+        . Mit dem Wohnmobil geht’s auch ohne Hotel: {EVENT.anreise.wohnmobil}
       </>
     ),
   },
