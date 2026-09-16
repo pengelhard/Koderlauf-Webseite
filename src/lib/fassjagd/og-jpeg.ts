@@ -13,7 +13,7 @@ export async function fassjagdOgJpegResponse(club: FassjagdClub): Promise<Respon
     quality -= 8;
     jpg = await sharp(png).jpeg({ quality, mozjpeg: true }).toBuffer();
   }
-  return new Response(jpg, {
+  return new Response(new Uint8Array(jpg), {
     headers: {
       "Content-Type": "image/jpeg",
       "Cache-Control": "public, max-age=600, s-maxage=600",
