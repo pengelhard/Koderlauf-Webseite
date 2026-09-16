@@ -1,18 +1,21 @@
 /**
- * Vereinsnamen normalisieren + Vereinswertung (Fass Bier).
+ * Teamnamen normalisieren + Wertung (Fass Bier).
  * SV Obermögersheim ist Ausrichter und nicht in der Wertung.
  */
 
 export const VEREINS_WERTUNG = {
   /** Kurztitel für Überschriften */
-  titel: "Vereinswertung",
+  titel: "Teamwertung",
   preis: "ein Fass Bier",
   /** Klarer Einzeiler */
   kurz:
-    "Der Verein mit den meisten Teilnehmern gewinnt ein Fass Bier.",
+    "Das Team mit den meisten Teilnehmern gewinnt ein Fass Bier – Verein, Gruppe oder Firma.",
   ausrichterCanonical: "SV Obermögersheim",
+  /** Wie der Name bei der Anmeldung eingetragen werden soll */
+  angabe:
+    "Bei der Anmeldung denselben Namen für Verein, Gruppe oder Firma eintragen, damit alle zusammengezählt werden.",
   hinweis:
-    "Bitte bei der Anmeldung den offiziellen Vereinsnamen angeben, damit die Zuordnung stimmt. Der Verein mit den meisten Teilnehmern gewinnt ein Fass Bier. SV Obermögersheim ist als Ausrichter nicht in der Wertung.",
+    "Bei der Anmeldung denselben Namen für Verein, Gruppe oder Firma eintragen, damit alle zusammengezählt werden. Das Team mit den meisten Teilnehmern gewinnt ein Fass Bier. SV Obermögersheim ist als Ausrichter nicht in der Wertung.",
 } as const;
 
 /** Kanonische Vereinsnamen → bekannte Schreibweisen (kleingeschrieben, normalisiert). */

@@ -58,9 +58,8 @@ export default function AnmeldungPage() {
                 <div>
                   <p className="font-semibold text-foreground">{VEREINS_WERTUNG.titel}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong> Bitte den{" "}
-                    <strong className="text-foreground">offiziellen Vereinsnamen</strong> angeben,
-                    damit die Zuordnung stimmt. {VEREINS_WERTUNG.ausrichterCanonical} ist als
+                    <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong>{" "}
+                    {VEREINS_WERTUNG.angabe} {VEREINS_WERTUNG.ausrichterCanonical} ist als
                     Ausrichter nicht in der Wertung.
                   </p>
                   <Link
