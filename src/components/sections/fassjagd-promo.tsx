@@ -45,7 +45,7 @@ export function FassjagdPromo() {
                   href="/fassjagd"
                   className="inline-flex w-fit items-center gap-2 text-sm font-semibold uppercase tracking-widest text-koder-orange hover:text-koder-orange-bright"
                 >
-                  Zur Live-Tafel <ArrowRight size={16} />
+                  Zur Fassjagd <ArrowRight size={16} />
                 </Link>
                 <FassjagdAnmeldeButtons className="max-w-xl" />
               </div>

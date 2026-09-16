@@ -15,7 +15,6 @@ import {
   peekStoryPng,
   prefetchStoryPng,
   runShareChain,
-  textShareData,
   type ShareChainResult,
 } from "@/lib/fassjagd/web-share";
 
@@ -94,7 +93,6 @@ export function FassjagdShareButtons({
   const pngName = `fassjagd-${club.slug}-story.png`;
   const jpgName = `fassjagd-${club.slug}-story.jpg`;
   const [igHint, setIgHint] = useState<string | null>(null);
-  const [igBusy, setIgBusy] = useState(false);
   const [pendingShare, setPendingShare] = useState<{ caption: string } | null>(null);
   const [waHref, setWaHref] = useState<string>();
 
@@ -126,6 +124,14 @@ export function FassjagdShareButtons({
     return `Fassjagd: ${club.name}`;
   }
 
+  function storyFile() {
+    return peekStoryJpeg(storyPath) ?? peekStoryPng(storyPath);
+  }
+
+  function linkShareData(caption: string): ShareData {
+    return { title: shareTitle(), text: caption, url: liveTeamUrl(club.slug) };
+  }
+
   function downloadCached(filename = pngName) {
     const blob = peekStoryBlob(storyPath);
     if (!blob) return false;
@@ -136,17 +142,13 @@ export function FassjagdShareButtons({
 
   function shareChain(caption: string, allowDownload: boolean) {
     const title = shareTitle();
-    const png = peekStoryPng(storyPath);
-    const jpeg = peekStoryJpeg(storyPath);
+    const file = storyFile();
     const steps: Array<() => Promise<ShareChainResult>> = [];
-    if (png) {
-      steps.push(() => tryShare(filesShareData(png, title, caption)));
-    }
-    if (jpeg) {
-      steps.push(() => tryShare(filesShareData(jpeg, title, caption)));
+    if (file) {
+      steps.push(() => tryShare(filesShareData(file, title, caption)));
     }
     if (hasNavigatorShare()) {
-      steps.push(() => tryShare(textShareData(title, caption)));
+      steps.push(() => tryShare(linkShareData(caption)));
     }
     if (allowDownload) {
       steps.push(async () => (downloadCached() ? "downloaded" : "fail"));
@@ -187,58 +189,40 @@ export function FassjagdShareButtons({
   }
 
   /**
-   * Instagram aus dem Browser: nur System-Teilen mit File.
-   * Deep-Links in die Story-Kamera öffnen leer. Ein Android-SHARE-Intent
-   * direkt an die Instagram-App braucht eine content://-URI (Content-Provider) –
-   * Blob-URLs gehen nicht, Chrome-Intent-URLs können kein File anhängen.
-   * Web Share mit `files` ist der dokumentierte Weg (Android: ACTION_SEND).
-   * iOS: Share-Sheet, kein Deep-Link-Fallback.
+   * Instagram = System-Teilen wie „Teilen“, mit Story-Bild wenn schon geladen.
+   * Kein Warten auf den Bild-Download – sonst verliert iOS die User-Geste.
    */
   function onInstagramClick() {
     setIgHint(null);
     const caption = instagramCaption(club, liveTeamUrl(club.slug));
-    const png = peekStoryPng(storyPath);
+    const file = storyFile();
+    copyCaption(caption);
+    prefetchNow();
 
-    if (png && hasNavigatorShare()) {
-      // Gleiche User-Geste: share() ohne vorheriges await.
-      const sharePromise = shareChain(caption, false);
-      copyCaption(caption);
-      void sharePromise.then((result) => onShareSettled(result, caption));
+    if (file && hasNavigatorShare()) {
+      void tryShare(filesShareData(file, shareTitle(), caption)).then((result) =>
+        onShareSettled(result, caption),
+      );
       return;
     }
 
-    if (png && !hasNavigatorShare()) {
-      copyCaption(caption);
+    if (hasNavigatorShare()) {
+      void tryShare(linkShareData(caption)).then((result) => {
+        if (result === "ok" || result === "abort") {
+          onShareSettled(result, caption);
+          return;
+        }
+        setPendingShare({ caption });
+        setIgHint("Story-Karte lädt noch – gleich nochmal Instagram für das Bild.");
+      });
+      return;
+    }
+
+    if (file) {
       downloadCached();
       return;
     }
-
-    setIgBusy(true);
-    void prefetchStoryPng(storyPath, pngName)
-      .then((file) => {
-        setIgBusy(false);
-        void warmJpeg(storyPath);
-        copyCaption(caption);
-        if (!hasNavigatorShare()) {
-          downloadCached();
-          return;
-        }
-        // Nach await ist die Geste auf iOS oft weg – zweiten Button zeigen
-        // und Share trotzdem versuchen (Android erlaubt das manchmal noch).
-        setPendingShare({ caption });
-        setIgHint("Tippe Jetzt teilen – dann im Menü Instagram wählen (Bild ist dabei).");
-        void tryShare(filesShareData(file, shareTitle(), caption)).then((result) => {
-          if (result === "ok" || result === "abort") {
-            setPendingShare(null);
-            if (result === "ok") setIgHint(null);
-          }
-        });
-      })
-      .catch(() => {
-        setIgBusy(false);
-        setPendingShare(null);
-        setIgHint("Bild konnte nicht geladen werden. Nochmal tippen.");
-      });
+    setIgHint("Story-Karte lädt – gleich nochmal tippen oder „Story-Karte“ laden.");
   }
 
   function openWhatsApp() {
@@ -289,12 +273,11 @@ export function FassjagdShareButtons({
           onPointerDown={prefetchNow}
           onTouchStart={prefetchNow}
           onClick={onInstagramClick}
-          disabled={igBusy}
-          className="inline-flex items-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/instagram.png" alt="" width={20} height={20} className="h-5 w-5 rounded-[5px]" />
-          {igBusy ? "Bild…" : "Instagram"}
+          Instagram
         </button>
         {pendingShare && (
           <button
@@ -324,7 +307,8 @@ export function FassjagdShareButtons({
         </button>
       </div>
       <p className="text-xs text-muted-foreground">
-        Teilen → Instagram (Bild ist dabei). Falls nichts passiert: „Jetzt teilen“.
+        Instagram und Teilen öffnen das Handy-Menü. Ist die Story-Karte geladen, hängt Instagram
+        das Bild dabei – sonst erst Link und Text.
       </p>
       {igHint && <p className="text-sm font-medium text-foreground">{igHint}</p>}
     </div>

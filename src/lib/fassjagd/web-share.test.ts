@@ -167,10 +167,11 @@ test("Share-Buttons bleiben ohne instagram:// und ohne canShare-Frühreturn", ()
 });
 
 test("Instagram-Button verspricht kein direktes Öffnen der App", () => {
-  assert.match(shareButtonsSrc, /\{igBusy \? "Bild…" : "Instagram"\}/);
-  assert.match(shareButtonsSrc, /Teilen → Instagram \(Bild ist dabei\)/);
+  assert.match(shareButtonsSrc, />[\s\n]*Instagram/);
+  assert.match(shareButtonsSrc, /Story-Karte geladen/);
   assert.equal(shareButtonsSrc.includes("Instagram-Story"), false);
   assert.equal(shareButtonsSrc.includes("com.instagram.android"), false);
+  assert.equal(shareButtonsSrc.includes("igBusy"), false);
 });
 
 test("WhatsApp-href kommt erst nach Mount von window.location.origin", () => {
