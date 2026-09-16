@@ -19,7 +19,8 @@ Write-Host "  npx vercel domains add $TestDomain"
 Write-Host ""
 Write-Host "Schritt 3 – In Vercel Dashboard (Project > Settings > Domains):" -ForegroundColor Yellow
 Write-Host "  - $TestDomain  -> Git Branch: main (Entwicklung / Tester)"
-Write-Host "  - $ProdDomain  -> Production Branch: production (offizielle Seite)"
+Write-Host "  - $ProdDomain  -> Production Branch: production (Primary Domain)"
+Write-Host "  - www.$ProdDomain -> Redirect Domain, 301 auf https://$ProdDomain/:path*"
 Write-Host ""
 Write-Host "Schritt 4 – Production Branch in Vercel (Settings > Git):" -ForegroundColor Yellow
 Write-Host "  Production Branch auf 'production' setzen (nicht 'main')"

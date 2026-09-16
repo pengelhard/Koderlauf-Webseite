@@ -6,5 +6,19 @@
       "staging": true,
       "production": true
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.koderlauf.de" }],
+      "destination": "https://koderlauf.de/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.koderlauf.de" }],
+      "destination": "https://koderlauf.de/:path*",
+      "permanent": true
+    }
+  ]
 }

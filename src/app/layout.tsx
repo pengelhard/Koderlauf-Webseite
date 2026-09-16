@@ -8,7 +8,7 @@ import { StickyCta } from "@/components/layout/sticky-cta";
 import { TestBanner } from "@/components/layout/test-banner";
 import { MobileMotionConfig } from "@/components/mobile-motion-config";
 import { EVENT } from "@/lib/event-config";
-import { getSiteUrlFromHost, isTestHost } from "@/lib/site-url";
+import { getCanonicalUrl, getSiteUrlFromHost, isTestHost, PROD_SITE_URL } from "@/lib/site-url";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,6 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = headersList.get("host");
   const siteUrl = getSiteUrlFromHost(host);
   const isTest = isTestHost(host);
+  const pathname = headersList.get("x-pathname") || "/";
+  const canonical = getCanonicalUrl(pathname);
 
   return {
     title: {
@@ -32,14 +34,21 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s | Koderlauf",
     },
     description: `Der jährliche Koderlauf in Obermögersheim. Strecken, Galerie und Anmeldung für den Koderlauf ${EVENT.jahr} am ${EVENT.datumFormatiert}.`,
-    metadataBase: new URL(siteUrl),
-    ...(isTest ? { robots: { index: false, follow: false } } : {}),
+    metadataBase: new URL(isTest ? siteUrl : PROD_SITE_URL),
+    ...(isTest
+      ? { robots: { index: false, follow: false } }
+      : {
+          alternates: {
+            canonical,
+          },
+        }),
     openGraph: {
       title: `Koderlauf ${EVENT.jahr} – ${EVENT.claim}`,
       description: `Koderlauf in ${EVENT.ort} am ${EVENT.datumFormatiert}. ${streckenListe}.`,
       type: "website",
       locale: "de_DE",
       siteName: "Koderlauf",
+      url: isTest ? siteUrl : canonical,
     },
     twitter: {
       card: "summary_large_image",
