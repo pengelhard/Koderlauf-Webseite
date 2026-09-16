@@ -77,7 +77,7 @@ export function FassjagdTafel({ initial }: { initial: FassjagdBoard }) {
         extra={
           leader ? (
             <p className="mt-4 text-sm font-semibold text-foreground">
-              Auf dem Fass: {leader.name} · {leader.total} Starter
+              Platz 1: {leader.name} · {leader.total} Starter
               {leader.leadBy ? ` · führt mit +${leader.leadBy}` : ""}
             </p>
           ) : null

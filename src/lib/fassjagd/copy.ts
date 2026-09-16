@@ -18,7 +18,10 @@ export function huntGapText(n: number, capitalize = false): string {
 
 export function gapHeadline(club: FassjagdClub): string {
   if (club.hausherr) return "Hausherr · außer Wertung";
-  if (club.place === 1) return "sitzen auf dem Fass";
+  if (club.place === 1) {
+    const lead = club.leadBy ?? 0;
+    return lead > 0 ? `führt mit +${lead}` : "Erster Platz";
+  }
   return huntGapText(club.gapToLeader);
 }
 
@@ -42,7 +45,7 @@ function shareDiff(club: FassjagdClub): string {
   if (club.place === 1) {
     return club.leadBy && club.leadBy > 0
       ? `führt mit +${club.leadBy}`
-      : "sitzen auf dem Fass";
+      : "Erster Platz";
   }
   return huntGapText(club.gapToLeader, true);
 }

@@ -441,7 +441,7 @@ export async function fassjagdWeekResponse(top: FassjagdClub[]) {
               Fassjagd 2027 · Wochenstand
             </div>
             <div style={{ ...flex, fontSize: 48, fontWeight: 900, marginTop: 8 }}>
-              Top 3 auf dem Fass
+              Die ersten drei
             </div>
           </div>
           <div style={{ ...flex, flexDirection: "column", maxWidth: 760, width: 760 }}>
