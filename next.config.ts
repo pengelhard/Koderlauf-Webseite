@@ -24,9 +24,6 @@ const nextConfig: NextConfig = {
     ];
     return [
       "/favicon.ico",
-      "/icon.png",
-      "/icon.svg",
-      "/apple-icon.png",
       "/koder-icon.png",
       "/koder-icon-192.png",
       "/koder-icon.svg",
