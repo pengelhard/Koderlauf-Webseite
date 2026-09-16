@@ -11,6 +11,17 @@ export function isTestHost(host: string | null | undefined): boolean {
   return host.split(":")[0].toLowerCase() === TEST_SITE_HOST;
 }
 
+/** Host aus Request-Headern. Öffentliche koderlauf.de-Domains gewinnen vor vercel.app. */
+export function hostFromHeaders(headersList: { get(name: string): string | null }): string | null {
+  const host = headersList.get("host");
+  const hostName = host?.split(":")[0]?.toLowerCase() ?? "";
+  if (hostName === TEST_SITE_HOST || hostName === PROD_SITE_HOST || hostName === `www.${PROD_SITE_HOST}`) {
+    return host;
+  }
+  const forwarded = headersList.get("x-forwarded-host")?.split(",")[0]?.trim() || null;
+  return forwarded || host;
+}
+
 /** Basis-URL anhand des Request-Hosts (SSR) oder Fallbacks (Build/Client). */
 export function getSiteUrlFromHost(host: string | null | undefined): string {
   if (isTestHost(host)) return TEST_SITE_URL;

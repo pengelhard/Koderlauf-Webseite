@@ -163,3 +163,12 @@ test("Share-Buttons bleiben ohne instagram:// und ohne canShare-Frühreturn", ()
   assert.match(shareButtonsSrc, /onTouchStart/);
   assert.match(shareButtonsSrc, /prefetchStoryPng/);
 });
+
+test("WhatsApp-href kommt erst nach Mount von window.location.origin", () => {
+  assert.equal(shareButtonsSrc.includes("canonicalTeamUrl"), false);
+  assert.equal(shareButtonsSrc.includes("getSiteUrl"), false);
+  assert.match(shareButtonsSrc, /window\.location\.origin/);
+  assert.match(shareButtonsSrc, /setWaHref/);
+  assert.match(shareButtonsSrc, /whatsappShareHref/);
+  assert.match(shareButtonsSrc, /prefetchStoryPng/);
+});

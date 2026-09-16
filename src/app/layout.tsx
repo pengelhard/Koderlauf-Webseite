@@ -8,7 +8,7 @@ import { StickyCta } from "@/components/layout/sticky-cta";
 import { TestBanner } from "@/components/layout/test-banner";
 import { MobileMotionConfig } from "@/components/mobile-motion-config";
 import { EVENT } from "@/lib/event-config";
-import { getCanonicalUrl, getSiteUrlFromHost, isTestHost, PROD_SITE_URL } from "@/lib/site-url";
+import { getCanonicalUrl, getSiteUrlFromHost, hostFromHeaders, isTestHost, PROD_SITE_URL } from "@/lib/site-url";
 import "./globals.css";
 
 const inter = Inter({
@@ -22,7 +22,7 @@ const streckenListe = EVENT.strecken.map((s) => s.name).join(", ");
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const host = headersList.get("host");
+  const host = hostFromHeaders(headersList);
   const siteUrl = getSiteUrlFromHost(host);
   const isTest = isTestHost(host);
   const pathname = headersList.get("x-pathname") || "/";
