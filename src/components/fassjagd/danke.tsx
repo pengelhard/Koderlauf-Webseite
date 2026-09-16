@@ -58,7 +58,7 @@ export function FassjagdDanke({ justRegistered }: { justRegistered: boolean }) {
       )}
       {club?.hausherr && (
         <p className="text-sm text-muted-foreground">
-          {club.name} ist Hausherr und steht außer Wertung – sichtbar auf der Fassjagd-Tafel.
+          {club.name} ist Hausherr und steht außer Wertung – sichtbar in der Fassjagd.
         </p>
       )}
     </div>
