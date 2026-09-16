@@ -130,7 +130,7 @@ export const EVENT = {
     tshirt: {
       name: "Koderlauf-T-Shirt",
       preis: 25,
-      bild: "/tshirt-koderlauf.webp",
+      bild: "/tshirt-2027.webp",
       hinweis:
         "Motiv 2027. Größen: 116, 128, 140, 152, 164, S–XXL, 3XL, 4XL.",
     },

@@ -161,9 +161,9 @@ export default function AnmeldungPage() {
               <div className="relative aspect-[4/3] bg-muted">
                 <Image
                   src={EVENT.extras.tshirt.bild}
-                  alt="Koderlauf-T-Shirt 2027 – Motiv auf der Rückseite"
+                  alt="Zwei Kinder von hinten mit hellblauem Koderlauf-Shirt 2027, Rückenmotiv 2. Obermögersheimer Koderlauf 29. Mai 2027"
                   fill
-                  className="object-cover"
+                  className="object-cover object-top"
                   sizes="(min-width: 640px) 50vw, 100vw"
                 />
               </div>
