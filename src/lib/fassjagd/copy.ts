@@ -3,12 +3,14 @@ import type { FassjagdClub } from "@/lib/fassjagd/types";
 export type CardVariant = "lead" | "hunt" | "chase";
 
 export function cardVariant(club: FassjagdClub): CardVariant {
+  if (club.hausherr) return "hunt";
   if (club.place === 1) return "lead";
   if (club.flaming && club.weekDelta > 0) return "chase";
   return "hunt";
 }
 
 export function gapHeadline(club: FassjagdClub): string {
+  if (club.hausherr) return "Hausherr · außer Wertung";
   const variant = cardVariant(club);
   if (variant === "lead") return "sitzen auf dem Fass";
   if (variant === "chase") return `+${club.weekDelta} diese Woche`;
@@ -16,6 +18,7 @@ export function gapHeadline(club: FassjagdClub): string {
 }
 
 export function gapLine(club: FassjagdClub): string {
+  if (club.hausherr) return `${club.total} Starter, nicht in der Wertung`;
   if (club.place === 1) {
     const lead = club.leadBy ?? 0;
     return lead > 0 ? `führt mit +${lead}` : "führt die Fassjagd an";
