@@ -28,10 +28,21 @@ async function publicDataUri(filename: string, mime: string): Promise<string> {
 async function cardAssets() {
   const [forest, fass] = await Promise.all([
     publicDataUri("fassjagd-wald.jpg", "image/jpeg"),
-    publicDataUri("fassjagd-fass-card.png", "image/png"),
+    publicDataUri("fassjagd-fass-blend.png", "image/png"),
   ]);
   return { forest, fass };
 }
+
+type FassLayout = "og" | "story" | "week";
+
+const FASS_LAYOUT: Record<
+  FassLayout,
+  { box: number; right: number; bottom: number; glow: number }
+> = {
+  og: { box: 430, right: -64, bottom: -96, glow: 300 },
+  story: { box: 680, right: -80, bottom: -40, glow: 480 },
+  week: { box: 400, right: -56, bottom: -80, glow: 280 },
+};
 
 export const EMPTY_FASSJAGD_CLUB: FassjagdClub = {
   name: "Fassjagd",
@@ -54,14 +65,59 @@ export const EMPTY_FASSJAGD_CLUB: FassjagdClub = {
 
 const flex: CSSProperties = { display: "flex" };
 
+function FassPrize({ src, layout }: { src: string; layout: FassLayout }) {
+  const { box, right, bottom, glow } = FASS_LAYOUT[layout];
+  return (
+    <div
+      style={{
+        ...flex,
+        position: "absolute",
+        right,
+        bottom,
+        width: box,
+        height: box,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          ...flex,
+          position: "absolute",
+          width: glow,
+          height: glow,
+          borderRadius: 9999,
+          background:
+            "radial-gradient(circle, rgba(255,107,0,0.42) 0%, rgba(255,107,0,0.16) 38%, rgba(255,107,0,0) 72%)",
+        }}
+      />
+      <img
+        src={src}
+        alt=""
+        width={box}
+        height={box}
+        style={{
+          width: box,
+          height: box,
+          objectFit: "contain",
+        }}
+      />
+    </div>
+  );
+}
+
 function ForestStage({
   size,
   forestSrc,
+  fassSrc,
+  fassLayout,
   objectPosition,
   children,
 }: {
   size: { width: number; height: number };
   forestSrc: string;
+  fassSrc: string;
+  fassLayout: FassLayout;
   objectPosition: string;
   children: ReactElement;
 }) {
@@ -116,6 +172,7 @@ function ForestStage({
             "linear-gradient(0deg, rgba(5,8,6,0.96) 0%, rgba(8,10,8,0.78) 38%, rgba(8,10,8,0.22) 72%, transparent 100%)",
         }}
       />
+      <FassPrize src={fassSrc} layout={fassLayout} />
       <div
         style={{
           ...flex,
@@ -144,14 +201,16 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
   const longName = club.name.length > 22;
   const nameSize = story ? (longName ? 58 : 74) : longName ? 42 : 54;
   const kickerSize = story ? 26 : 20;
-  const fassSize = story ? 168 : 118;
   const roleLabel = club.hausherr ? "HAUSHERR" : "TEAM";
+  const textMax = story ? 720 : 700;
 
   return new ImageResponse(
     (
       <ForestStage
         size={size}
         forestSrc={forest}
+        fassSrc={fass}
+        fassLayout={story ? "story" : "og"}
         objectPosition={story ? "50% 42%" : "50% 20%"}
       >
         <div
@@ -165,52 +224,33 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
             padding: pad,
           }}
         >
-          <div
-            style={{
-              ...flex,
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
-          >
-            <div style={{ ...flex, flexDirection: "column" }}>
-              <div
-                style={{
-                  ...flex,
-                  fontSize: kickerSize,
-                  fontWeight: 800,
-                  letterSpacing: story ? 8 : 6,
-                  textTransform: "uppercase",
-                  color: ORANGE,
-                }}
-              >
-                Fassjagd 2027
-              </div>
-              <div
-                style={{
-                  ...flex,
-                  fontSize: story ? 30 : 20,
-                  color: "rgba(255,255,255,0.72)",
-                  fontWeight: 600,
-                  marginTop: 8,
-                }}
-              >
-                Koderlauf · ein Fass Bier
-              </div>
-            </div>
-            <img
-              src={fass}
-              alt=""
-              width={fassSize}
-              height={fassSize}
+          <div style={{ ...flex, flexDirection: "column" }}>
+            <div
               style={{
-                width: fassSize,
-                height: fassSize,
-                objectFit: "contain",
+                ...flex,
+                fontSize: kickerSize,
+                fontWeight: 800,
+                letterSpacing: story ? 8 : 6,
+                textTransform: "uppercase",
+                color: ORANGE,
               }}
-            />
+            >
+              Fassjagd 2027
+            </div>
+            <div
+              style={{
+                ...flex,
+                fontSize: story ? 30 : 20,
+                color: "rgba(255,255,255,0.72)",
+                fontWeight: 600,
+                marginTop: 8,
+              }}
+            >
+              Koderlauf · ein Fass Bier
+            </div>
           </div>
 
-          <div style={{ ...flex, flexDirection: "column" }}>
+          <div style={{ ...flex, flexDirection: "column", maxWidth: textMax, width: textMax }}>
             <div
               style={{
                 ...flex,
@@ -234,7 +274,7 @@ export async function fassjagdCardResponse(club: FassjagdClub, format: "og" | "s
                 fontWeight: 900,
                 lineHeight: 1.05,
                 letterSpacing: -1.4,
-                maxWidth: "96%",
+                maxWidth: textMax,
                 marginTop: story ? 16 : 10,
                 textShadow: "0 3px 22px rgba(0,0,0,0.55)",
               }}
@@ -325,7 +365,13 @@ export async function fassjagdWeekResponse(top: FassjagdClub[]) {
 
   return new ImageResponse(
     (
-      <ForestStage size={size} forestSrc={forest} objectPosition="50% 18%">
+      <ForestStage
+        size={size}
+        forestSrc={forest}
+        fassSrc={fass}
+        fassLayout="week"
+        objectPosition="50% 18%"
+      >
         <div
           style={{
             ...flex,
@@ -337,33 +383,24 @@ export async function fassjagdWeekResponse(top: FassjagdClub[]) {
             padding: 52,
           }}
         >
-          <div style={{ ...flex, justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div style={{ ...flex, flexDirection: "column" }}>
-              <div
-                style={{
-                  ...flex,
-                  fontSize: 20,
-                  fontWeight: 800,
-                  letterSpacing: 6,
-                  textTransform: "uppercase",
-                  color: ORANGE,
-                }}
-              >
-                Fassjagd 2027 · Wochenstand
-              </div>
-              <div style={{ ...flex, fontSize: 42, fontWeight: 900, marginTop: 8 }}>
-                Top 3 auf dem Fass
-              </div>
+          <div style={{ ...flex, flexDirection: "column", maxWidth: 760 }}>
+            <div
+              style={{
+                ...flex,
+                fontSize: 20,
+                fontWeight: 800,
+                letterSpacing: 6,
+                textTransform: "uppercase",
+                color: ORANGE,
+              }}
+            >
+              Fassjagd 2027 · Wochenstand
             </div>
-            <img
-              src={fass}
-              alt=""
-              width={110}
-              height={110}
-              style={{ width: 110, height: 110, objectFit: "contain" }}
-            />
+            <div style={{ ...flex, fontSize: 42, fontWeight: 900, marginTop: 8 }}>
+              Top 3 auf dem Fass
+            </div>
           </div>
-          <div style={{ ...flex, flexDirection: "column" }}>
+          <div style={{ ...flex, flexDirection: "column", maxWidth: 760, width: 760 }}>
             {rows.map((club, i) => (
               <div
                 key={club.slug}
