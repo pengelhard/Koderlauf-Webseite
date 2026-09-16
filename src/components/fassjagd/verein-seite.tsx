@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { STRECKEN_ORDER_2027 } from "@/lib/anmeldungen/aggregate";
-import { FassjagdAnmeldeButtons } from "@/components/fassjagd/anmelde-buttons";
 import { FassjagdFassBild } from "@/components/fassjagd/fass-bild";
-import { FassjagdFlame, FassjagdLiveBadge, useFassjagdBoard } from "@/components/fassjagd/live";
+import { FassjagdFlame, useFassjagdBoard } from "@/components/fassjagd/live";
 import { FassjagdShareButtons } from "@/components/fassjagd/share-buttons";
+import { FASSJAGD_KASTEN_CLASS } from "@/components/fassjagd/hinweis-kasten";
 import { gapLine } from "@/lib/fassjagd/copy";
 import type { FassjagdBoard, FassjagdClub } from "@/lib/fassjagd/types";
+import { cn } from "@/lib/utils";
 
 export function FassjagdVerein({
   initial,
@@ -35,18 +36,15 @@ export function FassjagdVerein({
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Link
-          href="/fassjagd"
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-koder-orange bg-koder-orange/10 px-4 py-2.5 text-sm font-semibold uppercase tracking-widest text-koder-orange hover:bg-koder-orange hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden />
-          Zurück zur Übersicht
-        </Link>
-        <FassjagdLiveBadge status={board.status} />
-      </div>
+      <Link
+        href="/fassjagd"
+        className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-koder-orange bg-koder-orange/10 px-4 py-2.5 text-sm font-semibold uppercase tracking-widest text-koder-orange hover:bg-koder-orange hover:text-white"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden />
+        Zurück zur Übersicht
+      </Link>
 
-      <header className="rounded-3xl border border-koder-orange/35 bg-gradient-to-br from-koder-orange/15 to-forest-deep/10 p-6 sm:p-8">
+      <header className={cn(FASSJAGD_KASTEN_CLASS, "p-6 sm:p-8")}>
         <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
           <FassjagdFassBild size={112} className="h-28 w-28 shrink-0 object-contain" />
           <div className="min-w-0">
@@ -59,99 +57,96 @@ export function FassjagdVerein({
             </h1>
             <p className="mt-3 text-lg text-muted-foreground">
               {club.hausherr ? (
-                <>Hausherr · {club.total} Starter · außer Wertung</>
+                <>Hausherr · außer Wertung · {club.total} Starter</>
               ) : (
                 <>
                   Platz {club.place} · {club.total} Starter · {gapLine(club)}
                 </>
               )}
             </p>
-            {!club.hausherr && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                {club.gapToAbove != null && club.gapToAbove > 0
-                  ? `${club.gapToAbove} fehlen noch auf den Platz davor. `
-                  : "Kein Team davor. "}
-                {club.gapToBelow != null
-                  ? `Vorsprung nach hinten: ${club.gapToBelow}.`
-                  : "Letzter Platz in der Tafel."}
-              </p>
-            )}
           </div>
         </div>
       </header>
 
-      <FassjagdShareButtons club={club} />
-
-      <StreckenSplit club={club} />
-      <StarterListe club={club} />
-
-      <div className="space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
-          Mit-Starter anmelden
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-sm font-semibold">Karte für Instagram oder WhatsApp teilen</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Story-Bild herunterladen und in der App posten.
         </p>
-        <FassjagdAnmeldeButtons />
-        <Link
-          href="/fassjagd"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-koder-orange hover:underline"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          Zurück zur Übersicht
-        </Link>
+        <div className="mt-3">
+          <FassjagdShareButtons club={club} />
+        </div>
       </div>
+
+      <TeamStarterTabelle club={club} />
+
+      <Link
+        href="/fassjagd"
+        className="inline-flex items-center gap-1 text-sm font-semibold text-koder-orange hover:underline"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+        Zurück zur Übersicht
+      </Link>
     </div>
   );
 }
 
-function StreckenSplit({ club }: { club: FassjagdClub }) {
-  const keys = [
+function streckenKeys(club: FassjagdClub) {
+  return [
     ...STRECKEN_ORDER_2027.filter((s) => club.strecken[s]),
     ...Object.keys(club.strecken).filter(
       (s) => !(STRECKEN_ORDER_2027 as readonly string[]).includes(s),
     ),
   ];
-  if (keys.length === 0) return null;
-  return (
-    <section>
-      <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
-        Strecken-Split
-      </h2>
-      <ul className="mt-3 space-y-2">
-        {keys.map((name) => (
-          <li
-            key={name}
-            className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-2 text-sm"
-          >
-            <span>{name}</span>
-            <span className="font-black tabular-nums text-koder-orange">{club.strecken[name]}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
 }
 
-function StarterListe({ club }: { club: FassjagdClub }) {
+function TeamStarterTabelle({ club }: { club: FassjagdClub }) {
+  const keys = streckenKeys(club);
+
   return (
-    <section>
-      <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
-        Wer schon da ist
-      </h2>
-      {club.starters.length === 0 ? (
-        <p className="mt-3 text-sm text-muted-foreground">Noch keine Starter.</p>
-      ) : (
-        <ul className="mt-3 divide-y divide-border overflow-hidden rounded-2xl border border-border">
-          {club.starters.map((s, i) => (
-            <li key={`${s.nachname}-${s.vorname}-${s.strecke}-${i}`} className="flex justify-between gap-3 bg-card px-4 py-2 text-sm">
-              <span className="font-medium">
-                {s.nachname}
-                {s.nachname && s.vorname ? ", " : ""}
-                {s.vorname}
-              </span>
-              <span className="text-muted-foreground">{s.strecke || "–"}</span>
-            </li>
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      {keys.length > 0 && (
+        <div className="flex flex-wrap gap-2 border-b border-border px-4 py-3">
+          {keys.map((name) => (
+            <span
+              key={name}
+              className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold"
+            >
+              {name}
+              <span className="tabular-nums text-koder-orange">{club.strecken[name]}</span>
+            </span>
           ))}
-        </ul>
+        </div>
       )}
-    </section>
+      {club.starters.length === 0 ? (
+        <p className="px-4 py-6 text-sm text-muted-foreground">Noch keine Starter.</p>
+      ) : (
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border bg-muted/50 text-left">
+              <th className="px-4 py-2.5 font-semibold">Nachname</th>
+              <th className="px-4 py-2.5 font-semibold">Vorname</th>
+              <th className="px-4 py-2.5 font-semibold">Strecke</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {club.starters.map((s, i) => (
+              <tr key={`${s.nachname}-${s.vorname}-${s.strecke}-${i}`}>
+                <td className="px-4 py-2 font-medium">{s.nachname || "–"}</td>
+                <td className="px-4 py-2">{s.vorname || "–"}</td>
+                <td className="px-4 py-2 text-muted-foreground">{s.strecke || "–"}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-border bg-muted/30">
+              <td className="px-4 py-2.5 font-semibold" colSpan={3}>
+                {club.total} Starter
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      )}
+    </div>
   );
 }

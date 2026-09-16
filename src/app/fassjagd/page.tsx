@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Fassjagd",
-  description: VEREINS_WERTUNG.kurz,
+  description: VEREINS_WERTUNG.hinweis,
 };
 
 export default async function FassjagdPage() {

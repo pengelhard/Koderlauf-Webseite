@@ -33,13 +33,13 @@ export function FassjagdPromo() {
                 Wer holt das Fass?
               </h2>
               <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-                {VEREINS_WERTUNG.kurz} Meldet euch mit demselben Teamnamen an – dann zählt
-                jede Person für eure Tafel.
+                {VEREINS_WERTUNG.kurz}
               </p>
               <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
-                <li>1 Person = 1 Stimme, auch Kinderlauf und Walking</li>
-                <li>{VEREINS_WERTUNG.ausrichterCanonical} als Hausherr außer Wertung</li>
-                <li>Live-Tafel, bis die Online-Anmeldung schließt</li>
+                {VEREINS_WERTUNG.punkte.slice(1).map((punkt) => (
+                  <li key={punkt}>{punkt}</li>
+                ))}
+                <li>Tafel bis zum Online-Anmeldeschluss, danach Freeze</li>
               </ul>
               <div className="mt-6 flex flex-col gap-4">
                 <Link

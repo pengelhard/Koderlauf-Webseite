@@ -475,8 +475,8 @@ export default function ErgebnissePage() {
                       <div>
                         <p className="font-semibold">{VEREINS_WERTUNG.titel}</p>
                         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                          {VEREINS_WERTUNG.kurz} {VEREINS_WERTUNG.ausrichterCanonical} ist als
-                          Ausrichter nicht in der Wertung. Live-Tafel:{" "}
+                          {VEREINS_WERTUNG.kurz} {VEREINS_WERTUNG.stimme}{" "}
+                          {VEREINS_WERTUNG.ausrichterHinweis} Live-Tafel:{" "}
                           <Link href="/fassjagd" className="font-semibold text-koder-orange hover:underline">
                             Fassjagd
                           </Link>

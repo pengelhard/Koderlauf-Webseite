@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { VereinCombobox } from "@/components/fassjagd/verein-combobox";
+import { FassjagdLiveBadge } from "@/components/fassjagd/live";
 import type { FassjagdBoard } from "@/lib/fassjagd/types";
 import type { FassjagdOverrides } from "@/lib/fassjagd/store";
 
@@ -102,9 +103,12 @@ export default function FassjagdAdminPage() {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-3xl font-extrabold">Fassjagd Admin</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Status: {board?.status === "live" ? "LIVE" : "OFFIZIELL"}
-            {board?.frozen ? " (eingefroren)" : ""}
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            {board ? <FassjagdLiveBadge status={board.status} /> : null}
+            <span>
+              Status: {board?.status === "live" ? "LIVE" : "OFFIZIELL"}
+              {board?.frozen ? " (eingefroren)" : ""}
+            </span>
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">

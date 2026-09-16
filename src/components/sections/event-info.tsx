@@ -23,7 +23,7 @@ import { fadeReveal, useStaticReveal, variantsReveal } from "@/hooks/use-static-
 const INFOS = [
   { icon: MapPin, text: "Start/Ziel & Orga: Sportheim Obermögersheim" },
   { icon: Ticket, text: `Startnummern Do/Fr 17–20 Uhr empfohlen, am Eventtag ab ${EVENT.zeitplan.find((z) => z.titel.includes("Startnummern"))?.zeit ?? "13:00"} Uhr` },
-  { icon: Beer, text: `${VEREINS_WERTUNG.kurz} (Ausrichter außer Wertung)` },
+  { icon: Beer, text: `${VEREINS_WERTUNG.kurz} ${VEREINS_WERTUNG.ausrichterHinweis}` },
   { icon: Utensils, text: "Verpflegung während der Läufe und im Ziel; Essen & Trinken am Sportheim" },
   { icon: Car, text: `Parkplätze am Sportheim. ${EVENT.anreise.wohnmobil}` },
   { icon: ShowerHead, text: "Duschen im Sportheim möglich" },
@@ -117,7 +117,8 @@ export function EventInfo() {
               </strong>{" "}
               inklusive der neuen „Spielerei“ und der Koderrunde als Lauf und
               Walking (eigene Wertung). Neu:{" "}
-              <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong> Und:
+              <strong className="text-foreground">{VEREINS_WERTUNG.titel}:</strong>{" "}
+              {VEREINS_WERTUNG.kurz} Und:
               Der Koderlauf ist eingebettet in das Jubiläum{" "}
               <strong className="text-foreground">{EVENT.jubilaeum}</strong>.
             </p>

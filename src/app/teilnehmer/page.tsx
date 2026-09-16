@@ -318,7 +318,7 @@ export default function AnmeldungenPage() {
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong>{" "}
-              {VEREINS_WERTUNG.ausrichterCanonical} ist als Hausherr außer Wertung.
+              {VEREINS_WERTUNG.stimme} {VEREINS_WERTUNG.ausrichterHinweis}
             </p>
 
             <div className="mt-4 space-y-2">
@@ -328,7 +328,7 @@ export default function AnmeldungenPage() {
                     ? `${VEREINS_WERTUNG.titel} erscheint mit den Live-Daten.`
                     : liveEmpty
                       ? `${VEREINS_WERTUNG.titel} erscheint mit den ersten Anmeldungen.`
-                      : "Noch keine Angaben – bei der Anmeldung den Teamnamen wählen."}
+                      : `Noch keine Angaben – ${VEREINS_WERTUNG.angabe}`}
                 </div>
               ) : (
                 stats.vereine!.ranking.slice(0, 5).map((v, i) => {

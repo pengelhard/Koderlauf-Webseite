@@ -13,6 +13,48 @@ function pageUrl(slug: string) {
   return `https://koderlauf.de/fassjagd/${slug}`;
 }
 
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
+}
+
+function isIOS() {
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+/** Instagram hat keine offizielle Web-Story-API. Deep-Link in die App, sonst instagram.com. */
+function openInstagramApp() {
+  if (isAndroid()) {
+    window.location.href =
+      "intent://story-camera#Intent;scheme=instagram;package=com.instagram.android;S.browser_fallback_url=https%3A%2F%2Fwww.instagram.com%2F;end";
+    return;
+  }
+  if (isIOS()) {
+    window.location.href = "instagram://story-camera";
+    window.setTimeout(() => {
+      if (document.visibilityState !== "visible") return;
+      window.location.href = "instagram://app";
+      window.setTimeout(() => {
+        if (document.visibilityState === "visible") {
+          window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+        }
+      }, 700);
+    }, 900);
+    return;
+  }
+  window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+}
+
+async function downloadBlob(blob: Blob, filename: string) {
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+}
+
 export function FassjagdShareButtons({
   club,
   className,
@@ -46,40 +88,21 @@ export function FassjagdShareButtons({
       const res = await fetch(storyPath);
       if (!res.ok) throw new Error("card");
       const blob = await res.blob();
-      const file = new File([blob], `fassjagd-${club.slug}-story.png`, { type: "image/png" });
-      const nav = navigator as Navigator & {
-        canShare?: (data: ShareData) => boolean;
-      };
-      if (typeof nav.canShare === "function" && nav.canShare({ files: [file] })) {
+      await downloadBlob(blob, `fassjagd-${club.slug}-story.png`);
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
         try {
-          await navigator.share({
-            files: [file],
-            title: `Fassjagd: ${club.name}`,
-            text: caption,
-          });
-          setIgHint("Als Instagram-Story einfügen – Bild ist bereit.");
-          return;
+          await navigator.clipboard.writeText(caption);
         } catch {
-          /* cancelled or unsupported */
+          /* clipboard optional */
         }
       }
-      const objectUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = objectUrl;
-      a.download = file.name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
-      try {
-        await navigator.clipboard.writeText(caption);
-        setIgHint("Story gespeichert, Text kopiert. In Instagram als Story posten.");
-      } catch {
-        setIgHint("Story gespeichert. In Instagram als Story posten.");
-      }
+      setIgHint("Bild ist gespeichert – in Instagram als Story posten. Link ist kopiert.");
+      window.setTimeout(() => openInstagramApp(), 350);
     } catch {
       window.location.href = storyPath;
-      setIgHint("Story-Karte herunterladen und in Instagram als Story posten.");
+      setIgHint("Bild ist gespeichert – in Instagram als Story posten.");
     } finally {
       setIgBusy(false);
     }
@@ -124,7 +147,19 @@ export function FassjagdShareButtons({
           Teilen
         </button>
       </div>
-      {igHint && <p className="text-xs text-muted-foreground">{igHint}</p>}
+      <p className="text-xs text-muted-foreground">
+        Instagram-Story speichert das Bild und versucht, die App zu öffnen. Es gibt keine offizielle
+        Web-Story-Funktion – danach in Instagram als Story posten.{" "}
+        <a
+          href="https://www.instagram.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-koder-orange hover:underline"
+        >
+          Instagram öffnen
+        </a>
+      </p>
+      {igHint && <p className="text-sm font-medium text-foreground">{igHint}</p>}
     </div>
   );
 }

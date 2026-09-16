@@ -9,14 +9,21 @@ export const VEREINS_WERTUNG = {
   titel: "Fassjagd",
   preis: "ein Fass Bier",
   /** Klarer Einzeiler */
-  kurz:
-    "Das Team mit den meisten bezahlten Startern gewinnt ein Fass Bier – Verein, Firma oder Gruppe. 1 Person = 1 Stimme – Kinderlauf und Walking zählen.",
+  kurz: "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe.",
+  stimme: "1 Person = 1 Stimme, auch Kinderlauf und Walking.",
   ausrichterCanonical: "SV Obermögersheim",
   /** Wie der Name bei der Anmeldung eingetragen werden soll */
-  angabe:
-    "Bei der Anmeldung denselben Teamnamen wählen (Combobox: Verein, Firma oder Gruppe). Ohne einheitlichen Namen zählt die Meldung nicht für die Fassjagd.",
+  angabe: "Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht.",
+  ausrichterHinweis: "SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
+  /** Gleiche Kurzregeln für FAQ, Anmeldung und Tafel */
+  punkte: [
+    "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe.",
+    "1 Person = 1 Stimme, auch Kinderlauf und Walking.",
+    "Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht.",
+    "SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
+  ],
   hinweis:
-    "Bei der Anmeldung denselben Teamnamen wählen. Das Team mit den meisten bezahlten Startern gewinnt ein Fass Bier – Verein, Firma oder Gruppe. SV Obermögersheim ist als Ausrichter (Hausherr) sichtbar, aber nicht in der Wertung. Nach dem Online-Anmeldeschluss friert die Fassjagd ein – Nachmeldungen vor Ort zählen nicht.",
+    "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe. 1 Person = 1 Stimme, auch Kinderlauf und Walking. Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht. SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
 } as const;
 
 /** Kanonische Vereinsnamen → bekannte Schreibweisen (kleingeschrieben, normalisiert). */
