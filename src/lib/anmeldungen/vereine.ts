@@ -19,7 +19,7 @@ export const VEREINS_WERTUNG = {
   punkte: [
     "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe.",
     "1 Person = 1 Stimme, auch Kinderlauf und Walking.",
-    "Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht.",
+    "Tafel bis zum Online-Anmeldeschluss, danach Freeze.",
     "SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
   ],
   hinweis:
