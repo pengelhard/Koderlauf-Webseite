@@ -18,9 +18,9 @@ export type FassjagdClub = {
   flaming: boolean;
   /** Abstand auf Platz 1 (0 wenn selbst führend) */
   gapToLeader: number;
-  /** Starter, die zum Verein davor fehlen */
+  /** Starter, die zum Team davor fehlen */
   gapToAbove: number | null;
-  /** Vorsprung auf den Verein dahinter */
+  /** Vorsprung auf das Team dahinter */
   gapToBelow: number | null;
   /** Vorsprung auf Platz 2, nur Platz 1 */
   leadBy: number | null;

@@ -88,8 +88,8 @@ export function FassjagdTafel({ initial }: { initial: FassjagdBoard }) {
       <div className="space-y-2">
         {board.ranking.length === 0 ? (
           <div className="rounded-2xl border border-border bg-card px-4 py-8 text-center text-sm text-muted-foreground">
-            Noch keine Vereine in der Wertung. Bei der Anmeldung den Vereinsnamen in der Combobox
-            wählen – sonst zählt die Meldung nicht für die Fassjagd.
+            Noch keine Teams in der Wertung. Bei der Anmeldung den Teamnamen in der Combobox
+            wählen (Verein, Firma oder Gruppe) – sonst zählt die Meldung nicht für die Fassjagd.
           </div>
         ) : (
           board.ranking.map((club) => <ClubRow key={club.slug} club={club} max={max} />)
@@ -111,22 +111,22 @@ export function FassjagdTafel({ initial }: { initial: FassjagdBoard }) {
       )}
 
       {board.ohneAngabe > 0 && (
-        <p className="text-xs text-muted-foreground">Ohne Vereinsangabe: {board.ohneAngabe} (zählen nicht)</p>
+        <p className="text-xs text-muted-foreground">Ohne Teamangabe: {board.ohneAngabe} (zählen nicht)</p>
       )}
 
       {leader && (
         <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="mb-3 text-sm font-semibold">Vereinskarte teilen ({leader.name})</p>
+          <p className="mb-3 text-sm font-semibold">Teamkarte teilen ({leader.name})</p>
           <FassjagdShareButtons club={leader} />
           <p className="mt-2 text-xs text-muted-foreground">
-            Nur Vereins-Sharecards – keine privaten „Ich bin dabei“-Karten.
+            Nur Team-Sharecards – keine privaten „Ich bin dabei“-Karten.
           </p>
         </div>
       )}
 
       <div className="space-y-3">
         <p className="text-center text-sm font-semibold uppercase tracking-widest text-koder-orange">
-          Starter für deinen Verein anmelden
+          Starter für dein Team anmelden
         </p>
         <FassjagdAnmeldeButtons />
       </div>

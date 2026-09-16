@@ -3,7 +3,7 @@ import { loadFassjagdBoard } from "@/lib/fassjagd/load";
 
 export const dynamic = "force-dynamic";
 
-/** GET /api/fassjagd – Live-Tafel inkl. Vereinsnamen für Combobox */
+/** GET /api/fassjagd – Live-Tafel inkl. Teamnamen für Combobox */
 export async function GET() {
   const board = await loadFassjagdBoard();
   return NextResponse.json(board, {

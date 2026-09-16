@@ -88,7 +88,7 @@ export async function POST(request: Request) {
 
   if (action === "week-image") {
     const board = await loadFassjagdBoard();
-    return fassjagdWeekResponse(board.ranking);
+    return await fassjagdWeekResponse(board.ranking);
   }
 
   return NextResponse.json({ error: "Unbekannte Aktion" }, { status: 400 });

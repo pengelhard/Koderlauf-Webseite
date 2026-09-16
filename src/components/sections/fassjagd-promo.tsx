@@ -33,7 +33,7 @@ export function FassjagdPromo() {
                 Wer holt das Fass?
               </h2>
               <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-                {VEREINS_WERTUNG.kurz} Meldet euch mit demselben Vereinsnamen an – dann zählt
+                {VEREINS_WERTUNG.kurz} Meldet euch mit demselben Teamnamen an – dann zählt
                 jede Person für eure Tafel.
               </p>
               <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">

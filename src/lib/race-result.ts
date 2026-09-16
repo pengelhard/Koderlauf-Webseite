@@ -33,7 +33,7 @@ export const RACE_RESULT = {
     {
       id: "sammel",
       label: "Sammelanmeldung",
-      description: "Mehrere Personen in einem Durchgang – ideal für Vereine, Familien und Gruppen.",
+      description: "Mehrere Personen in einem Durchgang – ideal für Vereine, Firmen, Familien und Gruppen.",
       name: "Sammel-Anmeldung",
       key: "byl3kiDDa1BT",
     },

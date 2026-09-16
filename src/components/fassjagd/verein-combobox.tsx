@@ -7,7 +7,7 @@ export function VereinCombobox({
   names,
   value,
   onChange,
-  placeholder = "Verein wählen…",
+  placeholder = "Teamname wählen…",
   id,
   required,
 }: {

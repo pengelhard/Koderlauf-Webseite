@@ -25,7 +25,7 @@ export function FassjagdVerein({
   if (!club) {
     return (
       <p className="text-center text-muted-foreground">
-        Verein nicht gefunden.{" "}
+        Team nicht gefunden.{" "}
         <Link href="/fassjagd" className="text-koder-orange hover:underline">
           Zur Fassjagd
         </Link>
@@ -70,7 +70,7 @@ export function FassjagdVerein({
               <p className="mt-2 text-sm text-muted-foreground">
                 {club.gapToAbove != null && club.gapToAbove > 0
                   ? `${club.gapToAbove} fehlen noch auf den Platz davor. `
-                  : "Kein Verein davor. "}
+                  : "Kein Team davor. "}
                 {club.gapToBelow != null
                   ? `Vorsprung nach hinten: ${club.gapToBelow}.`
                   : "Letzter Platz in der Tafel."}

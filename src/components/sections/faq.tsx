@@ -99,8 +99,9 @@ const FAQS: FaqItem[] = [
     frage: "Gibt es eine Wertung für Vereine, Gruppen und Firmen?",
     antwort: (
       <>
-        Ja. <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong> Bitte bei der{" "}
-        <FaqLink href="/anmeldung">Anmeldung</FaqLink> denselben Namen für Verein, Gruppe oder Firma
+        Ja – die Fassjagd ist die Teamwertung für Verein, Firma oder Gruppe.{" "}
+        <strong className="text-foreground">{VEREINS_WERTUNG.kurz}</strong> Bitte bei der{" "}
+        <FaqLink href="/anmeldung">Anmeldung</FaqLink> denselben Teamnamen
         angeben, damit alle zusammengezählt werden. {VEREINS_WERTUNG.ausrichterCanonical} ist als
         Ausrichter nicht in der Wertung. Aktueller Stand:{" "}
         <FaqLink href="/fassjagd">Fassjagd</FaqLink>.

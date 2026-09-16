@@ -68,7 +68,7 @@ export default function FassjagdAdminPage() {
       <div className="mx-auto max-w-md px-4 pt-28 pb-16">
         <h1 className="text-3xl font-extrabold">Fassjagd Admin</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Vereine mergen, aus Wertung nehmen, Freeze, Wochenstand-Bild.
+          Vereine, Firmen und Gruppen mergen, aus Wertung nehmen, Freeze, Wochenstand-Bild.
         </p>
         <form
           className="mt-6 space-y-3"
