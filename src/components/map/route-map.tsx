@@ -587,6 +587,19 @@ export function RouteMap({
         </div>
       )}
 
+      {gpxDownloadHref && mapReady && (
+        <div className="pointer-events-none absolute top-3 left-3 z-10">
+          <a
+            href={gpxDownloadHref}
+            download={gpxName}
+            className={`${overlayGhost} pointer-events-auto`}
+          >
+            <Download size={14} aria-hidden />
+            GPX
+          </a>
+        </div>
+      )}
+
       {showFlightUi && (
         <div
           className="pointer-events-none absolute inset-0 z-10"
@@ -649,21 +662,11 @@ export function RouteMap({
               </>
             )}
 
-            {flightUi === "done" && (
-              <>
-                {!reducedMotion && (
-                  <button type="button" onClick={startFlight} className={overlayPrimary}>
-                    <RotateCcw size={14} aria-hidden />
-                    Nochmal
-                  </button>
-                )}
-                {gpxDownloadHref && (
-                  <a href={gpxDownloadHref} download={gpxName} className={overlayGhost}>
-                    <Download size={14} aria-hidden />
-                    GPX laden
-                  </a>
-                )}
-              </>
+            {flightUi === "done" && !reducedMotion && (
+              <button type="button" onClick={startFlight} className={overlayPrimary}>
+                <RotateCcw size={14} aria-hidden />
+                Nochmal
+              </button>
             )}
           </div>
         </div>
