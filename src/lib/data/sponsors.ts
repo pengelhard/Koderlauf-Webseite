@@ -12,7 +12,7 @@ import {
   getPublicSponsors,
   type PublicSponsor,
   type SponsorYear,
-} from "./sponsors-public";
+} from "./sponsors-public.ts";
 import type { Database } from "../../types/database";
 
 export type { SponsorYear };

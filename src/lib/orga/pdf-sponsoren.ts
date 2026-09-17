@@ -7,8 +7,8 @@ import {
   type SponsorRecord,
   type SponsorYear,
   type SponsorsLoadResult,
-} from "../data/sponsors";
-import { footerNote, PdfWriter } from "./pdf-core";
+} from "../data/sponsors.ts";
+import { footerNote, PdfWriter } from "./pdf-core.ts";
 
 export function sponsorenPdfFilename(year: SponsorYear): string {
   return `koderlauf-${year}-sponsoren.pdf`;
