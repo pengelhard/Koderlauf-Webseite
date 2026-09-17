@@ -1,4 +1,11 @@
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import {
+  PDFDocument,
+  StandardFonts,
+  rgb,
+  type PDFFont,
+  type PDFImage,
+  type PDFPage,
+} from "pdf-lib";
 
 export const A4_PORTRAIT: [number, number] = [595.28, 841.89];
 export const A4_LANDSCAPE: [number, number] = [841.89, 595.28];
@@ -94,6 +101,13 @@ export type PdfWriterOptions = {
 };
 
 export type KvRow = { label: string; value: string };
+
+export type KvLogo = {
+  image: PDFImage;
+  width: number;
+  height: number;
+  invert?: boolean;
+};
 
 export class PdfWriter {
   doc!: PDFDocument;
@@ -261,15 +275,16 @@ export class PdfWriter {
   kvBlock(
     title: string,
     rows: KvRow[],
-    options?: { index?: number; badge?: string },
+    options?: { index?: number; badge?: string; logo?: KvLogo },
   ) {
     const padX = 12;
     const padY = 11;
     const titleSize = 12.5;
     const labelW = 128;
+    const logo = options?.logo;
+    const logoReserve = logo ? logo.width + 16 : 0;
     const valueW = this.contentWidth - padX * 2 - labelW;
-    const titleMaxW =
-      this.contentWidth - padX * 2 - (options?.badge ? 110 : 0);
+    const titleMaxW = this.contentWidth - padX * 2 - logoReserve;
     const titleText =
       options?.index != null ? `${options.index}. ${title}` : title;
     const titleLines = wrap(this.bold, titleText, titleSize, titleMaxW);
@@ -279,7 +294,11 @@ export class PdfWriter {
     const rowHs = valueLines.map((lines) =>
       Math.max(this.lineHeight + 3, lines.length * this.lineHeight + 3),
     );
-    const titleH = titleLines.length * (titleSize + 3) + 8;
+    const badgeH = options?.badge ? 16 : 0;
+    const titleH = Math.max(
+      titleLines.length * (titleSize + 3) + 8 + badgeH,
+      logo ? logo.height + 10 : 0,
+    );
     const h = padY + titleH + rowHs.reduce((a, b) => a + b, 0) + padY;
 
     this.ensure(h + 10);
@@ -294,6 +313,26 @@ export class PdfWriter {
       borderColor: LINE,
       borderWidth: 0.6,
     });
+
+    if (logo) {
+      const lx = this.pageWidth - this.margin - padX - logo.width + 2;
+      const ly = this.y - padY - logo.height;
+      if (logo.invert) {
+        this.page.drawRectangle({
+          x: lx - 5,
+          y: ly - 5,
+          width: logo.width + 10,
+          height: logo.height + 10,
+          color: FOREST,
+        });
+      }
+      this.page.drawImage(logo.image, {
+        x: lx,
+        y: ly,
+        width: logo.width,
+        height: logo.height,
+      });
+    }
 
     let cursor = this.y - padY;
     titleLines.forEach((line) => {
@@ -310,10 +349,10 @@ export class PdfWriter {
     if (options?.badge) {
       const badge = winAnsi(options.badge);
       const bw = this.bold.widthOfTextAtSize(badge, 8);
-      const bx = this.pageWidth - this.margin - padX - bw + 2;
-      const by = this.y - padY - 12;
+      const bx = this.margin + padX - 4;
+      const by = cursor - 12;
       this.page.drawRectangle({
-        x: bx - 5,
+        x: bx - 4,
         y: by - 3,
         width: bw + 10,
         height: 14,
@@ -330,7 +369,7 @@ export class PdfWriter {
       });
     }
 
-    cursor -= 6;
+    cursor = this.y - padY - titleH;
     for (let i = 0; i < rows.length; i++) {
       this.page.drawText(winAnsi(rows[i].label), {
         x: this.margin + padX - 4,
@@ -596,12 +635,12 @@ export class PdfWriter {
     leftLabel: string,
     rightLabel: string,
   ) {
+    const tableW = cols.reduce((s, c) => s + c.width, 0);
     const drawHeader = () => {
       const colLines = this.headerLines(cols);
-      const subHeaderH = this.compact ? 12 : 14;
+      const subHeaderH = this.compact ? 12 : 18;
       const colHeaderH = this.headerHeight(colLines);
       const headerH = subHeaderH + colHeaderH;
-      const tableW = cols.reduce((s, c) => s + c.width, 0);
       const leftW = cols.slice(0, dividerAfterCol).reduce((s, c) => s + c.width, 0);
 
       this.ensure(headerH + 4);
@@ -610,22 +649,29 @@ export class PdfWriter {
         y: this.y - headerH,
         width: tableW + 4,
         height: headerH,
-        color: rgb(0.94, 0.96, 0.95),
+        color: rgb(0.91, 0.95, 0.93),
+      });
+      this.page.drawRectangle({
+        x: this.margin - 2,
+        y: this.y - subHeaderH,
+        width: tableW + 4,
+        height: subHeaderH,
+        color: FOREST,
       });
 
       this.page.drawText(winAnsi(leftLabel), {
         x: this.margin + 4,
-        y: this.y - 10,
-        size: this.headerSize,
+        y: this.y - (this.compact ? 10 : 13),
+        size: this.compact ? this.headerSize : 11,
         font: this.bold,
-        color: FOREST,
+        color: rgb(1, 1, 1),
       });
       this.page.drawText(winAnsi(rightLabel), {
         x: this.margin + leftW + 6,
-        y: this.y - 10,
-        size: this.headerSize,
+        y: this.y - (this.compact ? 10 : 13),
+        size: this.compact ? this.headerSize : 11,
         font: this.bold,
-        color: FOREST,
+        color: rgb(1, 1, 1),
       });
 
       let x = this.margin;
@@ -656,14 +702,15 @@ export class PdfWriter {
 
     drawHeader();
 
-    for (const row of rows) {
+    for (let ri = 0; ri < rows.length; ri++) {
+      const row = rows[ri];
       const cellLines = cols.map((col) => {
         const raw = row[col.key] ?? "";
         if (col.checkbox && (!raw || raw === CHECKBOX_CELL)) return [""];
         return wrap(this.font, raw, this.bodySize, col.width - 4);
       });
       const lines = Math.max(1, ...cellLines.map((l) => l.length));
-      const h = Math.max(this.rowHeight, lines * this.lineHeight + 4);
+      const h = Math.max(this.rowHeight, lines * this.lineHeight + 6);
       if (this.y - h < 48) {
         this.newPage();
         drawHeader();
@@ -673,9 +720,18 @@ export class PdfWriter {
       const dividerX = this.margin + leftW;
 
       let x = this.margin;
+      if (!this.compact && ri % 2 === 1) {
+        this.page.drawRectangle({
+          x: this.margin - 2,
+          y: this.y - h,
+          width: tableW + 4,
+          height: h,
+          color: rgb(0.95, 0.97, 0.95),
+        });
+      }
       this.page.drawLine({
         start: { x: this.margin, y: this.y },
-        end: { x: this.margin + cols.reduce((s, c) => s + c.width, 0), y: this.y },
+        end: { x: this.margin + tableW, y: this.y },
         thickness: 0.3,
         color: LINE,
       });
