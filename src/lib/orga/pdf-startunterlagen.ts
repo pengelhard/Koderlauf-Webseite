@@ -1,7 +1,6 @@
 import { EVENT } from "@/lib/event-config";
 import type { OrgaStats } from "@/lib/orga/types";
 import {
-  allStartunterlagenRows,
   groupStartunterlagen,
   listStreckenWithParticipants,
   streckeMeta,
@@ -24,18 +23,14 @@ function footer(): string {
 
 const NACHMELDUNG_ROWS = 5;
 
-function rowToStandard(r: StartunterlagenRow): Record<string, string> {
-  return {
-    bib: bibLabel(r.bib),
-    nachname: r.nachname,
-    vorname: r.vorname,
-    jg: r.jahrgang || "–",
-    shirt: r.shirt,
-    karte: r.abendkarten,
-    sn: CHECKBOX_CELL,
-    okShirt: CHECKBOX_CELL,
-    okKarte: CHECKBOX_CELL,
-  };
+function ausgabeWriter() {
+  return new PdfWriter({
+    bodySize: 10.5,
+    headerSize: 9.5,
+    rowHeight: 22,
+    lineHeight: 13.5,
+    margin: 36,
+  });
 }
 
 function rowToAusgabe(r: StartunterlagenRow): Record<string, string> {
@@ -49,50 +44,6 @@ function rowToAusgabe(r: StartunterlagenRow): Record<string, string> {
     karte: r.abendkarten,
     okKarte: CHECKBOX_CELL,
     sn: CHECKBOX_CELL,
-  };
-}
-
-function rowToGesamt(r: StartunterlagenRow): Record<string, string> {
-  return {
-    bib: bibLabel(r.bib),
-    strecke: r.strecke,
-    nachname: r.nachname,
-    vorname: r.vorname,
-    jg: r.jahrgang || "–",
-    shirt: r.shirt,
-    karte: r.abendkarten,
-    sn: CHECKBOX_CELL,
-    okShirt: CHECKBOX_CELL,
-    okKarte: CHECKBOX_CELL,
-  };
-}
-
-function blankStandard(): Record<string, string> {
-  return {
-    bib: "",
-    nachname: "",
-    vorname: "",
-    jg: "",
-    shirt: "",
-    karte: "",
-    sn: CHECKBOX_CELL,
-    okShirt: CHECKBOX_CELL,
-    okKarte: CHECKBOX_CELL,
-  };
-}
-
-function blankGesamt(): Record<string, string> {
-  return {
-    bib: "",
-    strecke: "",
-    nachname: "",
-    vorname: "",
-    jg: "",
-    shirt: "",
-    karte: "",
-    sn: CHECKBOX_CELL,
-    okShirt: CHECKBOX_CELL,
-    okKarte: CHECKBOX_CELL,
   };
 }
 
@@ -110,18 +61,6 @@ function blankAusgabe(): Record<string, string> {
   };
 }
 
-const COLS_STANDARD: Col[] = [
-  { key: "bib", header: "Startnr.", width: 34 },
-  { key: "nachname", header: "Nachname", width: 100 },
-  { key: "vorname", header: "Vorname", width: 76 },
-  { key: "jg", header: "Jahrgang", width: 34 },
-  { key: "shirt", header: "T-Shirt Größe", width: 44 },
-  { key: "karte", header: "Tape Jam", width: 30 },
-  { key: "sn", header: "Startnummer", width: 44, checkbox: true },
-  { key: "okShirt", header: "T-Shirt", width: 36, checkbox: true },
-  { key: "okKarte", header: "Abendkarte", width: 40, checkbox: true },
-];
-
 /** Hochformat A4: Spaltenbreiten Summe 523 bei Rand 36. */
 const COLS_AUSGABE: Col[] = [
   { key: "bib", header: "Startnr.", width: 56 },
@@ -135,119 +74,85 @@ const COLS_AUSGABE: Col[] = [
   { key: "sn", header: "Nr. aus", width: 47, checkbox: true },
 ];
 
-const COLS_GESAMT: Col[] = [
-  { key: "bib", header: "Startnr.", width: 34 },
-  { key: "strecke", header: "Strecke", width: 84 },
-  { key: "nachname", header: "Nachname", width: 88 },
-  { key: "vorname", header: "Vorname", width: 68 },
-  { key: "jg", header: "Jahrgang", width: 34 },
-  { key: "shirt", header: "T-Shirt Größe", width: 42 },
-  { key: "karte", header: "Tape Jam", width: 28 },
-  { key: "sn", header: "Startnummer", width: 44, checkbox: true },
-  { key: "okShirt", header: "T-Shirt", width: 36, checkbox: true },
-  { key: "okKarte", header: "Abendkarte", width: 40, checkbox: true },
-];
+function writeAusgabeTable(w: PdfWriter, rows: StartunterlagenRow[]) {
+  w.tableWithDivider(
+    COLS_AUSGABE,
+    [...rows.map(rowToAusgabe), ...Array.from({ length: NACHMELDUNG_ROWS }, blankAusgabe)],
+    4,
+    "Teilnehmer",
+    "Ausgabe",
+  );
+  if (rows.length === 0) {
+    w.paragraph("Noch keine Teilnehmer für diese Strecke in der Adressliste.");
+  }
+}
 
-async function writeStreckeHeader(
+function writeStreckeHeader(
   w: PdfWriter,
   meta: ReturnType<typeof streckeMeta>,
   stats: OrgaStats,
-  variant: "standard" | "ausgabe",
   summary: ReturnType<typeof summarizeStrecke>,
+  extraSubtitle?: string,
 ) {
-  const variantLabel =
-    variant === "standard" ? "Variante A – Checkliste" : "Variante B – Ausgabe";
   w.title(`Koderlauf ${EVENT.jahr} – Startunterlagen`);
   w.subtitle(
-    `${meta.label} · ${meta.distanz} · Start ${meta.startzeit} · ${variantLabel}`,
+    extraSubtitle
+      ? `${meta.label} · ${meta.distanz} · Start ${meta.startzeit} · ${extraSubtitle}`
+      : `${meta.label} · ${meta.distanz} · Start ${meta.startzeit} · Ausgabe`,
   );
   w.metaLine(
     `Stand ${formatStand(stats.fetchedAt)} · ${summary.teilnehmer} Teilnehmer · ${summary.shirts} Shirts · ${summary.karten} Abendkarten`,
   );
   w.paragraph(
-    variant === "ausgabe"
-      ? "Links Name und Startnummer, rechts Ausgabe zum Abhaken (Shirt, Abendkarte, Startnummer). Die Startnr. bleibt –, bis Race Result die Nummern in der Adressliste setzt. Beim nächsten PDF-Download erscheinen sie automatisch."
-      : "In den Spalten Startnummer, T-Shirt und Abendkarte zum Abhaken ausgeben.",
-    variant === "ausgabe" ? 9.5 : 7.5,
+    "Links Name und Startnummer, rechts Ausgabe zum Abhaken (Shirt, Abendkarte, Startnummer). Die Startnr. bleibt –, bis Race Result die Nummern in der Adressliste setzt. Beim nächsten PDF-Download erscheinen sie automatisch.",
+    9.5,
   );
 }
 
 export async function pdfStartunterlagenStrecke(
   stats: OrgaStats,
   streckeLabel: string,
-  variant: "standard" | "ausgabe",
 ): Promise<Uint8Array> {
   const groups = groupStartunterlagen(stats.participants);
   const rows = groups.get(streckeLabel) ?? [];
   const meta = streckeMeta(streckeLabel);
   const summary = summarizeStrecke(rows);
 
-  const w =
-    variant === "ausgabe"
-      ? new PdfWriter({
-          bodySize: 10.5,
-          headerSize: 9.5,
-          rowHeight: 22,
-          lineHeight: 13.5,
-          margin: 36,
-        })
-      : new PdfWriter({ landscape: true, compact: true });
+  const w = ausgabeWriter();
   await w.init(footer());
-
-  await writeStreckeHeader(w, meta, stats, variant, summary);
-
-  if (variant === "standard") {
-    w.table(
-      COLS_STANDARD,
-      [
-        ...rows.map(rowToStandard),
-        ...Array.from({ length: NACHMELDUNG_ROWS }, blankStandard),
-      ],
-    );
-  } else {
-    w.tableWithDivider(
-      COLS_AUSGABE,
-      [...rows.map(rowToAusgabe), ...Array.from({ length: NACHMELDUNG_ROWS }, blankAusgabe)],
-      4,
-      "Teilnehmer",
-      "Ausgabe",
-    );
-  }
-
-  if (rows.length === 0) {
-    w.paragraph("Noch keine Teilnehmer für diese Strecke in der Adressliste.");
-  }
-
+  w.runningHeader = `Koderlauf ${EVENT.jahr} – ${meta.label} Ausgabe`;
+  writeStreckeHeader(w, meta, stats, summary);
+  writeAusgabeTable(w, rows);
   return w.save();
 }
 
+/** Alle B-Ausgaben hintereinander, jede Strecke auf einer neuen Seite. */
 export async function pdfStartunterlagenGesamt(stats: OrgaStats): Promise<Uint8Array> {
-  const rows = allStartunterlagenRows(stats.participants);
-  const shirts = rows.filter((r) => r.shirt !== "–").length;
-  const karten = rows.reduce(
-    (sum, r) => sum + (r.abendkarten === "–" ? 0 : Number.parseInt(r.abendkarten, 10) || 0),
-    0,
-  );
-
-  const w = new PdfWriter({ landscape: true, compact: true });
+  const groups = groupStartunterlagen(stats.participants);
+  const labels = listStreckenWithParticipants(groups);
+  const w = ausgabeWriter();
   await w.init(footer());
-  w.title(`Koderlauf ${EVENT.jahr} – Startunterlagen Gesamt`);
-  w.subtitle("Variante C – alle Strecken nach Startnummer");
-  w.metaLine(
-    `Stand ${formatStand(stats.fetchedAt)} · ${rows.length} Teilnehmer · ${shirts} Shirts · ${karten} Abendkarten`,
-  );
-  w.paragraph(
-    "Für den Fall „Ich kenne meine Nummer, aber nicht die Strecke“. Kästchen zum Abhaken bei der Ausgabe.",
-    7.5,
-  );
 
-  w.table(
-    COLS_GESAMT,
-    [...rows.map(rowToGesamt), ...Array.from({ length: NACHMELDUNG_ROWS }, blankGesamt)],
-  );
-
-  if (rows.length === 0) {
+  if (labels.length === 0) {
+    w.title(`Koderlauf ${EVENT.jahr} – Startunterlagen`);
+    w.subtitle("Gesamtliste – alle Strecken");
     w.paragraph("Noch keine Teilnehmer in der Adressliste.");
+    return w.save();
+  }
+
+  for (let i = 0; i < labels.length; i++) {
+    const label = labels[i];
+    const rows = groups.get(label) ?? [];
+    const meta = streckeMeta(label);
+    const summary = summarizeStrecke(rows);
+
+    if (i > 0) {
+      w.runningHeader = "";
+      w.newPage();
+    }
+    w.runningHeader = `Koderlauf ${EVENT.jahr} – ${meta.label} Ausgabe`;
+    writeStreckeHeader(w, meta, stats, summary, "Gesamtliste");
+    writeAusgabeTable(w, rows);
   }
 
   return w.save();
@@ -260,8 +165,7 @@ export function buildStartunterlagenPdf(
 ): Promise<Uint8Array> {
   if (variant === "gesamt") return pdfStartunterlagenGesamt(stats);
   if (!streckeLabel) throw new Error("Strecke fehlt");
-  if (variant === "ausgabe") return pdfStartunterlagenStrecke(stats, streckeLabel, "ausgabe");
-  return pdfStartunterlagenStrecke(stats, streckeLabel, "standard");
+  return pdfStartunterlagenStrecke(stats, streckeLabel);
 }
 
 export function startunterlagenFilename(
@@ -275,8 +179,7 @@ export function startunterlagenFilename(
     ?.toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-  const suffix = variant === "ausgabe" ? "ausgabe" : "checkliste";
-  return `koderlauf-${EVENT.jahr}-start-${slug}-${suffix}.pdf`;
+  return `koderlauf-${EVENT.jahr}-start-${slug}-ausgabe.pdf`;
 }
 
 export function getStartunterlagenStrecken(stats: OrgaStats): string[] {

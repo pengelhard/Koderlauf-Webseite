@@ -14,7 +14,6 @@ import {
   startunterlagenFilename,
   getStartunterlagenStrecken,
 } from "@/lib/orga/pdf-startunterlagen";
-import type { StartunterlagenVariant } from "@/lib/orga/startunterlagen";
 
 export { formatStand, footerNote, bibLabel };
 
@@ -134,13 +133,9 @@ export async function buildOrgaPdf(
   if (kind === "ausgabe") return pdfTshirtAusgabe(stats);
   if (kind === "abendkarten") return pdfAbendkarten(stats);
   if (kind === "start-gesamt") return buildStartunterlagenPdf(stats, "gesamt");
-  if (kind === "start-ausgabe") {
+  if (kind === "start-ausgabe" || kind === "start-standard") {
     if (!options?.strecke) throw new Error("Strecke fehlt");
     return buildStartunterlagenPdf(stats, "ausgabe", options.strecke);
-  }
-  if (kind === "start-standard") {
-    if (!options?.strecke) throw new Error("Strecke fehlt");
-    return buildStartunterlagenPdf(stats, "standard", options.strecke);
   }
   throw new Error("Unbekanntes PDF");
 }
@@ -153,9 +148,7 @@ export function pdfFilename(kind: OrgaPdfKind, options?: { strecke?: string }): 
   };
   if (kind in map) return map[kind as keyof typeof map];
   if (kind === "start-gesamt") return startunterlagenFilename("gesamt");
-  const variant: StartunterlagenVariant =
-    kind === "start-ausgabe" ? "ausgabe" : "standard";
-  return startunterlagenFilename(variant, options?.strecke);
+  return startunterlagenFilename("ausgabe", options?.strecke);
 }
 
 export { getStartunterlagenStrecken };
