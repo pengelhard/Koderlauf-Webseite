@@ -9,13 +9,10 @@ import { SponsorAnfrageFormular } from "@/components/sponsoring/anfrage-formular
 import { SponsorStickyAnfrage } from "@/components/sponsoring/sponsor-sticky-anfrage";
 import {
   SponsorAblauf,
-  SponsorBandVergleich,
-  SponsorDreiFaelle,
   SponsorFaq,
   SponsorHeroBilder,
   SponsorOffeneFlaechen,
-  SponsorSoFunktionierts,
-  SponsorWarum,
+  SponsorPakete,
 } from "@/components/sponsoring/sponsor-werden-sections";
 
 export function SponsorWerdenContent() {
@@ -52,8 +49,8 @@ export function SponsorWerdenContent() {
               Sponsor 2027 werden
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              {premiere2026.finisher} Finisher, ein ganzes Dorf am Sportheim, 50 Jahre SV. Euer Name an
-              einer echten Fläche – oder als Beitrag, wenn die Flächen weg sind.
+              {premiere2026.finisher} Finisher, ein ganzes Dorf am Sportheim, 50 Jahre SV – sichtbar vor Ort
+              oder als Beitrag, wenn die Flächen weg sind.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               {EVENT.datumKurz} · {EVENT.ortDetail} · {EVENT.veranstalter}
@@ -70,7 +67,7 @@ export function SponsorWerdenContent() {
                 href="#flaechen"
                 className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
               >
-                Flächen ansehen
+                Flächen
               </Link>
               <Link
                 href="#anfrage"
@@ -81,32 +78,28 @@ export function SponsorWerdenContent() {
             </div>
 
             <p className="mt-4 text-sm text-muted-foreground">
-              Unverbindliche Anfrage, keine Online-Zahlung. Rückmeldung von{" "}
+              Auch reines Geld zählt – gerade über Restkosten. Unverbindlich, keine Online-Zahlung.{" "}
               <a href={`mailto:${kontaktEmail}`} className="text-koder-orange hover:underline">
                 {kontaktEmail}
               </a>
-              .
             </p>
 
             <SponsorHeroBilder />
           </motion.section>
 
-          <SponsorWarum />
-          <SponsorSoFunktionierts />
-          <SponsorBandVergleich />
+          <SponsorPakete />
           <SponsorOffeneFlaechen />
-          <SponsorDreiFaelle />
           <SponsorAblauf />
           <SponsorFaq />
 
-          <section id="anfrage" className="mt-16 scroll-mt-28" aria-labelledby="anfrage-titel">
+          <section id="anfrage" className="mt-12 scroll-mt-28" aria-labelledby="anfrage-titel">
             <h2 id="anfrage-titel" className="text-2xl font-extrabold tracking-tight">
               Anfrage abschließen
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Kein Checkout. Eure Anfrage geht per Mail an uns – Antwort von {kontaktEmail}.
+              Kein Checkout. Antwort von {kontaktEmail}.
             </p>
-            <div className="mt-8 rounded-3xl border border-border bg-card p-6 sm:p-8">
+            <div className="mt-6 rounded-3xl border border-border bg-card p-6 sm:p-8">
               <SponsorAnfrageFormular />
             </div>
           </section>

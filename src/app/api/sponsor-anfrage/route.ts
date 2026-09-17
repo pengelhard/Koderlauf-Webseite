@@ -8,8 +8,11 @@ import {
   isAnfrageWeg,
   isBeitragsart,
   isBeitragsband,
+  isBeitragsartGueltig,
   isFlaecheBuchbar,
+  isSachspendeFlaeche,
   normalizeStufe,
+  TYP_LABEL,
   SPONSORING_2027,
   type AnfrageWeg,
   type Beitragsart,
@@ -105,21 +108,20 @@ function getSmtpConfig():
 
 function resolveAnfrageWeg(rec: Record<string, unknown>): AnfrageWeg | null {
   if (isAnfrageWeg(rec.anfrageWeg)) return rec.anfrageWeg;
-  if (rec.anfrageArt === "partner") return "partner";
-  if (rec.anfrageArt === "posten") return "flaeche";
-  if (rec.stufe === "partner") return "partner";
-  if (rec.stufe === "foerderer" || rec.stufe === "hauptsponsor") return "beitrag";
-  if (rec.stufe === "sachpartner") return "beitrag";
   if (typeof rec.flaecheId === "string" || typeof rec.postenId === "string") return "flaeche";
+  if (rec.anfrageArt === "posten" || rec.anfrageArt === "flaeche") return "flaeche";
+  if (rec.anfrageArt === "partner" || rec.anfrageArt === "beitrag" || rec.anfrageArt === "paket") {
+    return "paket";
+  }
+  if (normalizeStufe(typeof rec.stufe === "string" ? rec.stufe : null)) return "paket";
   return null;
 }
 
-function resolveBand(rec: Record<string, unknown>, weg: AnfrageWeg): Beitragsband {
+function resolveBand(rec: Record<string, unknown>): Beitragsband {
   if (isBeitragsband(rec.band)) return rec.band;
   const stufe = normalizeStufe(typeof rec.stufe === "string" ? rec.stufe : null);
   if (stufe) return stufe;
-  if (weg === "partner") return "partner";
-  return "foerderer";
+  return "partner";
 }
 
 export async function POST(request: Request) {
@@ -157,12 +159,12 @@ export async function POST(request: Request) {
   const anfrageWeg = resolveAnfrageWeg(rec);
   if (!anfrageWeg) {
     return NextResponse.json(
-      { error: "Bitte einen Weg wählen: Partner, Beitrag oder Fläche." },
+      { error: "Bitte Paket oder Fläche wählen." },
       { status: 400 },
     );
   }
 
-  const band = resolveBand(rec, anfrageWeg);
+  const band = resolveBand(rec);
   const firma = clip(rec.firma, MAX_SHORT);
   const ansprechpartner = clip(rec.ansprechpartner, MAX_SHORT);
   const email = clip(rec.email, MAX_SHORT);
@@ -194,9 +196,15 @@ export async function POST(request: Request) {
   if (anfrageWeg === "flaeche" && !flaeche) {
     return NextResponse.json({ error: "Bitte eine Fläche wählen." }, { status: 400 });
   }
-  if (anfrageWeg !== "partner" && !beitragsart) {
+  if (anfrageWeg === "flaeche" && !beitragsart) {
     return NextResponse.json(
-      { error: "Bitte angeben, ob Geld, Sache oder beides." },
+      { error: "Bitte Art des Beitrags angeben." },
+      { status: 400 },
+    );
+  }
+  if (anfrageWeg === "flaeche" && flaeche && !isBeitragsartGueltig(flaeche, beitragsart ?? "geld")) {
+    return NextResponse.json(
+      { error: "Diese Fläche ist eine Sachspende. Geld allein bucht sie nicht." },
       { status: 400 },
     );
   }
@@ -217,18 +225,18 @@ export async function POST(request: Request) {
   }
 
   const wegLabel =
-    anfrageWeg === "partner"
-      ? `Partner (${SPONSORING_2027.partnerPreis} €)`
-      : anfrageWeg === "flaeche"
-        ? `${BAND_LABEL[band]} + Fläche`
-        : BAND_LABEL[band];
+    anfrageWeg === "flaeche"
+      ? flaeche && isSachspendeFlaeche(flaeche)
+        ? "Sachspende"
+        : `${BAND_LABEL[band]} + Fläche`
+      : BAND_LABEL[band];
   const beitragLabel =
     beitragsart === "geld"
       ? "Geld"
       : beitragsart === "sach"
-        ? "Sache"
+        ? "Sachspende"
         : beitragsart === "beides"
-          ? "Beides"
+          ? "Sache + Zuschuss"
           : "";
   const to = getMailTo();
   const text = [
@@ -238,6 +246,7 @@ export async function POST(request: Request) {
     `Weg: ${wegLabel}`,
     `Band: ${BAND_LABEL[band]}`,
     flaeche ? `Fläche: ${flaeche.titel} (${flaeche.id})` : "Fläche: —",
+    flaeche ? `Typ: ${TYP_LABEL[flaeche.typ]}` : "",
     beitragLabel ? `Beitrag: ${beitragLabel}` : "",
     flaeche ? `Festpreis: ${flaeche.festpreis} €` : "",
     "",
