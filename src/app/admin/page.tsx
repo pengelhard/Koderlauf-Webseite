@@ -201,10 +201,10 @@ export default function OrgaAdminPage() {
           <div>
             <h2 className="text-lg font-bold">Startunterlagen</h2>
             <p className="mt-0.5 text-sm text-muted-foreground">
-              Variante A bleibt Querformat-Checkliste. Variante B (Ausgabe) ist Hochformat
-              mit größerer Schrift: links Name/Startnr., rechts Abhak-Spalten. Startnummern
-              erscheinen automatisch, sobald Race Result sie in der Adressliste setzt.
-              Variante C = alle Strecken. Leere Zeilen am Ende für Nachmeldungen.
+              Pro Strecke die Ausgabe-Liste B (Hochformat). Die Gesamtliste C enthält
+              dieselben B-Listen aller Strecken in einem PDF, jede Strecke beginnt auf
+              einer neuen Seite. Startnummern erscheinen automatisch, sobald Race Result
+              sie in der Adressliste setzt. Leere Zeilen am Ende für Nachmeldungen.
             </p>
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function OrgaAdminPage() {
           className="inline-flex items-center gap-2 rounded-xl bg-koder-orange px-4 py-2.5 text-sm font-semibold text-white"
         >
           <Download size={16} aria-hidden />
-          Variante C – Gesamtliste (alle Strecken)
+          Variante C – Gesamtliste (alle B-Listen)
         </a>
 
         {strecken.length === 0 ? (
@@ -238,17 +238,9 @@ export default function OrgaAdminPage() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <a
-                      href={pdfHref("start-standard", s.slug)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:border-koder-orange/40"
-                      title="Variante A – Checkliste"
-                    >
-                      <Download size={14} aria-hidden />
-                      A Checkliste
-                    </a>
-                    <a
                       href={pdfHref("start-ausgabe", s.slug)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:border-koder-orange/40"
-                      title="Variante B – Ausgabe (Hochformat)"
+                      title="Ausgabe-Liste (Hochformat)"
                     >
                       <Download size={14} aria-hidden />
                       B Ausgabe
