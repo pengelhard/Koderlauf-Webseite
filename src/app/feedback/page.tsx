@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Send, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,8 +56,15 @@ export default function FeedbackPage() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [honeypotReady, setHoneypotReady] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setHoneypotReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -71,25 +78,20 @@ export default function FeedbackPage() {
       const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, subject, message }),
+        body: JSON.stringify({ name, email, subject, message, website: honeypot }),
       });
       const data = await res.json();
       if (!res.ok) {
         setStatus("error");
         const base = typeof data.error === "string" ? data.error : "Senden fehlgeschlagen.";
-        const hint = typeof data.hint === "string" ? data.hint : "";
-        const detail = typeof data.detail === "string" ? data.detail : "";
-        const parts = [base];
-        if (hint) parts.push(hint);
-        if (detail) parts.push(`Technische Info: ${detail}`);
-        setErrorMsg(parts.join("\n\n"));
+        setErrorMsg(base);
         return;
       }
       setStatus("success");
       setName("");
       setEmail("");
       setSubject("");
-      setMessage("");
+      setHoneypot("");
     } catch {
       setStatus("error");
       setErrorMsg("Netzwerkfehler. Bitte später erneut versuchen.");
@@ -132,7 +134,7 @@ export default function FeedbackPage() {
               </Button>
             </div>
           ) : (
-            <form noValidate onSubmit={handleSubmit} className="space-y-6">
+            <form noValidate onSubmit={handleSubmit} className="relative space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="feedback-name">Name (erforderlich)</Label>
@@ -192,6 +194,21 @@ export default function FeedbackPage() {
                 />
                 <p className="text-xs text-muted-foreground">{message.length} / 8000 Zeichen (min. 10)</p>
               </div>
+
+              {honeypotReady ? (
+                <div className="hidden" aria-hidden="true">
+                  <label htmlFor="feedback-website">Website</label>
+                  <input
+                    id="feedback-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+              ) : null}
 
               {status === "error" && errorMsg && (
                 <p className="whitespace-pre-line rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">

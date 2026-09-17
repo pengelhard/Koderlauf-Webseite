@@ -35,7 +35,7 @@ export async function getTotalParticipants(): Promise<number> {
     const supabase = createClient();
     const { count, error } = await supabase
       .from("participants")
-      .select("*", { count: "exact", head: true });
+      .select("id", { count: "exact", head: true });
 
     if (error || count === null) return DEMO_PARTICIPANT_COUNTS.total;
     return count;

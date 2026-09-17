@@ -10,6 +10,7 @@ import { MobileMotionConfig } from "@/components/mobile-motion-config";
 import { EVENT } from "@/lib/event-config";
 import { getCanonicalUrl, getSiteUrlFromHost, hostFromHeaders, isTestHost, PROD_SITE_URL } from "@/lib/site-url";
 import { isSocialCrawler } from "@/lib/social-crawler";
+import { SportsEventJsonLd } from "@/components/json-ld";
 import "./globals.css";
 
 const inter = Inter({
@@ -91,6 +92,7 @@ export default function RootLayout({
   return (
     <html lang="de" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
+        <SportsEventJsonLd />
         <ThemeProvider>
           <MobileMotionConfig />
           <Navbar />

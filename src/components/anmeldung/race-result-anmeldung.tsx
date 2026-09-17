@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle2, User, Users } from "lucide-react";
@@ -342,7 +342,7 @@ function AnmeldungErfolgBanner({
   );
 }
 
-function buildEmbedSrcDoc(formId: RaceResultFormId): string {
+function buildEmbedSrcDoc(formId: RaceResultFormId, parentOrigin: string): string {
   const form = getRaceResultForm(formId);
   const injectScript = `
     (function () {
@@ -389,7 +389,7 @@ function buildEmbedSrcDoc(formId: RaceResultFormId): string {
         if (!sawOpenForm || !confLooksComplete) return;
         done = true;
         try {
-          parent.postMessage(${JSON.stringify(COMPLETE_MESSAGE)}, "*");
+          parent.postMessage(${JSON.stringify(COMPLETE_MESSAGE)}, ${JSON.stringify(parentOrigin)});
         } catch (e) {}
       }
       setInterval(notifyComplete, 600);
@@ -477,6 +477,17 @@ export function AnmeldungAuswahl({ className = "" }: { className?: string }) {
   );
 }
 
+/** Dritt-Skript isoliert; Zahlung/Popups bleiben erlaubt. */
+const RR_IFRAME_SANDBOX = [
+  "allow-scripts",
+  "allow-forms",
+  "allow-popups",
+  "allow-popups-to-escape-sandbox",
+  "allow-modals",
+  "allow-downloads",
+  "allow-top-navigation-by-user-activation",
+].join(" ");
+
 /** Nur Formular – eigene Seite für Einzel- oder Sammelanmeldung. */
 export function RaceResultFormular({
   formId,
@@ -487,10 +498,26 @@ export function RaceResultFormular({
 }) {
   const router = useRouter();
   const anmeldungOffen = useOnlineAnmeldungOffen();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [iframeReady, setIframeReady] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const srcDoc = useMemo(() => buildEmbedSrcDoc(formId), [formId]);
+  const [parentOrigin, setParentOrigin] = useState<string | null>(null);
+  const srcDoc = useMemo(
+    () => (parentOrigin ? buildEmbedSrcDoc(formId, parentOrigin) : ""),
+    [formId, parentOrigin],
+  );
   const activeForm = getRaceResultForm(formId);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      setParentOrigin(window.location.origin);
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    setIframeReady(false);
+  }, [srcDoc]);
 
   useEffect(() => {
     const link = document.createElement("link");
@@ -511,8 +538,7 @@ export function RaceResultFormular({
   useEffect(() => {
     let redirectTimer = 0;
     function onMessage(event: MessageEvent) {
-      // Nur Nachrichten aus unserem Embed-iframe (srcDoc = same origin)
-      if (event.origin !== window.location.origin) return;
+      if (event.source !== iframeRef.current?.contentWindow) return;
       const data = event.data;
       if (
         data &&
@@ -569,10 +595,14 @@ export function RaceResultFormular({
             <p className="text-sm text-muted-foreground">Formular wird geladen…</p>
           </div>
         )}
+        {srcDoc ? (
         <iframe
+          ref={iframeRef}
           key={formId}
           title={activeForm.label}
           srcDoc={srcDoc}
+          sandbox={RR_IFRAME_SANDBOX}
+          allow="payment *; publickey-credentials-get *"
           className={cn(
             "h-[min(92vh,1200px)] w-full bg-[#0A0A0A] transition-opacity duration-300",
             iframeReady ? "opacity-100" : "opacity-0",
@@ -582,6 +612,7 @@ export function RaceResultFormular({
           }}
           referrerPolicy="no-referrer-when-downgrade"
         />
+        ) : null}
       </div>
       )}
     </div>
