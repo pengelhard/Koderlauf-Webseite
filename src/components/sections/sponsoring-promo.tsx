@@ -24,11 +24,11 @@ export function SponsoringPromo() {
                 Sponsoring {EVENT.jahr}
               </p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
-                Partner {SPONSORING_2027.partnerPreis} €, Hauptsponsor mit Posten oder Sachpartner
+                Partner {SPONSORING_2027.partnerPreis} €, Förderer oder Hauptsponsor
               </h2>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                Geld ohne Posten bleibt Partner. Hauptsponsor nur, wer einen konkreten Posten trägt
-                (ab ca. {SPONSORING_2027.hauptsponsorAb} €). Kleinere Sachen: Sachpartner. Anfrage ohne
+                Drei Bänder für Sichtbarkeit – Flächen optional. Hauptsponsor ab ca.{" "}
+                {SPONSORING_2027.hauptsponsorAb} €, auch ohne lieferbare Sache. Anfrage ohne
                 Online-Zahlung.
               </p>
             </div>

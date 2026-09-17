@@ -8,41 +8,48 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  anfrageArtAusQuery,
-  getKostenposten,
+  anfrageWegAusQuery,
+  bandAusQuery,
+  bandHinweisOhneFlaeche,
+  bandWarnung,
+  BAND_LABEL,
+  flaecheParamAusSearch,
+  getFlaeche,
   isBeitragsart,
-  isPostenRolle,
-  KOSTENPARTNERSCHAFTEN,
-  ROLLE_LABEL,
-  rolleAusQuery,
-  rolleWarnung,
+  isBeitragsband,
+  SPONSOR_FLAECHEN,
   SPONSORING_2027,
   STATUS_LABEL,
-  vorschlagRolle,
-  type AnfrageArt,
+  submitLabel,
+  vorschlagBand,
+  type AnfrageWeg,
   type Beitragsart,
-  type PostenRolle,
+  type Beitragsband,
 } from "@/lib/sponsoring-2027";
 
 function isValidEmailFormat(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
+const KEINE_FLAECHE = "";
+const RESTKOSTEN_ID = "restkosten";
+
 export function SponsorAnfrageFormular() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const stufeParam = searchParams.get("stufe");
-  const postenParam = searchParams.get("posten");
+  const flaecheParam = flaecheParamAusSearch(
+    searchParams.get("flaeche"),
+    searchParams.get("posten"),
+  );
 
-  const [anfrageArt, setAnfrageArt] = useState<AnfrageArt>(
-    anfrageArtAusQuery(stufeParam, postenParam),
+  const [anfrageWeg, setAnfrageWeg] = useState<AnfrageWeg>(
+    anfrageWegAusQuery(stufeParam, searchParams.get("flaeche"), searchParams.get("posten")),
   );
-  const [rolle, setRolle] = useState<PostenRolle>(
-    rolleAusQuery(stufeParam, getKostenposten(postenParam)),
+  const [band, setBand] = useState<Beitragsband>(
+    bandAusQuery(stufeParam, getFlaeche(flaecheParam)),
   );
-  const [postenId, setPostenId] = useState(
-    getKostenposten(postenParam) ? getKostenposten(postenParam)!.id : "",
-  );
+  const [flaecheId, setFlaecheId] = useState(getFlaeche(flaecheParam)?.id ?? "");
   const [beitragsart, setBeitragsart] = useState<Beitragsart>("geld");
   const [addonBauzaun, setAddonBauzaun] = useState(false);
   const [firma, setFirma] = useState("");
@@ -58,8 +65,9 @@ export function SponsorAnfrageFormular() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const gewaehlterPosten = getKostenposten(postenId);
-  const rolleHinweis = rolleWarnung(gewaehlterPosten, rolle);
+  const gewaehlteFlaeche = getFlaeche(flaecheId);
+  const bandHinweis = bandWarnung(gewaehlteFlaeche, band);
+  const ohneFlaecheHinweis = bandHinweisOhneFlaeche(band, flaecheId);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setHoneypotReady(true));
@@ -67,23 +75,43 @@ export function SponsorAnfrageFormular() {
   }, []);
 
   useEffect(() => {
-    const nextArt = anfrageArtAusQuery(stufeParam, postenParam);
-    setAnfrageArt(nextArt);
-    const nextPosten = getKostenposten(postenParam);
-    if (nextPosten) {
-      setPostenId(nextPosten.id);
-      setRolle(rolleAusQuery(stufeParam, nextPosten));
+    const flaecheIdResolved = flaecheParamAusSearch(
+      searchParams.get("flaeche"),
+      searchParams.get("posten"),
+    );
+    const nextWeg = anfrageWegAusQuery(
+      stufeParam,
+      searchParams.get("flaeche"),
+      searchParams.get("posten"),
+    );
+    setAnfrageWeg(nextWeg);
+    const nextFlaeche = getFlaeche(flaecheIdResolved);
+    if (nextFlaeche) {
+      setFlaecheId(nextFlaeche.id);
+      if (nextWeg === "flaeche") {
+        setBand(bandAusQuery(stufeParam, nextFlaeche));
+      }
+    }
+    if (nextWeg === "beitrag") {
+      setBand(bandAusQuery(stufeParam, nextFlaeche));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stufeParam, postenParam]);
+  }, [stufeParam, searchParams]);
 
-  function updateQuery(nextArt: AnfrageArt, nextRolle: PostenRolle, nextPosten: string) {
+  function updateQuery(
+    nextWeg: AnfrageWeg,
+    nextBand: Beitragsband,
+    nextFlaeche: string,
+  ) {
     const q = new URLSearchParams();
-    if (nextArt === "partner") {
+    if (nextWeg === "partner") {
       q.set("stufe", "partner");
+    } else if (nextWeg === "beitrag") {
+      q.set("stufe", nextBand);
+      if (nextFlaeche) q.set("flaeche", nextFlaeche);
     } else {
-      q.set("stufe", nextRolle);
-      if (nextPosten) q.set("posten", nextPosten);
+      q.set("stufe", nextBand);
+      if (nextFlaeche) q.set("flaeche", nextFlaeche);
     }
     router.replace(`/sponsor-werden?${q.toString()}#anfrage`, { scroll: false });
     requestAnimationFrame(() => {
@@ -110,9 +138,9 @@ export function SponsorAnfrageFormular() {
       setErrorMsg("Bitte eine gültige E-Mail-Adresse angeben.");
       return;
     }
-    if (anfrageArt === "posten" && !getKostenposten(postenId)) {
+    if (anfrageWeg === "flaeche" && !getFlaeche(flaecheId)) {
       setStatus("error");
-      setErrorMsg("Ohne konkreten Posten gibt es keinen Hauptsponsor-Titel.");
+      setErrorMsg("Bitte eine Fläche wählen.");
       return;
     }
     if (!bestaetigt) {
@@ -127,11 +155,11 @@ export function SponsorAnfrageFormular() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          anfrageArt,
-          rolle: anfrageArt === "posten" ? rolle : undefined,
-          postenId: anfrageArt === "posten" ? postenId : undefined,
-          beitragsart: anfrageArt === "posten" ? beitragsart : undefined,
-          addonBauzaun: anfrageArt === "partner" ? addonBauzaun : false,
+          anfrageWeg,
+          band: anfrageWeg === "partner" ? "partner" : band,
+          flaecheId: anfrageWeg !== "partner" && flaecheId ? flaecheId : undefined,
+          beitragsart: anfrageWeg !== "partner" ? beitragsart : undefined,
+          addonBauzaun: anfrageWeg === "partner" ? addonBauzaun : false,
           firma,
           ansprechpartner,
           email,
@@ -165,8 +193,8 @@ export function SponsorAnfrageFormular() {
           <a href={`mailto:${SPONSORING_2027.kontaktEmail}`} className="text-koder-orange hover:underline">
             {SPONSORING_2027.kontaktEmail}
           </a>
-          . Als Nächstes klären wir Rückfragen, Logo-Formate, Rechnungsadresse und – falls ihr eine Sache
-          stellt – den Liefertermin.
+          . Als Nächstes: Band bestätigen, Fläche ja/nein, Logo-Formate, Rechnungsadresse – falls ihr eine
+          Sache stellt, den Liefertermin.
         </p>
         <Button type="button" variant="outline" className="mt-2" onClick={() => setStatus("idle")}>
           Weitere Anfrage
@@ -175,33 +203,38 @@ export function SponsorAnfrageFormular() {
     );
   }
 
+  const flaecheOptions = SPONSOR_FLAECHEN.filter(
+    (f) => f.status !== "vergeben" || f.mehrereMoeglich,
+  );
+
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
         {/* Weg A */}
         <fieldset
           className={`rounded-2xl border p-5 transition-colors ${
-            anfrageArt === "partner" ? "border-koder-orange bg-koder-orange/5" : "border-border"
+            anfrageWeg === "partner" ? "border-koder-orange bg-koder-orange/5" : "border-border"
           }`}
         >
           <legend className="px-1 text-sm font-bold">Weg A – Partner {SPONSORING_2027.partnerPreis} €</legend>
           <p className="mt-2 text-sm text-muted-foreground">
-            Kein Posten nötig. Bauzaun, Zieleinlauf, Website, Instagram.
+            Kein Flächen-Select nötig. Bauzaun, Zieleinlauf, Website, Instagram.
           </p>
           <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
               type="radio"
-              name="anfrageArt"
-              checked={anfrageArt === "partner"}
+              name="anfrageWeg"
+              checked={anfrageWeg === "partner"}
               onChange={() => {
-                setAnfrageArt("partner");
-                updateQuery("partner", rolle, postenId);
+                setAnfrageWeg("partner");
+                setFlaecheId("");
+                updateQuery("partner", "partner", "");
               }}
               className="mt-1"
             />
             <span>Partner {SPONSORING_2027.partnerPreis} € bar wählen</span>
           </label>
-          {anfrageArt === "partner" && (
+          {anfrageWeg === "partner" && (
             <label className="mt-3 flex items-start gap-2 text-sm">
               <input
                 type="checkbox"
@@ -217,125 +250,198 @@ export function SponsorAnfrageFormular() {
         {/* Weg B */}
         <fieldset
           className={`rounded-2xl border p-5 transition-colors ${
-            anfrageArt === "posten" ? "border-koder-orange bg-koder-orange/5" : "border-border"
+            anfrageWeg === "beitrag" ? "border-koder-orange bg-koder-orange/5" : "border-border"
           }`}
         >
-          <legend className="px-1 text-sm font-bold">Weg B – Einen Posten übernehmen</legend>
+          <legend className="px-1 text-sm font-bold">Weg B – Förderer oder Hauptsponsor</legend>
           <p className="mt-2 text-sm text-muted-foreground">
-            Posten Pflicht. Rolle wird vorgeschlagen, ihr könnt sie anpassen.
+            Beitrag nach Band. Fläche optional – oder Restkosten.
           </p>
           <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
               type="radio"
-              name="anfrageArt"
-              checked={anfrageArt === "posten"}
+              name="anfrageWeg"
+              checked={anfrageWeg === "beitrag"}
               onChange={() => {
-                setAnfrageArt("posten");
-                updateQuery("posten", rolle, postenId);
+                setAnfrageWeg("beitrag");
+                setBand("foerderer");
+                updateQuery("beitrag", "foerderer", flaecheId);
               }}
               className="mt-1"
             />
-            <span>Einen offenen Posten übernehmen</span>
+            <span>Förderer oder Hauptsponsor (Beitrag)</span>
+          </label>
+        </fieldset>
+
+        {/* Weg C */}
+        <fieldset
+          className={`rounded-2xl border p-5 transition-colors ${
+            anfrageWeg === "flaeche" ? "border-koder-orange bg-koder-orange/5" : "border-border"
+          }`}
+        >
+          <legend className="px-1 text-sm font-bold">Weg C – Nur eine Fläche</legend>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Fläche Pflicht. Band wird aus dem Richtwert vorgeschlagen – ihr könnt höher gehen.
+          </p>
+          <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
+            <input
+              type="radio"
+              name="anfrageWeg"
+              checked={anfrageWeg === "flaeche"}
+              onChange={() => {
+                setAnfrageWeg("flaeche");
+                const first = flaecheOptions[0];
+                if (first) {
+                  setFlaecheId(first.id);
+                  setBand(vorschlagBand(first));
+                  updateQuery("flaeche", vorschlagBand(first), first.id);
+                } else {
+                  updateQuery("flaeche", "foerderer", "");
+                }
+              }}
+              className="mt-1"
+            />
+            <span>Eine Fläche übernehmen</span>
           </label>
         </fieldset>
       </div>
 
-      {anfrageArt === "posten" && (
+      {anfrageWeg === "beitrag" && (
         <div className="space-y-6 rounded-2xl border border-border bg-muted/20 p-5">
+          <fieldset className="space-y-3">
+            <legend className="text-sm font-semibold">Band</legend>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(["foerderer", "hauptsponsor"] as const).map((id) => (
+                <label
+                  key={id}
+                  className={`cursor-pointer rounded-xl border p-3 text-sm transition-colors ${
+                    band === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="band"
+                    value={id}
+                    checked={band === id}
+                    onChange={() => {
+                      if (!isBeitragsband(id)) return;
+                      setBand(id);
+                      updateQuery("beitrag", id, flaecheId);
+                    }}
+                    className="sr-only"
+                  />
+                  <span className="font-bold">{BAND_LABEL[id]}</span>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {id === "foerderer" ? "ca. 400–500 € Gegenwert" : "ab ca. 800 € Gegenwert"}
+                  </p>
+                </label>
+              ))}
+            </div>
+            {band === "hauptsponsor" && (
+              <p className="text-xs text-muted-foreground">
+                Hauptsponsoren begrenzt auf max. {SPONSORING_2027.hauptsponsorMax} – wir sagen zu oder
+                bieten Förderer an.
+              </p>
+            )}
+          </fieldset>
+
           <div className="space-y-2">
-            <Label htmlFor="sponsor-posten">Posten (Pflicht)</Label>
+            <Label htmlFor="sponsor-flaeche-opt">Fläche (optional)</Label>
             <select
-              id="sponsor-posten"
-              name="posten"
-              required
-              value={postenId}
+              id="sponsor-flaeche-opt"
+              name="flaecheOptional"
+              value={flaecheId}
               onChange={(e) => {
                 const id = e.target.value;
-                setPostenId(id);
-                const p = getKostenposten(id);
-                const nextRolle = vorschlagRolle(p);
-                setRolle(nextRolle);
-                updateQuery("posten", nextRolle, id);
+                setFlaecheId(id);
+                updateQuery("beitrag", band, id);
+              }}
+              className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
+            >
+              <option value={KEINE_FLAECHE}>Keine Fläche / nur Beitrag</option>
+              <option value={RESTKOSTEN_ID}>Restkosten (Lauf ermöglichen)</option>
+              {flaecheOptions
+                .filter((f) => f.id !== RESTKOSTEN_ID)
+                .map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.titel}
+                  </option>
+                ))}
+            </select>
+            {ohneFlaecheHinweis && !flaecheId && (
+              <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                {ohneFlaecheHinweis}
+              </p>
+            )}
+          </div>
+
+          <BeitragsartFeld beitragsart={beitragsart} setBeitragsart={setBeitragsart} />
+        </div>
+      )}
+
+      {anfrageWeg === "flaeche" && (
+        <div className="space-y-6 rounded-2xl border border-border bg-muted/20 p-5">
+          <div className="space-y-2">
+            <Label htmlFor="sponsor-flaeche">Fläche (Pflicht)</Label>
+            <select
+              id="sponsor-flaeche"
+              name="flaeche"
+              required
+              value={flaecheId}
+              onChange={(e) => {
+                const id = e.target.value;
+                setFlaecheId(id);
+                const f = getFlaeche(id);
+                const nextBand = vorschlagBand(f);
+                setBand(nextBand);
+                updateQuery("flaeche", nextBand, id);
               }}
               className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
             >
               <option value="">Bitte wählen …</option>
-              {KOSTENPARTNERSCHAFTEN.map((p) => (
-                <option key={p.id} value={p.id} disabled={p.status === "vergeben"}>
-                  {p.titel}
-                  {p.status !== "offen" ? ` (${STATUS_LABEL[p.status]})` : ""}
+              {flaecheOptions.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.titel}
+                  {f.status !== "offen" && !f.mehrereMoeglich ? ` (${STATUS_LABEL[f.status]})` : ""}
                 </option>
               ))}
             </select>
           </div>
 
           <fieldset className="space-y-3">
-            <legend className="text-sm font-semibold">Rolle (Vorschlag)</legend>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {(["hauptsponsor", "sachpartner"] as const).map((id) => (
+            <legend className="text-sm font-semibold">Band (Vorschlag)</legend>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {(["partner", "foerderer", "hauptsponsor"] as const).map((id) => (
                 <label
                   key={id}
                   className={`cursor-pointer rounded-xl border p-3 text-sm transition-colors ${
-                    rolle === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
+                    band === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
                   }`}
                 >
                   <input
                     type="radio"
-                    name="rolle"
+                    name="bandFlaeche"
                     value={id}
-                    checked={rolle === id}
+                    checked={band === id}
                     onChange={() => {
-                      if (!isPostenRolle(id)) return;
-                      setRolle(id);
-                      updateQuery("posten", id, postenId);
+                      if (!isBeitragsband(id)) return;
+                      setBand(id);
+                      updateQuery("flaeche", id, flaecheId);
                     }}
                     className="sr-only"
                   />
-                  <span className="font-bold">{ROLLE_LABEL[id]}</span>
+                  <span className="font-bold">{BAND_LABEL[id]}</span>
                 </label>
               ))}
             </div>
-            {rolleHinweis && (
+            {bandHinweis && (
               <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-100">
-                {rolleHinweis}
+                {bandHinweis}
               </p>
             )}
           </fieldset>
 
-          <fieldset className="space-y-3">
-            <legend className="text-sm font-semibold">Art des Beitrags</legend>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {(
-                [
-                  ["geld", "Geld für den Posten"],
-                  ["sach", "Sachspende"],
-                  ["beides", "Beides"],
-                ] as const
-              ).map(([id, label]) => (
-                <label
-                  key={id}
-                  className={`cursor-pointer rounded-xl border p-3 text-sm ${
-                    beitragsart === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="beitragsart"
-                    value={id}
-                    checked={beitragsart === id}
-                    onChange={() => {
-                      if (isBeitragsart(id)) setBeitragsart(id);
-                    }}
-                    className="sr-only"
-                  />
-                  <span className="font-semibold">{label}</span>
-                </label>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Wer die Sache stellt, zahlt nicht bar nach.
-            </p>
-          </fieldset>
+          <BeitragsartFeld beitragsart={beitragsart} setBeitragsart={setBeitragsart} />
         </div>
       )}
 
@@ -471,14 +577,55 @@ export function SponsorAnfrageFormular() {
         ) : (
           <>
             <Send className="size-4" />
-            {anfrageArt === "partner"
-              ? `Partner anfragen (${SPONSORING_2027.partnerPreis} €)`
-              : rolle === "hauptsponsor"
-                ? "Hauptsponsor anfragen"
-                : "Sachpartner anfragen"}
+            {submitLabel(anfrageWeg, band)}
           </>
         )}
       </Button>
     </form>
+  );
+}
+
+function BeitragsartFeld({
+  beitragsart,
+  setBeitragsart,
+}: {
+  beitragsart: Beitragsart;
+  setBeitragsart: (v: Beitragsart) => void;
+}) {
+  return (
+    <fieldset className="space-y-3">
+      <legend className="text-sm font-semibold">Art des Beitrags</legend>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {(
+          [
+            ["geld", "Geld"],
+            ["sach", "Sache"],
+            ["beides", "Beides"],
+          ] as const
+        ).map(([id, label]) => (
+          <label
+            key={id}
+            className={`cursor-pointer rounded-xl border p-3 text-sm ${
+              beitragsart === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
+            }`}
+          >
+            <input
+              type="radio"
+              name="beitragsart"
+              value={id}
+              checked={beitragsart === id}
+              onChange={() => {
+                if (isBeitragsart(id)) setBeitragsart(id);
+              }}
+              className="sr-only"
+            />
+            <span className="font-semibold">{label}</span>
+          </label>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Wer die Sache stellt, zahlt nicht bar nach. Gegenwert zählt für das Band.
+      </p>
+    </fieldset>
   );
 }
