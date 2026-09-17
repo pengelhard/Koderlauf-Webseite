@@ -1,5 +1,7 @@
--- Koderlauf Database Schema
--- Creates all tables for events, participants, results, and gallery
+-- ARCHIV – NICHT auf das neue Projekt rrhcoelbplyiwczzkrjl anwenden.
+-- Alter Entwurf (Anmeldung in eigener DB + Stripe). Live läuft die Anmeldung
+-- über Race Result. Stammdaten: supabase/migrations/20260917_orga_stammdaten.sql
+
 
 -- Enable UUID extension
 create extension if not exists "uuid-ossp";

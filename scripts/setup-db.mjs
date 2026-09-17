@@ -1,63 +1,51 @@
 #!/usr/bin/env node
 /**
- * Koderlauf Database Setup Script
+ * Orga-Stammdaten auf das neue Supabase-Projekt bringen.
  *
- * Runs the migration SQL against Supabase.
- * Usage: node scripts/setup-db.mjs
+ * Option 1 (einfach): SQL-Editor
+ *   https://supabase.com/dashboard/project/rrhcoelbplyiwczzkrjl/sql/new
+ *   Datei: supabase/migrations/20260917_orga_stammdaten.sql → Run
  *
- * Requires SUPABASE_DB_URL environment variable:
- *   postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
- *
- * Or run the SQL manually in Supabase Dashboard > SQL Editor
+ * Option 2: Connection-String (Database-Passwort, nicht der Publishable-Key)
+ *   SUPABASE_DB_URL='postgresql://postgres:PASS@db.rrhcoelbplyiwczzkrjl.supabase.co:5432/postgres' \
+ *     node scripts/setup-db.mjs
  */
 
-import { readFileSync } from "fs";
-import { execSync } from "child_process";
+import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 
-const migrationPath = "supabase/migrations/20260225_init_schema.sql";
-
-const dbUrl = process.env.SUPABASE_DB_URL;
+const PROJECT_REF = "rrhcoelbplyiwczzkrjl";
+const SQL_EDITOR = `https://supabase.com/dashboard/project/${PROJECT_REF}/sql/new`;
+const migrationPath = "supabase/migrations/20260917_orga_stammdaten.sql";
+const dbUrl = process.env.SUPABASE_DB_URL?.trim();
 
 if (!dbUrl) {
-  console.log("=".repeat(60));
-  console.log("KODERLAUF DATENBANK SETUP");
-  console.log("=".repeat(60));
-  console.log("");
-  console.log("Kein SUPABASE_DB_URL gefunden.");
-  console.log("");
-  console.log("Option 1: SQL direkt im Supabase Dashboard ausführen");
-  console.log("  1. Öffne: https://supabase.com/dashboard/project/dulsyqvhylxljdntbzbw/sql");
-  console.log("  2. Kopiere den Inhalt von:", migrationPath);
-  console.log("  3. Klicke 'Run'");
-  console.log("");
-  console.log("Option 2: Dieses Script mit DB-URL ausführen");
-  console.log("  SUPABASE_DB_URL='postgresql://postgres.[ref]:[pw]@...pooler.supabase.com:6543/postgres' node scripts/setup-db.mjs");
-  console.log("");
-  console.log("Die DB-URL findest du unter:");
-  console.log("  Dashboard > Settings > Database > Connection string > URI");
-  console.log("=".repeat(60));
-
-  console.log("\n\nHier ist das SQL zum Kopieren:\n");
-  console.log("-".repeat(60));
   const sql = readFileSync(migrationPath, "utf-8");
+  console.log("Koderlauf – Supabase-Setup (neues Projekt)");
+  console.log("");
+  console.log("Kein SUPABASE_DB_URL. Tabellen so anlegen:");
+  console.log(`  1. ${SQL_EDITOR}`);
+  console.log(`  2. Inhalt von ${migrationPath} einfügen`);
+  console.log("  3. Run");
+  console.log("");
+  console.log("Oder mit Datenbank-Passwort:");
+  console.log(
+    `  SUPABASE_DB_URL='postgresql://postgres:PASS@db.${PROJECT_REF}.supabase.co:5432/postgres' node scripts/setup-db.mjs`,
+  );
+  console.log("");
+  console.log("SQL folgt:\n");
   console.log(sql);
-  console.log("-".repeat(60));
-
   process.exit(1);
 }
 
-console.log("Verbinde mit Supabase-Datenbank...");
-
+console.log("Verbinde mit Supabase…");
 try {
-  const sql = readFileSync(migrationPath, "utf-8");
-  execSync(`psql "${dbUrl}" -c "${sql.replace(/"/g, '\\"')}"`, {
+  execFileSync("psql", [dbUrl, "-v", "ON_ERROR_STOP=1", "-f", migrationPath], {
     stdio: "inherit",
-    timeout: 30000,
   });
-  console.log("\n✅ Datenbank-Tabellen erfolgreich erstellt!");
+  console.log("Stammdaten-Tabellen sind angelegt (sponsors, fassjagd_state).");
 } catch (error) {
-  console.error("\n❌ Fehler:", error.message);
-  console.log("\nBitte führe das SQL manuell im Supabase Dashboard aus:");
-  console.log("https://supabase.com/dashboard/project/dulsyqvhylxljdntbzbw/sql");
+  console.error(error instanceof Error ? error.message : error);
+  console.error(`Bitte SQL manuell ausführen: ${SQL_EDITOR}`);
   process.exit(1);
 }

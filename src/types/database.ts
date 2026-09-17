@@ -7,15 +7,10 @@ export type Json =
   | Json[];
 
 /**
- * Hinweis zum Schema:
- * Die Init-Migration (`supabase/migrations/20260225_init_schema.sql`) beschreibt
- * events / participants / results / gallery_images in einem älteren Entwurf.
- * Die TypeScript-Typen und die Data-Layer-Queries nutzen abweichende Spalten
- * (vorname/nachname, gallery_photos, results.jahr). Live laufen Anmeldung und
- * Teilnehmerlisten über Race Result, nicht über diese Tabellen.
- *
- * `sponsors` (Migration 20260917) ist die geplante Orga-Stammdaten-Tabelle;
- * das PDF fällt auf Code-Daten zurück, solange die Tabelle leer ist oder fehlt.
+ * Live-Schema (neues Projekt `rrhcoelbplyiwczzkrjl`):
+ * `sponsors` + `fassjagd_state`. Anmeldung/Teilnehmer bleiben bei Race Result.
+ * Die alten Tabellen-Typen (participants/results/gallery_photos) sind nur noch
+ * für Demo-Fallbacks im Data-Layer – sie werden auf dem neuen Projekt nicht angelegt.
  */
 export interface Database {
   public: {
@@ -62,6 +57,19 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["sponsors"]["Insert"]>;
+      };
+      fassjagd_state: {
+        Row: {
+          id: number;
+          overrides: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          overrides?: Json;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["fassjagd_state"]["Insert"]>;
       };
       participants: {
         Row: {

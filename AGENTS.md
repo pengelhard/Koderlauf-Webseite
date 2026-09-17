@@ -7,7 +7,7 @@ This is the **Koderlauf-Webseite** — a Next.js 16 / React 19 website for a loc
 ### Tech Stack
 
 - **Next.js 16** (App Router) + TypeScript + Tailwind CSS v4 + shadcn/ui + Framer Motion
-- **Supabase** (project ref: `dulsyqvhylxljdntbzbw`) — Auth, Postgres, Storage
+- **Supabase** (project ref: `rrhcoelbplyiwczzkrjl`, URL `https://rrhcoelbplyiwczzkrjl.supabase.co`) — Orga-Stammdaten (Sponsoren, Fassjagd-Overrides). Auth/Storage bei Bedarf. Teilnehmer bleiben bei Race Result.
 - Stripe Checkout for payments, Resend for emails
 - Hosting target: Vercel
 
@@ -45,12 +45,13 @@ Runs on `http://localhost:3000`. Hot reload works out of the box.
 ### Environment variables
 
 A `.env.local` file is required with:
-- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon/publishable key
-- `STRIPE_SECRET_KEY` — Required for `/api/checkout` (payment route)
+- `NEXT_PUBLIC_SUPABASE_URL` — `https://rrhcoelbplyiwczzkrjl.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Publishable key (`sb_publishable_…`, also as `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
+- `SUPABASE_SECRET_KEY` — Server only (`sb_secret_…`); Fassjagd persist + sponsor contacts PDF. Alias: `SUPABASE_SERVICE_ROLE_KEY`
+- `STRIPE_SECRET_KEY` — Optional; `/api/checkout` is not used for live registration
 - `NEXT_PUBLIC_SITE_URL` — Public site URL (`https://koderlauf.de` prod, `https://test.koderlauf.de` test)
 
-The dev server starts fine with placeholder Supabase values (demo data is shown as fallback). Stripe requires a real key only when the checkout API is called.
+The dev server starts without the secret key (demo/code fallback). Set the secret key in Vercel so admin overrides survive deploys.
 
 ### Testdomain (test.koderlauf.de)
 
@@ -74,7 +75,13 @@ Separate test URL for reviewers; production stays on `koderlauf.de`.
 
 ### Database setup
 
-Tables must be created by running the SQL in `supabase/migrations/20260225_init_schema.sql` via the Supabase SQL Editor. The migration creates: `events`, `participants`, `results`, `gallery_images`, RLS policies, indexes, and seed data for 2026/2027 events.
+Neues leeres Projekt: SQL in `supabase/migrations/20260917_orga_stammdaten.sql` im Editor ausführen:
+
+https://supabase.com/dashboard/project/rrhcoelbplyiwczzkrjl/sql/new
+
+Creates `sponsors` (2026 seed: Namen/Ort/Website, Kontakte leer) and `fassjagd_state`. Do **not** apply `supabase/archive/20260225_init_schema.sql` (old unused Stripe/participants draft).
+
+Or: `SUPABASE_DB_URL='postgresql://…' node scripts/setup-db.mjs`
 
 ### Caveats
 

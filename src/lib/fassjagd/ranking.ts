@@ -1,6 +1,7 @@
 import type { AnmeldungParticipant } from "@/lib/anmeldungen/types";
 import { resolveVerein } from "@/lib/anmeldungen/vereine";
 import { getFassjagdFreezeAt, isFassjagdFrozen } from "@/lib/fassjagd/freeze";
+import { personVereinRaw } from "@/lib/fassjagd/person-id";
 import { slugifyVerein } from "@/lib/fassjagd/slug";
 import {
   getFassjagdOverrides,
@@ -109,7 +110,7 @@ export function buildFassjagdBoard(
   let ohneAngabe = 0;
 
   for (const p of participants) {
-    const r = resolveVerein(p.verein, overrides.aliases);
+    const r = resolveVerein(personVereinRaw(p, overrides.personGroups), overrides.aliases);
     if (r.empty) {
       ohneAngabe += 1;
       continue;

@@ -7,12 +7,12 @@
  * Wenn die Tabelle `sponsors` in Supabase existiert und Zeilen hat,
  * gewinnt die Datenbank (analog Demo-Fallback der restlichen App).
  */
-import { createClient } from "@supabase/supabase-js";
 import {
   getPublicSponsors,
   type PublicSponsor,
   type SponsorYear,
 } from "./sponsors-public.ts";
+import { createAdminSupabaseClient } from "../supabase/admin.ts";
 import type { Database } from "../../types/database";
 
 export type { SponsorYear };
@@ -131,14 +131,10 @@ function rowToRecord(row: SponsorRow): SponsorRecord {
 }
 
 async function tryLoadSponsorsFromDb(year: SponsorYear): Promise<SponsorRecord[] | null> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  if (!url || !serviceKey) return null;
+  const supabase = createAdminSupabaseClient();
+  if (!supabase) return null;
 
   try {
-    const supabase = createClient<Database>(url, serviceKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
     const { data, error } = await supabase
       .from("sponsors")
       .select("*")

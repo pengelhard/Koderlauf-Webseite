@@ -13,6 +13,7 @@ import {
   setExcluded,
   setManualFreeze,
 } from "@/lib/fassjagd/store";
+import { persistFassjagdToDb } from "@/lib/fassjagd/persist";
 import { normalizeVereinKey } from "@/lib/anmeldungen/vereine";
 
 function unauthorized() {
@@ -58,26 +59,34 @@ export async function POST(request: Request) {
 
   if (action === "merge") {
     mergeAlias(body?.from ?? "", body?.to ?? "", normalizeVereinKey);
+    const persisted = await persistFassjagdToDb();
     const board = await loadFassjagdBoard();
-    return NextResponse.json({ ok: true, board, overrides: exportOverrides() });
+    return NextResponse.json({ ok: true, persisted, board, overrides: exportOverrides() });
   }
 
   if (action === "exclude" || action === "include") {
     setExcluded(body?.name ?? "", action === "exclude");
+    const persisted = await persistFassjagdToDb();
     const board = await loadFassjagdBoard();
-    return NextResponse.json({ ok: true, board, overrides: exportOverrides() });
+    return NextResponse.json({ ok: true, persisted, board, overrides: exportOverrides() });
   }
 
   if (action === "freeze") {
     const board = await loadFassjagdBoard();
     setManualFreeze(true, { ...board, frozen: true, status: "offiziell" });
-    return NextResponse.json({ ok: true, board: { ...board, frozen: true, status: "offiziell" } });
+    const persisted = await persistFassjagdToDb();
+    return NextResponse.json({
+      ok: true,
+      persisted,
+      board: { ...board, frozen: true, status: "offiziell" },
+    });
   }
 
   if (action === "unfreeze") {
     setManualFreeze(false, null);
+    const persisted = await persistFassjagdToDb();
     const board = await loadFassjagdBoard();
-    return NextResponse.json({ ok: true, board });
+    return NextResponse.json({ ok: true, persisted, board });
   }
 
   if (action === "week-image") {
