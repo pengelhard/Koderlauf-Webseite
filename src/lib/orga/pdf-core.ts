@@ -38,15 +38,36 @@ function wrap(font: PDFFont, text: string, size: number, maxWidth: number): stri
   const words = safe.split(/\s+/);
   const lines: string[] = [];
   let cur = "";
-  for (const w of words) {
-    const next = cur ? `${cur} ${w}` : w;
-    if (font.widthOfTextAtSize(next, size) <= maxWidth) {
-      cur = next;
-    } else {
+
+  const flushLong = (chunk: string) => {
+    if (font.widthOfTextAtSize(chunk, size) <= maxWidth) {
+      const next = cur ? `${cur} ${chunk}` : chunk;
+      if (font.widthOfTextAtSize(next, size) <= maxWidth) {
+        cur = next;
+        return;
+      }
       if (cur) lines.push(cur);
-      cur = w;
+      cur = chunk;
+      return;
     }
-  }
+    if (cur) {
+      lines.push(cur);
+      cur = "";
+    }
+    let buf = "";
+    for (const ch of chunk) {
+      const next = buf + ch;
+      if (font.widthOfTextAtSize(next, size) <= maxWidth) {
+        buf = next;
+      } else {
+        if (buf) lines.push(buf);
+        buf = ch;
+      }
+    }
+    cur = buf;
+  };
+
+  for (const w of words) flushLong(w);
   if (cur) lines.push(cur);
   return lines.length ? lines : [""];
 }
@@ -66,7 +87,13 @@ export type PdfWriterOptions = {
   landscape?: boolean;
   compact?: boolean;
   margin?: number;
+  bodySize?: number;
+  headerSize?: number;
+  rowHeight?: number;
+  lineHeight?: number;
 };
+
+export type KvRow = { label: string; value: string };
 
 export class PdfWriter {
   doc!: PDFDocument;
@@ -76,6 +103,8 @@ export class PdfWriter {
   y = 0;
   pageNo = 0;
   footer = "";
+  /** Wird auf Folgeseiten oben wiederholt. */
+  runningHeader = "";
   pageSize: [number, number];
   margin: number;
   compact: boolean;
@@ -88,10 +117,10 @@ export class PdfWriter {
     this.pageSize = options.landscape ? A4_LANDSCAPE : A4_PORTRAIT;
     this.margin = options.margin ?? 40;
     this.compact = options.compact ?? false;
-    this.bodySize = this.compact ? 7.5 : 9;
-    this.headerSize = this.compact ? 7 : 8;
-    this.rowHeight = this.compact ? 13 : 16;
-    this.lineHeight = this.compact ? 10.5 : 12;
+    this.bodySize = options.bodySize ?? (this.compact ? 7.5 : 9);
+    this.headerSize = options.headerSize ?? (this.compact ? 7 : 8);
+    this.rowHeight = options.rowHeight ?? (this.compact ? 13 : 16);
+    this.lineHeight = options.lineHeight ?? (this.compact ? 10.5 : 12);
   }
 
   get pageWidth() {
@@ -139,6 +168,23 @@ export class PdfWriter {
       font: this.font,
       color: MUTED,
     });
+    if (this.pageNo > 1 && this.runningHeader) {
+      this.page.drawText(winAnsi(this.runningHeader), {
+        x: this.margin,
+        y: this.y - 11,
+        size: 10,
+        font: this.bold,
+        color: FOREST,
+      });
+      this.y -= 16;
+      this.page.drawLine({
+        start: { x: this.margin, y: this.y },
+        end: { x: this.pageWidth - this.margin, y: this.y },
+        thickness: 0.9,
+        color: ORANGE,
+      });
+      this.y -= 12;
+    }
   }
 
   ensure(h: number) {
@@ -180,7 +226,7 @@ export class PdfWriter {
   }
 
   paragraph(text: string, size?: number) {
-    const fs = size ?? (this.compact ? 7.5 : 9);
+    const fs = size ?? this.bodySize;
     const width = this.contentWidth;
     for (const line of wrap(this.font, text, fs, width)) {
       this.ensure(this.lineHeight + 2);
@@ -206,6 +252,106 @@ export class PdfWriter {
       color: ORANGE,
     });
     this.y -= this.compact ? 16 : 20;
+  }
+
+  /**
+   * Firma als Block, darunter beschriftete Kontaktdaten.
+   * Passt der Block nicht, folgt eine neue Seite (laufender Header).
+   */
+  kvBlock(
+    title: string,
+    rows: KvRow[],
+    options?: { index?: number; badge?: string },
+  ) {
+    const padX = 12;
+    const padY = 11;
+    const titleSize = 12.5;
+    const labelW = 128;
+    const valueW = this.contentWidth - padX * 2 - labelW;
+    const titleMaxW =
+      this.contentWidth - padX * 2 - (options?.badge ? 110 : 0);
+    const titleText =
+      options?.index != null ? `${options.index}. ${title}` : title;
+    const titleLines = wrap(this.bold, titleText, titleSize, titleMaxW);
+    const valueLines = rows.map((r) =>
+      wrap(this.font, r.value, this.bodySize, valueW),
+    );
+    const rowHs = valueLines.map((lines) =>
+      Math.max(this.lineHeight + 3, lines.length * this.lineHeight + 3),
+    );
+    const titleH = titleLines.length * (titleSize + 3) + 8;
+    const h = padY + titleH + rowHs.reduce((a, b) => a + b, 0) + padY;
+
+    this.ensure(h + 10);
+
+    const boxY = this.y - h;
+    this.page.drawRectangle({
+      x: this.margin - 2,
+      y: boxY,
+      width: this.contentWidth + 4,
+      height: h,
+      color: rgb(0.97, 0.98, 0.97),
+      borderColor: LINE,
+      borderWidth: 0.6,
+    });
+
+    let cursor = this.y - padY;
+    titleLines.forEach((line) => {
+      this.page.drawText(winAnsi(line), {
+        x: this.margin + padX - 4,
+        y: cursor - titleSize,
+        size: titleSize,
+        font: this.bold,
+        color: FOREST,
+      });
+      cursor -= titleSize + 3;
+    });
+
+    if (options?.badge) {
+      const badge = winAnsi(options.badge);
+      const bw = this.bold.widthOfTextAtSize(badge, 8);
+      const bx = this.pageWidth - this.margin - padX - bw + 2;
+      const by = this.y - padY - 12;
+      this.page.drawRectangle({
+        x: bx - 5,
+        y: by - 3,
+        width: bw + 10,
+        height: 14,
+        color: rgb(1, 0.94, 0.88),
+        borderColor: ORANGE,
+        borderWidth: 0.5,
+      });
+      this.page.drawText(badge, {
+        x: bx,
+        y: by,
+        size: 8,
+        font: this.bold,
+        color: ORANGE,
+      });
+    }
+
+    cursor -= 6;
+    for (let i = 0; i < rows.length; i++) {
+      this.page.drawText(winAnsi(rows[i].label), {
+        x: this.margin + padX - 4,
+        y: cursor - this.bodySize,
+        size: this.bodySize,
+        font: this.bold,
+        color: MUTED,
+      });
+      valueLines[i].forEach((line, li) => {
+        this.page.drawText(winAnsi(line), {
+          x: this.margin + padX - 4 + labelW,
+          y: cursor - this.bodySize - li * this.lineHeight,
+          size: this.bodySize,
+          font: this.font,
+          color: BLACK,
+        });
+      });
+      cursor -= rowHs[i];
+    }
+
+    this.y -= h + 8;
   }
 
   private headerLines(cols: Col[]): string[][] {

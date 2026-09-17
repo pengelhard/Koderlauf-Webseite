@@ -10,12 +10,14 @@ import {
   ClipboardList,
   LayoutList,
   Package,
+  Handshake,
 } from "lucide-react";
 import type { OrgaAdminPayload } from "@/lib/orga/types";
 
-function pdfHref(kind: string, strecke?: string): string {
+function pdfHref(kind: string, strecke?: string, year?: string): string {
   const params = new URLSearchParams({ kind });
   if (strecke) params.set("strecke", strecke);
+  if (year) params.set("year", year);
   return `/api/orga/pdf?${params.toString()}`;
 }
 
@@ -25,6 +27,7 @@ export default function OrgaAdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<OrgaAdminPayload | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sponsorYear, setSponsorYear] = useState<"2026" | "2027">("2026");
 
   const refresh = useCallback(async () => {
     const res = await fetch("/api/orga/admin", { cache: "no-store" });
@@ -80,7 +83,8 @@ export default function OrgaAdminPage() {
       <div className="mx-auto max-w-md px-4 pt-28 pb-16">
         <h1 className="text-3xl font-extrabold">Orga Admin</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Startunterlagen, T-Shirts und Abendkarten. Gleiches Passwort wie Fassjagd-Admin.
+          Startunterlagen, T-Shirts, Abendkarten und Sponsoren. Gleiches Passwort wie
+          Fassjagd-Admin.
         </p>
         <form
           className="mt-6 space-y-3"
@@ -254,6 +258,50 @@ export default function OrgaAdminPage() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Sponsoren */}
+      <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-koder-orange/15 text-koder-orange">
+            <Handshake className="h-5 w-5" aria-hidden />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold">Sponsoren</h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Internes Kontakt-PDF nach Jahr. Firma als Block, darunter Adresse,
+              Ansprechpartner, E-Mail, Telefon, Social Media und Website. Noch nicht
+              gepflegte Felder stehen als „–“. Die öffentliche Seite zeigt weiterhin nur
+              Name, Ort, Logo und Website – keine Telefonnummern.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex max-w-xs rounded-2xl border border-border bg-muted/40 p-1">
+          {(["2026", "2027"] as const).map((year) => (
+            <button
+              key={year}
+              type="button"
+              onClick={() => setSponsorYear(year)}
+              className={[
+                "flex-1 rounded-xl px-4 py-2 text-sm font-bold transition-colors",
+                sponsorYear === year
+                  ? "bg-koder-orange text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              ].join(" ")}
+            >
+              {year}
+            </button>
+          ))}
+        </div>
+
+        <a
+          href={pdfHref("sponsoren", undefined, sponsorYear)}
+          className="inline-flex items-center gap-2 rounded-xl bg-koder-orange px-4 py-2.5 text-sm font-semibold text-white"
+        >
+          <Download size={16} aria-hidden />
+          Sponsoren-PDF {sponsorYear}
+        </a>
       </section>
 
       {/* T-Shirt & Abendkarten */}

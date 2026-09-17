@@ -6,9 +6,63 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+/**
+ * Hinweis zum Schema:
+ * Die Init-Migration (`supabase/migrations/20260225_init_schema.sql`) beschreibt
+ * events / participants / results / gallery_images in einem älteren Entwurf.
+ * Die TypeScript-Typen und die Data-Layer-Queries nutzen abweichende Spalten
+ * (vorname/nachname, gallery_photos, results.jahr). Live laufen Anmeldung und
+ * Teilnehmerlisten über Race Result, nicht über diese Tabellen.
+ *
+ * `sponsors` (Migration 20260917) ist die geplante Orga-Stammdaten-Tabelle;
+ * das PDF fällt auf Code-Daten zurück, solange die Tabelle leer ist oder fehlt.
+ */
 export interface Database {
   public: {
     Tables: {
+      sponsors: {
+        Row: {
+          id: string;
+          year: number;
+          firma: string;
+          ort: string | null;
+          adresse: string | null;
+          ansprechpartner: string | null;
+          email: string | null;
+          telefon: string | null;
+          social_media: string | null;
+          website: string | null;
+          links: string[] | null;
+          logo_path: string | null;
+          hauptsponsor: boolean;
+          invert_in_light_mode: boolean;
+          sort_order: number;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          year: number;
+          firma: string;
+          ort?: string | null;
+          adresse?: string | null;
+          ansprechpartner?: string | null;
+          email?: string | null;
+          telefon?: string | null;
+          social_media?: string | null;
+          website?: string | null;
+          links?: string[] | null;
+          logo_path?: string | null;
+          hauptsponsor?: boolean;
+          invert_in_light_mode?: boolean;
+          sort_order?: number;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["sponsors"]["Insert"]>;
+      };
       participants: {
         Row: {
           id: string;
