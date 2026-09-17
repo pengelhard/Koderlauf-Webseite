@@ -14,6 +14,7 @@ export function StickyCta() {
 
   if (!offen) return null;
   if (pathname.startsWith("/anmeldung")) return null;
+  if (pathname.startsWith("/sponsor-werden")) return null;
 
   // Kein backdrop-blur: fixierte Elemente mit Blur verursachen auf Mobile Scroll-Ghosting
   return (
