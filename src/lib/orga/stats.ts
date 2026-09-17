@@ -1,11 +1,12 @@
 import { TSHIRT_SIZES } from "@/lib/pricing";
+import { bibLabel } from "./pdf-core";
 import {
   groupStartunterlagen,
   listStreckenWithParticipants,
   streckeMeta,
   streckeSlug,
   summarizeStrecke,
-} from "@/lib/orga/startunterlagen";
+} from "./startunterlagen";
 import type {
   AbendkarteRecipient,
   OrgaAdminPayload,
@@ -15,7 +16,7 @@ import type {
   ShirtRecipient,
   SizeCount,
   StartunterlagenStreckeSummary,
-} from "@/lib/orga/types";
+} from "./types";
 
 const SIZE_RANK = new Map<string, number>(
   TSHIRT_SIZES.map((s, i) => [s, i]),
@@ -115,6 +116,18 @@ export function buildOrgaStats(
   if (!fields.payment) {
     hinweise.push(
       "Kein Bezahlstatus in der Adressliste (Spalte z. B. Bezahlt/Status). Ausgabe-PDF zeigt ihn daher nicht.",
+    );
+  }
+  if (!fields.bib) {
+    hinweise.push(
+      "Spalte Startnummer fehlt in der Adressliste. Sobald Race Result die Nummern vergibt, Contest.Bib / Startnummer in die Ausgabeliste aufnehmen – die PDFs zeigen sie dann automatisch.",
+    );
+  } else if (
+    participants.length > 0 &&
+    participants.every((p) => bibLabel(p.bib) === "–")
+  ) {
+    hinweise.push(
+      "Startnummern sind in der Adressliste noch nicht gesetzt (Race Solution). Die Ausgabe-PDFs zeigen „–“ und füllen die Nummern automatisch, sobald sie in Race Result stehen.",
     );
   }
 

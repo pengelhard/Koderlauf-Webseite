@@ -1,3 +1,6 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import type { PDFDocument, PDFImage } from "pdf-lib";
 import {
   formatSponsorAdresse,
   formatSponsorLinks,
@@ -8,13 +11,49 @@ import {
   type SponsorYear,
   type SponsorsLoadResult,
 } from "../data/sponsors.ts";
-import { footerNote, PdfWriter } from "./pdf-core.ts";
+import { footerNote, PdfWriter, type KvLogo } from "./pdf-core.ts";
 
 export function sponsorenPdfFilename(year: SponsorYear): string {
   return `koderlauf-${year}-sponsoren.pdf`;
 }
 
-function drawSponsor(w: PdfWriter, s: SponsorRecord, index: number) {
+const LOGO_MAX_W = 72;
+const LOGO_MAX_H = 38;
+
+async function embedSponsorLogo(
+  doc: PDFDocument,
+  logoPath: string | undefined,
+  invert?: boolean,
+): Promise<KvLogo | undefined> {
+  if (!logoPath) return undefined;
+  const rel = logoPath.replace(/^\//, "");
+  const abs = path.join(process.cwd(), "public", rel);
+  const candidates = [abs];
+  if (/\.gif$/i.test(abs)) candidates.unshift(abs.replace(/\.gif$/i, ".png"));
+
+  for (const file of candidates) {
+    try {
+      const bytes = await readFile(file);
+      let image: PDFImage;
+      if (bytes[0] === 0x89 && bytes[1] === 0x50) image = await doc.embedPng(bytes);
+      else if (bytes[0] === 0xff && bytes[1] === 0xd8) image = await doc.embedJpg(bytes);
+      else continue;
+      const scale = Math.min(LOGO_MAX_W / image.width, LOGO_MAX_H / image.height, 1);
+      return {
+        image,
+        width: image.width * scale,
+        height: image.height * scale,
+        invert,
+      };
+    } catch {
+      continue;
+    }
+  }
+  return undefined;
+}
+
+async function drawSponsor(w: PdfWriter, s: SponsorRecord, index: number) {
+  const logo = await embedSponsorLogo(w.doc, s.logo, s.invertInLightMode);
   w.kvBlock(
     s.firma,
     [
@@ -25,7 +64,7 @@ function drawSponsor(w: PdfWriter, s: SponsorRecord, index: number) {
       { label: "Social Media", value: pdfDash(formatSponsorSocial(s)) },
       { label: "Website / Links", value: pdfDash(formatSponsorLinks(s)) },
     ],
-    { index, badge: s.hauptsponsor ? "Hauptsponsor" : undefined },
+    { index, badge: s.hauptsponsor ? "Hauptsponsor" : undefined, logo },
   );
 }
 
@@ -47,7 +86,7 @@ export async function renderSponsorenPdf(loaded: SponsorsLoadResult): Promise<Ui
     `Internes Orga-PDF · ${n} ${n === 1 ? "Eintrag" : "Einträge"} · Quelle: ${quelle}`,
   );
   w.paragraph(
-    "Alle Kontaktdaten nur für die Orga. Felder, die noch nicht gepflegt sind, stehen als Gedankenstrich – sobald Adresse, Telefon oder Mail ergänzt werden, erscheinen sie hier. Die öffentliche Sponsoren-Seite zeigt weiterhin nur Name, Ort, Logo und Website.",
+    "Alle Kontaktdaten nur für die Orga. Felder, die noch nicht gepflegt sind, stehen als Gedankenstrich. Logos rechts am Eintrag. Die öffentliche Sponsoren-Seite zeigt weiterhin nur Name, Ort, Logo und Website.",
   );
 
   if (sponsors.length === 0) {
@@ -65,7 +104,7 @@ export async function renderSponsorenPdf(loaded: SponsorsLoadResult): Promise<Ui
   if (haupts.length > 0) {
     w.heading("Hauptsponsoren");
     for (const s of haupts) {
-      drawSponsor(w, s, index);
+      await drawSponsor(w, s, index);
       index += 1;
     }
   }
@@ -76,7 +115,7 @@ export async function renderSponsorenPdf(loaded: SponsorsLoadResult): Promise<Ui
       : "Sponsoren & Unterstützer",
   );
   for (const s of weitere) {
-    drawSponsor(w, s, index);
+    await drawSponsor(w, s, index);
     index += 1;
   }
 
