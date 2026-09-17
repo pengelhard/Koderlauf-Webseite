@@ -51,7 +51,16 @@ function wrap(font: PDFFont, text: string, size: number, maxWidth: number): stri
   return lines.length ? lines : [""];
 }
 
-export type Col = { key: string; header: string; width: number; align?: "left" | "right" };
+export const CHECKBOX_CELL = "\x00cb";
+
+export type Col = {
+  key: string;
+  header: string;
+  width: number;
+  align?: "left" | "right";
+  /** Leere Zelle wird als Abhak-Kästchen gezeichnet. */
+  checkbox?: boolean;
+};
 
 export type PdfWriterOptions = {
   landscape?: boolean;
@@ -199,9 +208,56 @@ export class PdfWriter {
     this.y -= this.compact ? 16 : 20;
   }
 
+  private headerLines(cols: Col[]): string[][] {
+    return cols.map((col) => wrap(this.bold, col.header, this.headerSize, col.width - 4));
+  }
+
+  private headerHeight(colLines: string[][]): number {
+    const lines = Math.max(1, ...colLines.map((l) => l.length));
+    return Math.max(this.compact ? 18 : 22, lines * (this.headerSize + 2) + 6);
+  }
+
+  private drawCheckbox(cx: number, cy: number, size = 9) {
+    const half = size / 2;
+    this.page.drawRectangle({
+      x: cx - half,
+      y: cy - half,
+      width: size,
+      height: size,
+      borderColor: BLACK,
+      borderWidth: 0.75,
+    });
+  }
+
+  private drawTableCell(
+    col: Col,
+    value: string,
+    x: number,
+    rowTop: number,
+    rowH: number,
+    cellLines: string[],
+  ) {
+    if (col.checkbox && (!value || value === CHECKBOX_CELL)) {
+      this.drawCheckbox(x + col.width / 2, rowTop - rowH / 2);
+      return;
+    }
+    cellLines.forEach((line, li) => {
+      const tw = this.font.widthOfTextAtSize(winAnsi(line), this.bodySize);
+      const tx = col.align === "right" ? x + col.width - 3 - tw : x + 2;
+      this.page.drawText(winAnsi(line), {
+        x: tx,
+        y: rowTop - this.bodySize - 1 - li * this.lineHeight,
+        size: this.bodySize,
+        font: this.font,
+        color: BLACK,
+      });
+    });
+  }
+
   table(cols: Col[], rows: Record<string, string>[]) {
-    const headerH = this.compact ? 15 : 18;
     const drawHeader = () => {
+      const colLines = this.headerLines(cols);
+      const headerH = this.headerHeight(colLines);
       this.ensure(headerH + 4);
       let x = this.margin;
       this.page.drawRectangle({
@@ -211,15 +267,18 @@ export class PdfWriter {
         height: headerH,
         color: rgb(0.94, 0.96, 0.95),
       });
-      for (const col of cols) {
-        this.page.drawText(winAnsi(col.header), {
-          x: x + 2,
-          y: this.y - headerH + 4,
-          size: this.headerSize,
-          font: this.bold,
-          color: FOREST,
+      for (let i = 0; i < cols.length; i++) {
+        const col = colLines[i];
+        col.forEach((line, li) => {
+          this.page.drawText(winAnsi(line), {
+            x: x + 2,
+            y: this.y - headerH + 5 + li * (this.headerSize + 2),
+            size: this.headerSize,
+            font: this.bold,
+            color: FOREST,
+          });
         });
-        x += col.width;
+        x += cols[i].width;
       }
       this.y -= headerH;
     };
@@ -239,9 +298,11 @@ export class PdfWriter {
     }
 
     for (const row of rows) {
-      const cellLines = cols.map((col) =>
-        wrap(this.font, row[col.key] ?? "", this.bodySize, col.width - 4),
-      );
+      const cellLines = cols.map((col) => {
+        const raw = row[col.key] ?? "";
+        if (col.checkbox && (!raw || raw === CHECKBOX_CELL)) return [""];
+        return wrap(this.font, raw, this.bodySize, col.width - 4);
+      });
       const lines = Math.max(1, ...cellLines.map((l) => l.length));
       const h = Math.max(this.rowHeight, lines * this.lineHeight + 4);
       if (this.y - h < 48) {
@@ -257,17 +318,7 @@ export class PdfWriter {
       });
       for (let i = 0; i < cols.length; i++) {
         const col = cols[i];
-        cellLines[i].forEach((line, li) => {
-          const tw = this.font.widthOfTextAtSize(winAnsi(line), this.bodySize);
-          const tx = col.align === "right" ? x + col.width - 3 - tw : x + 2;
-          this.page.drawText(winAnsi(line), {
-            x: tx,
-            y: this.y - this.bodySize - 1 - li * this.lineHeight,
-            size: this.bodySize,
-            font: this.font,
-            color: BLACK,
-          });
-        });
+        this.drawTableCell(col, row[col.key] ?? "", x, this.y, h, cellLines[i]);
         x += col.width;
       }
       this.y -= h;
@@ -282,12 +333,15 @@ export class PdfWriter {
     leftLabel: string,
     rightLabel: string,
   ) {
-    const headerH = this.compact ? 24 : 28;
     const drawHeader = () => {
-      this.ensure(headerH + 4);
+      const colLines = this.headerLines(cols);
+      const subHeaderH = this.compact ? 12 : 14;
+      const colHeaderH = this.headerHeight(colLines);
+      const headerH = subHeaderH + colHeaderH;
       const tableW = cols.reduce((s, c) => s + c.width, 0);
       const leftW = cols.slice(0, dividerAfterCol).reduce((s, c) => s + c.width, 0);
 
+      this.ensure(headerH + 4);
       this.page.drawRectangle({
         x: this.margin - 2,
         y: this.y - headerH,
@@ -298,29 +352,32 @@ export class PdfWriter {
 
       this.page.drawText(winAnsi(leftLabel), {
         x: this.margin + 4,
-        y: this.y - 11,
+        y: this.y - 10,
         size: this.headerSize,
         font: this.bold,
         color: FOREST,
       });
       this.page.drawText(winAnsi(rightLabel), {
         x: this.margin + leftW + 6,
-        y: this.y - 11,
+        y: this.y - 10,
         size: this.headerSize,
         font: this.bold,
         color: FOREST,
       });
 
       let x = this.margin;
-      for (const col of cols) {
-        this.page.drawText(winAnsi(col.header), {
-          x: x + 2,
-          y: this.y - headerH + 5,
-          size: this.headerSize,
-          font: this.bold,
-          color: FOREST,
+      const colHeaderTop = this.y - subHeaderH;
+      for (let i = 0; i < cols.length; i++) {
+        colLines[i].forEach((line, li) => {
+          this.page.drawText(winAnsi(line), {
+            x: x + 2,
+            y: colHeaderTop - colHeaderH + 5 + li * (this.headerSize + 2),
+            size: this.headerSize,
+            font: this.bold,
+            color: FOREST,
+          });
         });
-        x += col.width;
+        x += cols[i].width;
       }
 
       const dividerX = this.margin + leftW;
@@ -337,9 +394,11 @@ export class PdfWriter {
     drawHeader();
 
     for (const row of rows) {
-      const cellLines = cols.map((col) =>
-        wrap(this.font, row[col.key] ?? "", this.bodySize, col.width - 4),
-      );
+      const cellLines = cols.map((col) => {
+        const raw = row[col.key] ?? "";
+        if (col.checkbox && (!raw || raw === CHECKBOX_CELL)) return [""];
+        return wrap(this.font, raw, this.bodySize, col.width - 4);
+      });
       const lines = Math.max(1, ...cellLines.map((l) => l.length));
       const h = Math.max(this.rowHeight, lines * this.lineHeight + 4);
       if (this.y - h < 48) {
@@ -366,17 +425,7 @@ export class PdfWriter {
 
       for (let i = 0; i < cols.length; i++) {
         const col = cols[i];
-        cellLines[i].forEach((line, li) => {
-          const tw = this.font.widthOfTextAtSize(winAnsi(line), this.bodySize);
-          const tx = col.align === "right" ? x + col.width - 3 - tw : x + 2;
-          this.page.drawText(winAnsi(line), {
-            x: tx,
-            y: this.y - this.bodySize - 1 - li * this.lineHeight,
-            size: this.bodySize,
-            font: this.font,
-            color: BLACK,
-          });
-        });
+        this.drawTableCell(col, row[col.key] ?? "", x, this.y, h, cellLines[i]);
         x += col.width;
       }
       this.y -= h;

@@ -9,7 +9,14 @@ import {
   type StartunterlagenRow,
   type StartunterlagenVariant,
 } from "@/lib/orga/startunterlagen";
-import { PdfWriter, formatStand, footerNote, bibLabel } from "@/lib/orga/pdf-core";
+import {
+  PdfWriter,
+  formatStand,
+  footerNote,
+  bibLabel,
+  CHECKBOX_CELL,
+  type Col,
+} from "@/lib/orga/pdf-core";
 
 function footer(): string {
   return footerNote(EVENT.jahr);
@@ -25,9 +32,9 @@ function rowToStandard(r: StartunterlagenRow): Record<string, string> {
     jg: r.jahrgang || "–",
     shirt: r.shirt,
     karte: r.abendkarten,
-    sn: "",
-    okShirt: "",
-    okKarte: "",
+    sn: CHECKBOX_CELL,
+    okShirt: CHECKBOX_CELL,
+    okKarte: CHECKBOX_CELL,
   };
 }
 
@@ -38,10 +45,10 @@ function rowToAusgabe(r: StartunterlagenRow): Record<string, string> {
     vorname: r.vorname,
     jg: r.jahrgang || "–",
     shirt: r.shirt,
-    okShirt: "",
+    okShirt: CHECKBOX_CELL,
     karte: r.abendkarten,
-    okKarte: "",
-    sn: "",
+    okKarte: CHECKBOX_CELL,
+    sn: CHECKBOX_CELL,
   };
 }
 
@@ -54,9 +61,9 @@ function rowToGesamt(r: StartunterlagenRow): Record<string, string> {
     jg: r.jahrgang || "–",
     shirt: r.shirt,
     karte: r.abendkarten,
-    sn: "",
-    okShirt: "",
-    okKarte: "",
+    sn: CHECKBOX_CELL,
+    okShirt: CHECKBOX_CELL,
+    okKarte: CHECKBOX_CELL,
   };
 }
 
@@ -68,9 +75,9 @@ function blankStandard(): Record<string, string> {
     jg: "",
     shirt: "",
     karte: "",
-    sn: "",
-    okShirt: "",
-    okKarte: "",
+    sn: CHECKBOX_CELL,
+    okShirt: CHECKBOX_CELL,
+    okKarte: CHECKBOX_CELL,
   };
 }
 
@@ -83,48 +90,48 @@ function blankGesamt(): Record<string, string> {
     jg: "",
     shirt: "",
     karte: "",
-    sn: "",
-    okShirt: "",
-    okKarte: "",
+    sn: CHECKBOX_CELL,
+    okShirt: CHECKBOX_CELL,
+    okKarte: CHECKBOX_CELL,
   };
 }
 
-const COLS_STANDARD = [
-  { key: "bib", header: "Nr.", width: 30 },
+const COLS_STANDARD: Col[] = [
+  { key: "bib", header: "Startnr.", width: 34 },
+  { key: "nachname", header: "Nachname", width: 100 },
+  { key: "vorname", header: "Vorname", width: 76 },
+  { key: "jg", header: "Jahrgang", width: 34 },
+  { key: "shirt", header: "T-Shirt Größe", width: 44 },
+  { key: "karte", header: "Tape Jam", width: 30 },
+  { key: "sn", header: "Startnummer", width: 44, checkbox: true },
+  { key: "okShirt", header: "T-Shirt", width: 36, checkbox: true },
+  { key: "okKarte", header: "Abendkarte", width: 40, checkbox: true },
+];
+
+const COLS_AUSGABE: Col[] = [
+  { key: "bib", header: "Startnr.", width: 34 },
   { key: "nachname", header: "Nachname", width: 108 },
-  { key: "vorname", header: "Vorname", width: 82 },
-  { key: "jg", header: "Jg.", width: 26 },
-  { key: "shirt", header: "Shirt", width: 34 },
-  { key: "karte", header: "Jam", width: 24 },
-  { key: "sn", header: "SN", width: 22 },
-  { key: "okShirt", header: "S", width: 20 },
-  { key: "okKarte", header: "K", width: 20 },
-] as const;
+  { key: "vorname", header: "Vorname", width: 80 },
+  { key: "jg", header: "Jahrgang", width: 34 },
+  { key: "shirt", header: "T-Shirt Größe", width: 44 },
+  { key: "okShirt", header: "T-Shirt", width: 36, checkbox: true },
+  { key: "karte", header: "Tape Jam", width: 30 },
+  { key: "okKarte", header: "Abendkarte", width: 40, checkbox: true },
+  { key: "sn", header: "Startnummer", width: 44, checkbox: true },
+];
 
-const COLS_AUSGABE = [
-  { key: "bib", header: "Nr.", width: 30 },
-  { key: "nachname", header: "Nachname", width: 118 },
-  { key: "vorname", header: "Vorname", width: 88 },
-  { key: "jg", header: "Jg.", width: 26 },
-  { key: "shirt", header: "Shirt", width: 34 },
-  { key: "okShirt", header: "S", width: 20 },
-  { key: "karte", header: "Jam", width: 24 },
-  { key: "okKarte", header: "K", width: 20 },
-  { key: "sn", header: "SN", width: 22 },
-] as const;
-
-const COLS_GESAMT = [
-  { key: "bib", header: "Nr.", width: 30 },
-  { key: "strecke", header: "Strecke", width: 88 },
-  { key: "nachname", header: "Nachname", width: 96 },
-  { key: "vorname", header: "Vorname", width: 72 },
-  { key: "jg", header: "Jg.", width: 26 },
-  { key: "shirt", header: "Shirt", width: 32 },
-  { key: "karte", header: "Jam", width: 22 },
-  { key: "sn", header: "SN", width: 22 },
-  { key: "okShirt", header: "S", width: 20 },
-  { key: "okKarte", header: "K", width: 20 },
-] as const;
+const COLS_GESAMT: Col[] = [
+  { key: "bib", header: "Startnr.", width: 34 },
+  { key: "strecke", header: "Strecke", width: 84 },
+  { key: "nachname", header: "Nachname", width: 88 },
+  { key: "vorname", header: "Vorname", width: 68 },
+  { key: "jg", header: "Jahrgang", width: 34 },
+  { key: "shirt", header: "T-Shirt Größe", width: 42 },
+  { key: "karte", header: "Tape Jam", width: 28 },
+  { key: "sn", header: "Startnummer", width: 44, checkbox: true },
+  { key: "okShirt", header: "T-Shirt", width: 36, checkbox: true },
+  { key: "okKarte", header: "Abendkarte", width: 40, checkbox: true },
+];
 
 async function writeStreckeHeader(
   w: PdfWriter,
@@ -141,7 +148,7 @@ async function writeStreckeHeader(
     `Stand ${formatStand(stats.fetchedAt)} · ${summary.teilnehmer} Teilnehmer · ${summary.shirts} Shirts · ${summary.karten} Abendkarten`,
   );
   w.paragraph(
-    "Abhaken bei der Ausgabe: SN = Startnummer/Chip, S = T-Shirt, K = Tape-Jam-Karte.",
+    "In den Spalten Startnummer, T-Shirt und Abendkarte zum Abhaken ausgeben.",
     7.5,
   );
 }
@@ -166,7 +173,7 @@ export async function pdfStartunterlagenStrecke(
 
   if (variant === "standard") {
     w.table(
-      [...COLS_STANDARD],
+      COLS_STANDARD,
       [
         ...rows.map(rowToStandard),
         ...Array.from({ length: NACHMELDUNG_ROWS }, blankStandard),
@@ -174,7 +181,7 @@ export async function pdfStartunterlagenStrecke(
     );
   } else {
     w.tableWithDivider(
-      [...COLS_AUSGABE],
+      COLS_AUSGABE,
       [...rows.map(rowToAusgabe), ...Array.from({ length: NACHMELDUNG_ROWS }, blankStandard)],
       4,
       "Identität",
@@ -205,12 +212,12 @@ export async function pdfStartunterlagenGesamt(stats: OrgaStats): Promise<Uint8A
     `Stand ${formatStand(stats.fetchedAt)} · ${rows.length} Teilnehmer · ${shirts} Shirts · ${karten} Abendkarten`,
   );
   w.paragraph(
-    "Für den Fall „Ich kenne meine Nummer, aber nicht die Strecke“. SN = Startnummer, S = Shirt, K = Karte.",
+    "Für den Fall „Ich kenne meine Nummer, aber nicht die Strecke“. Kästchen zum Abhaken bei der Ausgabe.",
     7.5,
   );
 
   w.table(
-    [...COLS_GESAMT],
+    COLS_GESAMT,
     [...rows.map(rowToGesamt), ...Array.from({ length: NACHMELDUNG_ROWS }, blankGesamt)],
   );
 

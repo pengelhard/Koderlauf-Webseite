@@ -6,6 +6,7 @@ import {
   formatStand,
   footerNote,
   bibLabel,
+  CHECKBOX_CELL,
   type Col,
 } from "@/lib/orga/pdf-core";
 import {
@@ -63,7 +64,7 @@ export async function pdfTshirtAusgabe(stats: OrgaStats): Promise<Uint8Array> {
     { key: "name", header: "Name", width: paymentCol ? 200 : 260 },
     { key: "size", header: "Größe", width: 56 },
     ...(paymentCol ? [{ key: "pay", header: "Status", width: 72 } satisfies Col] : []),
-    { key: "ok", header: "OK", width: 36 },
+    { key: "ok", header: "Ausgegeben", width: 44, checkbox: true },
   ];
 
   w.heading("A) Alphabetisch (Nachname)");
@@ -74,7 +75,7 @@ export async function pdfTshirtAusgabe(stats: OrgaStats): Promise<Uint8Array> {
       name: r.name,
       size: r.size,
       pay: r.paymentStatus || "–",
-      ok: "",
+      ok: CHECKBOX_CELL,
     })),
   );
 
@@ -86,7 +87,7 @@ export async function pdfTshirtAusgabe(stats: OrgaStats): Promise<Uint8Array> {
       name: r.name,
       size: r.size,
       pay: r.paymentStatus || "–",
-      ok: "",
+      ok: CHECKBOX_CELL,
     })),
   );
   return w.save();
@@ -109,13 +110,13 @@ export async function pdfAbendkarten(stats: OrgaStats): Promise<Uint8Array> {
       { key: "bib", header: "Startnr.", width: 42 },
       { key: "name", header: "Name", width: 280 },
       { key: "anzahl", header: "Karten", width: 52, align: "right" },
-      { key: "ok", header: "OK", width: 36 },
+      { key: "ok", header: "Ausgegeben", width: 44, checkbox: true },
     ],
     stats.abendkartenRecipients.map((r) => ({
       bib: bibLabel(r.bib),
       name: r.name,
       anzahl: String(r.anzahl),
-      ok: "",
+      ok: CHECKBOX_CELL,
     })),
   );
   if (stats.abendkartenTotal === 0) {
