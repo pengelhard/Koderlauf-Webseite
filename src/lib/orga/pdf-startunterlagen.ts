@@ -96,6 +96,20 @@ function blankGesamt(): Record<string, string> {
   };
 }
 
+function blankAusgabe(): Record<string, string> {
+  return {
+    bib: "",
+    nachname: "",
+    vorname: "",
+    jg: "",
+    shirt: "",
+    okShirt: CHECKBOX_CELL,
+    karte: "",
+    okKarte: CHECKBOX_CELL,
+    sn: CHECKBOX_CELL,
+  };
+}
+
 const COLS_STANDARD: Col[] = [
   { key: "bib", header: "Startnr.", width: 34 },
   { key: "nachname", header: "Nachname", width: 100 },
@@ -108,16 +122,17 @@ const COLS_STANDARD: Col[] = [
   { key: "okKarte", header: "Abendkarte", width: 40, checkbox: true },
 ];
 
+/** Hochformat A4: Spaltenbreiten Summe 523 bei Rand 36. */
 const COLS_AUSGABE: Col[] = [
-  { key: "bib", header: "Startnr.", width: 34 },
-  { key: "nachname", header: "Nachname", width: 108 },
-  { key: "vorname", header: "Vorname", width: 80 },
-  { key: "jg", header: "Jahrgang", width: 34 },
-  { key: "shirt", header: "T-Shirt Größe", width: 44 },
-  { key: "okShirt", header: "T-Shirt", width: 36, checkbox: true },
-  { key: "karte", header: "Tape Jam", width: 30 },
-  { key: "okKarte", header: "Abendkarte", width: 40, checkbox: true },
-  { key: "sn", header: "Startnummer", width: 44, checkbox: true },
+  { key: "bib", header: "Startnr.", width: 56 },
+  { key: "nachname", header: "Nachname", width: 118 },
+  { key: "vorname", header: "Vorname", width: 102 },
+  { key: "jg", header: "Jahrgang", width: 42 },
+  { key: "shirt", header: "Größe", width: 42 },
+  { key: "okShirt", header: "Shirt", width: 36, checkbox: true },
+  { key: "karte", header: "Karten", width: 42 },
+  { key: "okKarte", header: "Karte", width: 38, checkbox: true },
+  { key: "sn", header: "Nr. aus", width: 47, checkbox: true },
 ];
 
 const COLS_GESAMT: Col[] = [
@@ -137,9 +152,11 @@ async function writeStreckeHeader(
   w: PdfWriter,
   meta: ReturnType<typeof streckeMeta>,
   stats: OrgaStats,
-  variantLabel: string,
+  variant: "standard" | "ausgabe",
   summary: ReturnType<typeof summarizeStrecke>,
 ) {
+  const variantLabel =
+    variant === "standard" ? "Variante A – Checkliste" : "Variante B – Ausgabe";
   w.title(`Koderlauf ${EVENT.jahr} – Startunterlagen`);
   w.subtitle(
     `${meta.label} · ${meta.distanz} · Start ${meta.startzeit} · ${variantLabel}`,
@@ -148,8 +165,10 @@ async function writeStreckeHeader(
     `Stand ${formatStand(stats.fetchedAt)} · ${summary.teilnehmer} Teilnehmer · ${summary.shirts} Shirts · ${summary.karten} Abendkarten`,
   );
   w.paragraph(
-    "In den Spalten Startnummer, T-Shirt und Abendkarte zum Abhaken ausgeben.",
-    7.5,
+    variant === "ausgabe"
+      ? "Links Name und Startnummer, rechts Ausgabe zum Abhaken (Shirt, Abendkarte, Startnummer). Die Startnr. bleibt –, bis Race Result die Nummern in der Adressliste setzt. Beim nächsten PDF-Download erscheinen sie automatisch."
+      : "In den Spalten Startnummer, T-Shirt und Abendkarte zum Abhaken ausgeben.",
+    variant === "ausgabe" ? 9.5 : 7.5,
   );
 }
 
@@ -163,13 +182,19 @@ export async function pdfStartunterlagenStrecke(
   const meta = streckeMeta(streckeLabel);
   const summary = summarizeStrecke(rows);
 
-  const w = new PdfWriter({ landscape: true, compact: true });
+  const w =
+    variant === "ausgabe"
+      ? new PdfWriter({
+          bodySize: 10.5,
+          headerSize: 9.5,
+          rowHeight: 22,
+          lineHeight: 13.5,
+          margin: 36,
+        })
+      : new PdfWriter({ landscape: true, compact: true });
   await w.init(footer());
 
-  const variantLabel =
-    variant === "standard" ? "Variante A – Checkliste" : "Variante B – Ausgabe-Blöcke";
-
-  await writeStreckeHeader(w, meta, stats, variantLabel, summary);
+  await writeStreckeHeader(w, meta, stats, variant, summary);
 
   if (variant === "standard") {
     w.table(
@@ -182,9 +207,9 @@ export async function pdfStartunterlagenStrecke(
   } else {
     w.tableWithDivider(
       COLS_AUSGABE,
-      [...rows.map(rowToAusgabe), ...Array.from({ length: NACHMELDUNG_ROWS }, blankStandard)],
+      [...rows.map(rowToAusgabe), ...Array.from({ length: NACHMELDUNG_ROWS }, blankAusgabe)],
       4,
-      "Identität",
+      "Teilnehmer",
       "Ausgabe",
     );
   }

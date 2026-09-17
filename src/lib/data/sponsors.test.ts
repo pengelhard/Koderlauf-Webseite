@@ -6,6 +6,7 @@ import {
   formatSponsorLinks,
   formatSponsorSocial,
   getSponsorsFromCode,
+  overlaySponsorContact,
   pdfDash,
 } from "./sponsors.ts";
 import { getPublicSponsors, parseSponsorYear } from "./sponsors-public.ts";
@@ -29,17 +30,35 @@ test("parseSponsorYear akzeptiert nur 2026 und 2027", () => {
   assert.equal(parseSponsorYear(null), null);
 });
 
-test("PDF-Felder: fehlende Werte als Gedankenstrich, Ort als Adresse", () => {
+test("PDF-Felder: recherchierte Kontakte, fehlende Werte als Gedankenstrich", () => {
   assert.equal(pdfDash(""), "–");
   assert.equal(pdfDash(null), "–");
   assert.equal(pdfDash("  Max  "), "Max");
   const sample = getSponsorsFromCode(2026).find((s) => s.firma === "Bittig IT");
   assert.ok(sample);
-  assert.equal(formatSponsorAdresse(sample), "Obermögersheim");
-  assert.equal(pdfDash(sample.telefon), "–");
-  assert.equal(pdfDash(sample.email), "–");
-  assert.equal(pdfDash(sample.ansprechpartner), "–");
+  assert.match(formatSponsorAdresse(sample), /Obermögersheim 211/);
+  assert.match(pdfDash(sample.telefon), /09836/);
+  assert.match(pdfDash(sample.email), /bittig-it\.de/);
+  assert.match(pdfDash(sample.ansprechpartner), /Tobias/);
   assert.match(formatSponsorLinks(sample), /bittig-it\.de/);
+
+  const jaeger = getSponsorsFromCode(2026).find((s) => s.firma === "Jäger");
+  assert.ok(jaeger);
+  assert.equal(pdfDash(jaeger.telefon), "–");
+  assert.equal(pdfDash(jaeger.email), "–");
+});
+
+test("Datenbank-Werte überschreiben Code, leere DB-Felder werden ergänzt", () => {
+  const overlaid = overlaySponsorContact({
+    id: "bittig-it-2026",
+    year: 2026,
+    firma: "Bittig IT",
+    ort: "Obermögersheim",
+    email: "",
+    telefon: "09999 1",
+  });
+  assert.equal(overlaid.telefon, "09999 1");
+  assert.match(overlaid.email ?? "", /bittig-it\.de/);
 });
 
 test("Instagram-Website gilt als Social Media, wenn kein Extra-Feld da ist", () => {

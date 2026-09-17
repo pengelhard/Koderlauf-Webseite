@@ -201,9 +201,10 @@ export default function OrgaAdminPage() {
           <div>
             <h2 className="text-lg font-bold">Startunterlagen</h2>
             <p className="mt-0.5 text-sm text-muted-foreground">
-              Querformat A4, kompakte Schrift. Pro Strecke Variante A (Checkliste) und B
-              (Identität / Ausgabe getrennt). Variante C = alle Strecken nach Startnummer.
-              Leere Zeilen am Ende für Nachmeldungen.
+              Variante A bleibt Querformat-Checkliste. Variante B (Ausgabe) ist Hochformat
+              mit größerer Schrift: links Name/Startnr., rechts Abhak-Spalten. Startnummern
+              erscheinen automatisch, sobald Race Result sie in der Adressliste setzt.
+              Variante C = alle Strecken. Leere Zeilen am Ende für Nachmeldungen.
             </p>
           </div>
         </div>
@@ -247,7 +248,7 @@ export default function OrgaAdminPage() {
                     <a
                       href={pdfHref("start-ausgabe", s.slug)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:border-koder-orange/40"
-                      title="Variante B – Ausgabe-Blöcke"
+                      title="Variante B – Ausgabe (Hochformat)"
                     >
                       <Download size={14} aria-hidden />
                       B Ausgabe
@@ -269,10 +270,10 @@ export default function OrgaAdminPage() {
           <div>
             <h2 className="text-lg font-bold">Sponsoren</h2>
             <p className="mt-0.5 text-sm text-muted-foreground">
-              Internes Kontakt-PDF nach Jahr. Firma als Block, darunter Adresse,
-              Ansprechpartner, E-Mail, Telefon, Social Media und Website. Noch nicht
-              gepflegte Felder stehen als „–“. Die öffentliche Seite zeigt weiterhin nur
-              Name, Ort, Logo und Website – keine Telefonnummern.
+              Internes Kontakt-PDF nach Jahr. Firma als Block, Logo rechts, darunter
+              Adresse, Ansprechpartner, E-Mail, Telefon, Social Media und Website.
+              Öffentliche Felder und Web-Impressen sind ergänzt; was fehlt, steht als „–“.
+              Die Website zeigt weiterhin nur Name, Ort, Logo und Website.
             </p>
           </div>
         </div>
