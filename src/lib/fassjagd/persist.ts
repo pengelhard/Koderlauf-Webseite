@@ -63,7 +63,7 @@ export async function hydrateFassjagdFromDb(): Promise<boolean> {
       .eq("id", STATE_ID)
       .maybeSingle();
     if (error || !data) return false;
-    importOverrides(overridesFromJson(data.overrides));
+    importOverrides(overridesFromJson((data as { overrides?: unknown }).overrides));
     return true;
   } catch {
     return false;

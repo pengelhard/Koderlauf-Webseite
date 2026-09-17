@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../../types/database";
 import {
   hasAdminSupabaseConfig,
   supabaseSecretKey,
@@ -12,7 +11,7 @@ export function createAdminSupabaseClient() {
   const secret = supabaseSecretKey();
   if (!url || !secret) return null;
 
-  return createClient<Database>(url, secret, {
+  return createClient(url, secret, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
