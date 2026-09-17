@@ -89,6 +89,13 @@ export function Navbar() {
               </button>
             )}
 
+            <Link
+              href="/sponsor-werden"
+              className="hidden md:inline-flex rounded-xl border border-white/40 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition hover:border-koder-orange hover:text-koder-orange"
+            >
+              Sponsor 2027 werden
+            </Link>
+
             {/* Desktop Anmelden button - always visible on md+ */}
             <AnmeldeLink
               className="hidden md:inline-flex rounded-xl bg-koder-orange px-5 py-2 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-koder-orange/90"
@@ -138,9 +145,16 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
+                <Link
+                  href="/sponsor-werden"
+                  onClick={() => setMobileOpen(false)}
+                  className="mt-4 rounded-2xl border border-white/40 px-6 py-3 text-center text-sm font-semibold uppercase tracking-widest text-white"
+                >
+                  Sponsor 2027 werden
+                </Link>
                 <AnmeldeLink
                   onClick={() => setMobileOpen(false)}
-                  className="mt-4 rounded-2xl bg-koder-orange px-6 py-3 text-center text-sm font-semibold uppercase tracking-widest text-white"
+                  className="rounded-2xl bg-koder-orange px-6 py-3 text-center text-sm font-semibold uppercase tracking-widest text-white"
                 >
                   Jetzt anmelden
                 </AnmeldeLink>

@@ -6,12 +6,14 @@ import { Features } from "@/components/sections/features";
 import { Zeitplan } from "@/components/sections/zeitplan";
 import { Stats } from "@/components/sections/stats";
 import { Faq } from "@/components/sections/faq";
+import { SponsoringPromo } from "@/components/sections/sponsoring-promo";
 
 export default function Home() {
   return (
     <>
       <Hero />
       <EventInfo />
+      <SponsoringPromo />
       <FassjagdPromo />
       <JubilaeumsProgramm />
       <Features />

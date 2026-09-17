@@ -85,6 +85,12 @@ export default function SponsorenPage() {
             Ohne unsere Sponsoren und Unterstützer wäre der Koderlauf nicht möglich.
           </p>
           <YearSwitcher value={yearTab} onChange={setYearTab} />
+          <Link
+            href="/sponsor-werden"
+            className="mt-8 inline-flex rounded-xl bg-koder-orange px-6 py-3 text-sm font-bold uppercase tracking-widest text-white hover:bg-koder-orange/90"
+          >
+            Sponsor 2027 werden
+          </Link>
         </motion.div>
 
         {list.length === 0 ? (
@@ -98,8 +104,14 @@ export default function SponsorenPage() {
             <h2 className="mt-3 text-2xl font-extrabold">Sponsoring Koderlauf {yearTab}</h2>
             <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
               Die Sponsoren und Unterstützer für den Koderlauf {yearTab} werden wir hier bekannt geben, sobald
-              die Partnerschaften feststehen. Interesse? Meldet euch gern bei uns.
+              die Partnerschaften feststehen.
             </p>
+            <Link
+              href="/sponsor-werden"
+              className="mt-6 inline-flex rounded-xl bg-koder-orange px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-white hover:bg-koder-orange/90"
+            >
+              Partner oder Hauptsponsor werden
+            </Link>
           </motion.div>
         ) : (
           <>
@@ -148,12 +160,12 @@ export default function SponsorenPage() {
         )}
 
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Du möchtest den Koderlauf auch unterstützen? Schreib uns an{" "}
-          <a href="mailto:info@koderlauf.de" className="text-koder-orange hover:underline">info@koderlauf.de</a>
-          {" "}oder nutzt unser{" "}
-          <Link href="/feedback" className="text-koder-orange hover:underline">
-            Kontaktformular
+          Du möchtest den Koderlauf auch unterstützen?{" "}
+          <Link href="/sponsor-werden" className="text-koder-orange hover:underline">
+            Sponsor 2027 werden
           </Link>
+          {" "}oder schreibt an{" "}
+          <a href="mailto:info@koderlauf.de" className="text-koder-orange hover:underline">info@koderlauf.de</a>
           .
         </p>
       </div>

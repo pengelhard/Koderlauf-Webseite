@@ -12,6 +12,7 @@ const PATHS = [
   "/anmeldung/einzeln",
   "/anmeldung/sammel",
   "/sponsoren",
+  "/sponsor-werden",
   "/feedback",
   "/impressum",
   "/datenschutz",
