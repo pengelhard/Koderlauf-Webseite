@@ -8,6 +8,8 @@ import {
   BAND_LABEL,
   BAND_VERGLEICH,
   ctaFuerFlaeche,
+  getEffectiveStatus,
+  isFlaecheBuchbar,
   SPONSOR_ABLAUF,
   SPONSOR_BANDER,
   SPONSOR_FALLBEISPIELE,
@@ -52,7 +54,7 @@ export function SponsorWarum() {
     {
       icon: Shield,
       title: "Faire, öffentliche Flächen",
-      text: "Pro Fläche eine Firma. Status OFFEN oder VERGEBEN – für alle sichtbar.",
+      text: "Pro Slot OFFEN oder VERGEBEN – teilbar, wo Hälften existieren.",
     },
     {
       icon: Handshake,
@@ -122,8 +124,8 @@ export function SponsorBandVergleich() {
                 Leistung
               </th>
               <th className="px-4 py-3 font-semibold">Partner 150 €</th>
-              <th className="px-4 py-3 font-semibold">Förderer ca. 500 €</th>
-              <th className="px-4 py-3 font-semibold">Hauptsponsor ab 800 €</th>
+              <th className="px-4 py-3 font-semibold">Förderer ab 300 €</th>
+              <th className="px-4 py-3 font-semibold">Hauptsponsor ab 500 €</th>
             </tr>
           </thead>
           <tbody>
@@ -144,10 +146,10 @@ export function SponsorBandVergleich() {
           <div key={band} className="rounded-2xl border border-border bg-card p-4">
             <h3 className="font-bold">
               {band === "partner"
-                ? "Partner 150 €"
+                ? "Partner ab 150 €"
                 : band === "foerderer"
-                  ? "Förderer ca. 500 €"
-                  : "Hauptsponsor ab 800 €"}
+                  ? "Förderer ab 300 €"
+                  : "Hauptsponsor ab 500 €"}
             </h3>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               {BAND_VERGLEICH.map((row) => (
@@ -198,7 +200,8 @@ export function SponsorBandVergleich() {
 }
 
 function FlaecheKarte({ flaeche }: { flaeche: SponsorFlaeche }) {
-  const waehlbar = flaeche.status !== "vergeben" || flaeche.mehrereMoeglich;
+  const effectiveStatus = getEffectiveStatus(flaeche);
+  const waehlbar = isFlaecheBuchbar(flaeche.id);
   const cta = ctaFuerFlaeche(flaeche);
   const hasDetails =
     flaeche.aufteilbar || flaeche.hinweis || flaeche.beschreibung !== flaeche.kurz;
@@ -207,7 +210,7 @@ function FlaecheKarte({ flaeche }: { flaeche: SponsorFlaeche }) {
     <article className="flex flex-col rounded-2xl border border-border bg-card p-5">
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-lg font-bold">{flaeche.titel}</h3>
-        <StatusBadge status={flaeche.status} mehrere={flaeche.mehrereMoeglich} />
+        <StatusBadge status={effectiveStatus} mehrere={flaeche.mehrereMoeglich} />
       </div>
       <span className="mt-2 inline-flex w-fit rounded-full border border-koder-orange/30 bg-koder-orange/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-koder-orange">
         {flaeche.badgeLabel}
@@ -218,8 +221,8 @@ function FlaecheKarte({ flaeche }: { flaeche: SponsorFlaeche }) {
         {flaeche.werbungKurz}
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        <span className="font-semibold text-foreground">Richtwert: </span>
-        {flaeche.richtkosten}
+        <span className="font-semibold text-foreground">Festpreis: </span>
+        {flaeche.festpreis} € · {BAND_LABEL[flaeche.vorgeschlagenesBand]}
       </p>
 
       {hasDetails && (
@@ -258,8 +261,8 @@ export function SponsorOffeneFlaechen() {
     <section id="flaechen" className="mt-16 scroll-mt-28">
       <h2 className="text-2xl font-extrabold tracking-tight">Offene Flächen</h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Eine Firma pro Fläche (Ausnahme Restkosten-Topf). Status OFFEN oder VERGEBEN. Richtwert =
-        Einkaufswert. Standard: Verein kauft und organisiert – ihr zahlt den Richtwert.
+        Festpreise pro Slot. Teure Flächen haben Komplett plus Hälften – eine Firma darf beide
+        Hälften nehmen. Status OFFEN oder VERGEBEN. Standard: Verein kauft – ihr zahlt den Festpreis.
       </p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         {SPONSOR_FLAECHEN.map((flaeche) => (

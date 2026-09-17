@@ -27,8 +27,7 @@ export function SponsoringPromo() {
                 Partner {SPONSORING_2027.partnerPreis} €, Förderer oder Hauptsponsor
               </h2>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                Drei Bänder für Sichtbarkeit – Flächen optional. Hauptsponsor ab ca.{" "}
-                {SPONSORING_2027.hauptsponsorAb} €, auch ohne lieferbare Sache. Anfrage ohne
+                Drei Bänder ab 150 / 300 / 500 € – Flächen optional mit Festpreisen. Anfrage ohne
                 Online-Zahlung.
               </p>
             </div>

@@ -5,9 +5,11 @@ import {
   bandAusQuery,
   bandWarnung,
   ctaFuerFlaeche,
+  getEffectiveStatus,
   getFlaeche,
   isAnfrageWeg,
   isBeitragsband,
+  isFlaecheBuchbar,
   normalizeFlaecheId,
   normalizeStufe,
   SPONSOR_FLAECHEN,
@@ -16,53 +18,46 @@ import {
   vorschlagBand,
 } from "./sponsoring-2027.ts";
 
-test("zehn Flächen inkl. Restkosten, kein T-Shirt", () => {
-  assert.equal(SPONSOR_FLAECHEN.length, 10);
-  assert.ok(SPONSOR_FLAECHEN.every((f) => f.status === "offen" || f.mehrereMoeglich));
-  assert.equal(
-    SPONSOR_FLAECHEN.some((f) => /t-?shirt/i.test(f.titel)),
-    false,
-  );
-  assert.ok(SPONSOR_FLAECHEN.some((f) => f.id === "bauzaun-einzelfeld"));
+test("13 Flächen-Slots inkl. Hälften und Restkosten", () => {
+  assert.equal(SPONSOR_FLAECHEN.length, 13);
+  assert.ok(SPONSOR_FLAECHEN.some((f) => f.id === "medaillen-a"));
+  assert.ok(SPONSOR_FLAECHEN.some((f) => f.id === "preise-2"));
+  assert.ok(SPONSOR_FLAECHEN.some((f) => f.id === "bauzaun-stellen"));
   assert.ok(SPONSOR_FLAECHEN.some((f) => f.id === "restkosten"));
-  assert.equal(normalizeFlaecheId("bauzaun-feld"), "bauzaun-einzelfeld");
+  assert.equal(normalizeFlaecheId("siegerpreise"), "preise");
+  assert.equal(normalizeFlaecheId("bauzaun-feld"), "bauzaun-stellen");
 });
 
-test("kein Sachpartner mehr im Modell", () => {
+test("Bänder 150 / 300 / 500", () => {
+  assert.equal(SPONSORING_2027.partnerPreis, 150);
+  assert.equal(SPONSORING_2027.foerdererAb, 300);
+  assert.equal(SPONSORING_2027.hauptsponsorAb, 500);
+  assert.equal(normalizeStufe("sachpartner"), "foerderer");
   const json = JSON.stringify(SPONSOR_FLAECHEN);
   assert.equal(json.includes("Sachpartner"), false);
-  assert.equal(normalizeStufe("sachpartner"), "foerderer");
+  assert.equal(json.includes("800"), false);
 });
 
-test("getFlaeche, Bänder und Query", () => {
-  assert.equal(getFlaeche("medaillen")?.titel, "Medaillen");
-  assert.equal(getFlaeche("bauzaun-feld")?.id, "bauzaun-einzelfeld");
-  assert.equal(getFlaeche("restkosten")?.mehrereMoeglich, true);
-  assert.equal(isAnfrageWeg("partner"), true);
-  assert.equal(isAnfrageWeg("beitrag"), true);
+test("getFlaeche, Query und Festpreise", () => {
+  assert.equal(getFlaeche("medaillen")?.festpreis, 1000);
+  assert.equal(getFlaeche("medaillen-a")?.festpreis, 500);
+  assert.equal(getFlaeche("preise-1")?.festpreis, 300);
   assert.equal(isAnfrageWeg("flaeche"), true);
   assert.equal(isBeitragsband("foerderer"), true);
   assert.equal(anfrageWegAusQuery("partner", null, null), "partner");
-  assert.equal(anfrageWegAusQuery("foerderer", null, null), "beitrag");
-  assert.equal(anfrageWegAusQuery("hauptsponsor", null, null), "beitrag");
-  assert.equal(anfrageWegAusQuery(null, "medaillen", null), "flaeche");
-  assert.equal(anfrageWegAusQuery("sachpartner", null, null), "beitrag");
-  assert.equal(anfrageWegAusQuery("sachpartner", "medaillen", null), "flaeche");
+  assert.equal(anfrageWegAusQuery(null, "medaillen-a", null), "flaeche");
   assert.equal(bandAusQuery("hauptsponsor", getFlaeche("medaillen")), "hauptsponsor");
   assert.equal(vorschlagBand(getFlaeche("medaillen")), "hauptsponsor");
-  assert.equal(vorschlagBand(getFlaeche("bauzaun-einzelfeld")), "partner");
-  assert.equal(vorschlagBand(getFlaeche("zielbogen")), "foerderer");
+  assert.equal(vorschlagBand(getFlaeche("startnummern")), "foerderer");
 });
 
-test("CTAs, Warnungen und Submit-Labels", () => {
-  assert.equal(SPONSORING_2027.partnerPreis, 150);
-  assert.equal(SPONSORING_2027.hauptsponsorAb, 800);
-  assert.equal(ctaFuerFlaeche(getFlaeche("medaillen")!).label, "Diese Fläche anfragen");
+test("Komplett/Hälften-Logik", () => {
+  assert.equal(getEffectiveStatus(getFlaeche("medaillen")!), "offen");
+  assert.equal(isFlaecheBuchbar("medaillen"), true);
+  assert.equal(isFlaecheBuchbar("medaillen-a"), true);
   assert.match(ctaFuerFlaeche(getFlaeche("medaillen")!).href, /flaeche=medaillen/);
-  assert.match(ctaFuerFlaeche(getFlaeche("medaillen")!).href, /stufe=hauptsponsor/);
-  assert.ok(bandWarnung(getFlaeche("medaillen"), "partner"));
-  assert.equal(bandWarnung(getFlaeche("medaillen"), "hauptsponsor"), null);
+  assert.ok(bandWarnung(getFlaeche("medaillen-a"), "foerderer"));
+  assert.equal(bandWarnung(getFlaeche("medaillen-a"), "hauptsponsor"), null);
   assert.equal(submitLabel("partner", "partner"), "Partner anfragen (150 €)");
   assert.equal(submitLabel("beitrag", "foerderer"), "Förderer anfragen");
-  assert.equal(submitLabel("flaeche", "partner"), "Fläche anfragen");
 });

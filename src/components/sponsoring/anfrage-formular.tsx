@@ -13,13 +13,14 @@ import {
   bandHinweisOhneFlaeche,
   bandWarnung,
   BAND_LABEL,
+  flaecheOptionLabel,
   flaecheParamAusSearch,
   getFlaeche,
   isBeitragsart,
   isBeitragsband,
+  isFlaecheBuchbar,
   SPONSOR_FLAECHEN,
   SPONSORING_2027,
-  STATUS_LABEL,
   submitLabel,
   vorschlagBand,
   type AnfrageWeg,
@@ -51,7 +52,6 @@ export function SponsorAnfrageFormular() {
   );
   const [flaecheId, setFlaecheId] = useState(getFlaeche(flaecheParam)?.id ?? "");
   const [beitragsart, setBeitragsart] = useState<Beitragsart>("geld");
-  const [addonBauzaun, setAddonBauzaun] = useState(false);
   const [firma, setFirma] = useState("");
   const [ansprechpartner, setAnsprechpartner] = useState("");
   const [email, setEmail] = useState("");
@@ -143,6 +143,11 @@ export function SponsorAnfrageFormular() {
       setErrorMsg("Bitte eine Fläche wählen.");
       return;
     }
+    if (flaecheId && !isFlaecheBuchbar(flaecheId)) {
+      setStatus("error");
+      setErrorMsg("Diese Fläche ist gerade nicht buchbar – bitte einen anderen Slot wählen.");
+      return;
+    }
     if (!bestaetigt) {
       setStatus("error");
       setErrorMsg("Bitte bestätigt, dass ihr eine unverbindliche Anfrage ohne Online-Zahlung senden wollt.");
@@ -159,7 +164,6 @@ export function SponsorAnfrageFormular() {
           band: anfrageWeg === "partner" ? "partner" : band,
           flaecheId: anfrageWeg !== "partner" && flaecheId ? flaecheId : undefined,
           beitragsart: anfrageWeg !== "partner" ? beitragsart : undefined,
-          addonBauzaun: anfrageWeg === "partner" ? addonBauzaun : false,
           firma,
           ansprechpartner,
           email,
@@ -204,7 +208,7 @@ export function SponsorAnfrageFormular() {
   }
 
   const flaecheOptions = SPONSOR_FLAECHEN.filter(
-    (f) => f.status !== "vergeben" || f.mehrereMoeglich,
+    (f) => isFlaecheBuchbar(f.id) || f.mehrereMoeglich,
   );
 
   return (
@@ -218,7 +222,7 @@ export function SponsorAnfrageFormular() {
         >
           <legend className="px-1 text-sm font-bold">Weg A – Partner {SPONSORING_2027.partnerPreis} €</legend>
           <p className="mt-2 text-sm text-muted-foreground">
-            Kein Flächen-Select nötig. Bauzaun, Zieleinlauf, Website, Instagram.
+            Inkl. 1 Zaunbanner und 1 Gitterbanner, Website, Instagram.
           </p>
           <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
@@ -232,19 +236,8 @@ export function SponsorAnfrageFormular() {
               }}
               className="mt-1"
             />
-            <span>Partner {SPONSORING_2027.partnerPreis} € bar wählen</span>
+            <span>Partner {SPONSORING_2027.partnerPreis} € wählen</span>
           </label>
-          {anfrageWeg === "partner" && (
-            <label className="mt-3 flex items-start gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={addonBauzaun}
-                onChange={(e) => setAddonBauzaun(e.target.checked)}
-                className="mt-1"
-              />
-              <span>Add-on: Bauzaun-Einzelfeld (ca. 80–100 €, nach Absprache)</span>
-            </label>
-          )}
         </fieldset>
 
         {/* Weg B */}
@@ -332,7 +325,9 @@ export function SponsorAnfrageFormular() {
                   />
                   <span className="font-bold">{BAND_LABEL[id]}</span>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {id === "foerderer" ? "ca. 400–500 € Gegenwert" : "ab ca. 800 € Gegenwert"}
+                    {id === "foerderer"
+                      ? `ab ${SPONSORING_2027.foerdererAb} € Gegenwert`
+                      : `ab ${SPONSORING_2027.hauptsponsorAb} € Gegenwert`}
                   </p>
                 </label>
               ))}
@@ -363,8 +358,8 @@ export function SponsorAnfrageFormular() {
               {flaecheOptions
                 .filter((f) => f.id !== RESTKOSTEN_ID)
                 .map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {f.titel}
+                  <option key={f.id} value={f.id} disabled={!isFlaecheBuchbar(f.id)}>
+                    {flaecheOptionLabel(f)}
                   </option>
                 ))}
             </select>
@@ -400,9 +395,8 @@ export function SponsorAnfrageFormular() {
             >
               <option value="">Bitte wählen …</option>
               {flaecheOptions.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.titel}
-                  {f.status !== "offen" && !f.mehrereMoeglich ? ` (${STATUS_LABEL[f.status]})` : ""}
+                <option key={f.id} value={f.id} disabled={!isFlaecheBuchbar(f.id)}>
+                  {flaecheOptionLabel(f)}
                 </option>
               ))}
             </select>

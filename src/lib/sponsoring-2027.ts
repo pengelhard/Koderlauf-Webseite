@@ -7,13 +7,12 @@ export type Beitragsart = "geld" | "sach" | "beides";
 
 export const SPONSORING_2027 = {
   partnerPreis: 150,
-  foerdererVon: 400,
-  foerdererBis: 500,
-  hauptsponsorAb: 800,
+  foerdererAb: 300,
+  hauptsponsorAb: 500,
   hauptsponsorMax: 5,
   kontaktEmail: "info@koderlauf.de",
   fairnessSatz:
-    "Status folgt dem Beitrag. Fläche folgt dem Inventar. 800 € ohne freie Medaille ergeben denselben Rang wie die Medaillen – aber nicht dasselbe Band-Logo.",
+    "Status folgt dem Beitrag ab 150 / 300 / 500 €. Fläche ist extra. 500 € Cash ohne freie Medaille = gleicher Rang wie eine Medaillen-Hälfte – aber nicht dasselbe Band-Logo.",
   premiere2026: {
     anmeldungen: 400,
     finisher: 378,
@@ -34,7 +33,15 @@ export const STATUS_LABEL: Record<FlaecheStatus, string> = {
 };
 
 const FLAECHE_ID_ALIASES: Record<string, string> = {
-  "bauzaun-feld": "bauzaun-einzelfeld",
+  "bauzaun-feld": "bauzaun-stellen",
+  "bauzaun-einzelfeld": "bauzaun-stellen",
+  "bauzaun-buendel": "bauzaun-stellen",
+  siegerpreise: "preise",
+};
+
+const KOMPLETT_HAELFTE: Record<string, [string, string]> = {
+  medaillen: ["medaillen-a", "medaillen-b"],
+  preise: ["preise-1", "preise-2"],
 };
 
 const STUFE_ALIASES: Record<string, Beitragsband> = {
@@ -54,22 +61,22 @@ export const SPONSOR_BANDER: {
   {
     id: "partner",
     name: "Partner",
-    preisLabel: "150 € bar",
+    preisLabel: "ab 150 €",
     kurz: "Sichtbarkeit ohne Exklusivfläche – beliebig viele Partner.",
     leistungen: [
-      "1× Banner am Bauzaun",
-      "1× Banner am Zieleinlauf",
+      "1× Zaunbanner",
+      "1× Gitterbanner am Zieleinlauf",
       "Erwähnung auf der Website",
       "Verlinkung auf Instagram",
     ],
-    flaecheHinweis: "Keine Exklusivfläche – Bauzaun-Einzelfeld optional als Add-on.",
+    flaecheHinweis: "Keine Exklusivfläche am Gegenstand.",
     ctaHref: "/sponsor-werden?stufe=partner#anfrage",
     ctaLabel: "Partner werden",
   },
   {
     id: "foerderer",
     name: "Förderer",
-    preisLabel: "ca. 400–500 € Gegenwert",
+    preisLabel: "ab 300 €",
     kurz: "Partner-Paket plus größeres Logo auf der Sponsoren-Seite und klarer Dank.",
     leistungen: [
       "Alles wie Partner",
@@ -84,7 +91,7 @@ export const SPONSOR_BANDER: {
   {
     id: "hauptsponsor",
     name: "Hauptsponsor",
-    preisLabel: "ab ca. 800 € Gegenwert",
+    preisLabel: "ab 500 €",
     kurz: "Partner-Paket plus große Nennung und Dank bei der Siegerehrung.",
     leistungen: [
       "Alles wie Partner",
@@ -93,7 +100,7 @@ export const SPONSOR_BANDER: {
       "Fläche optional, wenn noch eine passende offen ist",
     ],
     flaecheHinweis:
-      "Fläche optional – Geld ohne lieferbare Sache ist ausdrücklich erlaubt. Begrenzt auf max. 5 Hauptsponsoren.",
+      "Fläche optional – Geld ohne lieferbare Sache ist erlaubt. Max. 5 Hauptsponsoren (Medaillen-Hälften zählen bewusst separat).",
     ctaHref: "/sponsor-werden?stufe=hauptsponsor#anfrage",
     ctaLabel: "Hauptsponsor anfragen",
   },
@@ -107,20 +114,20 @@ export const BAND_VERGLEICH: {
 }[] = [
   { leistung: "Website-Nennung", partner: "klein", foerderer: "groß", hauptsponsor: "prominent" },
   { leistung: "Instagram", partner: "ja", foerderer: "ja", hauptsponsor: "ja" },
-  { leistung: "Banner-Paket Bauzaun+Ziel", partner: "ja", foerderer: "ja", hauptsponsor: "ja" },
+  { leistung: "Banner-Paket Zaun+Ziel", partner: "ja", foerderer: "ja", hauptsponsor: "ja" },
   { leistung: "Dank Siegerehrung", partner: "nein", foerderer: "kurz möglich", hauptsponsor: "ja" },
   {
     leistung: "Exklusivfläche",
-    partner: "nein, außer Add-on",
+    partner: "nein",
     foerderer: "optional wenn offen",
     hauptsponsor: "optional wenn offen",
   },
   { leistung: "Titel", partner: "Partner", foerderer: "Förderer", hauptsponsor: "Hauptsponsor" },
   {
     leistung: "Gegenwert",
-    partner: "150 € bar",
-    foerderer: "ca. 400–500 €",
-    hauptsponsor: "ab ca. 800 €",
+    partner: "ab 150 €",
+    foerderer: "ab 300 €",
+    hauptsponsor: "ab 500 €",
   },
   { leistung: "Sache nötig?", partner: "nein", foerderer: "nein", hauptsponsor: "nein" },
   {
@@ -132,7 +139,7 @@ export const BAND_VERGLEICH: {
 ];
 
 export const SPONSOR_SO_FUNKTIONIERT = [
-  { schritt: "1", titel: "Band wählen", text: "150 €, ca. 500 € oder ab 800 € Gegenwert – Geld oder Sache." },
+  { schritt: "1", titel: "Band wählen", text: "150 €, 300 € oder ab 500 € – Geld oder Sache." },
   {
     schritt: "2",
     titel: "Optional Fläche dazu",
@@ -153,60 +160,107 @@ export interface SponsorFlaeche {
   badgeLabel: string;
   beschreibung: string;
   werbung: string;
-  richtkosten: string;
+  festpreis: number;
   vorgeschlagenesBand: Beitragsband;
   minBand: Beitragsband;
-  wertCa?: string;
   aufteilbar?: string;
   hinweis?: string;
   status: FlaecheStatus;
-  /** Mehrere Firmen möglich (z. B. Restkosten-Topf). */
+  /** Komplett-Slot mit zwei Hälften. */
+  komplettHaelften?: [string, string];
+  /** Hälfte eines Komplett-Slots. */
+  halfteVon?: string;
+  /** Mehrere Firmen möglich (Restkosten). */
   mehrereMoeglich?: boolean;
 }
 
 export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "medaillen",
-    titel: "Medaillen",
-    kurz: "Finisher-Medaille inkl. Band und Aufkleber für alle Finisher plus Reserve.",
-    werbungKurz: "Logo auf dem Medaillenband; Aufkleber optional.",
-    badgeLabel: "ca. 720–800 € · typisch Hauptsponsor",
+    titel: "Medaillen (Komplett)",
+    kurz: "Finisher-Medaille inkl. Band und Aufkleber für ca. 500 Starter plus Reserve.",
+    werbungKurz: "Logo auf Band und Aufkleber.",
+    badgeLabel: "1.000 € · Hauptsponsor · Komplett",
     beschreibung:
-      "Finisher-Medaille inkl. Band und Aufkleber für alle Finisher plus Reserve (ca. 5–10 %).",
-    werbung: "Logo auf dem Band (Hauptplatz); Aufkleber optional mit Logo oder Claim.",
-    richtkosten: "ca. 1,80 €/Finisher. Bei 400 Finishern ca. 720–800 €.",
+      "Finisher-Medaille inkl. Band und Aufkleber. Kalkulation: 500 Starter, Festpreis. Komplett buchen setzt Hälfte A und B auf VERGEBEN.",
+    werbung: "Logo auf dem Medaillenband und auf dem Aufkleber.",
+    festpreis: 1000,
     vorgeschlagenesBand: "hauptsponsor",
+    minBand: "hauptsponsor",
+    komplettHaelften: ["medaillen-a", "medaillen-b"],
+    hinweis: "Eine Firma darf auch beide Hälften buchen. Zwei Firmen können je eine Hälfte nehmen.",
+    status: "offen",
+  },
+  {
+    id: "medaillen-a",
+    titel: "Medaillen – Hälfte A",
+    kurz: "Logo auf dem Medaillenband für alle Finisher.",
+    werbungKurz: "Logo auf dem Band.",
+    badgeLabel: "500 € · Hauptsponsor · Hälfte A",
+    beschreibung: "Hälfte A der Medaillen-Fläche – Logo auf dem Band.",
+    werbung: "Logo auf dem Medaillenband.",
+    festpreis: 500,
+    vorgeschlagenesBand: "hauptsponsor",
+    minBand: "hauptsponsor",
+    halfteVon: "medaillen",
+    status: "offen",
+  },
+  {
+    id: "medaillen-b",
+    titel: "Medaillen – Hälfte B",
+    kurz: "Logo auf dem Medaillen-Aufkleber.",
+    werbungKurz: "Logo auf dem Aufkleber.",
+    badgeLabel: "500 € · Hauptsponsor · Hälfte B",
+    beschreibung: "Hälfte B der Medaillen-Fläche – Logo auf dem Aufkleber.",
+    werbung: "Logo auf dem Aufkleber.",
+    festpreis: 500,
+    vorgeschlagenesBand: "hauptsponsor",
+    minBand: "hauptsponsor",
+    halfteVon: "medaillen",
+    status: "offen",
+  },
+  {
+    id: "preise",
+    titel: "Siegerpreise (Komplett)",
+    kurz: "6 Läufe × Platz 1–3: Spielerei, Kinderlauf, Trailrun, Koderrunde Lauf, Koderrunde Walking, Kurz und knackig.",
+    werbungKurz: "Übergabe, Nennung, Foto – alle 6 Läufe.",
+    badgeLabel: "500 € · Hauptsponsor · Komplett",
+    beschreibung:
+      "Sachpreise oder Gutscheine für alle sechs Läufe. Komplett buchen setzt Paket 1 und 2 auf VERGEBEN.",
+    werbung: "Übergabe, Nennung bei der Siegerehrung, Foto.",
+    festpreis: 500,
+    vorgeschlagenesBand: "hauptsponsor",
+    minBand: "hauptsponsor",
+    komplettHaelften: ["preise-1", "preise-2"],
+    hinweis: "Eine Firma darf beide Pakete nehmen. Zwei Firmen können je ein Paket buchen.",
+    status: "offen",
+  },
+  {
+    id: "preise-1",
+    titel: "Siegerpreise – Paket 1",
+    kurz: "Spielerei, Trailrun, Koderrunde Lauf.",
+    werbungKurz: "Übergabe, Nennung, Foto.",
+    badgeLabel: "300 € · Förderer",
+    beschreibung: "Sachpreise für Spielerei, Trailrun und Koderrunde Lauf.",
+    werbung: "Übergabe, Nennung bei der Siegerehrung, Foto.",
+    festpreis: 300,
+    vorgeschlagenesBand: "foerderer",
     minBand: "foerderer",
-    wertCa: "720–800",
-    hinweis: "Wer die Sache stellt, zahlt nicht bar nach. Standard: Verein bestellt.",
+    halfteVon: "preise",
     status: "offen",
   },
   {
-    id: "startnummern",
-    titel: "Startnummern",
-    kurz: "Druck der Startnummern für alle Starter plus Reserve (ohne Timing-Chip).",
-    werbungKurz: "Logo unten auf der Startnummer – exklusiv.",
-    badgeLabel: "ca. 0,80–1,50 €/Starter · oft Förderer oder Hauptsponsor",
-    beschreibung: "Druck der Startnummern für alle Starter plus Reserve. Ohne Zeitnahme-Chip.",
-    werbung: "Logo unten auf der Startnummer – exklusiv für diese Fläche.",
-    richtkosten: "ca. 0,80–1,50 €/Starter. Summe oft um oder über 500 €.",
+    id: "preise-2",
+    titel: "Siegerpreise – Paket 2",
+    kurz: "Kinderlauf, Koderrunde Walking, Kurz und knackig.",
+    werbungKurz: "Übergabe, Nennung, Foto.",
+    badgeLabel: "300 € · Förderer",
+    beschreibung: "Sachpreise für Kinderlauf, Koderrunde Walking und Kurz und knackig.",
+    werbung: "Übergabe, Nennung bei der Siegerehrung, Foto.",
+    festpreis: 300,
     vorgeschlagenesBand: "foerderer",
-    minBand: "partner",
-    hinweis: "Standard: Verein bestellt. Die Logo-Fläche wird nicht parallel an zwei Firmen verkauft.",
-    status: "offen",
-  },
-  {
-    id: "streckenverpflegung",
-    titel: "Streckenverpflegung",
-    kurz: "Wasser, Iso, Obst und Becher an einer oder mehreren Stationen.",
-    werbungKurz: "Schild „Verpflegung präsentiert von …“ an der Station.",
-    badgeLabel: "ca. 0,40–0,80 €/Starter/Station · Förderer oder Hauptsponsor",
-    beschreibung: "Wasser, Iso, Obst, Becher und Müll an einer oder mehreren Stationen.",
-    werbung: "Schild „Verpflegung präsentiert von …“ an der Station.",
-    richtkosten: "ca. 0,40–0,80 €/Starter pro Station (Einkaufswert / Angebot).",
-    vorgeschlagenesBand: "foerderer",
-    minBand: "partner",
-    aufteilbar: "Station A, Station B oder alle Stationen.",
+    minBand: "foerderer",
+    halfteVon: "preise",
     status: "offen",
   },
   {
@@ -214,13 +268,12 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Zielverpflegung",
     kurz: "Getränk und Kleinigkeit direkt nach dem Zieleinlauf.",
     werbungKurz: "Schild oder Theke am Ziel.",
-    badgeLabel: "ca. 0,80–1,50 €/Finisher · Förderer oder Hauptsponsor",
-    beschreibung: "Getränk und Kleinigkeit direkt nach dem Zieleinlauf. Ziel-Bier ist ein eigener Posten.",
+    badgeLabel: "500 € · Hauptsponsor · nicht teilbar",
+    beschreibung: "Getränk und Kleinigkeit am Ziel. Ziel-Bier ist ein eigener Posten. Nicht splitten.",
     werbung: "Schild oder Theke am Ziel.",
-    richtkosten: "ca. 0,80–1,50 €/Finisher (Einkaufswert).",
-    vorgeschlagenesBand: "foerderer",
-    minBand: "partner",
-    aufteilbar: "z. B. Getränke und Snack getrennt.",
+    festpreis: 500,
+    vorgeschlagenesBand: "hauptsponsor",
+    minBand: "hauptsponsor",
     status: "offen",
   },
   {
@@ -228,85 +281,87 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Ziel-Bier",
     kurz: "Ein Bier (o. ä.) für jeden Finisher am Ziel. Kinderlauf ausgenommen.",
     werbungKurz: "Zapfstelle oder Schild „Zielbier präsentiert von …“.",
-    badgeLabel: "ca. 1,00–2,00 €/Finisher · Förderer oder Hauptsponsor",
-    beschreibung: "Ein Bier (o. ä.) für jeden Finisher am Ziel. Kinderlauf ausgenommen.",
+    badgeLabel: "400 € · Förderer",
+    beschreibung: "Ein Bier für jeden Finisher am Ziel. Kinderlauf ausgenommen.",
     werbung: "Zapfstelle/Schild „Zielbier präsentiert von …“.",
-    richtkosten: "ca. 1,00–2,00 €/Finisher (Gebinde und Ausschank).",
+    festpreis: 400,
     vorgeschlagenesBand: "foerderer",
-    minBand: "partner",
+    minBand: "foerderer",
     hinweis: "Alkohol nur für Erwachsene.",
+    status: "offen",
+  },
+  {
+    id: "startnummern",
+    titel: "Startnummern",
+    kurz: "Druck der Startnummern für alle Starter plus Reserve (ohne Timing-Chip).",
+    werbungKurz: "Logo unten auf der Startnummer – exklusiv.",
+    badgeLabel: "300 € · Förderer",
+    beschreibung: "Druck der Startnummern für alle Starter plus Reserve. Ohne Zeitnahme-Chip.",
+    werbung: "Logo unten auf der Startnummer – exklusiv.",
+    festpreis: 300,
+    vorgeschlagenesBand: "foerderer",
+    minBand: "foerderer",
+    hinweis: "Standard: Verein bestellt.",
     status: "offen",
   },
   {
     id: "zielbogen",
     titel: "Zielbogen",
-    kurz: "Start-/Zielbogen mit Branding – sehr fotogen.",
+    kurz: "Start-/Zielbogen mit eigenem Branding – sehr fotogen.",
     werbungKurz: "Großes Logo auf dem Zielbogen.",
-    badgeLabel: "oft 300–800 € · Förderer bis Hauptsponsor",
+    badgeLabel: "300 € · Förderer",
     beschreibung: "Start-/Zielbogen mit Branding. 2026: Jeremias am Start-/Zielbogen.",
     werbung: "Großes Logo auf dem Bogen – sehr sichtbar auf Fotos.",
-    richtkosten: "Angebot oder Sachspende zum Einkaufswert, oft ca. 300–800 €.",
+    festpreis: 300,
     vorgeschlagenesBand: "foerderer",
     minBand: "foerderer",
-    hinweis: "300 € allein → Förderer. Obere Spanne → Hauptsponsor. Standard: Verein bestellt.",
+    hinweis:
+      "Logo nur bei eigenem/gebrandetem Bogen. Neutralleihe ohne Individualwerbung = Restkosten.",
     status: "offen",
   },
   {
-    id: "siegerpreise",
-    titel: "Siegerpreise",
-    kurz: "Sachpreise oder Gutscheine für Platzierungen und Altersklassen.",
-    werbungKurz: "Übergabe, Nennung bei der Siegerehrung, Foto.",
-    badgeLabel: "oft 150–400 € · typisch Partner oder Förderer",
-    beschreibung: "Sachpreise oder Gutscheine für Platzierungen und Altersklassen.",
-    werbung: "Übergabe, Nennung bei der Siegerehrung, Foto.",
-    richtkosten: "Pauschale oft ca. 150–400 € Gesamttopf.",
+    id: "bauzaun-stellen",
+    titel: "Bauzaun stellen",
+    kurz: "Eine Firma stellt 60 Zaunelemente und 70 Gitter – alle Sponsoren bekommen trotzdem Platz.",
+    werbungKurz: "Logo auf dem Bauzaun; HS groß, Förderer mittel, Partner 1 Banner.",
+    badgeLabel: "300 € · Förderer · Sachleistung",
+    beschreibung:
+      "Eine Firma stellt 60 Zaunelemente und 70 Gitter. Alle anderen Sponsoren bekommen trotzdem Platz am Bauzaun.",
+    werbung: "Logo am Bauzaun – Größe nach Band (HS groß, Förderer mittel, Partner 1 Banner).",
+    festpreis: 300,
     vorgeschlagenesBand: "foerderer",
-    minBand: "partner",
-    aufteilbar: "z. B. nur Frauenwertung, Trail oder Kinderlauf.",
+    minBand: "foerderer",
+    hinweis: "Sachleistung zählt als Gegenwert. Wer stellt, zahlt nicht bar nach.",
     status: "offen",
   },
   {
-    id: "bauzaun-buendel",
-    titel: "Bauzaun (Bündel)",
-    kurz: "2–3 Felder oder ein Bereich am Bauzaun Start/Ziel.",
-    werbungKurz: "Logo und Motiv auf den Bannern.",
-    badgeLabel: "ca. 200–250 € · Fläche + Partner oder Förderer",
-    beschreibung: "2–3 Felder oder ein Bereich am Bauzaun Start/Ziel.",
-    werbung: "Logo und Motiv auf den Bannern.",
-    richtkosten: "ab ca. 200–250 € gesamt (Druck).",
-    vorgeschlagenesBand: "partner",
-    minBand: "partner",
-    status: "offen",
-  },
-  {
-    id: "bauzaun-einzelfeld",
-    titel: "Bauzaun (Einzelfeld)",
-    kurz: "Ein einzelnes Feld am Bauzaun.",
-    werbungKurz: "Logo auf diesem einen Banner.",
-    badgeLabel: "ca. 80–100 € · Fläche + Partner-Niveau",
-    beschreibung: "Ein einzelnes Feld. Typisch unter 200 €.",
-    werbung: "Logo auf diesem einen Banner.",
-    richtkosten: "ca. 80–100 € bzw. unter 200 €.",
-    vorgeschlagenesBand: "partner",
-    minBand: "partner",
-    hinweis: "Auch als Add-on zum Partner 150 € möglich.",
+    id: "streckenverpflegung",
+    titel: "Streckenverpflegung",
+    kurz: "Wasser, Iso, Obst und Becher an der/den Station(en).",
+    werbungKurz: "Schild „Verpflegung präsentiert von …“ an der Station.",
+    badgeLabel: "300 € · Förderer",
+    beschreibung: "Verpflegung an einer oder mehreren Stationen.",
+    werbung: "Schild an der Station.",
+    festpreis: 300,
+    vorgeschlagenesBand: "foerderer",
+    minBand: "foerderer",
+    aufteilbar:
+      "Optional zwei Stationen à 150 € – dann Partner-Paket plus Fläche an der Station.",
     status: "offen",
   },
   {
     id: "restkosten",
     titel: "Lauf ermöglichen (Restkosten)",
     kurz: "Zeitnahme, Sanitäter, Streckenmarkierung, Reserve, Kinderlauf-Unkosten.",
-    werbungKurz: "Nennung als Sponsor – kein fotogenes Logo am Gegenstand.",
-    badgeLabel: "Pakete 150 / 400–500 / 800 € → passendes Band",
+    werbungKurz: "Nennung als Sponsor – kein Logo am Gegenstand.",
+    badgeLabel: "150 / 300 / 500 € → passendes Band",
     beschreibung:
-      "Zeitnahme, Sanitäter, Streckenmarkierung, Reserve, Kinderlauf-Unkosten. Kein fotogenes Logo am Gegenstand, aber ehrlicher Cash-Weg.",
-    werbung: "Nennung auf der Website und in der Kommunikation – kein Logo am Gegenstand.",
-    richtkosten:
-      "Richtwert-Pakete z. B. 150 € (Partner), 400–500 € (Förderer) oder 800 € (Hauptsponsor).",
+      "Zeitnahme, Sanitäter, Streckenmarkierung, Reserve, Kinderlauf-Unkosten. Kein fotogenes Logo – ehrlicher Cash-Weg.",
+    werbung: "Nennung auf der Website und in der Kommunikation.",
+    festpreis: 300,
     vorgeschlagenesBand: "foerderer",
     minBand: "partner",
-    hinweis:
-      "Mehrere Förderer möglich. Standard: Verein kauft und organisiert. Sache liefern nur nach Absprache.",
+    hinweis: "Pakete 150 € (Partner), 300 € (Förderer) oder 500 € (Hauptsponsor). Mehrere möglich.",
     status: "offen",
     mehrereMoeglich: true,
   },
@@ -316,17 +371,16 @@ export const SPONSOR_FALLBEISPIELE: { titel: string; text: string }[] = [
   {
     titel: "Wir wollen Hauptsponsor sein, können aber nichts liefern.",
     text:
-      "Ja. Ab ca. 800 € Gegenwert – oder ihr zahlt die Medaillen und der Verein bestellt. Titel ja. Logo auf dem Band nur, wenn die Fläche noch frei ist.",
+      "Ja. Ab 500 € Gegenwert – oder ihr zahlt eine Medaillen-Hälfte und der Verein bestellt. Titel ja. Logo auf dem Band nur, wenn die Fläche noch frei ist.",
   },
   {
     titel: "Alle Flächen sind vergeben.",
-    text:
-      "Beitrag über Restkosten. Gleicher Rang möglich. Der Verein meldet sich, welches Band passt.",
+    text: "Beitrag über Restkosten. Gleicher Rang möglich. Der Verein meldet sich, welches Band passt.",
   },
   {
-    titel: "Wir stellen nur den Bauzaun (~200 €).",
+    titel: "Wir stellen den Bauzaun (300 €).",
     text:
-      "Ihr seid Sponsor mit der Fläche Bauzaun – das ist die Anerkennung. Kein Hauptsponsor-Titel. Partner-Paket 150 € als Add-on möglich.",
+      "Ihr seid Sponsor mit der Fläche Bauzaun – das ist die Anerkennung. Partner-Paket 150 € zusätzlich für Zaun- und Gitterbanner möglich.",
   },
 ];
 
@@ -340,41 +394,46 @@ export const SPONSOR_FAQ: { frage: string; antwort: string }[] = [
     antwort: "Bei Zusage wechselt der Status auf VERGEBEN – öffentlich auf dieser Seite.",
   },
   {
+    frage: "Können zwei Firmen eine Fläche teilen?",
+    antwort:
+      "Ja, wo Hälften existieren (Medaillen, Siegerpreise). Eine Firma darf auch beide Hälften nehmen. Komplett-Buchung sperrt beide Hälften.",
+  },
+  {
     frage: "Hauptsponsor ohne Fläche?",
-    antwort: "Ja, ab ca. 800 € Gegenwert. Geld ohne lieferbare Sache ist ausdrücklich erlaubt.",
+    antwort: "Ja, ab 500 € Gegenwert. Geld ohne lieferbare Sache ist ausdrücklich erlaubt.",
   },
   {
     frage: "Kann ich nur eine Verpflegungsstation nehmen?",
-    antwort: "Ja. Strecken- und Zielverpflegung sind aufteilbar – z. B. nur Station A oder nur Getränke.",
+    antwort:
+      "Ja. Streckenverpflegung optional als zwei Stationen à 150 € – dann Partner plus Fläche an der Station.",
   },
   {
     frage: "Gibt es Fotos nach dem Lauf?",
-    antwort:
-      "Ausgewählte Fotos eurer Fläche, soweit vorhanden. Keine Aftermovie-Garantie.",
-  },
-  {
-    frage: "Partner plus Einzelfeld Bauzaun?",
-    antwort: "Ja. Das Einzelfeld kann als Add-on zum Partner 150 € gebucht werden.",
+    antwort: "Ausgewählte Fotos eurer Fläche, soweit vorhanden. Keine Aftermovie-Garantie.",
   },
   {
     frage: "Was ist der Unterschied zwischen Band und Fläche?",
     antwort:
-      "Das Band (Partner, Förderer, Hauptsponsor) bestimmt euren Rang und die Sichtbarkeit im Paket. Die Fläche ist knappes Inventar – Logo am Gegenstand, eine Firma pro Fläche.",
+      "Das Band (150 / 300 / 500 €) bestimmt Rang und Sichtbarkeitspaket. Die Fläche ist knappes Inventar – Logo am Gegenstand, Festpreis pro Slot.",
   },
   {
-    frage: "Warum ist 200 € Zaun nicht gleich 800 € Medaillen?",
+    frage: "Warum ist 300 € Zaun nicht gleich 500 € Medaillen-Hälfte?",
     antwort:
       "Rang folgt dem Euro-Gegenwert im Band. Die Fläche folgt dem Inventar. Beides ist wertvoll – nur anders sichtbar.",
   },
   {
     frage: "Wer bestellt Medaillen, Bogen und Startnummern?",
     antwort:
-      "Standard: der Verein kauft und organisiert, ihr zahlt den Richtwert. Sache liefern nur nach Absprache (Qualität, Termin, Motiv).",
+      "Standard: der Verein kauft und organisiert, ihr zahlt den Festpreis. Sache liefern nur nach Absprache.",
   },
 ];
 
 export const SPONSOR_ABLAUF = [
-  { schritt: "1", titel: "Band wählen (und optional Fläche)", text: "150 €, ca. 500 € oder ab 800 € – plus Fläche, wenn ihr wollt." },
+  {
+    schritt: "1",
+    titel: "Band wählen (und optional Fläche)",
+    text: "150 €, 300 € oder ab 500 € – plus Fläche, wenn ihr wollt.",
+  },
   { schritt: "2", titel: "Geld, Sache oder beides", text: "Kurz formulieren – wir klären Details per Mail." },
   {
     schritt: "3",
@@ -426,6 +485,59 @@ export function flaecheParamAusSearch(
   return flaeche ?? posten;
 }
 
+/** Effektiver Status inkl. Komplett/Hälften-Logik. */
+export function getEffectiveStatus(flaeche: SponsorFlaeche): FlaecheStatus {
+  if (flaeche.status === "vergeben") return "vergeben";
+
+  if (flaeche.halfteVon) {
+    const parent = getFlaeche(flaeche.halfteVon);
+    if (parent && getEffectiveStatus(parent) === "vergeben") return "vergeben";
+  }
+
+  if (flaeche.komplettHaelften) {
+    const [a, b] = flaeche.komplettHaelften;
+    const ha = getFlaeche(a);
+    const hb = getFlaeche(b);
+    if (ha?.status === "vergeben" || hb?.status === "vergeben") return "vergeben";
+  }
+
+  return flaeche.status;
+}
+
+/** Ob ein Slot aktuell buchbar ist (Komplett/Hälften-Konflikte). */
+export function isFlaecheBuchbar(id: string): boolean {
+  const f = getFlaeche(id);
+  if (!f) return false;
+  if (getEffectiveStatus(f) === "vergeben") return false;
+
+  if (f.komplettHaelften) {
+    const [a, b] = f.komplettHaelften;
+    if (getFlaeche(a)?.status === "vergeben" || getFlaeche(b)?.status === "vergeben") {
+      return false;
+    }
+  }
+
+  if (f.halfteVon) {
+    const [ha, hb] = KOMPLETT_HAELFTE[f.halfteVon] ?? [];
+    if (ha && hb) {
+      const other = f.id === ha ? hb : ha;
+      if (getFlaeche(f.halfteVon)?.status === "vergeben") return false;
+      if (f.id !== other && getFlaeche(other)?.status === "vergeben") {
+        // andere Hälfte vergeben – diese Hälfte noch buchbar
+      }
+    }
+  }
+
+  return true;
+}
+
+export function flaecheOptionLabel(f: SponsorFlaeche): string {
+  const status = getEffectiveStatus(f);
+  const suffix =
+    status !== "offen" && !f.mehrereMoeglich ? ` (${STATUS_LABEL[status]})` : "";
+  return `${f.titel} – ${f.festpreis} €${suffix}`;
+}
+
 export function vorschlagBand(flaeche: SponsorFlaeche | undefined): Beitragsband {
   if (!flaeche) return "foerderer";
   return flaeche.vorgeschlagenesBand;
@@ -466,16 +578,15 @@ export function bandWarnung(
   flaeche: SponsorFlaeche | undefined,
   band: Beitragsband,
 ): string | null {
-  if (!flaeche || band === "hauptsponsor") return null;
+  if (!flaeche) return null;
   if (BAND_RANK[band] < BAND_RANK[flaeche.minBand]) {
-    const wert = flaeche.wertCa ? `ca. ${flaeche.wertCa} €` : flaeche.badgeLabel.split("·")[0]?.trim();
-    return `Diese Fläche liegt bei ${wert ?? "diesem Richtwert"}. Daraus folgt ${BAND_LABEL[flaeche.minBand]}. Niedriger nur nach Absprache.`;
+    return `Diese Fläche liegt bei ${flaeche.festpreis} €. Daraus folgt ${BAND_LABEL[flaeche.minBand]}. Niedriger nur nach Absprache.`;
   }
   return null;
 }
 
 export function bandHinweisOhneFlaeche(band: Beitragsband, flaecheId: string): string | null {
-  if (band === "hauptsponsor" && !flaecheId) {
+  if ((band === "hauptsponsor" || band === "foerderer") && !flaecheId) {
     return "Ohne Fläche bleibt der Rang. Die Exklusivwerbung am Gegenstand entfällt.";
   }
   return null;

@@ -8,6 +8,7 @@ import {
   isAnfrageWeg,
   isBeitragsart,
   isBeitragsband,
+  isFlaecheBuchbar,
   normalizeStufe,
   SPONSORING_2027,
   type AnfrageWeg,
@@ -169,7 +170,6 @@ export async function POST(request: Request) {
   const web = clip(rec.web, 300);
   const instagram = clip(rec.instagram, 200);
   const nachricht = clip(rec.nachricht, MAX_TEXT);
-  const addonBauzaun = rec.addonBauzaun === true;
   const flaecheIdRaw =
     typeof rec.flaecheId === "string"
       ? rec.flaecheId.trim()
@@ -203,9 +203,9 @@ export async function POST(request: Request) {
   if (flaecheIdRaw && !flaeche) {
     return NextResponse.json({ error: "Unbekannte Fläche." }, { status: 400 });
   }
-  if (flaeche && flaeche.status === "vergeben" && !flaeche.mehrereMoeglich) {
+  if (flaecheIdRaw && flaeche && !isFlaecheBuchbar(flaeche.id) && !flaeche.mehrereMoeglich) {
     return NextResponse.json(
-      { error: "Diese Fläche ist bereits vergeben. Bitte eine andere wählen." },
+      { error: "Diese Fläche ist gerade nicht buchbar. Bitte einen anderen Slot wählen." },
       { status: 400 },
     );
   }
@@ -239,7 +239,7 @@ export async function POST(request: Request) {
     `Band: ${BAND_LABEL[band]}`,
     flaeche ? `Fläche: ${flaeche.titel} (${flaeche.id})` : "Fläche: —",
     beitragLabel ? `Beitrag: ${beitragLabel}` : "",
-    addonBauzaun ? "Add-on: Bauzaun-Einzelfeld (Partner)" : "",
+    flaeche ? `Festpreis: ${flaeche.festpreis} €` : "",
     "",
     `Firma: ${firma}`,
     `Ansprechpartner: ${ansprechpartner}`,
