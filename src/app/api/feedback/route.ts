@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { getPublicDomainLabel, getSiteUrl } from "@/lib/site-url";
+import { allowRequest, clientIp } from "@/lib/rate-limit";
 
 const PROD_TO = "info@koderlauf.de";
 const MAX_SUBJECT = 180;
 const MAX_MESSAGE = 8000;
 const MAX_NAME = 120;
+const GENERIC_SEND_ERROR =
+  "Die E-Mail konnte nicht gesendet werden. Bitte versucht es später oder schreibt an info@koderlauf.de.";
+const GENERIC_UNAVAILABLE =
+  "E-Mail-Versand ist derzeit nicht eingerichtet. Bitte später erneut versuchen oder schreibt direkt an info@koderlauf.de.";
 
 export const runtime = "nodejs";
 /** Vercel: genug Zeit für SMTP-Handshake */
@@ -15,6 +20,38 @@ function isValidEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
+function isNonEmptyString(v: unknown): v is string {
+  return typeof v === "string" && v.trim().length > 0;
+}
+
+/** Same-site only: Origin/Referer muss zum Request-Host passen. */
+function isSameSiteRequest(request: Request): boolean {
+  const host = request.headers.get("host");
+  if (!host) return false;
+  const expected = host.split(":")[0]?.toLowerCase();
+  if (!expected) return false;
+
+  const origin = request.headers.get("origin");
+  if (origin) {
+    try {
+      return new URL(origin).hostname.toLowerCase() === expected;
+    } catch {
+      return false;
+    }
+  }
+
+  const referer = request.headers.get("referer");
+  if (referer) {
+    try {
+      return new URL(referer).hostname.toLowerCase() === expected;
+    } catch {
+      return false;
+    }
+  }
+
+  return process.env.NODE_ENV === "development";
+}
+
 /** Lokal: optional andere Empfänger-Adresse (z. B. zum Testen). */
 function getFeedbackTo(): string {
   const devOverride = process.env.FEEDBACK_DEV_TO?.trim();
@@ -22,26 +59,6 @@ function getFeedbackTo(): string {
     return devOverride;
   }
   return PROD_TO;
-}
-
-function smtpFailureHint(message: string): string | null {
-  const m = message.toLowerCase();
-  if (
-    m.includes("invalid login") ||
-    m.includes("authentication failed") ||
-    m.includes("535") ||
-    m.includes("eauth") ||
-    m.includes("badcredentials")
-  ) {
-    return "SMTP-Anmeldung fehlgeschlagen: SMTP_USER und SMTP_PASS prüfen (Postfach-Passwort des Providers).";
-  }
-  if (m.includes("econnrefused") || m.includes("etimedout") || m.includes("enotfound") || m.includes("gai")) {
-    return "Keine Verbindung zum SMTP-Server (Host/Port/Firewall). Hinweis: Einige Serverless-Plattformen blockieren ausgehendes SMTP – dann Relais oder anderen Host nutzen.";
-  }
-  if (m.includes("certificate") || m.includes("tls") || m.includes("ssl")) {
-    return "TLS-Problem: Port 587 mit STARTTLS oder 465 mit SSL testen; SMTP_SECURE in der Doku des Providers prüfen.";
-  }
-  return null;
 }
 
 function getSmtpConfig():
@@ -76,21 +93,18 @@ function getSmtpConfig():
 }
 
 export async function POST(request: Request) {
-  const smtp = getSmtpConfig();
-  if (!smtp.ok) {
-    const msg =
-      smtp.reason === "missing_host"
-        ? "SMTP_HOST fehlt in der Server-Konfiguration."
-        : smtp.reason === "missing_user"
-          ? "SMTP_USER fehlt in der Server-Konfiguration."
-          : "SMTP_PASS fehlt in der Server-Konfiguration.";
-    console.error("Feedback SMTP:", msg);
+  if (!isSameSiteRequest(request)) {
+    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 403 });
+  }
+
+  const ip = clientIp(request);
+  if (
+    !allowRequest(`feedback:${ip}`, { windowMs: 10 * 60 * 1000, max: 5 }) ||
+    !allowRequest(`feedback-hour:${ip}`, { windowMs: 60 * 60 * 1000, max: 12 })
+  ) {
     return NextResponse.json(
-      {
-        error: "E-Mail-Versand ist derzeit nicht eingerichtet. Bitte später erneut versuchen oder schreibt direkt an info@koderlauf.de.",
-        hint: "Auf dem Server SMTP_HOST, SMTP_USER und SMTP_PASS setzen (siehe .env.example).",
-      },
-      { status: 503 }
+      { error: "Zu viele Nachrichten. Bitte in ein paar Minuten erneut versuchen." },
+      { status: 429 },
     );
   }
 
@@ -105,7 +119,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
   }
 
-  const { subject, message, email, name } = body as Record<string, unknown>;
+  const { subject, message, email, name, website, fax_number } = body as Record<string, unknown>;
+
+  // Honeypot: Bots füllen versteckte Felder – still {ok:true}, kein Versand
+  if (isNonEmptyString(website) || isNonEmptyString(fax_number)) {
+    return NextResponse.json({ ok: true });
+  }
+
+  const smtp = getSmtpConfig();
+  if (!smtp.ok) {
+    console.error("Feedback SMTP:", smtp.reason);
+    return NextResponse.json({ error: GENERIC_UNAVAILABLE }, { status: 503 });
+  }
 
   const subjectStr = typeof subject === "string" ? subject.trim() : "";
   const messageStr = typeof message === "string" ? message.trim() : "";
@@ -162,14 +187,6 @@ export async function POST(request: Request) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("Feedback SMTP send error:", msg, e);
-    const hint = smtpFailureHint(msg);
-    return NextResponse.json(
-      {
-        error: "Die E-Mail konnte nicht gesendet werden. Bitte versucht es später oder schreibt an info@koderlauf.de.",
-        ...(hint ? { hint } : {}),
-        ...(process.env.NODE_ENV === "development" ? { detail: msg } : {}),
-      },
-      { status: 502 }
-    );
+    return NextResponse.json({ error: GENERIC_SEND_ERROR }, { status: 502 });
   }
 }
