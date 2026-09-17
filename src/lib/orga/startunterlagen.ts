@@ -2,7 +2,7 @@ import { normalizeContest, STRECKEN_ORDER_2027 } from "@/lib/anmeldungen/aggrega
 import { EVENT, getStrecke, type EventStrecke } from "@/lib/event-config";
 import type { OrgaParticipant } from "@/lib/orga/types";
 
-export type StartunterlagenVariant = "standard" | "ausgabe" | "gesamt";
+export type StartunterlagenVariant = "ausgabe" | "gesamt";
 
 export interface StartunterlagenRow {
   bib: string;
