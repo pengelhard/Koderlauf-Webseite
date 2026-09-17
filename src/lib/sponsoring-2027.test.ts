@@ -7,23 +7,27 @@ import {
   isAnfrageArt,
   isPostenRolle,
   KOSTENPARTNERSCHAFTEN,
+  normalizePostenId,
   rolleAusQuery,
+  rolleWarnung,
   SPONSORING_2027,
+  vorschlagRolle,
 } from "./sponsoring-2027.ts";
 
-test("neun Kostenpartnerschaften, alle offen, kein T-Shirt", () => {
+test("neun offene Posten, kein T-Shirt, bauzaun-einzelfeld", () => {
   assert.equal(KOSTENPARTNERSCHAFTEN.length, 9);
   assert.ok(KOSTENPARTNERSCHAFTEN.every((p) => p.status === "offen"));
   assert.equal(
     KOSTENPARTNERSCHAFTEN.some((p) => /t-?shirt/i.test(p.titel)),
     false,
   );
-  assert.ok(KOSTENPARTNERSCHAFTEN.some((p) => p.id === "bauzaun-feld"));
-  assert.ok(KOSTENPARTNERSCHAFTEN.some((p) => p.id === "bauzaun-buendel"));
+  assert.ok(KOSTENPARTNERSCHAFTEN.some((p) => p.id === "bauzaun-einzelfeld"));
+  assert.equal(normalizePostenId("bauzaun-feld"), "bauzaun-einzelfeld");
 });
 
 test("getKostenposten, Rollen und Query", () => {
   assert.equal(getKostenposten("medaillen")?.titel, "Medaillen");
+  assert.equal(getKostenposten("bauzaun-feld")?.id, "bauzaun-einzelfeld");
   assert.equal(getKostenposten("unbekannt"), undefined);
   assert.equal(isAnfrageArt("partner"), true);
   assert.equal(isAnfrageArt("posten"), true);
@@ -34,13 +38,14 @@ test("getKostenposten, Rollen und Query", () => {
   assert.equal(anfrageArtAusQuery(null, "medaillen"), "posten");
   assert.equal(rolleAusQuery("hauptsponsor", getKostenposten("siegerpreise")), "hauptsponsor");
   assert.equal(rolleAusQuery(null, getKostenposten("siegerpreise")), "sachpartner");
-  assert.equal(rolleAusQuery(null, getKostenposten("medaillen")), "hauptsponsor");
+  assert.equal(vorschlagRolle(getKostenposten("medaillen")), "hauptsponsor");
 });
 
-test("Hauptsponsor-Schwelle und CTAs ohne Tickets", () => {
+test("CTAs und Rollen-Warnung", () => {
   assert.equal(SPONSORING_2027.partnerPreis, 150);
   assert.equal(SPONSORING_2027.hauptsponsorAb, 500);
-  assert.equal(ctaFuerPosten(getKostenposten("medaillen")!).label, "Als Hauptsponsor anfragen");
-  assert.equal(ctaFuerPosten(getKostenposten("bauzaun-feld")!).label, "Als Sachpartner anfragen");
-  assert.equal(ctaFuerPosten(getKostenposten("zielbogen")!).label, "Diesen Posten anfragen");
+  assert.equal(ctaFuerPosten(getKostenposten("medaillen")!).label, "Diesen Posten anfragen");
+  assert.match(ctaFuerPosten(getKostenposten("medaillen")!).href, /posten=medaillen/);
+  assert.ok(rolleWarnung(getKostenposten("siegerpreise"), "hauptsponsor"));
+  assert.equal(rolleWarnung(getKostenposten("medaillen"), "hauptsponsor"), null);
 });

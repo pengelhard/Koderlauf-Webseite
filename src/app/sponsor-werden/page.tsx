@@ -5,7 +5,7 @@ import { SponsorWerdenContent } from "@/components/sponsoring/sponsor-werden-con
 
 export const metadata: Metadata = {
   title: `Sponsor ${EVENT.jahr} werden`,
-  description: `Partner für 150 €, Hauptsponsor nur mit Posten ab ca. 500 € oder Sachpartner für kleinere Posten beim Koderlauf ${EVENT.jahr} am ${EVENT.datumFormatiert} in ${EVENT.ort}.`,
+  description: `378 Finisher, Jubiläum 50 Jahre SV – Partner 150 € oder einen offenen Posten übernehmen. Koderlauf ${EVENT.jahr} am ${EVENT.datumFormatiert} in ${EVENT.ort}. Unverbindliche Anfrage, keine Online-Zahlung.`,
 };
 
 export default function SponsorWerdenPage() {

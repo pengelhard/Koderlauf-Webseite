@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useScroll } from "@/hooks/use-scroll";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
@@ -20,11 +21,23 @@ const navLinks = [
   { href: "/feedback", label: "Feedback" },
 ] as const;
 
+const sponsorLink = { href: "/sponsor-werden", label: "Sponsor 2027" };
+
+function navLinkClass(active: boolean) {
+  return cn(
+    "whitespace-nowrap transition-colors hover:text-koder-orange",
+    active && "text-koder-orange",
+  );
+}
+
 export function Navbar() {
+  const pathname = usePathname();
   const scrolled = useScroll(50);
   const { theme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const sponsorActive = pathname === sponsorLink.href || pathname.startsWith(`${sponsorLink.href}/`);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
@@ -48,35 +61,39 @@ export function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Mobile: komplett statischer, deckender Header. Der Klassenwechsel beim
-          Überschreiten der Scroll-Schwelle löst sonst mitten im Scrollen einen
-          Repaint aus → Ghosting auf Mali-GPUs. Blur/Transparenz-Effekte und die
-          Transition gibt es deshalb nur auf Desktop (lg+). */}
       <header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 bg-forest-deep shadow-lg lg:transition-all lg:duration-300",
           scrolled
             ? "lg:bg-forest-deep/95 lg:backdrop-blur-md"
-            : "lg:bg-forest-deep/70 lg:backdrop-blur-sm lg:shadow-none"
+            : "lg:bg-forest-deep/70 lg:backdrop-blur-sm lg:shadow-none",
         )}
       >
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
-          <Logo size="md" />
+        <nav
+          className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-3 sm:gap-3 sm:px-6 sm:py-4 lg:px-8"
+        >
+          <div className="relative z-10 shrink-0">
+            <Logo size="md" />
+          </div>
 
-          {/* Desktop navigation links */}
-          <div className="hidden lg:flex items-center gap-5 text-sm font-semibold uppercase tracking-widest text-white/90">
+          <div
+            className="hidden min-w-0 items-center justify-center gap-x-2 gap-y-1 lg:flex xl:gap-x-3 text-[10px] font-semibold uppercase tracking-wide text-white/90 xl:text-xs"
+          >
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="transition-colors hover:text-koder-orange"
+                className={navLinkClass(pathname === link.href)}
               >
                 {link.label}
               </Link>
             ))}
+            <Link href={sponsorLink.href} className={navLinkClass(sponsorActive)}>
+              {sponsorLink.label}
+            </Link>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
             {mounted && (
               <button
                 type="button"
@@ -90,21 +107,23 @@ export function Navbar() {
             )}
 
             <Link
-              href="/sponsor-werden"
-              className="hidden md:inline-flex rounded-xl border border-white/40 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition hover:border-koder-orange hover:text-koder-orange"
+              href={sponsorLink.href}
+              className={cn(
+                "hidden rounded-xl border px-3 py-2 text-[10px] font-semibold uppercase tracking-wide transition md:inline-flex xl:hidden",
+                sponsorActive
+                  ? "border-koder-orange bg-koder-orange/15 text-koder-orange"
+                  : "border-white/40 text-white hover:border-koder-orange hover:text-koder-orange",
+              )}
             >
-              Sponsor 2027 werden
+              Sponsor
             </Link>
 
-            {/* Desktop Anmelden button - always visible on md+ */}
             <AnmeldeLink
-              className="hidden md:inline-flex rounded-xl bg-koder-orange px-5 py-2 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-koder-orange/90"
+              className="hidden md:inline-flex rounded-xl bg-koder-orange px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-koder-orange/90 xl:px-5 xl:text-sm"
             >
-              Jetzt anmelden
+              Anmelden
             </AnmeldeLink>
 
-            {/* Hamburger always visible so the dropdown for other pages is available at the top */}
-            {/* Hamburger always visible so the dropdown for other pages is available at the top */}
             <button
               type="button"
               suppressHydrationWarning
@@ -139,16 +158,22 @@ export function Navbar() {
                     <Link
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className="block text-lg font-semibold uppercase tracking-widest text-white transition-colors hover:text-koder-orange"
+                      className={cn(
+                        "block text-lg font-semibold uppercase tracking-widest transition-colors hover:text-koder-orange",
+                        pathname === link.href ? "text-koder-orange" : "text-white",
+                      )}
                     >
                       {link.label}
                     </Link>
                   </motion.div>
                 ))}
                 <Link
-                  href="/sponsor-werden"
+                  href={sponsorLink.href}
                   onClick={() => setMobileOpen(false)}
-                  className="mt-4 rounded-2xl border border-white/40 px-6 py-3 text-center text-sm font-semibold uppercase tracking-widest text-white"
+                  className={cn(
+                    "text-lg font-semibold uppercase tracking-widest transition-colors hover:text-koder-orange",
+                    sponsorActive ? "text-koder-orange" : "text-white",
+                  )}
                 >
                   Sponsor 2027 werden
                 </Link>

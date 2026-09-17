@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +15,10 @@ import {
   KOSTENPARTNERSCHAFTEN,
   ROLLE_LABEL,
   rolleAusQuery,
-  rolleHinweis,
+  rolleWarnung,
   SPONSORING_2027,
+  STATUS_LABEL,
+  vorschlagRolle,
   type AnfrageArt,
   type Beitragsart,
   type PostenRolle,
@@ -38,7 +41,7 @@ export function SponsorAnfrageFormular() {
     rolleAusQuery(stufeParam, getKostenposten(postenParam)),
   );
   const [postenId, setPostenId] = useState(
-    getKostenposten(postenParam) ? postenParam! : "",
+    getKostenposten(postenParam) ? getKostenposten(postenParam)!.id : "",
   );
   const [beitragsart, setBeitragsart] = useState<Beitragsart>("geld");
   const [addonBauzaun, setAddonBauzaun] = useState(false);
@@ -56,6 +59,7 @@ export function SponsorAnfrageFormular() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const gewaehlterPosten = getKostenposten(postenId);
+  const rolleHinweis = rolleWarnung(gewaehlterPosten, rolle);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setHoneypotReady(true));
@@ -66,11 +70,10 @@ export function SponsorAnfrageFormular() {
     const nextArt = anfrageArtAusQuery(stufeParam, postenParam);
     setAnfrageArt(nextArt);
     const nextPosten = getKostenposten(postenParam);
-    if (nextPosten) setPostenId(nextPosten.id);
-    if (nextArt === "posten") {
-      setRolle(rolleAusQuery(stufeParam, nextPosten ?? getKostenposten(postenId)));
+    if (nextPosten) {
+      setPostenId(nextPosten.id);
+      setRolle(rolleAusQuery(stufeParam, nextPosten));
     }
-    // postenId only as fallback when query has no posten; do not re-run on every postenId change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stufeParam, postenParam]);
 
@@ -83,15 +86,23 @@ export function SponsorAnfrageFormular() {
       if (nextPosten) q.set("posten", nextPosten);
     }
     router.replace(`/sponsor-werden?${q.toString()}#anfrage`, { scroll: false });
+    requestAnimationFrame(() => {
+      document.getElementById("anfrage")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrorMsg(null);
 
-    if (!firma.trim() || !ansprechpartner.trim()) {
+    if (!firma.trim()) {
       setStatus("error");
-      setErrorMsg("Bitte Firma und Ansprechpartner angeben.");
+      setErrorMsg("Bitte Firma oder Name angeben.");
+      return;
+    }
+    if (!ansprechpartner.trim()) {
+      setStatus("error");
+      setErrorMsg("Bitte einen Ansprechpartner angeben.");
       return;
     }
     if (!isValidEmailFormat(email.trim())) {
@@ -101,12 +112,12 @@ export function SponsorAnfrageFormular() {
     }
     if (anfrageArt === "posten" && !getKostenposten(postenId)) {
       setStatus("error");
-      setErrorMsg("Bitte einen Posten wählen.");
+      setErrorMsg("Ohne konkreten Posten gibt es keinen Hauptsponsor-Titel.");
       return;
     }
     if (!bestaetigt) {
       setStatus("error");
-      setErrorMsg("Bitte bestätigt, dass ihr eine Anfrage ohne Online-Zahlung senden wollt.");
+      setErrorMsg("Bitte bestätigt, dass ihr eine unverbindliche Anfrage ohne Online-Zahlung senden wollt.");
       return;
     }
 
@@ -148,13 +159,14 @@ export function SponsorAnfrageFormular() {
     return (
       <div className="flex flex-col items-center gap-4 py-8 text-center">
         <CheckCircle2 className="h-14 w-14 text-koder-orange" aria-hidden />
-        <p className="text-lg font-semibold">Danke – eure Anfrage ist unterwegs.</p>
+        <p className="text-lg font-semibold">Danke – eure Anfrage ist raus.</p>
         <p className="max-w-md text-sm text-muted-foreground">
-          Wir melden uns von{" "}
-          <a href="mailto:info@koderlauf.de" className="text-koder-orange hover:underline">
-            info@koderlauf.de
+          Ihr hört von{" "}
+          <a href={`mailto:${SPONSORING_2027.kontaktEmail}`} className="text-koder-orange hover:underline">
+            {SPONSORING_2027.kontaktEmail}
           </a>
-          . Zahlung erfolgt später per Rechnung über den Verein – nicht online.
+          . Als Nächstes klären wir Rückfragen, Logo-Formate, Rechnungsadresse und – falls ihr eine Sache
+          stellt – den Liefertermin.
         </p>
         <Button type="button" variant="outline" className="mt-2" onClick={() => setStatus("idle")}>
           Weitere Anfrage
@@ -164,61 +176,72 @@ export function SponsorAnfrageFormular() {
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="space-y-6">
-      <fieldset className="space-y-3">
-        <legend className="text-sm font-semibold">Art der Anfrage</legend>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label
-            className={`cursor-pointer rounded-2xl border p-4 text-sm transition-colors ${
-              anfrageArt === "partner"
-                ? "border-koder-orange bg-koder-orange/10"
-                : "border-border hover:border-koder-orange/40"
-            }`}
-          >
+    <form noValidate onSubmit={handleSubmit} className="space-y-8">
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Weg A */}
+        <fieldset
+          className={`rounded-2xl border p-5 transition-colors ${
+            anfrageArt === "partner" ? "border-koder-orange bg-koder-orange/5" : "border-border"
+          }`}
+        >
+          <legend className="px-1 text-sm font-bold">Weg A – Partner {SPONSORING_2027.partnerPreis} €</legend>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Kein Posten nötig. Bauzaun, Zieleinlauf, Website, Instagram.
+          </p>
+          <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
               type="radio"
               name="anfrageArt"
-              value="partner"
               checked={anfrageArt === "partner"}
               onChange={() => {
                 setAnfrageArt("partner");
                 updateQuery("partner", rolle, postenId);
               }}
-              className="sr-only"
+              className="mt-1"
             />
-            <span className="font-bold">Partner · {SPONSORING_2027.partnerPreis} €</span>
-            <span className="mt-1 block text-muted-foreground">
-              Nur Geld. Bauzaun, Zieleinlauf, Website, Instagram. Kein Posten.
-            </span>
+            <span>Partner {SPONSORING_2027.partnerPreis} € bar wählen</span>
           </label>
-          <label
-            className={`cursor-pointer rounded-2xl border p-4 text-sm transition-colors ${
-              anfrageArt === "posten"
-                ? "border-koder-orange bg-koder-orange/10"
-                : "border-border hover:border-koder-orange/40"
-            }`}
-          >
+          {anfrageArt === "partner" && (
+            <label className="mt-3 flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={addonBauzaun}
+                onChange={(e) => setAddonBauzaun(e.target.checked)}
+                className="mt-1"
+              />
+              <span>Add-on: Bauzaun-Einzelfeld (ca. 80–100 €, nach Absprache)</span>
+            </label>
+          )}
+        </fieldset>
+
+        {/* Weg B */}
+        <fieldset
+          className={`rounded-2xl border p-5 transition-colors ${
+            anfrageArt === "posten" ? "border-koder-orange bg-koder-orange/5" : "border-border"
+          }`}
+        >
+          <legend className="px-1 text-sm font-bold">Weg B – Einen Posten übernehmen</legend>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Posten Pflicht. Rolle wird vorgeschlagen, ihr könnt sie anpassen.
+          </p>
+          <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
               type="radio"
               name="anfrageArt"
-              value="posten"
               checked={anfrageArt === "posten"}
               onChange={() => {
                 setAnfrageArt("posten");
                 updateQuery("posten", rolle, postenId);
               }}
-              className="sr-only"
+              className="mt-1"
             />
-            <span className="font-bold">Kostenpartnerschaft</span>
-            <span className="mt-1 block text-muted-foreground">
-              Posten wählen. Ab ca. {SPONSORING_2027.hauptsponsorAb} € Hauptsponsor, darunter Sachpartner.
-            </span>
+            <span>Einen offenen Posten übernehmen</span>
           </label>
-        </div>
-      </fieldset>
+        </fieldset>
+      </div>
 
       {anfrageArt === "posten" && (
-        <>
+        <div className="space-y-6 rounded-2xl border border-border bg-muted/20 p-5">
           <div className="space-y-2">
             <Label htmlFor="sponsor-posten">Posten (Pflicht)</Label>
             <select
@@ -230,39 +253,30 @@ export function SponsorAnfrageFormular() {
                 const id = e.target.value;
                 setPostenId(id);
                 const p = getKostenposten(id);
-                const nextRolle = rolleAusQuery(null, p);
+                const nextRolle = vorschlagRolle(p);
                 setRolle(nextRolle);
                 updateQuery("posten", nextRolle, id);
               }}
-              className="border-input bg-transparent focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
+              className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
             >
               <option value="">Bitte wählen …</option>
               {KOSTENPARTNERSCHAFTEN.map((p) => (
                 <option key={p.id} value={p.id} disabled={p.status === "vergeben"}>
                   {p.titel}
-                  {p.status !== "offen" ? ` (${p.status})` : ""}
+                  {p.status !== "offen" ? ` (${STATUS_LABEL[p.status]})` : ""}
                 </option>
               ))}
             </select>
-            {gewaehlterPosten ? (
-              <p className="text-xs text-muted-foreground">{rolleHinweis(gewaehlterPosten)}</p>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Ohne konkreten Posten gibt es keinen Hauptsponsor-Titel.
-              </p>
-            )}
           </div>
 
           <fieldset className="space-y-3">
-            <legend className="text-sm font-semibold">Gewünschte Rolle</legend>
+            <legend className="text-sm font-semibold">Rolle (Vorschlag)</legend>
             <div className="grid gap-3 sm:grid-cols-2">
               {(["hauptsponsor", "sachpartner"] as const).map((id) => (
                 <label
                   key={id}
-                  className={`cursor-pointer rounded-2xl border p-4 text-sm transition-colors ${
-                    rolle === id
-                      ? "border-koder-orange bg-koder-orange/10"
-                      : "border-border hover:border-koder-orange/40"
+                  className={`cursor-pointer rounded-xl border p-3 text-sm transition-colors ${
+                    rolle === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
                   }`}
                 >
                   <input
@@ -278,19 +292,19 @@ export function SponsorAnfrageFormular() {
                     className="sr-only"
                   />
                   <span className="font-bold">{ROLLE_LABEL[id]}</span>
-                  <span className="mt-1 block text-muted-foreground">
-                    {id === "hauptsponsor"
-                      ? `Posten ab ca. ${SPONSORING_2027.hauptsponsorAb} € · Partner-Sichtbarkeit plus Werbung auf dem Gegenstand.`
-                      : "Unter ca. 500 € · Werbung nur am eigenen Posten, kleine Website-Nennung."}
-                  </span>
                 </label>
               ))}
             </div>
+            {rolleHinweis && (
+              <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-100">
+                {rolleHinweis}
+              </p>
+            )}
           </fieldset>
 
           <fieldset className="space-y-3">
             <legend className="text-sm font-semibold">Art des Beitrags</legend>
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-3">
               {(
                 [
                   ["geld", "Geld für den Posten"],
@@ -300,10 +314,8 @@ export function SponsorAnfrageFormular() {
               ).map(([id, label]) => (
                 <label
                   key={id}
-                  className={`cursor-pointer rounded-2xl border p-3 text-sm transition-colors ${
-                    beitragsart === id
-                      ? "border-koder-orange bg-koder-orange/10"
-                      : "border-border hover:border-koder-orange/40"
+                  className={`cursor-pointer rounded-xl border p-3 text-sm ${
+                    beitragsart === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
                   }`}
                 >
                   <input
@@ -321,29 +333,15 @@ export function SponsorAnfrageFormular() {
               ))}
             </div>
             <p className="text-xs text-muted-foreground">
-              Wer die Sache stellt, muss nicht bar nachzahlen. Der Richtwert dient nur der Einordnung.
+              Wer die Sache stellt, zahlt nicht bar nach.
             </p>
           </fieldset>
-        </>
-      )}
-
-      {anfrageArt === "partner" && (
-        <label className="flex items-start gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={addonBauzaun}
-            onChange={(e) => setAddonBauzaun(e.target.checked)}
-            className="mt-1"
-          />
-          <span>
-            Add-on: zusätzliches Bauzaunfeld (kein Solo-Hauptsponsor, Preis nach Absprache ca. 80–100 €).
-          </span>
-        </label>
+        </div>
       )}
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="sponsor-firma">Firma / Name</Label>
+          <Label htmlFor="sponsor-firma">Firma / Name *</Label>
           <Input
             id="sponsor-firma"
             name="firma"
@@ -355,7 +353,7 @@ export function SponsorAnfrageFormular() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="sponsor-person">Ansprechpartner</Label>
+          <Label htmlFor="sponsor-person">Ansprechpartner *</Label>
           <Input
             id="sponsor-person"
             name="ansprechpartner"
@@ -367,7 +365,7 @@ export function SponsorAnfrageFormular() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="sponsor-email">E-Mail</Label>
+          <Label htmlFor="sponsor-email">E-Mail *</Label>
           <Input
             id="sponsor-email"
             name="email"
@@ -435,8 +433,11 @@ export function SponsorAnfrageFormular() {
           className="mt-1"
         />
         <span>
-          Das ist eine unverbindliche Anfrage. Es gibt keine Online-Zahlung – der Verein meldet sich
-          mit den nächsten Schritten und der Rechnung.
+          Unverbindliche Anfrage, keine Online-Zahlung. Der Verein meldet sich mit den nächsten Schritten
+          und der Rechnung.{" "}
+          <Link href="/datenschutz" className="text-koder-orange hover:underline">
+            Datenschutz
+          </Link>
         </span>
       </label>
 
