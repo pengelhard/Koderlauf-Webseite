@@ -4,24 +4,11 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { FassjagdHinweisKasten } from "@/components/fassjagd/hinweis-kasten";
 import { FassjagdFlame, useFassjagdBoard } from "@/components/fassjagd/live";
+import { PlaceMark } from "@/components/fassjagd/place-mark";
 import { gapLine } from "@/lib/fassjagd/copy";
 import type { FassjagdBoard, FassjagdClub } from "@/lib/fassjagd/types";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import { EVENT } from "@/lib/event-config";
-import { cn } from "@/lib/utils";
-
-function PlaceMark({ place, lead }: { place: number; lead: boolean }) {
-  return (
-    <span
-      className={cn(
-        "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-extrabold",
-        lead ? "bg-koder-orange text-white" : "bg-muted text-muted-foreground",
-      )}
-    >
-      {place}
-    </span>
-  );
-}
 
 function ClubRow({ club, max }: { club: FassjagdClub; max: number }) {
   const pct = max > 0 ? (club.total / max) * 100 : 0;
@@ -32,7 +19,7 @@ function ClubRow({ club, max }: { club: FassjagdClub; max: number }) {
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <PlaceMark place={club.place ?? 0} lead={club.place === 1} />
+          <PlaceMark place={club.place ?? 0} />
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <span className="truncate font-semibold">{club.name}</span>

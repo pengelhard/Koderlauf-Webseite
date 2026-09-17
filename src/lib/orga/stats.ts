@@ -198,6 +198,19 @@ export function shirtsBySizeThenName(stats: OrgaStats): ShirtRecipient[] {
   });
 }
 
+export function shirtsGroupedBySize(
+  stats: OrgaStats,
+): { size: string; count: number; rows: ShirtRecipient[] }[] {
+  const groups: { size: string; count: number; rows: ShirtRecipient[] }[] = [];
+  for (const r of shirtsBySizeThenName(stats)) {
+    const last = groups[groups.length - 1];
+    if (last && last.size === r.size) last.rows.push(r);
+    else groups.push({ size: r.size, count: 0, rows: [r] });
+  }
+  for (const g of groups) g.count = g.rows.length;
+  return groups;
+}
+
 export function toAdminPayload(stats: OrgaStats): OrgaAdminPayload {
   return {
     fetchedAt: stats.fetchedAt,

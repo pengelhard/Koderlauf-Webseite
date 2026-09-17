@@ -45,6 +45,21 @@ export function mergeAlias(fromDisplay: string, toDisplay: string, normalizeKey:
   s.aliases[fromKey] = toName;
 }
 
+export function setPersonGroup(personId: string, groupName: string) {
+  const s = store();
+  const id = personId.trim();
+  const name = groupName.trim();
+  if (!id || !name) return;
+  s.personGroups[id] = name;
+}
+
+export function clearPersonGroup(personId: string) {
+  const s = store();
+  const id = personId.trim();
+  if (!id) return;
+  delete s.personGroups[id];
+}
+
 export function setExcluded(name: string, excluded: boolean) {
   const s = store();
   const n = name.trim();

@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { VereinCombobox } from "@/components/fassjagd/verein-combobox";
+import { FassjagdAdminPersonen } from "@/components/fassjagd/admin-personen";
 import { FassjagdLiveBadge } from "@/components/fassjagd/live";
-import type { FassjagdBoard } from "@/lib/fassjagd/types";
+import type { FassjagdBoard, FassjagdPerson } from "@/lib/fassjagd/types";
 import type { FassjagdOverrides } from "@/lib/fassjagd/store";
 
 export default function FassjagdAdminPage() {
@@ -11,6 +12,7 @@ export default function FassjagdAdminPage() {
   const [authed, setAuthed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [board, setBoard] = useState<FassjagdBoard | null>(null);
+  const [people, setPeople] = useState<FassjagdPerson[]>([]);
   const [overrides, setOverrides] = useState<FassjagdOverrides | null>(null);
   const [fromName, setFromName] = useState("");
   const [toName, setToName] = useState("");
@@ -29,6 +31,7 @@ export default function FassjagdAdminPage() {
     }
     setAuthed(true);
     setBoard(json.board);
+    setPeople(Array.isArray(json.people) ? json.people : []);
     setOverrides(json.overrides);
   }, []);
 
@@ -51,6 +54,7 @@ export default function FassjagdAdminPage() {
         return;
       }
       if (json.board) setBoard(json.board);
+      if (Array.isArray(json.people)) setPeople(json.people);
       if (json.overrides) setOverrides(json.overrides);
       if (body.action === "login") {
         setAuthed(true);
@@ -62,14 +66,17 @@ export default function FassjagdAdminPage() {
     }
   }
 
-  const names = board?.names ?? [];
+  const names = [...new Set([
+    ...(board?.names ?? []),
+    ...people.flatMap((p) => [p.currentGroup, p.originalGroup].filter(Boolean)),
+  ])].sort((a, b) => a.localeCompare(b, "de"));
 
   if (!authed) {
     return (
       <div className="mx-auto max-w-md px-4 pt-28 pb-16">
         <h1 className="text-3xl font-extrabold">Fassjagd Admin</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Vereine, Firmen und Gruppen mergen, aus Wertung nehmen, Freeze, Wochenstand-Bild.
+          Gruppen mergen, einzelne Starter zuweisen, aus Wertung nehmen, Freeze, Wochenstand-Bild.
         </p>
         <form
           className="mt-6 space-y-3"
@@ -151,6 +158,14 @@ export default function FassjagdAdminPage() {
           </ul>
         )}
       </section>
+
+      <FassjagdAdminPersonen
+        people={people}
+        names={names}
+        busy={busy}
+        onAssign={(personId, group) => void post({ action: "assign-group", personId, group })}
+        onReset={(personId) => void post({ action: "reset-group", personId })}
+      />
 
       <section className="rounded-2xl border border-border bg-card p-4 space-y-3">
         <h2 className="font-semibold">Aus Wertung nehmen</h2>

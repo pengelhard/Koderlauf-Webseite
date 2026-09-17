@@ -5,6 +5,7 @@ import type {
   StreckeCount,
 } from "@/lib/anmeldungen/types";
 import { resolveVerein, rankVereine } from "@/lib/anmeldungen/vereine";
+import { personVereinRaw } from "@/lib/fassjagd/person-id";
 import { getFassjagdOverrides } from "@/lib/fassjagd/store";
 
 /** Anzeige-Reihenfolge der Strecken 2027 */
@@ -170,8 +171,8 @@ export function mapRaceResultRow(
       pickString(row, ["YB", "YEAR", "YearOfBirth", "Jahrgang", "DateOfBirth", "DOB"]) || undefined,
     verein: vereinResolved.empty ? undefined : vereinResolved.display,
     nation: pickString(row, ["Nation", "Nationality", "Country"]) || undefined,
-    bib: pickNumber(row, ["BIB", "Bib", "Startnummer", "StartNo", "Startnumber"]),
-    rrId: pickNumber(row, ["ID", "Id", "ContestantId", "PID"]),
+    bib: pickNumber(row, ["BIB", "Bib", "Startnummer", "StartNo", "Startnumber", "BibNo"]),
+    rrId: pickNumber(row, ["ID", "Id", "ContId", "ContestantId", "PID"]),
   };
 }
 
@@ -293,7 +294,11 @@ export function aggregateFromRaceResultJson(
     return a.vorname.localeCompare(b.vorname, "de");
   });
 
-  const vereinStats = rankVereine(sorted, getFassjagdOverrides().aliases);
+  const overrides = getFassjagdOverrides();
+  const vereinStats = rankVereine(
+    sorted.map((p) => ({ verein: personVereinRaw(p, overrides.personGroups) })),
+    overrides.aliases,
+  );
 
   return {
     total: participants.length,
