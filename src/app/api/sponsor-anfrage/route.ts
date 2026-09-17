@@ -3,15 +3,16 @@ import nodemailer from "nodemailer";
 import { getPublicDomainLabel, getSiteUrl } from "@/lib/site-url";
 import { allowRequest, clientIp } from "@/lib/rate-limit";
 import {
-  getKostenposten,
-  isAnfrageArt,
+  BAND_LABEL,
+  getFlaeche,
+  isAnfrageWeg,
   isBeitragsart,
-  isPostenRolle,
-  ROLLE_LABEL,
+  isBeitragsband,
+  normalizeStufe,
   SPONSORING_2027,
-  type AnfrageArt,
+  type AnfrageWeg,
   type Beitragsart,
-  type PostenRolle,
+  type Beitragsband,
 } from "@/lib/sponsoring-2027";
 
 const PROD_TO = "info@koderlauf.de";
@@ -101,6 +102,25 @@ function getSmtpConfig():
   return { ok: true, transporter, from };
 }
 
+function resolveAnfrageWeg(rec: Record<string, unknown>): AnfrageWeg | null {
+  if (isAnfrageWeg(rec.anfrageWeg)) return rec.anfrageWeg;
+  if (rec.anfrageArt === "partner") return "partner";
+  if (rec.anfrageArt === "posten") return "flaeche";
+  if (rec.stufe === "partner") return "partner";
+  if (rec.stufe === "foerderer" || rec.stufe === "hauptsponsor") return "beitrag";
+  if (rec.stufe === "sachpartner") return "beitrag";
+  if (typeof rec.flaecheId === "string" || typeof rec.postenId === "string") return "flaeche";
+  return null;
+}
+
+function resolveBand(rec: Record<string, unknown>, weg: AnfrageWeg): Beitragsband {
+  if (isBeitragsband(rec.band)) return rec.band;
+  const stufe = normalizeStufe(typeof rec.stufe === "string" ? rec.stufe : null);
+  if (stufe) return stufe;
+  if (weg === "partner") return "partner";
+  return "foerderer";
+}
+
 export async function POST(request: Request) {
   if (!isSameSiteRequest(request)) {
     return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 403 });
@@ -133,20 +153,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  let anfrageArt: AnfrageArt | null = isAnfrageArt(rec.anfrageArt) ? rec.anfrageArt : null;
-  if (!anfrageArt) {
-    if (rec.stufe === "partner") anfrageArt = "partner";
-    else if (rec.stufe === "hauptsponsor" || rec.stufe === "sachpartner" || rec.stufe === "posten") {
-      anfrageArt = "posten";
-    }
-  }
-  if (!anfrageArt) {
+  const anfrageWeg = resolveAnfrageWeg(rec);
+  if (!anfrageWeg) {
     return NextResponse.json(
-      { error: "Bitte Partner oder eine Kostenpartnerschaft wählen." },
+      { error: "Bitte einen Weg wählen: Partner, Beitrag oder Fläche." },
       { status: 400 },
     );
   }
 
+  const band = resolveBand(rec, anfrageWeg);
   const firma = clip(rec.firma, MAX_SHORT);
   const ansprechpartner = clip(rec.ansprechpartner, MAX_SHORT);
   const email = clip(rec.email, MAX_SHORT);
@@ -155,12 +170,14 @@ export async function POST(request: Request) {
   const instagram = clip(rec.instagram, 200);
   const nachricht = clip(rec.nachricht, MAX_TEXT);
   const addonBauzaun = rec.addonBauzaun === true;
-  const postenId = typeof rec.postenId === "string" ? rec.postenId.trim() : "";
-  const posten = getKostenposten(postenId);
+  const flaecheIdRaw =
+    typeof rec.flaecheId === "string"
+      ? rec.flaecheId.trim()
+      : typeof rec.postenId === "string"
+        ? rec.postenId.trim()
+        : "";
+  const flaeche = getFlaeche(flaecheIdRaw);
   const beitragsart: Beitragsart | null = isBeitragsart(rec.beitragsart) ? rec.beitragsart : null;
-  let rolle: PostenRolle | null = isPostenRolle(rec.rolle) ? rec.rolle : null;
-  if (!rolle && rec.stufe === "hauptsponsor") rolle = "hauptsponsor";
-  if (!rolle && rec.stufe === "sachpartner") rolle = "sachpartner";
 
   if (!firma) {
     return NextResponse.json({ error: "Bitte die Firma oder den Namen angeben." }, { status: 400 });
@@ -174,30 +191,21 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  if (anfrageArt === "posten" && !posten) {
-    return NextResponse.json(
-      { error: "Bitte einen Posten für Hauptsponsor oder Sachpartner wählen." },
-      { status: 400 },
-    );
+  if (anfrageWeg === "flaeche" && !flaeche) {
+    return NextResponse.json({ error: "Bitte eine Fläche wählen." }, { status: 400 });
   }
-  if (anfrageArt === "posten" && !rolle) {
-    return NextResponse.json(
-      { error: "Bitte Hauptsponsor oder Sachpartner als Rolle wählen." },
-      { status: 400 },
-    );
-  }
-  if (anfrageArt === "posten" && !beitragsart) {
+  if (anfrageWeg !== "partner" && !beitragsart) {
     return NextResponse.json(
       { error: "Bitte angeben, ob Geld, Sache oder beides." },
       { status: 400 },
     );
   }
-  if (postenId && !posten) {
-    return NextResponse.json({ error: "Unbekannte Kostenpartnerschaft." }, { status: 400 });
+  if (flaecheIdRaw && !flaeche) {
+    return NextResponse.json({ error: "Unbekannte Fläche." }, { status: 400 });
   }
-  if (posten && posten.status === "vergeben") {
+  if (flaeche && flaeche.status === "vergeben" && !flaeche.mehrereMoeglich) {
     return NextResponse.json(
-      { error: "Dieser Posten ist bereits vergeben. Bitte einen anderen wählen." },
+      { error: "Diese Fläche ist bereits vergeben. Bitte eine andere wählen." },
       { status: 400 },
     );
   }
@@ -208,21 +216,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: GENERIC_UNAVAILABLE }, { status: 503 });
   }
 
-  const stufeLabel =
-    anfrageArt === "partner"
+  const wegLabel =
+    anfrageWeg === "partner"
       ? `Partner (${SPONSORING_2027.partnerPreis} €)`
-      : `${ROLLE_LABEL[rolle ?? "sachpartner"]} (Posten)`;
+      : anfrageWeg === "flaeche"
+        ? `${BAND_LABEL[band]} + Fläche`
+        : BAND_LABEL[band];
   const beitragLabel =
-    beitragsart === "geld" ? "Geld für den Posten" : beitragsart === "sach" ? "Sachspende" : beitragsart === "beides" ? "Beides" : "";
+    beitragsart === "geld"
+      ? "Geld"
+      : beitragsart === "sach"
+        ? "Sache"
+        : beitragsart === "beides"
+          ? "Beides"
+          : "";
   const to = getMailTo();
   const text = [
     ...(to !== PROD_TO ? [`[Nur Entwicklung: Zustellung an ${to} (Live: ${PROD_TO})]`, ""] : []),
     `Sponsoring-Anfrage über ${getPublicDomainLabel(getSiteUrl())}`,
     "",
-    `Art: ${stufeLabel}`,
-    posten ? `Kostenpartnerschaft: ${posten.titel} (${posten.id})` : "Kostenpartnerschaft: —",
+    `Weg: ${wegLabel}`,
+    `Band: ${BAND_LABEL[band]}`,
+    flaeche ? `Fläche: ${flaeche.titel} (${flaeche.id})` : "Fläche: —",
     beitragLabel ? `Beitrag: ${beitragLabel}` : "",
-    addonBauzaun ? "Add-on: zusätzliches Bauzaunfeld (Partner)" : "",
+    addonBauzaun ? "Add-on: Bauzaun-Einzelfeld (Partner)" : "",
     "",
     `Firma: ${firma}`,
     `Ansprechpartner: ${ansprechpartner}`,
@@ -242,7 +259,7 @@ export async function POST(request: Request) {
       from: smtp.from,
       to,
       replyTo: email,
-      subject: `[Koderlauf Sponsor 2027] ${stufeLabel} – ${firma}`.slice(0, 250),
+      subject: `[Koderlauf Sponsor 2027] ${wegLabel} – ${firma}`.slice(0, 250),
       text,
     });
     return NextResponse.json({ ok: true });

@@ -1,15 +1,19 @@
-/** Sponsoring-Konzept Koderlauf 2027. Drei Rollen, öffentlich und fair. */
+/** Sponsoring-Konzept Koderlauf 2027 – Beitragsbänder + Flächen-Inventar. */
 
-export type AnfrageArt = "partner" | "posten";
-export type PostenRolle = "hauptsponsor" | "sachpartner";
-export type PostenStatus = "offen" | "reserviert" | "vergeben";
+export type Beitragsband = "partner" | "foerderer" | "hauptsponsor";
+export type AnfrageWeg = "partner" | "beitrag" | "flaeche";
+export type FlaecheStatus = "offen" | "reserviert" | "vergeben";
 export type Beitragsart = "geld" | "sach" | "beides";
-export type TypischeRolle = PostenRolle | "je_nach_summe";
 
 export const SPONSORING_2027 = {
   partnerPreis: 150,
-  hauptsponsorAb: 500,
+  foerdererVon: 400,
+  foerdererBis: 500,
+  hauptsponsorAb: 800,
+  hauptsponsorMax: 5,
   kontaktEmail: "info@koderlauf.de",
+  fairnessSatz:
+    "Status folgt dem Beitrag. Fläche folgt dem Inventar. 800 € ohne freie Medaille ergeben denselben Rang wie die Medaillen – aber nicht dasselbe Band-Logo.",
   premiere2026: {
     anmeldungen: 400,
     finisher: 378,
@@ -17,27 +21,33 @@ export const SPONSORING_2027 = {
   },
 } as const;
 
-export const ROLLE_LABEL: Record<PostenRolle, string> = {
+export const BAND_LABEL: Record<Beitragsband, string> = {
+  partner: "Partner",
+  foerderer: "Förderer",
   hauptsponsor: "Hauptsponsor",
-  sachpartner: "Sachpartner",
 };
 
-export const STATUS_LABEL: Record<PostenStatus, string> = {
+export const STATUS_LABEL: Record<FlaecheStatus, string> = {
   offen: "OFFEN",
   reserviert: "RESERVIERT",
   vergeben: "VERGEBEN",
 };
 
-const POSTEN_ID_ALIASES: Record<string, string> = {
+const FLAECHE_ID_ALIASES: Record<string, string> = {
   "bauzaun-feld": "bauzaun-einzelfeld",
 };
 
-export const SPONSOR_ROLLEN: {
-  id: "partner" | "hauptsponsor" | "sachpartner";
+const STUFE_ALIASES: Record<string, Beitragsband> = {
+  sachpartner: "foerderer",
+};
+
+export const SPONSOR_BANDER: {
+  id: Beitragsband;
   name: string;
   preisLabel: string;
   kurz: string;
   leistungen: string[];
+  flaecheHinweis: string;
   ctaHref: string;
   ctaLabel: string;
 }[] = [
@@ -45,95 +55,130 @@ export const SPONSOR_ROLLEN: {
     id: "partner",
     name: "Partner",
     preisLabel: "150 € bar",
-    kurz: "Sichtbarkeit ohne Gegenstand – beliebig viele Partner.",
+    kurz: "Sichtbarkeit ohne Exklusivfläche – beliebig viele Partner.",
     leistungen: [
       "1× Banner am Bauzaun",
       "1× Banner am Zieleinlauf",
       "Erwähnung auf der Website",
       "Verlinkung auf Instagram",
     ],
+    flaecheHinweis: "Keine Exklusivfläche – Bauzaun-Einzelfeld optional als Add-on.",
     ctaHref: "/sponsor-werden?stufe=partner#anfrage",
     ctaLabel: "Partner werden",
   },
   {
-    id: "hauptsponsor",
-    name: "Hauptsponsor",
-    preisLabel: "ab ca. 500 € + Posten",
-    kurz: "Nur mit konkretem Event-Posten – Sache oder Geld dafür.",
+    id: "foerderer",
+    name: "Förderer",
+    preisLabel: "ca. 400–500 € Gegenwert",
+    kurz: "Partner-Paket plus größeres Logo auf der Sponsoren-Seite und klarer Dank.",
     leistungen: [
       "Alles wie Partner",
-      "Exklusive Werbung auf diesem Gegenstand",
-      "Pro Posten nur eine Firma",
+      "Größere Nennung auf der Sponsoren-Seite",
+      "Klarer Dank in der Kommunikation",
+      "Fläche optional, wenn noch eine passende offen ist",
     ],
-    ctaHref: "/sponsor-werden#posten",
-    ctaLabel: "Posten ansehen",
+    flaecheHinweis: "Fläche optional – nicht Pflicht.",
+    ctaHref: "/sponsor-werden?stufe=foerderer#anfrage",
+    ctaLabel: "Förderer anfragen",
   },
   {
-    id: "sachpartner",
-    name: "Sachpartner",
-    preisLabel: "unter ca. 500 €",
-    kurz: "Kleiner Posten oder kleine Sache – ehrlich benannt.",
+    id: "hauptsponsor",
+    name: "Hauptsponsor",
+    preisLabel: "ab ca. 800 € Gegenwert",
+    kurz: "Partner-Paket plus große Nennung und Dank bei der Siegerehrung.",
     leistungen: [
-      "Werbung nur am eigenen Posten",
-      "Kleine Nennung auf der Website",
-      "Kein automatisches Bauzaun-Paket",
+      "Alles wie Partner",
+      "Prominente Nennung auf der Website",
+      "Dank bei der Siegerehrung",
+      "Fläche optional, wenn noch eine passende offen ist",
     ],
-    ctaHref: "/sponsor-werden#posten",
-    ctaLabel: "Posten ansehen",
+    flaecheHinweis:
+      "Fläche optional – Geld ohne lieferbare Sache ist ausdrücklich erlaubt. Begrenzt auf max. 5 Hauptsponsoren.",
+    ctaHref: "/sponsor-werden?stufe=hauptsponsor#anfrage",
+    ctaLabel: "Hauptsponsor anfragen",
   },
 ];
 
-export const ROLLEN_VERGLEICH: {
+export const BAND_VERGLEICH: {
   leistung: string;
   partner: string;
-  sachpartner: string;
+  foerderer: string;
   hauptsponsor: string;
 }[] = [
-  { leistung: "Website-Nennung", partner: "ja", sachpartner: "klein", hauptsponsor: "ja" },
-  { leistung: "Instagram", partner: "ja", sachpartner: "nein", hauptsponsor: "ja" },
-  { leistung: "Bauzaun-Paket", partner: "ja", sachpartner: "nein", hauptsponsor: "ja" },
-  { leistung: "Exklusivfläche am Posten", partner: "nein", sachpartner: "ja", hauptsponsor: "ja" },
-  { leistung: "Titel", partner: "Partner", sachpartner: "Sachpartner", hauptsponsor: "Hauptsponsor" },
+  { leistung: "Website-Nennung", partner: "klein", foerderer: "groß", hauptsponsor: "prominent" },
+  { leistung: "Instagram", partner: "ja", foerderer: "ja", hauptsponsor: "ja" },
+  { leistung: "Banner-Paket Bauzaun+Ziel", partner: "ja", foerderer: "ja", hauptsponsor: "ja" },
+  { leistung: "Dank Siegerehrung", partner: "nein", foerderer: "kurz möglich", hauptsponsor: "ja" },
   {
-    leistung: "Richtwert",
+    leistung: "Exklusivfläche",
+    partner: "nein, außer Add-on",
+    foerderer: "optional wenn offen",
+    hauptsponsor: "optional wenn offen",
+  },
+  { leistung: "Titel", partner: "Partner", foerderer: "Förderer", hauptsponsor: "Hauptsponsor" },
+  {
+    leistung: "Gegenwert",
     partner: "150 € bar",
-    sachpartner: "unter ca. 500 €",
-    hauptsponsor: "ab ca. 500 € + Posten",
+    foerderer: "ca. 400–500 €",
+    hauptsponsor: "ab ca. 800 €",
+  },
+  { leistung: "Sache nötig?", partner: "nein", foerderer: "nein", hauptsponsor: "nein" },
+  {
+    leistung: "Geht, wenn alle Flächen weg sind?",
+    partner: "ja",
+    foerderer: "ja, über Restkosten",
+    hauptsponsor: "ja, über Restkosten",
   },
 ];
 
-export interface Kostenposten {
+export const SPONSOR_SO_FUNKTIONIERT = [
+  { schritt: "1", titel: "Band wählen", text: "150 €, ca. 500 € oder ab 800 € Gegenwert – Geld oder Sache." },
+  {
+    schritt: "2",
+    titel: "Optional Fläche dazu",
+    text: "Eine offene Fläche übernehmen – oder Restkosten, wenn das Inventar voll ist.",
+  },
+  {
+    schritt: "3",
+    titel: "Anfrage senden",
+    text: "Der Verein klärt Beschaffung, Logo-Formate und Rechnung.",
+  },
+];
+
+export interface SponsorFlaeche {
   id: string;
   titel: string;
-  /** 1 Satz für Karten */
   kurz: string;
-  /** 1 Satz Werbefläche */
   werbungKurz: string;
-  /** 1 Zeile Richtwert + Rolle */
-  richtwertKurz: string;
+  badgeLabel: string;
   beschreibung: string;
   werbung: string;
   richtkosten: string;
-  typischeRolle: TypischeRolle;
+  vorgeschlagenesBand: Beitragsband;
+  minBand: Beitragsband;
+  wertCa?: string;
   aufteilbar?: string;
   hinweis?: string;
-  status: PostenStatus;
+  status: FlaecheStatus;
+  /** Mehrere Firmen möglich (z. B. Restkosten-Topf). */
+  mehrereMoeglich?: boolean;
 }
 
-export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
+export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "medaillen",
     titel: "Medaillen",
     kurz: "Finisher-Medaille inkl. Band und Aufkleber für alle Finisher plus Reserve.",
     werbungKurz: "Logo auf dem Medaillenband; Aufkleber optional.",
-    richtwertKurz: "ca. 1,80 €/Finisher · bei 400 ca. 720–800 € · typisch Hauptsponsor",
+    badgeLabel: "ca. 720–800 € · typisch Hauptsponsor",
     beschreibung:
       "Finisher-Medaille inkl. Band und Aufkleber für alle Finisher plus Reserve (ca. 5–10 %).",
     werbung: "Logo auf dem Band (Hauptplatz); Aufkleber optional mit Logo oder Claim.",
-    richtkosten:
-      "Stück × Menge: ca. 1,80 €/Finisher. Bei 400 Finishern ca. 720–800 €.",
-    typischeRolle: "hauptsponsor",
-    hinweis: "Sachsteller müssen nicht bar nachzahlen, wenn sie die Medaillen stellen.",
+    richtkosten: "ca. 1,80 €/Finisher. Bei 400 Finishern ca. 720–800 €.",
+    vorgeschlagenesBand: "hauptsponsor",
+    minBand: "foerderer",
+    wertCa: "720–800",
+    hinweis: "Wer die Sache stellt, zahlt nicht bar nach. Standard: Verein bestellt.",
     status: "offen",
   },
   {
@@ -141,11 +186,13 @@ export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
     titel: "Startnummern",
     kurz: "Druck der Startnummern für alle Starter plus Reserve (ohne Timing-Chip).",
     werbungKurz: "Logo unten auf der Startnummer – exklusiv.",
-    richtwertKurz: "ca. 0,80–1,50 €/Starter · oft um 500 € · HS oder Sachpartner",
+    badgeLabel: "ca. 0,80–1,50 €/Starter · oft Förderer oder Hauptsponsor",
     beschreibung: "Druck der Startnummern für alle Starter plus Reserve. Ohne Zeitnahme-Chip.",
-    werbung: "Logo unten auf der Startnummer – exklusiv für diesen Posten.",
+    werbung: "Logo unten auf der Startnummer – exklusiv für diese Fläche.",
     richtkosten: "ca. 0,80–1,50 €/Starter. Summe oft um oder über 500 €.",
-    typischeRolle: "je_nach_summe",
+    vorgeschlagenesBand: "foerderer",
+    minBand: "partner",
+    hinweis: "Standard: Verein bestellt. Die Logo-Fläche wird nicht parallel an zwei Firmen verkauft.",
     status: "offen",
   },
   {
@@ -153,11 +200,12 @@ export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
     titel: "Streckenverpflegung",
     kurz: "Wasser, Iso, Obst und Becher an einer oder mehreren Stationen.",
     werbungKurz: "Schild „Verpflegung präsentiert von …“ an der Station.",
-    richtwertKurz: "ca. 0,40–0,80 €/Starter/Station · HS oder Sachpartner",
+    badgeLabel: "ca. 0,40–0,80 €/Starter/Station · Förderer oder Hauptsponsor",
     beschreibung: "Wasser, Iso, Obst, Becher und Müll an einer oder mehreren Stationen.",
     werbung: "Schild „Verpflegung präsentiert von …“ an der Station.",
     richtkosten: "ca. 0,40–0,80 €/Starter pro Station (Einkaufswert / Angebot).",
-    typischeRolle: "je_nach_summe",
+    vorgeschlagenesBand: "foerderer",
+    minBand: "partner",
     aufteilbar: "Station A, Station B oder alle Stationen.",
     status: "offen",
   },
@@ -166,11 +214,12 @@ export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
     titel: "Zielverpflegung",
     kurz: "Getränk und Kleinigkeit direkt nach dem Zieleinlauf.",
     werbungKurz: "Schild oder Theke am Ziel.",
-    richtwertKurz: "ca. 0,80–1,50 €/Finisher · HS oder Sachpartner",
+    badgeLabel: "ca. 0,80–1,50 €/Finisher · Förderer oder Hauptsponsor",
     beschreibung: "Getränk und Kleinigkeit direkt nach dem Zieleinlauf. Ziel-Bier ist ein eigener Posten.",
     werbung: "Schild oder Theke am Ziel.",
     richtkosten: "ca. 0,80–1,50 €/Finisher (Einkaufswert).",
-    typischeRolle: "je_nach_summe",
+    vorgeschlagenesBand: "foerderer",
+    minBand: "partner",
     aufteilbar: "z. B. Getränke und Snack getrennt.",
     status: "offen",
   },
@@ -179,11 +228,12 @@ export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
     titel: "Ziel-Bier",
     kurz: "Ein Bier (o. ä.) für jeden Finisher am Ziel. Kinderlauf ausgenommen.",
     werbungKurz: "Zapfstelle oder Schild „Zielbier präsentiert von …“.",
-    richtwertKurz: "ca. 1,00–2,00 €/Finisher · HS oder Sachpartner",
+    badgeLabel: "ca. 1,00–2,00 €/Finisher · Förderer oder Hauptsponsor",
     beschreibung: "Ein Bier (o. ä.) für jeden Finisher am Ziel. Kinderlauf ausgenommen.",
     werbung: "Zapfstelle/Schild „Zielbier präsentiert von …“.",
     richtkosten: "ca. 1,00–2,00 €/Finisher (Gebinde und Ausschank).",
-    typischeRolle: "je_nach_summe",
+    vorgeschlagenesBand: "foerderer",
+    minBand: "partner",
     hinweis: "Alkohol nur für Erwachsene.",
     status: "offen",
   },
@@ -192,11 +242,13 @@ export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
     titel: "Zielbogen",
     kurz: "Start-/Zielbogen mit Branding – sehr fotogen.",
     werbungKurz: "Großes Logo auf dem Zielbogen.",
-    richtwertKurz: "oft 300–800 € · HS oder Sachpartner je nach Gegenwert",
+    badgeLabel: "oft 300–800 € · Förderer bis Hauptsponsor",
     beschreibung: "Start-/Zielbogen mit Branding. 2026: Jeremias am Start-/Zielbogen.",
     werbung: "Großes Logo auf dem Bogen – sehr sichtbar auf Fotos.",
     richtkosten: "Angebot oder Sachspende zum Einkaufswert, oft ca. 300–800 €.",
-    typischeRolle: "je_nach_summe",
+    vorgeschlagenesBand: "foerderer",
+    minBand: "foerderer",
+    hinweis: "300 € allein → Förderer. Obere Spanne → Hauptsponsor. Standard: Verein bestellt.",
     status: "offen",
   },
   {
@@ -204,13 +256,13 @@ export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
     titel: "Siegerpreise",
     kurz: "Sachpreise oder Gutscheine für Platzierungen und Altersklassen.",
     werbungKurz: "Übergabe, Nennung bei der Siegerehrung, Foto.",
-    richtwertKurz: "oft 150–400 € · typisch Sachpartner",
+    badgeLabel: "oft 150–400 € · typisch Partner oder Förderer",
     beschreibung: "Sachpreise oder Gutscheine für Platzierungen und Altersklassen.",
     werbung: "Übergabe, Nennung bei der Siegerehrung, Foto.",
     richtkosten: "Pauschale oft ca. 150–400 € Gesamttopf.",
-    typischeRolle: "sachpartner",
+    vorgeschlagenesBand: "foerderer",
+    minBand: "partner",
     aufteilbar: "z. B. nur Frauenwertung, Trail oder Kinderlauf.",
-    hinweis: "Hauptsponsor-Titel erst ab ca. 500 € Gegenwert.",
     status: "offen",
   },
   {
@@ -218,11 +270,12 @@ export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
     titel: "Bauzaun (Bündel)",
     kurz: "2–3 Felder oder ein Bereich am Bauzaun Start/Ziel.",
     werbungKurz: "Logo und Motiv auf den Bannern.",
-    richtwertKurz: "ca. 200–250 € Druck · typisch Sachpartner",
+    badgeLabel: "ca. 200–250 € · Fläche + Partner oder Förderer",
     beschreibung: "2–3 Felder oder ein Bereich am Bauzaun Start/Ziel.",
     werbung: "Logo und Motiv auf den Bannern.",
     richtkosten: "ab ca. 200–250 € gesamt (Druck).",
-    typischeRolle: "sachpartner",
+    vorgeschlagenesBand: "partner",
+    minBand: "partner",
     status: "offen",
   },
   {
@@ -230,28 +283,65 @@ export const KOSTENPARTNERSCHAFTEN: Kostenposten[] = [
     titel: "Bauzaun (Einzelfeld)",
     kurz: "Ein einzelnes Feld am Bauzaun.",
     werbungKurz: "Logo auf diesem einen Banner.",
-    richtwertKurz: "ca. 80–100 € · Sachpartner · Add-on zu Partner 150 €",
+    badgeLabel: "ca. 80–100 € · Fläche + Partner-Niveau",
     beschreibung: "Ein einzelnes Feld. Typisch unter 200 €.",
     werbung: "Logo auf diesem einen Banner.",
     richtkosten: "ca. 80–100 € bzw. unter 200 €.",
-    typischeRolle: "sachpartner",
+    vorgeschlagenesBand: "partner",
+    minBand: "partner",
     hinweis: "Auch als Add-on zum Partner 150 € möglich.",
     status: "offen",
+  },
+  {
+    id: "restkosten",
+    titel: "Lauf ermöglichen (Restkosten)",
+    kurz: "Zeitnahme, Sanitäter, Streckenmarkierung, Reserve, Kinderlauf-Unkosten.",
+    werbungKurz: "Nennung als Sponsor – kein fotogenes Logo am Gegenstand.",
+    badgeLabel: "Pakete 150 / 400–500 / 800 € → passendes Band",
+    beschreibung:
+      "Zeitnahme, Sanitäter, Streckenmarkierung, Reserve, Kinderlauf-Unkosten. Kein fotogenes Logo am Gegenstand, aber ehrlicher Cash-Weg.",
+    werbung: "Nennung auf der Website und in der Kommunikation – kein Logo am Gegenstand.",
+    richtkosten:
+      "Richtwert-Pakete z. B. 150 € (Partner), 400–500 € (Förderer) oder 800 € (Hauptsponsor).",
+    vorgeschlagenesBand: "foerderer",
+    minBand: "partner",
+    hinweis:
+      "Mehrere Förderer möglich. Standard: Verein kauft und organisiert. Sache liefern nur nach Absprache.",
+    status: "offen",
+    mehrereMoeglich: true,
+  },
+];
+
+export const SPONSOR_FALLBEISPIELE: { titel: string; text: string }[] = [
+  {
+    titel: "Wir wollen Hauptsponsor sein, können aber nichts liefern.",
+    text:
+      "Ja. Ab ca. 800 € Gegenwert – oder ihr zahlt die Medaillen und der Verein bestellt. Titel ja. Logo auf dem Band nur, wenn die Fläche noch frei ist.",
+  },
+  {
+    titel: "Alle Flächen sind vergeben.",
+    text:
+      "Beitrag über Restkosten. Gleicher Rang möglich. Der Verein meldet sich, welches Band passt.",
+  },
+  {
+    titel: "Wir stellen nur den Bauzaun (~200 €).",
+    text:
+      "Ihr seid Sponsor mit der Fläche Bauzaun – das ist die Anerkennung. Kein Hauptsponsor-Titel. Partner-Paket 150 € als Add-on möglich.",
   },
 ];
 
 export const SPONSOR_FAQ: { frage: string; antwort: string }[] = [
   {
     frage: "Muss ich nachzahlen, wenn ich die Sache stelle?",
-    antwort: "Nein. Wer die Sache stellt, zahlt nicht bar nach. Der Richtwert dient nur zur Einordnung.",
+    antwort: "Nein. Wer die Sache stellt, zahlt nicht bar nach. Der Gegenwert zählt für euer Band.",
   },
   {
-    frage: "Wann ist ein Posten vergeben?",
-    antwort: "Sobald eine Zusage feststeht, wechselt der Status auf VERGEBEN – öffentlich auf dieser Seite.",
+    frage: "Wann ist eine Fläche vergeben?",
+    antwort: "Bei Zusage wechselt der Status auf VERGEBEN – öffentlich auf dieser Seite.",
   },
   {
-    frage: "Bekomme ich den Titel Hauptsponsor mit einer Überweisung ohne Posten?",
-    antwort: "Nein. Hauptsponsor gibt es nur mit einem konkreten Posten. Reines Geld ohne Posten bleibt Partner.",
+    frage: "Hauptsponsor ohne Fläche?",
+    antwort: "Ja, ab ca. 800 € Gegenwert. Geld ohne lieferbare Sache ist ausdrücklich erlaubt.",
   },
   {
     frage: "Kann ich nur eine Verpflegungsstation nehmen?",
@@ -260,87 +350,171 @@ export const SPONSOR_FAQ: { frage: string; antwort: string }[] = [
   {
     frage: "Gibt es Fotos nach dem Lauf?",
     antwort:
-      "Ja – ausgewählte Fotos eurer Fläche, soweit vorhanden. Keine Garantie für ein Aftermovie.",
+      "Ausgewählte Fotos eurer Fläche, soweit vorhanden. Keine Aftermovie-Garantie.",
   },
   {
     frage: "Partner plus Einzelfeld Bauzaun?",
     antwort: "Ja. Das Einzelfeld kann als Add-on zum Partner 150 € gebucht werden.",
   },
+  {
+    frage: "Was ist der Unterschied zwischen Band und Fläche?",
+    antwort:
+      "Das Band (Partner, Förderer, Hauptsponsor) bestimmt euren Rang und die Sichtbarkeit im Paket. Die Fläche ist knappes Inventar – Logo am Gegenstand, eine Firma pro Fläche.",
+  },
+  {
+    frage: "Warum ist 200 € Zaun nicht gleich 800 € Medaillen?",
+    antwort:
+      "Rang folgt dem Euro-Gegenwert im Band. Die Fläche folgt dem Inventar. Beides ist wertvoll – nur anders sichtbar.",
+  },
+  {
+    frage: "Wer bestellt Medaillen, Bogen und Startnummern?",
+    antwort:
+      "Standard: der Verein kauft und organisiert, ihr zahlt den Richtwert. Sache liefern nur nach Absprache (Qualität, Termin, Motiv).",
+  },
 ];
 
 export const SPONSOR_ABLAUF = [
-  { schritt: "1", titel: "Rolle oder Posten wählen", text: "Partner 150 € oder einen offenen Posten auswählen." },
-  { schritt: "2", titel: "Kurz formulieren", text: "Geld, Sache oder beides – wir klären Details per Mail." },
-  { schritt: "3", titel: "Verein meldet sich", text: "Rückfragen, Logo-Formate, Rechnungsadresse, Liefertermin falls Sache." },
+  { schritt: "1", titel: "Band wählen (und optional Fläche)", text: "150 €, ca. 500 € oder ab 800 € – plus Fläche, wenn ihr wollt." },
+  { schritt: "2", titel: "Geld, Sache oder beides", text: "Kurz formulieren – wir klären Details per Mail." },
+  {
+    schritt: "3",
+    titel: "Verein meldet sich",
+    text: "Rückfragen, Logo-Formate, Rechnungsadresse, Liefer-/Drucktermin falls Sache.",
+  },
 ];
 
-export function normalizePostenId(id: string | null | undefined): string | undefined {
+const BAND_RANK: Record<Beitragsband, number> = {
+  partner: 1,
+  foerderer: 2,
+  hauptsponsor: 3,
+};
+
+export function normalizeFlaecheId(id: string | null | undefined): string | undefined {
   if (!id) return undefined;
-  return POSTEN_ID_ALIASES[id] ?? id;
+  return FLAECHE_ID_ALIASES[id] ?? id;
 }
 
-export function rolleBadgeLabel(posten: Kostenposten): string {
-  if (posten.typischeRolle === "hauptsponsor") return "Hauptsponsor";
-  if (posten.typischeRolle === "sachpartner") return "Sachpartner";
-  return "Hauptsponsor oder Sachpartner";
+/** @deprecated Alias – nutzt flaeche oder legacy posten. */
+export function normalizePostenId(id: string | null | undefined): string | undefined {
+  return normalizeFlaecheId(id);
 }
 
-export function vorschlagRolle(posten: Kostenposten | undefined): PostenRolle {
-  if (!posten) return "hauptsponsor";
-  if (posten.typischeRolle === "sachpartner") return "sachpartner";
-  if (posten.typischeRolle === "hauptsponsor") return "hauptsponsor";
-  if (posten.id === "zielbogen" || posten.id === "medaillen" || posten.id === "startnummern") {
-    return "hauptsponsor";
+export function normalizeStufe(stufe: string | null | undefined): Beitragsband | undefined {
+  if (!stufe) return undefined;
+  if (stufe in STUFE_ALIASES) return STUFE_ALIASES[stufe];
+  if (stufe === "partner" || stufe === "foerderer" || stufe === "hauptsponsor") {
+    return stufe;
   }
-  return "sachpartner";
+  return undefined;
 }
 
-export function rolleWarnung(posten: Kostenposten | undefined, rolle: PostenRolle): string | null {
-  if (!posten || rolle !== "hauptsponsor") return null;
-  if (posten.typischeRolle === "sachpartner") {
-    return "Hauptsponsor gilt erst ab ca. 500 € Gegenwert und nur mit diesem konkreten Posten. Liegt der Beitrag darunter, wird daraus Sachpartner.";
-  }
-  if (posten.id === "siegerpreise" || posten.id === "bauzaun-einzelfeld" || posten.id === "bauzaun-buendel") {
-    return "Dieser Posten ist typischerweise Sachpartner. Hauptsponsor nur ab ca. 500 € Gegenwert.";
+export function getFlaeche(id: string | null | undefined): SponsorFlaeche | undefined {
+  const normalized = normalizeFlaecheId(id);
+  if (!normalized) return undefined;
+  return SPONSOR_FLAECHEN.find((f) => f.id === normalized);
+}
+
+/** @deprecated Alias für getFlaeche. */
+export function getKostenposten(id: string | null | undefined): SponsorFlaeche | undefined {
+  return getFlaeche(id);
+}
+
+export function flaecheParamAusSearch(
+  flaeche: string | null,
+  posten: string | null,
+): string | null {
+  return flaeche ?? posten;
+}
+
+export function vorschlagBand(flaeche: SponsorFlaeche | undefined): Beitragsband {
+  if (!flaeche) return "foerderer";
+  return flaeche.vorgeschlagenesBand;
+}
+
+export function bandAusQuery(
+  stufe: string | null,
+  flaeche: SponsorFlaeche | undefined,
+): Beitragsband {
+  const normalized = normalizeStufe(stufe);
+  if (normalized) return normalized;
+  return vorschlagBand(flaeche);
+}
+
+export function anfrageWegAusQuery(
+  stufe: string | null,
+  flaecheId: string | null,
+  postenId: string | null = null,
+): AnfrageWeg {
+  const flaeche = getFlaeche(flaecheParamAusSearch(flaecheId, postenId));
+  const band = normalizeStufe(stufe);
+
+  if (band === "partner" && !flaeche) return "partner";
+
+  if (stufe === "sachpartner" && flaeche) return "flaeche";
+  if (stufe === "sachpartner" && !flaeche) return "beitrag";
+
+  if (flaeche && (!band || band === "partner")) return "flaeche";
+
+  if (band === "foerderer" || band === "hauptsponsor") return "beitrag";
+
+  if (flaeche) return "flaeche";
+
+  return "partner";
+}
+
+export function bandWarnung(
+  flaeche: SponsorFlaeche | undefined,
+  band: Beitragsband,
+): string | null {
+  if (!flaeche || band === "hauptsponsor") return null;
+  if (BAND_RANK[band] < BAND_RANK[flaeche.minBand]) {
+    const wert = flaeche.wertCa ? `ca. ${flaeche.wertCa} €` : flaeche.badgeLabel.split("·")[0]?.trim();
+    return `Diese Fläche liegt bei ${wert ?? "diesem Richtwert"}. Daraus folgt ${BAND_LABEL[flaeche.minBand]}. Niedriger nur nach Absprache.`;
   }
   return null;
 }
 
-export function ctaFuerPosten(posten: Kostenposten): { href: string; label: string } {
-  const rolle = vorschlagRolle(posten);
+export function bandHinweisOhneFlaeche(band: Beitragsband, flaecheId: string): string | null {
+  if (band === "hauptsponsor" && !flaecheId) {
+    return "Ohne Fläche bleibt der Rang. Die Exklusivwerbung am Gegenstand entfällt.";
+  }
+  return null;
+}
+
+export function ctaFuerFlaeche(flaeche: SponsorFlaeche): { href: string; label: string } {
+  const band = vorschlagBand(flaeche);
   return {
-    href: `/sponsor-werden?stufe=${rolle}&posten=${posten.id}#anfrage`,
-    label: "Diesen Posten anfragen",
+    href: `/sponsor-werden?stufe=${band}&flaeche=${flaeche.id}#anfrage`,
+    label: "Diese Fläche anfragen",
   };
 }
 
-export function getKostenposten(id: string | null | undefined): Kostenposten | undefined {
-  const normalized = normalizePostenId(id);
-  if (!normalized) return undefined;
-  return KOSTENPARTNERSCHAFTEN.find((p) => p.id === normalized);
+/** @deprecated Alias. */
+export function ctaFuerPosten(flaeche: SponsorFlaeche): { href: string; label: string } {
+  return ctaFuerFlaeche(flaeche);
 }
 
-export function isAnfrageArt(v: unknown): v is AnfrageArt {
-  return v === "partner" || v === "posten";
+export function isAnfrageWeg(v: unknown): v is AnfrageWeg {
+  return v === "partner" || v === "beitrag" || v === "flaeche";
 }
 
-export function isPostenRolle(v: unknown): v is PostenRolle {
-  return v === "hauptsponsor" || v === "sachpartner";
+/** @deprecated */
+export function isAnfrageArt(v: unknown): v is AnfrageWeg {
+  return isAnfrageWeg(v);
+}
+
+export function isBeitragsband(v: unknown): v is Beitragsband {
+  return v === "partner" || v === "foerderer" || v === "hauptsponsor";
 }
 
 export function isBeitragsart(v: unknown): v is Beitragsart {
   return v === "geld" || v === "sach" || v === "beides";
 }
 
-export function anfrageArtAusQuery(stufe: string | null, postenId: string | null): AnfrageArt {
-  if (stufe === "partner") return "partner";
-  if (postenId || stufe === "hauptsponsor" || stufe === "sachpartner" || stufe === "posten") {
-    return "posten";
-  }
-  return "partner";
-}
-
-export function rolleAusQuery(stufe: string | null, posten: Kostenposten | undefined): PostenRolle {
-  if (isPostenRolle(stufe)) return stufe;
-  return vorschlagRolle(posten);
+export function submitLabel(weg: AnfrageWeg, band: Beitragsband): string {
+  if (weg === "partner") return `Partner anfragen (${SPONSORING_2027.partnerPreis} €)`;
+  if (weg === "flaeche") return "Fläche anfragen";
+  if (band === "hauptsponsor") return "Hauptsponsor anfragen";
+  if (band === "foerderer") return "Förderer anfragen";
+  return `Partner anfragen (${SPONSORING_2027.partnerPreis} €)`;
 }

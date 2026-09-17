@@ -5,20 +5,22 @@ import Image from "next/image";
 import { useState } from "react";
 import { Check, ChevronDown, Eye, Handshake, MapPin, Shield } from "lucide-react";
 import {
-  ctaFuerPosten,
-  KOSTENPARTNERSCHAFTEN,
-  rolleBadgeLabel,
-  ROLLEN_VERGLEICH,
+  BAND_LABEL,
+  BAND_VERGLEICH,
+  ctaFuerFlaeche,
   SPONSOR_ABLAUF,
+  SPONSOR_BANDER,
+  SPONSOR_FALLBEISPIELE,
   SPONSOR_FAQ,
-  SPONSOR_ROLLEN,
+  SPONSOR_FLAECHEN,
+  SPONSOR_SO_FUNKTIONIERT,
   SPONSORING_2027,
   STATUS_LABEL,
-  type Kostenposten,
-  type PostenStatus,
+  type FlaecheStatus,
+  type SponsorFlaeche,
 } from "@/lib/sponsoring-2027";
 
-function StatusBadge({ status }: { status: PostenStatus }) {
+function StatusBadge({ status, mehrere }: { status: FlaecheStatus; mehrere?: boolean }) {
   const tone =
     status === "offen"
       ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
@@ -29,7 +31,7 @@ function StatusBadge({ status }: { status: PostenStatus }) {
     <span
       className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest ${tone}`}
     >
-      {STATUS_LABEL[status]}
+      {mehrere && status === "offen" ? "OFFEN · mehrere möglich" : STATUS_LABEL[status]}
     </span>
   );
 }
@@ -49,12 +51,12 @@ export function SponsorWarum() {
     },
     {
       icon: Shield,
-      title: "Faire, öffentliche Posten",
-      text: "Pro Posten eine Firma. Status OFFEN oder VERGEBEN – für alle sichtbar.",
+      title: "Faire, öffentliche Flächen",
+      text: "Pro Fläche eine Firma. Status OFFEN oder VERGEBEN – für alle sichtbar.",
     },
     {
       icon: Handshake,
-      title: "Danach: Nennung & Fotos",
+      title: "Nennung & Fotos",
       text: "Nennung auf der Website, Fotos eurer Fläche und Danksagung – soweit der Verein das umsetzen kann.",
     },
   ];
@@ -72,8 +74,9 @@ export function SponsorWarum() {
         ))}
       </div>
       <p className="mt-4 text-sm text-muted-foreground">
-        2026 haben über {premiere2026.anmeldungen} Menschen am Start gestanden, {premiere2026.finisher}{" "}
-        sind ins Ziel gekommen –{" "}
+        Auch reines Geld zählt – gerade wenn die Flächen vergeben sind. 2026 haben über{" "}
+        {premiere2026.anmeldungen} Menschen am Start gestanden, {premiere2026.finisher} sind ins Ziel
+        gekommen –{" "}
         <Link href="/sponsoren" className="font-semibold text-koder-orange hover:underline">
           unsere Sponsoren 2026
         </Link>{" "}
@@ -83,31 +86,52 @@ export function SponsorWarum() {
   );
 }
 
-export function SponsorRollenVergleich() {
+export function SponsorSoFunktionierts() {
   return (
     <section className="mt-16">
-      <h2 className="text-2xl font-extrabold tracking-tight">Die 3 Rollen</h2>
+      <h2 className="text-2xl font-extrabold tracking-tight">So funktioniert&apos;s</h2>
+      <ol className="mt-6 grid gap-4 sm:grid-cols-3">
+        {SPONSOR_SO_FUNKTIONIERT.map((s) => (
+          <li key={s.schritt} className="rounded-2xl border border-border bg-card p-5">
+            <span className="text-2xl font-black text-koder-orange">{s.schritt}</span>
+            <h3 className="mt-2 font-bold">{s.titel}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-6 rounded-2xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+        {SPONSORING_2027.fairnessSatz}
+      </p>
+    </section>
+  );
+}
+
+export function SponsorBandVergleich() {
+  return (
+    <section className="mt-16">
+      <h2 className="text-2xl font-extrabold tracking-tight">Die 3 Bänder</h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Kurz vergleichen, dann die passende Rolle wählen.
+        Rang und Sichtbarkeitspaket – unabhängig von der Fläche.
       </p>
 
-      {/* Desktop-Tabelle */}
       <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-border md:block">
-        <table className="w-full min-w-[640px] text-sm">
+        <table className="w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40 text-left">
-              <th className="px-4 py-3 font-semibold">Leistung</th>
+              <th className="sticky left-0 z-10 bg-muted/95 px-4 py-3 font-semibold backdrop-blur-sm">
+                Leistung
+              </th>
               <th className="px-4 py-3 font-semibold">Partner 150 €</th>
-              <th className="px-4 py-3 font-semibold">Sachpartner</th>
-              <th className="px-4 py-3 font-semibold">Hauptsponsor</th>
+              <th className="px-4 py-3 font-semibold">Förderer ca. 500 €</th>
+              <th className="px-4 py-3 font-semibold">Hauptsponsor ab 800 €</th>
             </tr>
           </thead>
           <tbody>
-            {ROLLEN_VERGLEICH.map((row) => (
+            {BAND_VERGLEICH.map((row) => (
               <tr key={row.leistung} className="border-b border-border last:border-0">
-                <td className="px-4 py-2.5 font-medium">{row.leistung}</td>
+                <td className="sticky left-0 z-10 bg-card px-4 py-2.5 font-medium">{row.leistung}</td>
                 <td className="px-4 py-2.5 text-muted-foreground">{row.partner}</td>
-                <td className="px-4 py-2.5 text-muted-foreground">{row.sachpartner}</td>
+                <td className="px-4 py-2.5 text-muted-foreground">{row.foerderer}</td>
                 <td className="px-4 py-2.5 text-muted-foreground">{row.hauptsponsor}</td>
               </tr>
             ))}
@@ -115,17 +139,20 @@ export function SponsorRollenVergleich() {
         </table>
       </div>
 
-      {/* Mobile: gestapelte Checklisten */}
       <div className="mt-6 space-y-4 md:hidden">
-        {(["partner", "sachpartner", "hauptsponsor"] as const).map((rolle) => (
-          <div key={rolle} className="rounded-2xl border border-border bg-card p-4">
-            <h3 className="font-bold capitalize">
-              {rolle === "partner" ? "Partner 150 €" : rolle === "sachpartner" ? "Sachpartner" : "Hauptsponsor"}
+        {(["partner", "foerderer", "hauptsponsor"] as const).map((band) => (
+          <div key={band} className="rounded-2xl border border-border bg-card p-4">
+            <h3 className="font-bold">
+              {band === "partner"
+                ? "Partner 150 €"
+                : band === "foerderer"
+                  ? "Förderer ca. 500 €"
+                  : "Hauptsponsor ab 800 €"}
             </h3>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              {ROLLEN_VERGLEICH.map((row) => (
+              {BAND_VERGLEICH.map((row) => (
                 <li key={row.leistung}>
-                  <span className="font-medium text-foreground">{row.leistung}:</span> {row[rolle]}
+                  <span className="font-medium text-foreground">{row.leistung}:</span> {row[band]}
                 </li>
               ))}
             </ul>
@@ -134,82 +161,80 @@ export function SponsorRollenVergleich() {
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        {SPONSOR_ROLLEN.map((rolle) => (
+        {SPONSOR_BANDER.map((band) => (
           <article
-            key={rolle.id}
+            key={band.id}
             className={`flex flex-col rounded-3xl border p-6 ${
-              rolle.id === "hauptsponsor"
+              band.id === "hauptsponsor"
                 ? "border-koder-orange/40 bg-gradient-to-br from-koder-orange/10 to-transparent"
                 : "border-border bg-card"
             }`}
           >
             <p className="text-xs font-semibold uppercase tracking-widest text-koder-orange">
-              {rolle.preisLabel}
+              {band.preisLabel}
             </p>
-            <h3 className="mt-2 text-xl font-extrabold">{rolle.name}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{rolle.kurz}</p>
+            <h3 className="mt-2 text-xl font-extrabold">{band.name}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">{band.kurz}</p>
             <ul className="mt-4 flex-1 space-y-2 text-sm">
-              {rolle.leistungen.map((item) => (
+              {band.leistungen.map((item) => (
                 <li key={item} className="flex gap-2">
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-koder-orange" aria-hidden />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
+            <p className="mt-4 text-xs text-muted-foreground">{band.flaecheHinweis}</p>
             <Link
-              href={rolle.ctaHref}
+              href={band.ctaHref}
               className="mt-5 inline-flex justify-center rounded-xl bg-koder-orange px-4 py-2.5 text-sm font-bold text-white hover:bg-koder-orange/90"
             >
-              {rolle.ctaLabel}
+              {band.ctaLabel}
             </Link>
           </article>
         ))}
       </div>
-
-      <p className="mt-6 rounded-2xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-        <strong className="text-foreground">Hinweis Hauptsponsor:</strong> Der Titel gilt nur mit einem
-        konkreten Posten (Sache oder Geld dafür), Richtwert ab ca. {SPONSORING_2027.hauptsponsorAb} €.
-        Darunter wird es Sachpartner. Reines Geld ohne Posten bleibt Partner (
-        {SPONSORING_2027.partnerPreis} €) – kein Gold/Silber/Bronze, kein Extra-Titel nur per Überweisung.
-      </p>
     </section>
   );
 }
 
-function PostenKarte({ posten }: { posten: Kostenposten }) {
-  const waehlbar = posten.status !== "vergeben";
-  const cta = ctaFuerPosten(posten);
-  const hasDetails = posten.aufteilbar || posten.hinweis || posten.beschreibung !== posten.kurz;
+function FlaecheKarte({ flaeche }: { flaeche: SponsorFlaeche }) {
+  const waehlbar = flaeche.status !== "vergeben" || flaeche.mehrereMoeglich;
+  const cta = ctaFuerFlaeche(flaeche);
+  const hasDetails =
+    flaeche.aufteilbar || flaeche.hinweis || flaeche.beschreibung !== flaeche.kurz;
 
   return (
     <article className="flex flex-col rounded-2xl border border-border bg-card p-5">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-lg font-bold">{posten.titel}</h3>
-        <StatusBadge status={posten.status} />
+        <h3 className="text-lg font-bold">{flaeche.titel}</h3>
+        <StatusBadge status={flaeche.status} mehrere={flaeche.mehrereMoeglich} />
       </div>
       <span className="mt-2 inline-flex w-fit rounded-full border border-koder-orange/30 bg-koder-orange/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-koder-orange">
-        {rolleBadgeLabel(posten)}
+        {flaeche.badgeLabel}
       </span>
-      <p className="mt-3 text-sm text-muted-foreground">{posten.kurz}</p>
+      <p className="mt-3 text-sm text-muted-foreground">{flaeche.kurz}</p>
       <p className="mt-2 text-sm">
         <span className="font-semibold">Werbung: </span>
-        {posten.werbungKurz}
+        {flaeche.werbungKurz}
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         <span className="font-semibold text-foreground">Richtwert: </span>
-        {posten.richtwertKurz}
+        {flaeche.richtkosten}
       </p>
 
       {hasDetails && (
-        <details className="mt-3 group">
+        <details className="group mt-3">
           <summary className="flex cursor-pointer list-none items-center gap-1 text-xs font-semibold text-koder-orange hover:underline [&::-webkit-details-marker]:hidden">
             Details
             <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" aria-hidden />
           </summary>
           <div className="mt-2 space-y-2 text-xs text-muted-foreground">
-            {posten.aufteilbar && <p>Aufteilbar: {posten.aufteilbar}</p>}
-            {posten.hinweis && <p>{posten.hinweis}</p>}
-            <p>{posten.richtkosten}</p>
+            {flaeche.aufteilbar && <p>Aufteilbar: {flaeche.aufteilbar}</p>}
+            {flaeche.hinweis && <p>{flaeche.hinweis}</p>}
+            <p>
+              Typisches Band: {BAND_LABEL[flaeche.vorgeschlagenesBand]}. Wer die Sache stellt, zahlt nicht
+              bar nach.
+            </p>
           </div>
         </details>
       )}
@@ -228,23 +253,39 @@ function PostenKarte({ posten }: { posten: Kostenposten }) {
   );
 }
 
-export function SponsorOffenePosten() {
+export function SponsorOffeneFlaechen() {
   return (
-    <section id="posten" className="mt-16 scroll-mt-28">
-      <h2 className="text-2xl font-extrabold tracking-tight">Offene Posten</h2>
+    <section id="flaechen" className="mt-16 scroll-mt-28">
+      <h2 className="text-2xl font-extrabold tracking-tight">Offene Flächen</h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Öffentlich: Posten, Richtwert, Rolle, Status. Pro Posten eine Firma. Richtwerte aus Stück × Menge,
-        Angebot oder Sachspende zum Einkaufswert.
+        Eine Firma pro Fläche (Ausnahme Restkosten-Topf). Status OFFEN oder VERGEBEN. Richtwert =
+        Einkaufswert. Standard: Verein kauft und organisiert – ihr zahlt den Richtwert.
       </p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        {KOSTENPARTNERSCHAFTEN.map((posten) => (
-          <PostenKarte key={posten.id} posten={posten} />
+        {SPONSOR_FLAECHEN.map((flaeche) => (
+          <FlaecheKarte key={flaeche.id} flaeche={flaeche} />
         ))}
       </div>
       <p className="mt-6 text-sm text-muted-foreground">
-        T-Shirts sind 2027 keine Sponsoring-Posten. Kleine Sachspenden sind willkommen – die Rolle richtet
-        sich nach dem Gegenwert, ohne abgeschwächten Titel.
+        T-Shirts sind 2027 keine Sponsoring-Fläche. Kleine Sachspenden sind willkommen – das Band richtet
+        sich nach dem Gegenwert.
       </p>
+    </section>
+  );
+}
+
+export function SponsorDreiFaelle() {
+  return (
+    <section className="mt-16">
+      <h2 className="text-2xl font-extrabold tracking-tight">Typische Situationen</h2>
+      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        {SPONSOR_FALLBEISPIELE.map((fall) => (
+          <article key={fall.titel} className="rounded-2xl border border-border bg-card p-5">
+            <h3 className="text-sm font-bold leading-snug">{fall.titel}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">{fall.text}</p>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }
