@@ -1,6 +1,6 @@
 import { EVENT } from "@/lib/event-config";
 import type { OrgaStats } from "@/lib/orga/types";
-import { shirtsBySizeThenName } from "@/lib/orga/stats";
+import { shirtsGroupedBySize } from "@/lib/orga/stats";
 import {
   PdfWriter,
   formatStand,
@@ -47,49 +47,41 @@ export async function pdfTshirtProduktion(stats: OrgaStats): Promise<Uint8Array>
 }
 
 export async function pdfTshirtAusgabe(stats: OrgaStats): Promise<Uint8Array> {
-  const w = new PdfWriter({ landscape: true, compact: true });
+  const w = new PdfWriter({
+    bodySize: 11,
+    headerSize: 10,
+    rowHeight: 22,
+    lineHeight: 14,
+    margin: 42,
+  });
   await w.init(footerNote(EVENT.jahr));
   w.title(`Koderlauf ${EVENT.jahr} – T-Shirt Ausgabe`);
   w.subtitle(
-    `Stand ${formatStand(stats.fetchedAt)} · ${stats.tshirtTotal} Shirts · Sportheim / Startnummernausgabe`,
+    `Stand ${formatStand(stats.fetchedAt)} · ${stats.tshirtTotal} Shirts · nach Größe, dann Name`,
   );
   w.paragraph(
-    "Nur Personen mit bestelltem Shirt. Keine Mailadressen. Haken-Spalte zum Abhaken bei der Ausgabe.",
-    7.5,
+    "Nur Personen mit bestelltem Shirt. Keine Mailadressen. Spalte Startnr. bleibt '-', bis Race Result die Nummern in der Adressliste setzt. Haken zum Abhaken bei der Ausgabe.",
+    10,
   );
 
-  const paymentCol = stats.fields.payment;
-  const colsA: Col[] = [
-    { key: "bib", header: "Startnr.", width: 42 },
-    { key: "name", header: "Name", width: paymentCol ? 200 : 260 },
-    { key: "size", header: "Größe", width: 56 },
-    ...(paymentCol ? [{ key: "pay", header: "Status", width: 72 } satisfies Col] : []),
-    { key: "ok", header: "Ausgegeben", width: 44, checkbox: true },
+  const cols: Col[] = [
+    { key: "size", header: "Größe", width: 78 },
+    { key: "name", header: "Name", width: 290 },
+    { key: "bib", header: "Startnr.", width: 82 },
+    { key: "ok", header: "Abgeholt", width: 61, checkbox: true },
   ];
 
-  w.heading("A) Alphabetisch (Nachname)");
-  w.table(
-    colsA,
-    stats.tshirtRecipients.map((r) => ({
-      bib: bibLabel(r.bib),
-      name: r.name,
+  const groups = shirtsGroupedBySize(stats).map((g) => ({
+    label: `${g.size}  ·  ${g.count} ${g.count === 1 ? "Shirt" : "Shirts"}`,
+    rows: g.rows.map((r) => ({
       size: r.size,
-      pay: r.paymentStatus || "–",
+      name: r.name,
+      bib: bibLabel(r.bib),
       ok: CHECKBOX_CELL,
     })),
-  );
+  }));
 
-  w.heading("B) Nach Größe, dann Name (Karton)");
-  w.table(
-    colsA,
-    shirtsBySizeThenName(stats).map((r) => ({
-      bib: bibLabel(r.bib),
-      name: r.name,
-      size: r.size,
-      pay: r.paymentStatus || "–",
-      ok: CHECKBOX_CELL,
-    })),
-  );
+  w.tableGrouped(cols, groups);
   return w.save();
 }
 

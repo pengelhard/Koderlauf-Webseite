@@ -266,7 +266,9 @@ export default function OrgaAdminPage() {
             <h2 className="text-lg font-bold">T-Shirt &amp; Abendkarten</h2>
             <p className="mt-0.5 text-sm text-muted-foreground">
               Speziallisten für Druckerei, Shirt-Karton und Tape Jam. Keine Mailadressen in den
-              PDFs.
+              PDFs. Die T-Shirt-Ausgabe ist Hochformat, sortiert nach Größe, dann Name.
+              Startnummern erscheinen in der Ausgabe, sobald Race Result sie in der Adressliste
+              setzt.
             </p>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { loadFassjagdBoard } from "@/lib/fassjagd/load";
+import { loadFassjagdAdmin } from "@/lib/fassjagd/load";
 import { fassjagdWeekResponse } from "@/lib/fassjagd/card";
 import {
   fassjagdAdminSecret,
@@ -12,6 +12,8 @@ import {
   mergeAlias,
   setExcluded,
   setManualFreeze,
+  setPersonGroup,
+  clearPersonGroup,
 } from "@/lib/fassjagd/store";
 import { normalizeVereinKey } from "@/lib/anmeldungen/vereine";
 
@@ -19,10 +21,14 @@ function unauthorized() {
   return NextResponse.json({ error: "Nicht angemeldet" }, { status: 401 });
 }
 
+async function payload() {
+  const { board, people } = await loadFassjagdAdmin();
+  return { board, people, overrides: exportOverrides() };
+}
+
 export async function GET() {
   if (!(await isFassjagdAdmin())) return unauthorized();
-  const board = await loadFassjagdBoard();
-  return NextResponse.json({ board, overrides: exportOverrides() });
+  return NextResponse.json(await payload());
 }
 
 export async function POST(request: Request) {
@@ -35,7 +41,15 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json().catch(() => null)) as
-    | { action?: string; password?: string; from?: string; to?: string; name?: string }
+    | {
+        action?: string;
+        password?: string;
+        from?: string;
+        to?: string;
+        name?: string;
+        personId?: string;
+        group?: string;
+      }
     | null;
   const action = body?.action;
 
@@ -58,30 +72,41 @@ export async function POST(request: Request) {
 
   if (action === "merge") {
     mergeAlias(body?.from ?? "", body?.to ?? "", normalizeVereinKey);
-    const board = await loadFassjagdBoard();
-    return NextResponse.json({ ok: true, board, overrides: exportOverrides() });
+    return NextResponse.json({ ok: true, ...(await payload()) });
+  }
+
+  if (action === "assign-group") {
+    setPersonGroup(body?.personId ?? "", body?.group ?? "");
+    return NextResponse.json({ ok: true, ...(await payload()) });
+  }
+
+  if (action === "reset-group") {
+    clearPersonGroup(body?.personId ?? "");
+    return NextResponse.json({ ok: true, ...(await payload()) });
   }
 
   if (action === "exclude" || action === "include") {
     setExcluded(body?.name ?? "", action === "exclude");
-    const board = await loadFassjagdBoard();
-    return NextResponse.json({ ok: true, board, overrides: exportOverrides() });
+    return NextResponse.json({ ok: true, ...(await payload()) });
   }
 
   if (action === "freeze") {
-    const board = await loadFassjagdBoard();
-    setManualFreeze(true, { ...board, frozen: true, status: "offiziell" });
-    return NextResponse.json({ ok: true, board: { ...board, frozen: true, status: "offiziell" } });
+    const data = await payload();
+    setManualFreeze(true, { ...data.board, frozen: true, status: "offiziell" });
+    return NextResponse.json({
+      ok: true,
+      ...data,
+      board: { ...data.board, frozen: true, status: "offiziell" },
+    });
   }
 
   if (action === "unfreeze") {
     setManualFreeze(false, null);
-    const board = await loadFassjagdBoard();
-    return NextResponse.json({ ok: true, board });
+    return NextResponse.json({ ok: true, ...(await payload()) });
   }
 
   if (action === "week-image") {
-    const board = await loadFassjagdBoard();
+    const { board } = await payload();
     return await fassjagdWeekResponse(board.ranking);
   }
 

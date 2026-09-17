@@ -1,7 +1,18 @@
 export type FassjagdStarter = {
+  id?: string;
   vorname: string;
   nachname: string;
   strecke: string;
+};
+
+export type FassjagdPerson = {
+  id: string;
+  vorname: string;
+  nachname: string;
+  strecke: string;
+  originalGroup: string;
+  currentGroup: string;
+  overridden: boolean;
 };
 
 export type FassjagdClub = {

@@ -9,6 +9,7 @@ import { STRECKEN_ORDER as STRECKEN_2026 } from "@/lib/data/anmeldungen-2026";
 import { STRECKEN_ORDER_2027 } from "@/lib/anmeldungen/aggregate";
 import type { AnmeldungParticipant, AnmeldungenStats } from "@/lib/anmeldungen/types";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
+import { PlaceMark } from "@/components/fassjagd/place-mark";
 import { cn } from "@/lib/utils";
 
 type Jahr = "2027" | "2026";
@@ -341,16 +342,7 @@ export default function AnmeldungenPage() {
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0 flex items-center gap-3">
-                          <span
-                            className={cn(
-                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-extrabold",
-                              i === 0
-                                ? "bg-koder-orange text-white"
-                                : "bg-muted text-muted-foreground",
-                            )}
-                          >
-                            {i + 1}
-                          </span>
+                          <PlaceMark place={i + 1} size="sm" />
                           <span className="truncate font-semibold">{v.name}</span>
                         </div>
                         <span className="shrink-0 text-xl font-black tabular-nums text-koder-orange">

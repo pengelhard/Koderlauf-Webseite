@@ -1,6 +1,7 @@
 import type { AnmeldungParticipant } from "@/lib/anmeldungen/types";
 import { resolveVerein } from "@/lib/anmeldungen/vereine";
 import { getFassjagdFreezeAt, isFassjagdFrozen } from "@/lib/fassjagd/freeze";
+import { fassjagdPersonId, personVereinRaw } from "@/lib/fassjagd/person-id";
 import { slugifyVerein } from "@/lib/fassjagd/slug";
 import {
   getFassjagdOverrides,
@@ -109,7 +110,7 @@ export function buildFassjagdBoard(
   let ohneAngabe = 0;
 
   for (const p of participants) {
-    const r = resolveVerein(p.verein, overrides.aliases);
+    const r = resolveVerein(personVereinRaw(p, overrides.personGroups), overrides.aliases);
     if (r.empty) {
       ohneAngabe += 1;
       continue;
@@ -125,6 +126,7 @@ export function buildFassjagdBoard(
     cur.ausgeschlossen = excluded;
     cur.hausherr = cur.hausherr || r.isAusrichter;
     cur.starters.push({
+      id: fassjagdPersonId(p),
       vorname: p.vorname,
       nachname: p.nachname,
       strecke: p.strecke,
@@ -149,7 +151,7 @@ export function buildFassjagdBoard(
       .map((s) => {
         strecken[s.strecke] = (strecken[s.strecke] ?? 0) + 1;
         if (TRAIL_SPIELEREI.has(s.strecke)) trailSpielerei += 1;
-        return { vorname: s.vorname, nachname: s.nachname, strecke: s.strecke };
+        return { id: s.id, vorname: s.vorname, nachname: s.nachname, strecke: s.strecke };
       })
       .sort((a, b) => {
         const n = a.nachname.localeCompare(b.nachname, "de");

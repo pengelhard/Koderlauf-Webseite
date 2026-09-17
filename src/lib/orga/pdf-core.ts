@@ -66,6 +66,10 @@ export type PdfWriterOptions = {
   landscape?: boolean;
   compact?: boolean;
   margin?: number;
+  bodySize?: number;
+  headerSize?: number;
+  rowHeight?: number;
+  lineHeight?: number;
 };
 
 export class PdfWriter {
@@ -88,10 +92,10 @@ export class PdfWriter {
     this.pageSize = options.landscape ? A4_LANDSCAPE : A4_PORTRAIT;
     this.margin = options.margin ?? 40;
     this.compact = options.compact ?? false;
-    this.bodySize = this.compact ? 7.5 : 9;
-    this.headerSize = this.compact ? 7 : 8;
-    this.rowHeight = this.compact ? 13 : 16;
-    this.lineHeight = this.compact ? 10.5 : 12;
+    this.bodySize = options.bodySize ?? (this.compact ? 7.5 : 9);
+    this.headerSize = options.headerSize ?? (this.compact ? 7 : 8);
+    this.rowHeight = options.rowHeight ?? (this.compact ? 13 : 16);
+    this.lineHeight = options.lineHeight ?? (this.compact ? 10.5 : 12);
   }
 
   get pageWidth() {
@@ -217,13 +221,14 @@ export class PdfWriter {
     return Math.max(this.compact ? 18 : 22, lines * (this.headerSize + 2) + 6);
   }
 
-  private drawCheckbox(cx: number, cy: number, size = 9) {
-    const half = size / 2;
+  private drawCheckbox(cx: number, cy: number, size?: number) {
+    const box = size ?? (this.bodySize >= 11 ? 11 : 9);
+    const half = box / 2;
     this.page.drawRectangle({
       x: cx - half,
       y: cy - half,
-      width: size,
-      height: size,
+      width: box,
+      height: box,
       borderColor: BLACK,
       borderWidth: 0.75,
     });
@@ -322,6 +327,122 @@ export class PdfWriter {
         x += col.width;
       }
       this.y -= h;
+    }
+  }
+
+  groupBanner(text: string) {
+    const h = this.bodySize >= 11 ? 24 : this.compact ? 16 : 20;
+    this.ensure(h + 10);
+    this.y -= 6;
+    this.page.drawRectangle({
+      x: this.margin - 2,
+      y: this.y - h,
+      width: this.contentWidth + 4,
+      height: h,
+      color: FOREST,
+    });
+    this.page.drawText(winAnsi(text), {
+      x: this.margin + 6,
+      y: this.y - h + (h - (this.bodySize >= 11 ? 12 : 10)) / 2,
+      size: this.bodySize >= 11 ? 12 : this.compact ? 10 : 11,
+      font: this.bold,
+      color: rgb(1, 1, 1),
+    });
+    this.y -= h + 2;
+  }
+
+  /** Tabellen mit Gruppenköpfen (z. B. T-Shirt-Größe). Header wiederholt sich pro Seite. */
+  tableGrouped(cols: Col[], groups: { label: string; rows: Record<string, string>[] }[]) {
+    const drawColHeader = () => {
+      const colLines = this.headerLines(cols);
+      const headerH = this.headerHeight(colLines);
+      this.ensure(headerH + 4);
+      let x = this.margin;
+      this.page.drawRectangle({
+        x: this.margin - 2,
+        y: this.y - headerH,
+        width: this.contentWidth + 4,
+        height: headerH,
+        color: rgb(0.94, 0.96, 0.95),
+      });
+      for (let i = 0; i < cols.length; i++) {
+        colLines[i].forEach((line, li) => {
+          this.page.drawText(winAnsi(line), {
+            x: x + 2,
+            y: this.y - headerH + 5 + li * (this.headerSize + 2),
+            size: this.headerSize,
+            font: this.bold,
+            color: FOREST,
+          });
+        });
+        x += cols[i].width;
+      }
+      this.y -= headerH;
+    };
+
+    if (groups.length === 0) {
+      drawColHeader();
+      this.ensure(this.rowHeight);
+      this.page.drawText(winAnsi("Keine Einträge."), {
+        x: this.margin + 2,
+        y: this.y - 10,
+        size: this.bodySize,
+        font: this.font,
+        color: MUTED,
+      });
+      this.y -= this.rowHeight;
+      return;
+    }
+
+    for (const group of groups) {
+      const colLines = this.headerLines(cols);
+      const headerH = this.headerHeight(colLines);
+      const bannerH = this.bodySize >= 11 ? 24 : this.compact ? 16 : 20;
+      this.ensure(bannerH + headerH + this.rowHeight + 12);
+      this.groupBanner(group.label);
+      drawColHeader();
+
+      if (group.rows.length === 0) {
+        this.ensure(this.rowHeight);
+        this.page.drawText(winAnsi("Keine Einträge."), {
+          x: this.margin + 2,
+          y: this.y - 10,
+          size: this.bodySize,
+          font: this.font,
+          color: MUTED,
+        });
+        this.y -= this.rowHeight;
+        continue;
+      }
+
+      for (const row of group.rows) {
+        const cellLines = cols.map((col) => {
+          const raw = row[col.key] ?? "";
+          if (col.checkbox && (!raw || raw === CHECKBOX_CELL)) return [""];
+          return wrap(this.font, raw, this.bodySize, col.width - 4);
+        });
+        const lines = Math.max(1, ...cellLines.map((l) => l.length));
+        const h = Math.max(this.rowHeight, lines * this.lineHeight + 6);
+        if (this.y - h < 48) {
+          this.newPage();
+          this.groupBanner(group.label);
+          drawColHeader();
+        }
+        let x = this.margin;
+        this.page.drawLine({
+          start: { x: this.margin, y: this.y },
+          end: { x: this.pageWidth - this.margin, y: this.y },
+          thickness: 0.4,
+          color: LINE,
+        });
+        for (let i = 0; i < cols.length; i++) {
+          const col = cols[i];
+          this.drawTableCell(col, row[col.key] ?? "", x, this.y, h, cellLines[i]);
+          x += col.width;
+        }
+        this.y -= h;
+      }
+      this.y -= 8;
     }
   }
 
@@ -442,6 +563,8 @@ export function footerNote(jahr = 0): string {
   return `Koderlauf ${y} · intern · Sportheim Obermögersheim`;
 }
 
-export function bibLabel(bib: string): string {
-  return bib || "–";
+export function bibLabel(bib: string | number | null | undefined): string {
+  const s = String(bib ?? "").trim();
+  if (!s || /^(0+|unassigned|n\/?a|none|null|-|–|—)$/i.test(s)) return "–";
+  return s;
 }

@@ -5,6 +5,8 @@ export type FassjagdOverrides = {
   aliases: Record<string, string>;
   /** zusätzliche Vereine außer Wertung (kanonischer Name) */
   excluded: string[];
+  /** Personen-ID → Gruppenname (Fassjagd Verein/Firma/Gruppe) */
+  personGroups: Record<string, string>;
   manualFreeze: boolean;
   freezeSnapshot: FassjagdBoard | null;
   /** ISO-Tag → Vereinsname → Anzahl (für 7-Tage-Flamme) */
@@ -14,6 +16,7 @@ export type FassjagdOverrides = {
 const EMPTY: FassjagdOverrides = {
   aliases: {},
   excluded: [],
+  personGroups: {},
   manualFreeze: false,
   freezeSnapshot: null,
   dailyCounts: {},
@@ -26,6 +29,7 @@ function store(): FassjagdOverrides {
   if (!g.__koderFassjagd) {
     g.__koderFassjagd = structuredClone(EMPTY);
   }
+  if (!g.__koderFassjagd.personGroups) g.__koderFassjagd.personGroups = {};
   return g.__koderFassjagd;
 }
 
@@ -39,6 +43,21 @@ export function mergeAlias(fromDisplay: string, toDisplay: string, normalizeKey:
   const toName = toDisplay.trim();
   if (!fromKey || !toName) return;
   s.aliases[fromKey] = toName;
+}
+
+export function setPersonGroup(personId: string, groupName: string) {
+  const s = store();
+  const id = personId.trim();
+  const name = groupName.trim();
+  if (!id || !name) return;
+  s.personGroups[id] = name;
+}
+
+export function clearPersonGroup(personId: string) {
+  const s = store();
+  const id = personId.trim();
+  if (!id) return;
+  delete s.personGroups[id];
 }
 
 export function setExcluded(name: string, excluded: boolean) {
@@ -89,6 +108,7 @@ export function importOverrides(next: Partial<FassjagdOverrides>) {
   const s = store();
   if (next.aliases) s.aliases = next.aliases;
   if (next.excluded) s.excluded = next.excluded;
+  if (next.personGroups) s.personGroups = next.personGroups;
   if (typeof next.manualFreeze === "boolean") s.manualFreeze = next.manualFreeze;
   if (next.freezeSnapshot !== undefined) s.freezeSnapshot = next.freezeSnapshot;
   if (next.dailyCounts) s.dailyCounts = next.dailyCounts;

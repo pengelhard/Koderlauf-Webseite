@@ -7,6 +7,7 @@ import { FassjagdFassBild } from "@/components/fassjagd/fass-bild";
 import { FassjagdFlame, useFassjagdBoard } from "@/components/fassjagd/live";
 import { FassjagdShareButtons } from "@/components/fassjagd/share-buttons";
 import { FASSJAGD_KASTEN_CLASS } from "@/components/fassjagd/hinweis-kasten";
+import { PlaceMark } from "@/components/fassjagd/place-mark";
 import { gapLine } from "@/lib/fassjagd/copy";
 import type { FassjagdBoard, FassjagdClub } from "@/lib/fassjagd/types";
 import { cn } from "@/lib/utils";
@@ -55,11 +56,12 @@ export function FassjagdVerein({
               {club.name}
               <FassjagdFlame show={club.flaming} />
             </h1>
-            <p className="mt-3 text-lg text-muted-foreground">
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-lg text-muted-foreground">
               {club.hausherr ? (
                 <>Hausherr · außer Wertung · {club.total} Starter</>
               ) : (
                 <>
+                  {club.place ? <PlaceMark place={club.place} /> : null}
                   Platz {club.place} · {club.total} Starter · {gapLine(club)}
                 </>
               )}
