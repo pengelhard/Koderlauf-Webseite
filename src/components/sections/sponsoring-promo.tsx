@@ -24,7 +24,7 @@ export function SponsoringPromo() {
                 Sponsoring {EVENT.jahr}
               </p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
-                Partner {SPONSORING_2027.partnerPreis} €, Förderer oder Hauptsponsor
+                Partner {SPONSORING_2027.partnerPreis} €, Sponsor oder Hauptsponsor
               </h2>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground">
                 Drei Bänder ab 150 / 300 / 500 € – Flächen optional mit Festpreisen. Anfrage ohne

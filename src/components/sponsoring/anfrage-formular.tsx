@@ -10,15 +10,18 @@ import { Label } from "@/components/ui/label";
 import {
   anfrageWegAusQuery,
   bandAusQuery,
-  bandHinweisOhneFlaeche,
   bandWarnung,
+  beitragsartWarnung,
   BAND_LABEL,
+  defaultBeitragsart,
   flaecheOptionLabel,
   flaecheParamAusSearch,
   getFlaeche,
   isBeitragsart,
+  isBeitragsartGueltig,
   isBeitragsband,
   isFlaecheBuchbar,
+  isSachspendeFlaeche,
   SPONSOR_FLAECHEN,
   SPONSORING_2027,
   submitLabel,
@@ -31,9 +34,6 @@ import {
 function isValidEmailFormat(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
-
-const KEINE_FLAECHE = "";
-const RESTKOSTEN_ID = "restkosten";
 
 export function SponsorAnfrageFormular() {
   const searchParams = useSearchParams();
@@ -51,7 +51,9 @@ export function SponsorAnfrageFormular() {
     bandAusQuery(stufeParam, getFlaeche(flaecheParam)),
   );
   const [flaecheId, setFlaecheId] = useState(getFlaeche(flaecheParam)?.id ?? "");
-  const [beitragsart, setBeitragsart] = useState<Beitragsart>("geld");
+  const [beitragsart, setBeitragsart] = useState<Beitragsart>(
+    defaultBeitragsart(getFlaeche(flaecheParam)),
+  );
   const [firma, setFirma] = useState("");
   const [ansprechpartner, setAnsprechpartner] = useState("");
   const [email, setEmail] = useState("");
@@ -67,7 +69,8 @@ export function SponsorAnfrageFormular() {
 
   const gewaehlteFlaeche = getFlaeche(flaecheId);
   const bandHinweis = bandWarnung(gewaehlteFlaeche, band);
-  const ohneFlaecheHinweis = bandHinweisOhneFlaeche(band, flaecheId);
+  const artWarnung = beitragsartWarnung(gewaehlteFlaeche, beitragsart);
+  const istSachspende = isSachspendeFlaeche(gewaehlteFlaeche);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setHoneypotReady(true));
@@ -75,43 +78,31 @@ export function SponsorAnfrageFormular() {
   }, []);
 
   useEffect(() => {
-    const flaecheIdResolved = flaecheParamAusSearch(
+    const resolved = flaecheParamAusSearch(
       searchParams.get("flaeche"),
       searchParams.get("posten"),
     );
-    const nextWeg = anfrageWegAusQuery(
-      stufeParam,
-      searchParams.get("flaeche"),
-      searchParams.get("posten"),
-    );
+    const nextWeg = anfrageWegAusQuery(stufeParam, searchParams.get("flaeche"), searchParams.get("posten"));
     setAnfrageWeg(nextWeg);
-    const nextFlaeche = getFlaeche(flaecheIdResolved);
+    const nextFlaeche = getFlaeche(resolved);
     if (nextFlaeche) {
       setFlaecheId(nextFlaeche.id);
-      if (nextWeg === "flaeche") {
-        setBand(bandAusQuery(stufeParam, nextFlaeche));
-      }
-    }
-    if (nextWeg === "beitrag") {
-      setBand(bandAusQuery(stufeParam, nextFlaeche));
+      setBand(vorschlagBand(nextFlaeche));
+      setBeitragsart(defaultBeitragsart(nextFlaeche));
+    } else if (nextWeg === "paket") {
+      setBand(bandAusQuery(stufeParam, undefined));
+      setFlaecheId("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stufeParam, searchParams]);
 
-  function updateQuery(
-    nextWeg: AnfrageWeg,
-    nextBand: Beitragsband,
-    nextFlaeche: string,
-  ) {
+  function updateQuery(nextWeg: AnfrageWeg, nextBand: Beitragsband, nextFlaeche: string) {
     const q = new URLSearchParams();
-    if (nextWeg === "partner") {
-      q.set("stufe", "partner");
-    } else if (nextWeg === "beitrag") {
+    if (nextWeg === "flaeche" && nextFlaeche) {
       q.set("stufe", nextBand);
-      if (nextFlaeche) q.set("flaeche", nextFlaeche);
+      q.set("flaeche", nextFlaeche);
     } else {
       q.set("stufe", nextBand);
-      if (nextFlaeche) q.set("flaeche", nextFlaeche);
     }
     router.replace(`/sponsor-werden?${q.toString()}#anfrage`, { scroll: false });
     requestAnimationFrame(() => {
@@ -145,12 +136,17 @@ export function SponsorAnfrageFormular() {
     }
     if (flaecheId && !isFlaecheBuchbar(flaecheId)) {
       setStatus("error");
-      setErrorMsg("Diese Fläche ist gerade nicht buchbar – bitte einen anderen Slot wählen.");
+      setErrorMsg("Diese Fläche ist gerade nicht buchbar.");
+      return;
+    }
+    if (anfrageWeg === "flaeche" && !isBeitragsartGueltig(gewaehlteFlaeche, beitragsart)) {
+      setStatus("error");
+      setErrorMsg("Diese Fläche ist eine Sachspende. Geld allein bucht sie nicht.");
       return;
     }
     if (!bestaetigt) {
       setStatus("error");
-      setErrorMsg("Bitte bestätigt, dass ihr eine unverbindliche Anfrage ohne Online-Zahlung senden wollt.");
+      setErrorMsg("Bitte bestätigt, dass ihr eine unverbindliche Anfrage senden wollt.");
       return;
     }
 
@@ -161,9 +157,9 @@ export function SponsorAnfrageFormular() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           anfrageWeg,
-          band: anfrageWeg === "partner" ? "partner" : band,
-          flaecheId: anfrageWeg !== "partner" && flaecheId ? flaecheId : undefined,
-          beitragsart: anfrageWeg !== "partner" ? beitragsart : undefined,
+          band,
+          flaecheId: anfrageWeg === "flaeche" ? flaecheId : undefined,
+          beitragsart: anfrageWeg === "flaeche" ? beitragsart : undefined,
           firma,
           ansprechpartner,
           email,
@@ -197,8 +193,7 @@ export function SponsorAnfrageFormular() {
           <a href={`mailto:${SPONSORING_2027.kontaktEmail}`} className="text-koder-orange hover:underline">
             {SPONSORING_2027.kontaktEmail}
           </a>
-          . Als Nächstes: Band bestätigen, Fläche ja/nein, Logo-Formate, Rechnungsadresse – falls ihr eine
-          Sache stellt, den Liefertermin.
+          . Als Nächstes: Paket bestätigen, Fläche ja/nein, Logo-Formate, Rechnungsadresse.
         </p>
         <Button type="button" variant="outline" className="mt-2" onClick={() => setStatus("idle")}>
           Weitere Anfrage
@@ -207,74 +202,78 @@ export function SponsorAnfrageFormular() {
     );
   }
 
-  const flaecheOptions = SPONSOR_FLAECHEN.filter(
-    (f) => isFlaecheBuchbar(f.id) || f.mehrereMoeglich,
-  );
+  const flaecheOptions = SPONSOR_FLAECHEN.filter((f) => isFlaecheBuchbar(f.id) || f.mehrereMoeglich);
 
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Weg A */}
+      <div className="grid gap-4 sm:grid-cols-2">
         <fieldset
           className={`rounded-2xl border p-5 transition-colors ${
-            anfrageWeg === "partner" ? "border-koder-orange bg-koder-orange/5" : "border-border"
+            anfrageWeg === "paket" ? "border-koder-orange bg-koder-orange/5" : "border-border"
           }`}
         >
-          <legend className="px-1 text-sm font-bold">Weg A – Partner {SPONSORING_2027.partnerPreis} €</legend>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Inkl. 1 Zaunbanner und 1 Gitterbanner, Website, Instagram.
-          </p>
+          <legend className="px-1 text-sm font-bold">Nur Paket</legend>
+          <p className="mt-1 text-sm text-muted-foreground">Partner 150 € · Sponsor 300 € · Hauptsponsor 500 €</p>
           <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
               type="radio"
               name="anfrageWeg"
-              checked={anfrageWeg === "partner"}
+              checked={anfrageWeg === "paket"}
               onChange={() => {
-                setAnfrageWeg("partner");
+                setAnfrageWeg("paket");
                 setFlaecheId("");
-                updateQuery("partner", "partner", "");
+                setBand("partner");
+                updateQuery("paket", "partner", "");
               }}
               className="mt-1"
             />
-            <span>Partner {SPONSORING_2027.partnerPreis} € wählen</span>
+            <span>Paket wählen (ohne Fläche)</span>
           </label>
+          {anfrageWeg === "paket" && (
+            <div className="mt-4 grid gap-2">
+              {(["partner", "sponsor", "hauptsponsor"] as const).map((id) => (
+                <label
+                  key={id}
+                  className={`cursor-pointer rounded-xl border p-3 text-sm ${
+                    band === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paket"
+                    value={id}
+                    checked={band === id}
+                    onChange={() => {
+                      if (!isBeitragsband(id)) return;
+                      setBand(id);
+                      updateQuery("paket", id, "");
+                    }}
+                    className="sr-only"
+                  />
+                  <span className="font-bold">{BAND_LABEL[id]}</span>
+                  <span className="text-muted-foreground">
+                    {" "}
+                    ·{" "}
+                    {id === "partner"
+                      ? `${SPONSORING_2027.partnerPreis} €`
+                      : id === "sponsor"
+                        ? `ab ${SPONSORING_2027.sponsorAb} €`
+                        : `ab ${SPONSORING_2027.hauptsponsorAb} €`}
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
         </fieldset>
 
-        {/* Weg B */}
-        <fieldset
-          className={`rounded-2xl border p-5 transition-colors ${
-            anfrageWeg === "beitrag" ? "border-koder-orange bg-koder-orange/5" : "border-border"
-          }`}
-        >
-          <legend className="px-1 text-sm font-bold">Weg B – Förderer oder Hauptsponsor</legend>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Beitrag nach Band. Fläche optional – oder Restkosten.
-          </p>
-          <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
-            <input
-              type="radio"
-              name="anfrageWeg"
-              checked={anfrageWeg === "beitrag"}
-              onChange={() => {
-                setAnfrageWeg("beitrag");
-                setBand("foerderer");
-                updateQuery("beitrag", "foerderer", flaecheId);
-              }}
-              className="mt-1"
-            />
-            <span>Förderer oder Hauptsponsor (Beitrag)</span>
-          </label>
-        </fieldset>
-
-        {/* Weg C */}
         <fieldset
           className={`rounded-2xl border p-5 transition-colors ${
             anfrageWeg === "flaeche" ? "border-koder-orange bg-koder-orange/5" : "border-border"
           }`}
         >
-          <legend className="px-1 text-sm font-bold">Weg C – Nur eine Fläche</legend>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Fläche Pflicht. Band wird aus dem Richtwert vorgeschlagen – ihr könnt höher gehen.
+          <legend className="px-1 text-sm font-bold">Eine Fläche wählen</legend>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Paket folgt aus dem Gegenwert. Art des Beitrags aus Flächentyp.
           </p>
           <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
@@ -287,95 +286,19 @@ export function SponsorAnfrageFormular() {
                 if (first) {
                   setFlaecheId(first.id);
                   setBand(vorschlagBand(first));
+                  setBeitragsart(defaultBeitragsart(first));
                   updateQuery("flaeche", vorschlagBand(first), first.id);
-                } else {
-                  updateQuery("flaeche", "foerderer", "");
                 }
               }}
               className="mt-1"
             />
-            <span>Eine Fläche übernehmen</span>
+            <span>Konkrete Fläche übernehmen</span>
           </label>
         </fieldset>
       </div>
 
-      {anfrageWeg === "beitrag" && (
-        <div className="space-y-6 rounded-2xl border border-border bg-muted/20 p-5">
-          <fieldset className="space-y-3">
-            <legend className="text-sm font-semibold">Band</legend>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {(["foerderer", "hauptsponsor"] as const).map((id) => (
-                <label
-                  key={id}
-                  className={`cursor-pointer rounded-xl border p-3 text-sm transition-colors ${
-                    band === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="band"
-                    value={id}
-                    checked={band === id}
-                    onChange={() => {
-                      if (!isBeitragsband(id)) return;
-                      setBand(id);
-                      updateQuery("beitrag", id, flaecheId);
-                    }}
-                    className="sr-only"
-                  />
-                  <span className="font-bold">{BAND_LABEL[id]}</span>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {id === "foerderer"
-                      ? `ab ${SPONSORING_2027.foerdererAb} € Gegenwert`
-                      : `ab ${SPONSORING_2027.hauptsponsorAb} € Gegenwert`}
-                  </p>
-                </label>
-              ))}
-            </div>
-            {band === "hauptsponsor" && (
-              <p className="text-xs text-muted-foreground">
-                Hauptsponsoren begrenzt auf max. {SPONSORING_2027.hauptsponsorMax} – wir sagen zu oder
-                bieten Förderer an.
-              </p>
-            )}
-          </fieldset>
-
-          <div className="space-y-2">
-            <Label htmlFor="sponsor-flaeche-opt">Fläche (optional)</Label>
-            <select
-              id="sponsor-flaeche-opt"
-              name="flaecheOptional"
-              value={flaecheId}
-              onChange={(e) => {
-                const id = e.target.value;
-                setFlaecheId(id);
-                updateQuery("beitrag", band, id);
-              }}
-              className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
-            >
-              <option value={KEINE_FLAECHE}>Keine Fläche / nur Beitrag</option>
-              <option value={RESTKOSTEN_ID}>Restkosten (Lauf ermöglichen)</option>
-              {flaecheOptions
-                .filter((f) => f.id !== RESTKOSTEN_ID)
-                .map((f) => (
-                  <option key={f.id} value={f.id} disabled={!isFlaecheBuchbar(f.id)}>
-                    {flaecheOptionLabel(f)}
-                  </option>
-                ))}
-            </select>
-            {ohneFlaecheHinweis && !flaecheId && (
-              <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-                {ohneFlaecheHinweis}
-              </p>
-            )}
-          </div>
-
-          <BeitragsartFeld beitragsart={beitragsart} setBeitragsart={setBeitragsart} />
-        </div>
-      )}
-
       {anfrageWeg === "flaeche" && (
-        <div className="space-y-6 rounded-2xl border border-border bg-muted/20 p-5">
+        <div className="space-y-5 rounded-2xl border border-border bg-muted/20 p-5">
           <div className="space-y-2">
             <Label htmlFor="sponsor-flaeche">Fläche (Pflicht)</Label>
             <select
@@ -385,10 +308,11 @@ export function SponsorAnfrageFormular() {
               value={flaecheId}
               onChange={(e) => {
                 const id = e.target.value;
-                setFlaecheId(id);
                 const f = getFlaeche(id);
+                setFlaecheId(id);
                 const nextBand = vorschlagBand(f);
                 setBand(nextBand);
+                setBeitragsart(defaultBeitragsart(f));
                 updateQuery("flaeche", nextBand, id);
               }}
               className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
@@ -402,40 +326,34 @@ export function SponsorAnfrageFormular() {
             </select>
           </div>
 
-          <fieldset className="space-y-3">
-            <legend className="text-sm font-semibold">Band (Vorschlag)</legend>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {(["partner", "foerderer", "hauptsponsor"] as const).map((id) => (
-                <label
-                  key={id}
-                  className={`cursor-pointer rounded-xl border p-3 text-sm transition-colors ${
-                    band === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="bandFlaeche"
-                    value={id}
-                    checked={band === id}
-                    onChange={() => {
-                      if (!isBeitragsband(id)) return;
-                      setBand(id);
-                      updateQuery("flaeche", id, flaecheId);
-                    }}
-                    className="sr-only"
-                  />
-                  <span className="font-bold">{BAND_LABEL[id]}</span>
-                </label>
-              ))}
-            </div>
-            {bandHinweis && (
-              <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-100">
-                {bandHinweis}
-              </p>
-            )}
-          </fieldset>
+          {gewaehlteFlaeche && (
+            <p className="text-sm text-muted-foreground">
+              Vorgeschlagenes Paket: <strong>{BAND_LABEL[band]}</strong> ({gewaehlteFlaeche.festpreis} €)
+            </p>
+          )}
 
-          <BeitragsartFeld beitragsart={beitragsart} setBeitragsart={setBeitragsart} />
+          {istSachspende && (
+            <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">
+              Sachspende: Bitte die Sache stellen. Eine Überweisung ersetzt das nicht.
+            </p>
+          )}
+
+          <BeitragsartFeld
+            beitragsart={beitragsart}
+            setBeitragsart={setBeitragsart}
+            sachspende={istSachspende}
+          />
+
+          {bandHinweis && (
+            <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-100">
+              {bandHinweis}
+            </p>
+          )}
+          {artWarnung && (
+            <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              {artWarnung}
+            </p>
+          )}
         </div>
       )}
 
@@ -515,12 +433,12 @@ export function SponsorAnfrageFormular() {
         <textarea
           id="sponsor-msg"
           name="nachricht"
-          rows={5}
+          rows={4}
           value={nachricht}
           onChange={(e) => setNachricht(e.target.value)}
           maxLength={8000}
-          placeholder="Was euch wichtig ist, Wunsch-Fläche, Fragen …"
-          className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex min-h-[120px] w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:ring-[3px] md:text-sm"
+          placeholder="Was euch wichtig ist, Fragen …"
+          className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex min-h-[100px] w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:ring-[3px] md:text-sm"
         />
       </div>
 
@@ -533,8 +451,7 @@ export function SponsorAnfrageFormular() {
           className="mt-1"
         />
         <span>
-          Unverbindliche Anfrage, keine Online-Zahlung. Der Verein meldet sich mit den nächsten Schritten
-          und der Rechnung.{" "}
+          Unverbindliche Anfrage, keine Online-Zahlung. Der Verein meldet sich.{" "}
           <Link href="/datenschutz" className="text-koder-orange hover:underline">
             Datenschutz
           </Link>
@@ -571,7 +488,7 @@ export function SponsorAnfrageFormular() {
         ) : (
           <>
             <Send className="size-4" />
-            {submitLabel(anfrageWeg, band)}
+            {submitLabel(anfrageWeg, band, gewaehlteFlaeche)}
           </>
         )}
       </Button>
@@ -582,25 +499,37 @@ export function SponsorAnfrageFormular() {
 function BeitragsartFeld({
   beitragsart,
   setBeitragsart,
+  sachspende,
 }: {
   beitragsart: Beitragsart;
   setBeitragsart: (v: Beitragsart) => void;
+  sachspende: boolean;
 }) {
+  const options: { id: Beitragsart; label: string; disabled?: boolean }[] = sachspende
+    ? [
+        { id: "sach", label: "Sachspende" },
+        { id: "beides", label: "Sache + Zuschuss" },
+        { id: "geld", label: "Nur Geld", disabled: true },
+      ]
+    : [
+        { id: "geld", label: "Geld" },
+        { id: "sach", label: "Sache" },
+        { id: "beides", label: "Beides" },
+      ];
+
   return (
     <fieldset className="space-y-3">
       <legend className="text-sm font-semibold">Art des Beitrags</legend>
       <div className="grid gap-2 sm:grid-cols-3">
-        {(
-          [
-            ["geld", "Geld"],
-            ["sach", "Sache"],
-            ["beides", "Beides"],
-          ] as const
-        ).map(([id, label]) => (
+        {options.map(({ id, label, disabled }) => (
           <label
             key={id}
-            className={`cursor-pointer rounded-xl border p-3 text-sm ${
-              beitragsart === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
+            className={`rounded-xl border p-3 text-sm ${
+              disabled
+                ? "cursor-not-allowed border-border opacity-50"
+                : beitragsart === id
+                  ? "cursor-pointer border-koder-orange bg-koder-orange/10"
+                  : "cursor-pointer border-border"
             }`}
           >
             <input
@@ -608,8 +537,9 @@ function BeitragsartFeld({
               name="beitragsart"
               value={id}
               checked={beitragsart === id}
+              disabled={disabled}
               onChange={() => {
-                if (isBeitragsart(id)) setBeitragsart(id);
+                if (isBeitragsart(id) && !disabled) setBeitragsart(id);
               }}
               className="sr-only"
             />
@@ -617,9 +547,11 @@ function BeitragsartFeld({
           </label>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground">
-        Wer die Sache stellt, zahlt nicht bar nach. Gegenwert zählt für das Band.
-      </p>
+      {!sachspende && (
+        <p className="text-xs text-muted-foreground">
+          Wer die Sache stellt, zahlt nicht bar nach.
+        </p>
+      )}
     </fieldset>
   );
 }
