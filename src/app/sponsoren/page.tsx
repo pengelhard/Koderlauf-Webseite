@@ -110,7 +110,7 @@ export default function SponsorenPage() {
               href="/sponsor-werden"
               className="mt-6 inline-flex rounded-xl bg-koder-orange px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-white hover:bg-koder-orange/90"
             >
-              Partner oder Hauptsponsor werden
+              Partner, Hauptsponsor oder Sachpartner werden
             </Link>
           </motion.div>
         ) : (

@@ -4,9 +4,14 @@ import { getPublicDomainLabel, getSiteUrl } from "@/lib/site-url";
 import { allowRequest, clientIp } from "@/lib/rate-limit";
 import {
   getKostenposten,
-  isSponsorStufe,
+  isAnfrageArt,
+  isBeitragsart,
+  isPostenRolle,
+  ROLLE_LABEL,
   SPONSORING_2027,
-  type SponsorStufe,
+  type AnfrageArt,
+  type Beitragsart,
+  type PostenRolle,
 } from "@/lib/sponsoring-2027";
 
 const PROD_TO = "info@koderlauf.de";
@@ -128,10 +133,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  if (!isSponsorStufe(rec.stufe)) {
-    return NextResponse.json({ error: "Bitte Partner oder Hauptsponsor wählen." }, { status: 400 });
+  let anfrageArt: AnfrageArt | null = isAnfrageArt(rec.anfrageArt) ? rec.anfrageArt : null;
+  if (!anfrageArt) {
+    if (rec.stufe === "partner") anfrageArt = "partner";
+    else if (rec.stufe === "hauptsponsor" || rec.stufe === "sachpartner" || rec.stufe === "posten") {
+      anfrageArt = "posten";
+    }
   }
-  const stufe: SponsorStufe = rec.stufe;
+  if (!anfrageArt) {
+    return NextResponse.json(
+      { error: "Bitte Partner oder eine Kostenpartnerschaft wählen." },
+      { status: 400 },
+    );
+  }
 
   const firma = clip(rec.firma, MAX_SHORT);
   const ansprechpartner = clip(rec.ansprechpartner, MAX_SHORT);
@@ -139,11 +153,14 @@ export async function POST(request: Request) {
   const telefon = clip(rec.telefon, 40);
   const web = clip(rec.web, 300);
   const instagram = clip(rec.instagram, 200);
-  const budget = clip(rec.budget, 80);
   const nachricht = clip(rec.nachricht, MAX_TEXT);
   const addonBauzaun = rec.addonBauzaun === true;
   const postenId = typeof rec.postenId === "string" ? rec.postenId.trim() : "";
   const posten = getKostenposten(postenId);
+  const beitragsart: Beitragsart | null = isBeitragsart(rec.beitragsart) ? rec.beitragsart : null;
+  let rolle: PostenRolle | null = isPostenRolle(rec.rolle) ? rec.rolle : null;
+  if (!rolle && rec.stufe === "hauptsponsor") rolle = "hauptsponsor";
+  if (!rolle && rec.stufe === "sachpartner") rolle = "sachpartner";
 
   if (!firma) {
     return NextResponse.json({ error: "Bitte die Firma oder den Namen angeben." }, { status: 400 });
@@ -157,9 +174,21 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  if (stufe === "hauptsponsor" && !posten) {
+  if (anfrageArt === "posten" && !posten) {
     return NextResponse.json(
-      { error: "Bitte eine Kostenpartnerschaft für den Hauptsponsor wählen." },
+      { error: "Bitte einen Posten für Hauptsponsor oder Sachpartner wählen." },
+      { status: 400 },
+    );
+  }
+  if (anfrageArt === "posten" && !rolle) {
+    return NextResponse.json(
+      { error: "Bitte Hauptsponsor oder Sachpartner als Rolle wählen." },
+      { status: 400 },
+    );
+  }
+  if (anfrageArt === "posten" && !beitragsart) {
+    return NextResponse.json(
+      { error: "Bitte angeben, ob Geld, Sache oder beides." },
       { status: 400 },
     );
   }
@@ -179,16 +208,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: GENERIC_UNAVAILABLE }, { status: 503 });
   }
 
-  const stufeLabel = stufe === "partner" ? `Partner (${SPONSORING_2027.partnerPreis} €)` : "Hauptsponsor (ab 500 €)";
+  const stufeLabel =
+    anfrageArt === "partner"
+      ? `Partner (${SPONSORING_2027.partnerPreis} €)`
+      : `${ROLLE_LABEL[rolle ?? "sachpartner"]} (Posten)`;
+  const beitragLabel =
+    beitragsart === "geld" ? "Geld für den Posten" : beitragsart === "sach" ? "Sachspende" : beitragsart === "beides" ? "Beides" : "";
   const to = getMailTo();
   const text = [
     ...(to !== PROD_TO ? [`[Nur Entwicklung: Zustellung an ${to} (Live: ${PROD_TO})]`, ""] : []),
     `Sponsoring-Anfrage über ${getPublicDomainLabel(getSiteUrl())}`,
     "",
-    `Stufe: ${stufeLabel}`,
+    `Art: ${stufeLabel}`,
     posten ? `Kostenpartnerschaft: ${posten.titel} (${posten.id})` : "Kostenpartnerschaft: —",
+    beitragLabel ? `Beitrag: ${beitragLabel}` : "",
     addonBauzaun ? "Add-on: zusätzliches Bauzaunfeld (Partner)" : "",
-    budget ? `Wunsch-Budget: ${budget}` : "",
     "",
     `Firma: ${firma}`,
     `Ansprechpartner: ${ansprechpartner}`,
