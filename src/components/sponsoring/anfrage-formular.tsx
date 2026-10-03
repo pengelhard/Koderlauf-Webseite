@@ -15,7 +15,6 @@ import {
   getFlaeche,
   isBeitragsartGueltig,
   isFlaecheBuchbar,
-  isSachspendeFlaeche,
   brauchtAngebot,
   SACHSPENDEN_SICHTBAR,
   SPONSORING_2027,
@@ -225,7 +224,7 @@ export function SponsorAnfrageFormular() {
             }}
             className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
           >
-            <option value="">Keine Sache</option>
+            <option value="">Reine Geldspende</option>
             {SACHSPENDEN_SICHTBAR.map((f) => (
               <option key={f.id} value={f.id} disabled={!isFlaecheBuchbar(f.id)}>
                 {flaecheOptionLabel(f)}
@@ -284,11 +283,6 @@ export function SponsorAnfrageFormular() {
         </p>
       )}
 
-      {isSachspendeFlaeche(gewaehlteFlaeche) && (
-        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">
-          Bitte die Sache stellen. Eine Überweisung ersetzt das nicht.
-        </p>
-      )}
       {artWarnung && (
         <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
           {artWarnung}
