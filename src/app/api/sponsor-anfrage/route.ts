@@ -5,12 +5,13 @@ import { allowRequest, clientIp } from "@/lib/rate-limit";
 import {
   BAND_LABEL,
   getFlaeche,
-  isAnfrageWeg,
+  bandWarnung,
   isBeitragsart,
   isBeitragsband,
   isBeitragsartGueltig,
   isFlaecheBuchbar,
   isSachspendeFlaeche,
+  normalizeAnfrageWeg,
   normalizeStufe,
   TYP_LABEL,
   SPONSORING_2027,
@@ -107,13 +108,14 @@ function getSmtpConfig():
 }
 
 function resolveAnfrageWeg(rec: Record<string, unknown>): AnfrageWeg | null {
-  if (isAnfrageWeg(rec.anfrageWeg)) return rec.anfrageWeg;
+  const fromField = normalizeAnfrageWeg(rec.anfrageWeg);
+  if (fromField) return fromField;
   if (typeof rec.flaecheId === "string" || typeof rec.postenId === "string") return "flaeche";
   if (rec.anfrageArt === "posten" || rec.anfrageArt === "flaeche") return "flaeche";
-  if (rec.anfrageArt === "partner" || rec.anfrageArt === "beitrag" || rec.anfrageArt === "paket") {
-    return "paket";
+  if (rec.anfrageArt === "partner" || rec.anfrageArt === "beitrag" || rec.anfrageArt === "paket" || rec.anfrageArt === "stufe") {
+    return "stufe";
   }
-  if (normalizeStufe(typeof rec.stufe === "string" ? rec.stufe : null)) return "paket";
+  if (normalizeStufe(typeof rec.stufe === "string" ? rec.stufe : null)) return "stufe";
   return null;
 }
 
@@ -121,7 +123,7 @@ function resolveBand(rec: Record<string, unknown>): Beitragsband {
   if (isBeitragsband(rec.band)) return rec.band;
   const stufe = normalizeStufe(typeof rec.stufe === "string" ? rec.stufe : null);
   if (stufe) return stufe;
-  return "partner";
+  return "liste";
 }
 
 export async function POST(request: Request) {
@@ -159,7 +161,7 @@ export async function POST(request: Request) {
   const anfrageWeg = resolveAnfrageWeg(rec);
   if (!anfrageWeg) {
     return NextResponse.json(
-      { error: "Bitte Paket oder Fläche wählen." },
+      { error: "Bitte Stufe oder Fläche wählen." },
       { status: 400 },
     );
   }
@@ -230,6 +232,7 @@ export async function POST(request: Request) {
         ? "Sachspende"
         : `${BAND_LABEL[band]} + Fläche`
       : BAND_LABEL[band];
+  const stufenHinweis = bandWarnung(flaeche, band);
   const beitragLabel =
     beitragsart === "geld"
       ? "Geld"
@@ -244,11 +247,11 @@ export async function POST(request: Request) {
     `Sponsoring-Anfrage über ${getPublicDomainLabel(getSiteUrl())}`,
     "",
     `Weg: ${wegLabel}`,
-    `Band: ${BAND_LABEL[band]}`,
+    `Stufe: ${BAND_LABEL[band]}`,
     flaeche ? `Fläche: ${flaeche.titel} (${flaeche.id})` : "Fläche: —",
     flaeche ? `Typ: ${TYP_LABEL[flaeche.typ]}` : "",
     beitragLabel ? `Beitrag: ${beitragLabel}` : "",
-    flaeche ? `Festpreis: ${flaeche.festpreis} €` : "",
+    stufenHinweis ? `Hinweis: ${stufenHinweis}` : flaeche ? "Wert der Sache: im Gespräch klären" : "",
     "",
     `Firma: ${firma}`,
     `Ansprechpartner: ${ansprechpartner}`,

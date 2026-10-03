@@ -8,15 +8,14 @@ import { SPONSORING_2027 } from "@/lib/sponsoring-2027";
 import { SponsorAnfrageFormular } from "@/components/sponsoring/anfrage-formular";
 import { SponsorStickyAnfrage } from "@/components/sponsoring/sponsor-sticky-anfrage";
 import {
-  SponsorAblauf,
   SponsorFaq,
   SponsorHeroBilder,
   SponsorOffeneFlaechen,
-  SponsorPakete,
+  SponsorStufen,
 } from "@/components/sponsoring/sponsor-werden-sections";
 
 export function SponsorWerdenContent() {
-  const { premiere2026, kontaktEmail, partnerPreis } = SPONSORING_2027;
+  const { kontaktEmail } = SPONSORING_2027;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -46,11 +45,10 @@ export function SponsorWerdenContent() {
               Koderlauf {EVENT.jahr}
             </p>
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
-              Sponsor 2027 werden
+              Sponsor werden
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              {premiere2026.finisher} Finisher, ein ganzes Dorf am Sportheim, 50 Jahre SV – sichtbar vor Ort
-              oder als Beitrag, wenn die Flächen weg sind.
+              Auch eine Kiste Äpfel oder 50 € sind willkommen. Kurz Bescheid sagen – wir fragen auch persönlich nach.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               {EVENT.datumKurz} · {EVENT.ortDetail} · {EVENT.veranstalter}
@@ -58,10 +56,22 @@ export function SponsorWerdenContent() {
 
             <div className="mt-6 flex flex-wrap gap-2">
               <Link
-                href="/sponsor-werden?stufe=partner#anfrage"
+                href="/sponsor-werden?stufe=liste#anfrage"
                 className="rounded-xl bg-koder-orange px-4 py-2.5 text-sm font-bold text-white hover:bg-koder-orange/90"
               >
-                Partner {partnerPreis} €
+                Liste
+              </Link>
+              <Link
+                href="/sponsor-werden?stufe=banner#anfrage"
+                className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
+              >
+                Banner
+              </Link>
+              <Link
+                href="/sponsor-werden?stufe=buehne#anfrage"
+                className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
+              >
+                Bühne
               </Link>
               <Link
                 href="#flaechen"
@@ -69,16 +79,10 @@ export function SponsorWerdenContent() {
               >
                 Flächen
               </Link>
-              <Link
-                href="#anfrage"
-                className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
-              >
-                Anfrage
-              </Link>
             </div>
 
             <p className="mt-4 text-sm text-muted-foreground">
-              Auch reines Geld zählt – gerade über Restkosten. Unverbindlich, keine Online-Zahlung.{" "}
+              {SPONSORING_2027.zuordnungSatz} Unverbindlich, keine Online-Zahlung.{" "}
               <a href={`mailto:${kontaktEmail}`} className="text-koder-orange hover:underline">
                 {kontaktEmail}
               </a>
@@ -87,17 +91,16 @@ export function SponsorWerdenContent() {
             <SponsorHeroBilder />
           </motion.section>
 
-          <SponsorPakete />
+          <SponsorStufen />
           <SponsorOffeneFlaechen />
-          <SponsorAblauf />
           <SponsorFaq />
 
           <section id="anfrage" className="mt-12 scroll-mt-28" aria-labelledby="anfrage-titel">
             <h2 id="anfrage-titel" className="text-2xl font-extrabold tracking-tight">
-              Anfrage abschließen
+              Kurz Bescheid sagen
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Kein Checkout. Antwort von {kontaktEmail}.
+              Kein Checkout. Wir melden uns von {kontaktEmail} und ordnen den Umfang zu.
             </p>
             <div className="mt-6 rounded-3xl border border-border bg-card p-6 sm:p-8">
               <SponsorAnfrageFormular />

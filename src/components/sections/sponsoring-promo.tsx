@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { HeartHandshake } from "lucide-react";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
 import { EVENT } from "@/lib/event-config";
-import { SPONSORING_2027 } from "@/lib/sponsoring-2027";
 
 export function SponsoringPromo() {
   const staticReveal = useStaticReveal();
@@ -24,10 +23,10 @@ export function SponsoringPromo() {
                 Sponsoring {EVENT.jahr}
               </p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
-                Partner {SPONSORING_2027.partnerPreis} €, Sponsor oder Hauptsponsor
+                Liste, Banner oder Bühne
               </h2>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                Drei Bänder ab 150 / 300 / 500 € – Flächen optional mit Festpreisen. Anfrage ohne
+                Auch eine Kiste Äpfel oder 50 €. Sache ordnen wir im Gespräch zu. Anfrage ohne
                 Online-Zahlung.
               </p>
             </div>

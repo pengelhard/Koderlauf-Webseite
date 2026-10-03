@@ -1,18 +1,18 @@
-/** Sponsoring Koderlauf 2027 – Pakete + Flächen-Inventar. */
+/** Sponsoring Koderlauf 2027 – Sichtbarkeit statt Preispakete. */
 
-export type Beitragsband = "partner" | "sponsor" | "hauptsponsor";
-export type AnfrageWeg = "paket" | "flaeche";
+export type Sichtbarkeit = "liste" | "banner" | "buehne";
+/** Alter Name im Formular und in der API. */
+export type Beitragsband = Sichtbarkeit;
+export type AnfrageWeg = "stufe" | "flaeche";
 export type FlaecheStatus = "offen" | "reserviert" | "vergeben";
 export type FlaecheTyp = "sachspende" | "geld_oder_sache";
 export type Beitragsart = "geld" | "sach" | "beides";
 
 export const SPONSORING_2027 = {
-  partnerPreis: 150,
-  sponsorAb: 300,
-  hauptsponsorAb: 500,
-  hauptsponsorMax: 5,
+  bannerAb: 150,
+  buehneAb: 500,
   kontaktEmail: "info@koderlauf.de",
-  fairnessSatz: "Rang folgt dem Betrag. Fläche folgt der Sache.",
+  zuordnungSatz: "Geld hat einen Betrag. Sache ordnen wir im Gespräch zu.",
   starterKalkulation: 500,
   premiere2026: {
     anmeldungen: 400,
@@ -21,15 +21,15 @@ export const SPONSORING_2027 = {
   },
 } as const;
 
-export const BAND_LABEL: Record<Beitragsband, string> = {
-  partner: "Partner",
-  sponsor: "Sponsor",
-  hauptsponsor: "Hauptsponsor",
+export const BAND_LABEL: Record<Sichtbarkeit, string> = {
+  liste: "Liste",
+  banner: "Banner",
+  buehne: "Bühne",
 };
 
 export const STATUS_LABEL: Record<FlaecheStatus, string> = {
   offen: "OFFEN",
-  reserviert: "IN SPRACHE",
+  reserviert: "IM GESPRÄCH",
   vergeben: "VERGEBEN",
 };
 
@@ -47,18 +47,16 @@ const FLAECHE_ID_ALIASES: Record<string, string> = {
   streckenverpflegung: "strecke",
 };
 
-const KOMPLETT_HAELFTE: Record<string, [string, string]> = {
-  medaillen: ["medaillen-a", "medaillen-b"],
-  preise: ["preise-1", "preise-2"],
+const STUFE_ALIASES: Record<string, Sichtbarkeit> = {
+  foerderer: "banner",
+  sachpartner: "banner",
+  partner: "banner",
+  sponsor: "banner",
+  hauptsponsor: "buehne",
 };
 
-const STUFE_ALIASES: Record<string, Beitragsband> = {
-  foerderer: "sponsor",
-  sachpartner: "sponsor",
-};
-
-export const SPONSOR_PAKETE: {
-  id: Beitragsband;
+export const SPONSOR_STUFEN: {
+  id: Sichtbarkeit;
   name: string;
   preisLabel: string;
   kurz: string;
@@ -67,53 +65,37 @@ export const SPONSOR_PAKETE: {
   ctaLabel: string;
 }[] = [
   {
-    id: "partner",
-    name: "Partner",
-    preisLabel: "150 €",
-    kurz: "Geldpaket – beliebig viele.",
-    leistungen: [
-      "1 Banner am Bauzaun (klein)",
-      "1 Banner am Absperrgitter Zieleinlauf",
-      "Website-Nennung",
-      "Instagram-Link",
-    ],
-    ctaHref: "/sponsor-werden?stufe=partner#anfrage",
-    ctaLabel: "Partner werden",
+    id: "liste",
+    name: "Liste",
+    preisLabel: "klein",
+    kurz: "Äpfel, Riegel, 50 €, kleine Gutscheine.",
+    leistungen: ["Name auf der Dankesliste", "Kein Banner"],
+    ctaHref: "/sponsor-werden?stufe=liste#anfrage",
+    ctaLabel: "Liste anfragen",
   },
   {
-    id: "sponsor",
-    name: "Sponsor",
-    preisLabel: "ab 300 €",
-    kurz: "Partner-Paket plus größere Sichtbarkeit.",
+    id: "banner",
+    name: "Banner",
+    preisLabel: "ab etwa 150 €",
+    kurz: "Geld ab etwa 150 € – oder Ware und Gutscheine in der Größenordnung.",
     leistungen: [
-      "Alles wie Partner",
-      "Größeres Logo auf der Sponsoren-Seite",
-      "Mittleres Zaunbanner",
-      "Fläche optional",
+      "Banner am Zaun",
+      "Logo auf der Website",
+      "Instagram",
+      "Mehr Umfang, größeres Banner",
     ],
-    ctaHref: "/sponsor-werden?stufe=sponsor#anfrage",
-    ctaLabel: "Sponsor anfragen",
+    ctaHref: "/sponsor-werden?stufe=banner#anfrage",
+    ctaLabel: "Banner anfragen",
   },
   {
-    id: "hauptsponsor",
-    name: "Hauptsponsor",
-    preisLabel: "ab 500 €",
-    kurz: "Partner-Paket plus prominente Nennung.",
-    leistungen: [
-      "Alles wie Partner",
-      "Prominente Website-Nennung",
-      "Dank bei der Siegerehrung",
-      "Großes Zaunbanner · Fläche optional",
-    ],
-    ctaHref: "/sponsor-werden?stufe=hauptsponsor#anfrage",
-    ctaLabel: "Hauptsponsor anfragen",
+    id: "buehne",
+    name: "Bühne",
+    preisLabel: "ab etwa 500 €",
+    kurz: "Geld ab etwa 500 € – oder eine Sache, die den Lauf trägt.",
+    leistungen: ["Großes Banner", "Prominente Nennung", "Dank bei der Siegerehrung"],
+    ctaHref: "/sponsor-werden?stufe=buehne#anfrage",
+    ctaLabel: "Bühne anfragen",
   },
-];
-
-export const SPONSOR_ABLAUF = [
-  { schritt: "1", titel: "Paket oder Fläche", text: "150 €, 300 € oder 500 € – oder eine konkrete Fläche." },
-  { schritt: "2", titel: "Kurz formulieren", text: "Geld, Sache oder beides – je nach Flächentyp." },
-  { schritt: "3", titel: "Verein meldet sich", text: "Logo-Formate, Rechnung, Termine." },
 ];
 
 export interface SponsorFlaeche {
@@ -121,10 +103,9 @@ export interface SponsorFlaeche {
   titel: string;
   kurz: string;
   werbungKurz: string;
-  festpreis: number;
   typ: FlaecheTyp;
-  vorgeschlagenesBand: Beitragsband;
-  minBand: Beitragsband;
+  vorgeschlagenesBand: Sichtbarkeit;
+  minBand: Sichtbarkeit;
   beschreibung: string;
   hinweis?: string;
   aufteilbar?: string;
@@ -136,98 +117,92 @@ export interface SponsorFlaeche {
   aktionLabel?: string;
 }
 
-/** Alle buchbaren Slots (Formular). */
+/** Alle buchbaren Slots (Formular). Ohne Euro-Preise: Sache wird im Gespräch eingeordnet. */
 export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "bauzaun",
     titel: "Bauzaun stellen",
-    kurz: "Ca. 60 Bauzaunfelder + 70 Absperrgitter stellen (Transport/Aufbau nach Absprache).",
-    werbungKurz: "Hauptmotiv + „Bauzaun von …“ – alle anderen Sponsoren bekommen trotzdem Platz.",
-    festpreis: 300,
+    kurz: "Ca. 60 Bauzaunfelder und 70 Absperrgitter stellen. Transport und Aufbau nach Absprache.",
+    werbungKurz: "Hauptmotiv und „Bauzaun von …“. Alle anderen bekommen trotzdem Platz für ihr Banner.",
     typ: "sachspende",
-    vorgeschlagenesBand: "sponsor",
-    minBand: "sponsor",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
     beschreibung:
-      "Eine Firma stellt den Zaun. Wer 300 € überweist ohne Zaun, bucht Restkosten – nicht diese Fläche.",
+      "Wir brauchen den Zaun, keine Überweisung an seiner Stelle. Im Gespräch, noch nicht fest.",
     aktionLabel: "Zaun stellen",
-    status: "offen",
+    status: "reserviert",
   },
   {
     id: "zielbogen",
     titel: "Zielbogen stellen",
-    kurz: "Eigenen Start-/Zielbogen mit Branding stellen oder bekleben/produzieren.",
-    werbungKurz: "Großes Logo auf dem Bogen – fotogen.",
-    festpreis: 300,
+    kurz: "Eigenen Start- und Zielbogen mit Branding stellen, bekleben oder produzieren.",
+    werbungKurz: "Großes Logo auf dem Bogen.",
     typ: "sachspende",
-    vorgeschlagenesBand: "sponsor",
-    minBand: "sponsor",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
     beschreibung:
-      "Neutralbogen-Leihe vom Verein = Restkosten, keine Individualwerbung. 300 € ohne Bogen ≠ diese Fläche.",
+      "Ein geliehener Neutralbogen hat kein eigenes Logo. Den ordnen wir anders ein.",
     aktionLabel: "Bogen stellen",
     status: "offen",
   },
   {
     id: "ziel-bier",
     titel: "Ziel-Bier stellen",
-    kurz: "Fässer/Gebinde + nach Absprache Ausschank für erwachsene Finisher (Kinderlauf ausgenommen).",
-    werbungKurz: "Zapfstelle/Schild „Zielbier präsentiert von …“.",
-    festpreis: 400,
+    kurz: "Fässer oder Gebinde und nach Absprache Ausschank für erwachsene Finisher. Kinderlauf ausgenommen.",
+    werbungKurz: "Zapfstelle oder Schild „Zielbier präsentiert von …“.",
     typ: "sachspende",
-    vorgeschlagenesBand: "sponsor",
-    minBand: "sponsor",
-    beschreibung: "Geld ohne Bier = Restkosten, nicht diese Fläche. Alkohol nur für Erwachsene.",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung: "Ohne Bier ist es keine Fläche. Alkohol nur für Erwachsene.",
     aktionLabel: "Bier stellen",
     status: "offen",
   },
   {
     id: "medaillen",
     titel: "Medaillen (Komplett)",
-    kurz: "Finisher-Medaille inkl. Band und Aufkleber für 500 Starter plus Reserve.",
+    kurz: "Finisher-Medaille inklusive Band und Aufkleber, plus Reserve.",
     werbungKurz: "Logo auf Band und Aufkleber.",
-    festpreis: 1000,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "hauptsponsor",
-    minBand: "hauptsponsor",
-    beschreibung: "Komplett setzt Hälfte A und B auf VERGEBEN. Kalkulation: 500 Starter, Festpreis.",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung:
+      "Komplett schließt die beiden Hälften. Eine Firma darf beides nehmen, zwei Firmen je eine Hälfte.",
     komplettHaelften: ["medaillen-a", "medaillen-b"],
-    hinweis: "Eine Firma darf beide Hälften. Zwei Firmen je eine Hälfte.",
-    status: "offen",
+    hinweis: "Im Gespräch, noch nicht fest. Name nennen wir erst, wenn es zu ist.",
+    status: "reserviert",
   },
   {
     id: "medaillen-a",
     titel: "Medaillen – Hälfte A (Band)",
     kurz: "Logo auf dem Medaillenband.",
     werbungKurz: "Logo auf dem Band.",
-    festpreis: 500,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "hauptsponsor",
-    minBand: "hauptsponsor",
-    beschreibung: "Hälfte A – Logo auf dem Band.",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung: "Hälfte A. Wer die Medaillen herstellt oder bezahlt, kommt auf die Bühne.",
     halfteVon: "medaillen",
-    status: "offen",
+    status: "reserviert",
   },
   {
     id: "medaillen-b",
     titel: "Medaillen – Hälfte B (Aufkleber)",
     kurz: "Logo auf dem Medaillen-Aufkleber.",
     werbungKurz: "Logo auf dem Aufkleber.",
-    festpreis: 500,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "hauptsponsor",
-    minBand: "hauptsponsor",
-    beschreibung: "Hälfte B – Logo auf dem Aufkleber.",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung: "Hälfte B. Wer die Medaillen herstellt oder bezahlt, kommt auf die Bühne.",
     halfteVon: "medaillen",
-    status: "offen",
+    status: "reserviert",
   },
   {
     id: "preise",
     titel: "Siegerpreise (Komplett)",
-    kurz: "6 Läufe × Platz 1–3 – alle Wertungen.",
+    kurz: "6 Läufe, Platz 1 bis 3.",
     werbungKurz: "Übergabe, Nennung, Foto.",
-    festpreis: 500,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "hauptsponsor",
-    minBand: "hauptsponsor",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
     beschreibung:
       "Spielerei, Kinderlauf, Trailrun, Koderrunde Lauf, Koderrunde Walking, Kurz und knackig.",
     komplettHaelften: ["preise-1", "preise-2"],
@@ -238,11 +213,10 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Siegerpreise – Paket 1",
     kurz: "Spielerei, Trailrun, Koderrunde Lauf.",
     werbungKurz: "Übergabe, Nennung, Foto.",
-    festpreis: 300,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "sponsor",
-    minBand: "sponsor",
-    beschreibung: "Paket 1 der Siegerpreise.",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung: "Paket 1. Umfang der Preise klären wir zusammen.",
     halfteVon: "preise",
     status: "offen",
   },
@@ -251,62 +225,45 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Siegerpreise – Paket 2",
     kurz: "Kinderlauf, Koderrunde Walking, Kurz und knackig.",
     werbungKurz: "Übergabe, Nennung, Foto.",
-    festpreis: 300,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "sponsor",
-    minBand: "sponsor",
-    beschreibung: "Paket 2 der Siegerpreise.",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung: "Paket 2. Umfang der Preise klären wir zusammen.",
     halfteVon: "preise",
     status: "offen",
   },
   {
     id: "zielverpflegung",
     titel: "Zielverpflegung",
-    kurz: "Getränk + Kleinigkeit am Ziel, ohne Bier.",
+    kurz: "Getränk und eine Kleinigkeit am Ziel, ohne Bier.",
     werbungKurz: "Schild oder Theke am Ziel.",
-    festpreis: 500,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "hauptsponsor",
-    minBand: "hauptsponsor",
-    beschreibung: "Nicht splitten. Standard: Verein beschafft.",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung: "Nicht teilen. Verein kann einkaufen, oder ihr liefert.",
     status: "offen",
   },
   {
     id: "startnummern",
     titel: "Startnummern",
-    kurz: "Druck + Reserve, Logo unten exklusiv.",
+    kurz: "Druck plus Reserve. Logo unten, exklusiv.",
     werbungKurz: "Logo unten auf der Startnummer.",
-    festpreis: 300,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "sponsor",
-    minBand: "sponsor",
-    beschreibung: "Ohne Timing-Chip. Standard: Verein bestellt.",
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung: "Ohne Timing-Chip. Verein kann bestellen, oder ihr liefert.",
     status: "offen",
   },
   {
     id: "strecke",
     titel: "Streckenverpflegung",
-    kurz: "Wasser, Iso, Obst, Becher an der/den Station(en).",
+    kurz: "Wasser, Iso, Obst, Becher an der Station.",
     werbungKurz: "Schild an der Station.",
-    festpreis: 300,
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "sponsor",
-    minBand: "sponsor",
-    beschreibung: "Verpflegung an der Strecke.",
-    aufteilbar: "Optional 2 Stationen à 150 € – dann Partner plus Fläche.",
-    status: "offen",
-  },
-  {
-    id: "restkosten",
-    titel: "Restkosten / Lauf ermöglichen",
-    kurz: "Zeitnahme, Sanitäter, Markierung, Reserve, Neutralbogen, Zaunleihe.",
-    werbungKurz: "Nennung – kein Logo am Gegenstand.",
-    festpreis: 300,
-    typ: "geld_oder_sache",
-    vorgeschlagenesBand: "sponsor",
-    minBand: "partner",
-    beschreibung: "Reines Geld landet hier. Pakete 150 / 300 / 500 €.",
-    mehrereMoeglich: true,
+    vorgeschlagenesBand: "buehne",
+    minBand: "buehne",
+    beschreibung: "Verein kann einkaufen, oder ihr stellt die Verpflegung.",
+    aufteilbar: "Zwei Stationen gehen auch getrennt. Eine einzelne Station kann Banner sein – sagen wir im Gespräch.",
     status: "offen",
   },
 ];
@@ -318,43 +275,52 @@ export const FLAECHEN_UI = {
     {
       id: "medaillen",
       titel: "Medaillen",
-      zeile: "1.000 € Komplett oder 2× 500 € (Band / Aufkleber) · Hauptsponsor",
+      zeile: "Komplett, oder Band und Aufkleber getrennt.",
       slotIds: ["medaillen", "medaillen-a", "medaillen-b"],
     },
     {
       id: "preise",
       titel: "Siegerpreise",
-      zeile: "500 € Komplett oder 2× 300 € (Paket 1 / 2) · 6 Läufe",
+      zeile: "Alle 6 Läufe, oder zwei Pakete.",
       slotIds: ["preise", "preise-1", "preise-2"],
     },
   ],
-  kurzIds: ["zielverpflegung", "startnummern", "strecke", "restkosten"] as const,
+  kurzIds: ["zielverpflegung", "startnummern", "strecke"] as const,
 };
 
 export const SPONSOR_FAQ: { frage: string; antwort: string }[] = [
   {
+    frage: "Wie ordnet ihr Äpfel, Riegel oder Gutscheine ein?",
+    antwort:
+      "Das machen wir im Gespräch. Eine Kiste oder 50 € ist Liste. Gutscheine über ein paar hundert Euro sind meist Banner. Ihr müsst keinen Preis festlegen.",
+  },
+  {
     frage: "Warum Zaun, Bogen und Bier nur als Sache?",
-    antwort: "Weil wir die Sache brauchen – kein Geld ohne Gestell, Bogen oder Fässer. Überweisung ohne Sache = Restkosten.",
+    antwort: "Weil wir die Sache brauchen. Geld ohne Gestell, Bogen oder Fässer ist eine andere Stufe, kein Logo auf dem Gegenstand.",
   },
   {
     frage: "Muss ich nachzahlen, wenn ich die Sache stelle?",
-    antwort: "Nein. Wer die Sache stellt, zahlt nicht bar nach.",
+    antwort: "Nein.",
   },
   {
     frage: "Können zwei Firmen eine Fläche teilen?",
-    antwort: "Nur bei Medaillen und Siegerpreisen (Hälften/Pakete). Eine Firma darf auch beide nehmen.",
+    antwort: "Bei Medaillen und Siegerpreisen ja. Sonst eine Firma pro Fläche.",
   },
   {
-    frage: "Hauptsponsor ohne Fläche?",
-    antwort: "Ja – 500 € über Restkosten. Kein Logo am Gegenstand.",
+    frage: "Banner ohne Fläche?",
+    antwort: "Ja. Geld ab etwa 150 € oder eine vergleichbare Sache. Kein Logo auf Zaun, Medaille oder Bogen.",
+  },
+  {
+    frage: "Was heißt „im Gespräch“?",
+    antwort: "Wir reden schon mit jemandem, es ist noch nicht fest. Namen stehen hier erst, wenn es zu ist. Du kannst dich trotzdem melden.",
   },
   {
     frage: "Neutraler Leihbogen?",
-    antwort: "Keine Individualwerbung. Das ist Restkosten, nicht die Fläche Zielbogen.",
+    antwort: "Kein eigenes Logo. Das ist nicht die Fläche Zielbogen.",
   },
   {
     frage: "Wer hängt Banner an den Zaun?",
-    antwort: "Alle Pakete bekommen Platz. Die stellende Firma hat das Hauptmotiv.",
+    antwort: "Banner und Bühne. Die Firma, die den Zaun stellt, hat das Hauptmotiv.",
   },
   {
     frage: "Gibt es Fotos?",
@@ -362,10 +328,10 @@ export const SPONSOR_FAQ: { frage: string; antwort: string }[] = [
   },
 ];
 
-const BAND_RANK: Record<Beitragsband, number> = {
-  partner: 1,
-  sponsor: 2,
-  hauptsponsor: 3,
+const BAND_RANK: Record<Sichtbarkeit, number> = {
+  liste: 1,
+  banner: 2,
+  buehne: 3,
 };
 
 export function normalizeFlaecheId(id: string | null | undefined): string | undefined {
@@ -377,10 +343,10 @@ export function normalizePostenId(id: string | null | undefined): string | undef
   return normalizeFlaecheId(id);
 }
 
-export function normalizeStufe(stufe: string | null | undefined): Beitragsband | undefined {
+export function normalizeStufe(stufe: string | null | undefined): Sichtbarkeit | undefined {
   if (!stufe) return undefined;
   if (stufe in STUFE_ALIASES) return STUFE_ALIASES[stufe];
-  if (stufe === "partner" || stufe === "sponsor" || stufe === "hauptsponsor") return stufe;
+  if (stufe === "liste" || stufe === "banner" || stufe === "buehne") return stufe;
   return undefined;
 }
 
@@ -439,19 +405,18 @@ export function isFlaecheBuchbar(id: string): boolean {
 
 export function flaecheOptionLabel(f: SponsorFlaeche): string {
   const status = getEffectiveStatus(f);
-  const suffix = status !== "offen" && !f.mehrereMoeglich ? ` (${STATUS_LABEL[status]})` : "";
-  return `${f.titel} – ${f.festpreis} €${suffix}`;
+  const suffix = status !== "offen" ? ` (${STATUS_LABEL[status]})` : "";
+  return `${f.titel}${suffix}`;
 }
 
-export function vorschlagBand(flaeche: SponsorFlaeche | undefined): Beitragsband {
-  if (!flaeche) return "sponsor";
+export function vorschlagBand(flaeche: SponsorFlaeche | undefined): Sichtbarkeit {
+  if (!flaeche) return "liste";
   return flaeche.vorgeschlagenesBand;
 }
 
-export function bandAusQuery(stufe: string | null, flaeche: SponsorFlaeche | undefined): Beitragsband {
-  const normalized = normalizeStufe(stufe);
-  if (normalized) return normalized;
-  return vorschlagBand(flaeche);
+export function bandAusQuery(stufe: string | null, flaeche: SponsorFlaeche | undefined): Sichtbarkeit {
+  if (flaeche) return vorschlagBand(flaeche);
+  return normalizeStufe(stufe) ?? "liste";
 }
 
 export function anfrageWegAusQuery(
@@ -461,14 +426,13 @@ export function anfrageWegAusQuery(
 ): AnfrageWeg {
   const flaeche = getFlaeche(flaecheParamAusSearch(flaecheId, postenId));
   if (flaeche) return "flaeche";
-  if (normalizeStufe(stufe)) return "paket";
-  return "paket";
+  return "stufe";
 }
 
-export function bandWarnung(flaeche: SponsorFlaeche | undefined, band: Beitragsband): string | null {
+export function bandWarnung(flaeche: SponsorFlaeche | undefined, band: Sichtbarkeit): string | null {
   if (!flaeche) return null;
   if (BAND_RANK[band] < BAND_RANK[flaeche.minBand]) {
-    return `Diese Fläche liegt bei ${flaeche.festpreis} €. Daraus folgt ${BAND_LABEL[flaeche.minBand]}. Niedriger nur nach Absprache.`;
+    return `Wer diese Fläche übernimmt, kommt auf die ${BAND_LABEL[flaeche.minBand]}. Kleiner nur nach Absprache.`;
   }
   return null;
 }
@@ -479,7 +443,7 @@ export function beitragsartWarnung(
 ): string | null {
   if (!flaeche || !isSachspendeFlaeche(flaeche)) return null;
   if (beitragsart === "geld") {
-    return "Diese Fläche ist eine Sachspende. Geld allein bucht sie nicht – bitte Sache oder beides wählen.";
+    return "Diese Fläche ist eine Sachspende. Geld allein bucht sie nicht.";
   }
   return null;
 }
@@ -500,9 +464,7 @@ export function defaultBeitragsart(flaeche: SponsorFlaeche | undefined): Beitrag
 
 export function ctaFuerFlaeche(flaeche: SponsorFlaeche): { href: string; label: string } {
   const band = vorschlagBand(flaeche);
-  const label = flaeche.aktionLabel
-    ? `${flaeche.aktionLabel} anfragen`
-    : "Diese Fläche anfragen";
+  const label = flaeche.aktionLabel ? `${flaeche.aktionLabel} anfragen` : "Diese Fläche anfragen";
   return {
     href: `/sponsor-werden?stufe=${band}&flaeche=${flaeche.id}#anfrage`,
     label,
@@ -513,16 +475,26 @@ export function ctaFuerPosten(flaeche: SponsorFlaeche): { href: string; label: s
   return ctaFuerFlaeche(flaeche);
 }
 
+export function normalizeAnfrageWeg(v: unknown): AnfrageWeg | null {
+  if (v === "stufe" || v === "paket") return "stufe";
+  if (v === "flaeche") return "flaeche";
+  return null;
+}
+
 export function isAnfrageWeg(v: unknown): v is AnfrageWeg {
-  return v === "paket" || v === "flaeche";
+  return normalizeAnfrageWeg(v) !== null;
 }
 
 export function isAnfrageArt(v: unknown): v is AnfrageWeg {
   return isAnfrageWeg(v);
 }
 
+export function isSichtbarkeit(v: unknown): v is Sichtbarkeit {
+  return v === "liste" || v === "banner" || v === "buehne";
+}
+
 export function isBeitragsband(v: unknown): v is Beitragsband {
-  return v === "partner" || v === "sponsor" || v === "hauptsponsor";
+  return isSichtbarkeit(v);
 }
 
 export function isBeitragsart(v: unknown): v is Beitragsart {
@@ -531,13 +503,12 @@ export function isBeitragsart(v: unknown): v is Beitragsart {
 
 export function submitLabel(
   weg: AnfrageWeg,
-  band: Beitragsband,
+  band: Sichtbarkeit,
   flaeche?: SponsorFlaeche,
 ): string {
   if (weg === "flaeche" && flaeche && isSachspendeFlaeche(flaeche)) return "Sachspende anfragen";
-  if (weg === "flaeche") return "Fläche anfragen";
-  if (band === "partner") return "Partner anfragen";
-  if (band === "sponsor") return "Sponsor anfragen";
-  if (band === "hauptsponsor") return "Hauptsponsor anfragen";
+  if (band === "liste") return "Liste anfragen";
+  if (band === "banner") return "Banner anfragen";
+  if (band === "buehne") return "Bühne anfragen";
   return "Anfrage senden";
 }
