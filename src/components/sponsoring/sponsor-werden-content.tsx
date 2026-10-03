@@ -43,10 +43,16 @@ export function SponsorWerdenContent() {
               Sponsor werden
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-foreground">
-              Drei Tage Fest, 50 Jahre SV. Der Koderlauf am Samstag ist das Herzstück.
+              Drei Tage Fest, 50 Jahre SV. Eure Werbung ist alle drei Tage da.
             </p>
-            <p className="mt-2 max-w-2xl text-muted-foreground">
-              100 €, 250 € oder ab 500 €. Auch eine Kiste Äpfel.
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Unterstützer 100 €, Sponsor 250 €, Hauptsponsor ab 500 €. Unter 100 € und bei 100 €:
+              kleines Logo und Name auf der Website, wie 2026. Bei 250 € etwas größer. Ab 500 € ganz oben.
+            </p>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Sachspende heißt: ihr bringt eine Sache. Wir sagen, ob der Wert stimmt. Dann fallt ihr in
+              die Stufe. Auf Zielbogen, Medaillenband oder Startnummer seid ihr zusätzlich noch einmal
+              drauf. Zur Orientierung: etwa 600 bis 1000 Leute.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               {EVENT.datumKurz} · {EVENT.ortDetail}

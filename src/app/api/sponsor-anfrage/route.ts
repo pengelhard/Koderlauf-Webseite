@@ -4,6 +4,7 @@ import { getPublicDomainLabel, getSiteUrl } from "@/lib/site-url";
 import { allowRequest, clientIp } from "@/lib/rate-limit";
 import {
   BAND_LABEL,
+  brauchtAngebot,
   getFlaeche,
   isBeitragsart,
   stufeAusWert,
@@ -186,6 +187,7 @@ export async function POST(request: Request) {
   const web = clip(rec.web, 300);
   const instagram = clip(rec.instagram, 200);
   const nachricht = clip(rec.nachricht, MAX_TEXT);
+  const angebot = clip(rec.angebot, MAX_TEXT);
   const flaecheIdRaw =
     typeof rec.flaecheId === "string"
       ? rec.flaecheId.trim()
@@ -209,6 +211,12 @@ export async function POST(request: Request) {
   }
   if (anfrageWeg === "flaeche" && !flaeche) {
     return NextResponse.json({ error: "Bitte eine Fläche wählen." }, { status: 400 });
+  }
+  if (flaeche && brauchtAngebot(flaeche.id) && !angebot) {
+    return NextResponse.json(
+      { error: "Bitte schreiben, was ihr schenken oder sponsern wollt." },
+      { status: 400 },
+    );
   }
   if (anfrageWeg === "flaeche" && !beitragsart) {
     return NextResponse.json(
@@ -264,6 +272,7 @@ export async function POST(request: Request) {
     flaeche ? `Typ: ${TYP_LABEL[flaeche.typ]}` : "",
     beitragLabel ? `Beitrag: ${beitragLabel}` : "",
     wert !== null ? `Genannter Wert: ${wert} €` : "",
+    angebot ? `Angebot: ${angebot}` : "",
     "",
     `Firma: ${firma}`,
     `Ansprechpartner: ${ansprechpartner}`,

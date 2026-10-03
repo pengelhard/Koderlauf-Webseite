@@ -18,6 +18,7 @@ import {
   isBeitragsartGueltig,
   isFlaecheBuchbar,
   isSachspendeFlaeche,
+  brauchtAngebot,
   isSichtbarkeit,
   SACHSPENDEN_SICHTBAR,
   SPONSORING_2027,
@@ -49,6 +50,7 @@ export function SponsorAnfrageFormular() {
   const [email, setEmail] = useState("");
   const [telefon, setTelefon] = useState("");
   const [nachricht, setNachricht] = useState("");
+  const [angebot, setAngebot] = useState("");
   const [bestaetigt, setBestaetigt] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const [honeypotReady, setHoneypotReady] = useState(false);
@@ -114,6 +116,11 @@ export function SponsorAnfrageFormular() {
       setErrorMsg("Diese Sache ist gerade nicht frei.");
       return;
     }
+    if (brauchtAngebot(flaecheId) && !angebot.trim()) {
+      setStatus("error");
+      setErrorMsg("Bitte schreiben, was ihr schenken oder sponsern wollt.");
+      return;
+    }
     if (gewaehlteFlaeche && !isBeitragsartGueltig(gewaehlteFlaeche, beitragsart)) {
       setStatus("error");
       setErrorMsg("Diese Sache muss geliefert werden. Geld allein ersetzt sie nicht.");
@@ -140,6 +147,7 @@ export function SponsorAnfrageFormular() {
           ansprechpartner,
           email,
           telefon,
+          angebot: brauchtAngebot(flaecheId) ? angebot : undefined,
           nachricht,
           fax_number: honeypot,
         }),
@@ -242,6 +250,20 @@ export function SponsorAnfrageFormular() {
         </div>
       </div>
 
+      {brauchtAngebot(flaecheId) && (
+        <div className="space-y-2">
+          <Label htmlFor="sponsor-angebot">Was wollt ihr schenken oder sponsern? *</Label>
+          <Input
+            id="sponsor-angebot"
+            value={angebot}
+            onChange={(e) => setAngebot(e.target.value)}
+            maxLength={500}
+            required
+            placeholder={flaecheId === "verpflegung" ? "Zum Beispiel Wasser, Obst, Riegel …" : "Zum Beispiel Gutscheine …"}
+          />
+        </div>
+      )}
+
       {stufeAusSache && (
         <p className="rounded-lg border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm">
           Bei {wertZahl} € seid ihr <strong>{BAND_LABEL[stufeAusSache]}</strong>. {werbeleistungKurz(stufeAusSache)}
@@ -286,13 +308,7 @@ export function SponsorAnfrageFormular() {
           value={nachricht}
           onChange={(e) => setNachricht(e.target.value)}
           maxLength={8000}
-          placeholder={
-            flaecheId === "verpflegung"
-              ? "Was ihr an Essen oder Trinken bieten könnt …"
-              : flaecheId === "preise"
-                ? "Idee für die Siegerpreise …"
-                : "Was ihr mitbringt …"
-          }
+          placeholder="Was ihr mitbringt …"
           className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex min-h-[80px] w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:ring-[3px] md:text-sm"
         />
       </div>
