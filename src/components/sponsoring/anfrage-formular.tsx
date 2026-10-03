@@ -286,7 +286,13 @@ export function SponsorAnfrageFormular() {
           value={nachricht}
           onChange={(e) => setNachricht(e.target.value)}
           maxLength={8000}
-          placeholder="Was ihr mitbringt …"
+          placeholder={
+            flaecheId === "verpflegung"
+              ? "Was ihr an Essen oder Trinken bieten könnt …"
+              : flaecheId === "preise"
+                ? "Idee für die Siegerpreise …"
+                : "Was ihr mitbringt …"
+          }
           className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex min-h-[80px] w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:ring-[3px] md:text-sm"
         />
       </div>

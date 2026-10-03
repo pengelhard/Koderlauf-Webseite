@@ -82,7 +82,6 @@ function StufenKarte({
 }
 
 export function SponsorStufen() {
-  const [offen, setOffen] = useState(false);
   return (
     <section className="mt-10" id="stufen">
       <h2 className="text-2xl font-extrabold tracking-tight">Drei Stufen</h2>
@@ -91,11 +90,9 @@ export function SponsorStufen() {
           <StufenKarte key={stufe.id} stufe={stufe} />
         ))}
       </div>
-      <p className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        Unter 100 € nur der Name auf der Website.
-        <InfoButton label="Info unter 100 Euro" open={offen} onToggle={() => setOffen((v) => !v)} />
+      <p className="mt-4 text-sm text-muted-foreground">
+        Kleine Spenden sind willkommen. Dann nur der Name auf der Website.
       </p>
-      {offen && <InfoNote text="Äpfel, Riegel oder ein kleiner Betrag. Kein Banner, kein Instagram." />}
     </section>
   );
 }
@@ -116,8 +113,9 @@ function SacheZeile({ flaeche }: { flaeche: SponsorFlaeche }) {
           )}
         </span>
         <span className="text-sm text-muted-foreground">
-          {flaeche.kurz}
-          {status === "reserviert" ? " · im Gespräch" : status === "vergeben" ? " · vergeben" : ""}
+          {[flaeche.kurz, status === "reserviert" ? "im Gespräch" : status === "vergeben" ? "vergeben" : ""]
+            .filter(Boolean)
+            .join(" · ")}
         </span>
       </div>
       {open && hinweis && <InfoNote text={hinweis} />}
@@ -135,7 +133,7 @@ export function SponsorSachen() {
       </div>
       {offen && <InfoNote text={SPONSORING_2027.zuordnungSatz} />}
       <p className="mt-2 text-sm text-muted-foreground">
-        Kein Preis von uns. Unter 100 € Website · ab 100 € Banner und Instagram · ab 250 € größeres Logo · ab 500 € Hauptsponsor.
+        Kein Preis von uns. Unter 100 € Website · ab 100 € Banner am Bauzaun · ab 250 € Zieleinlauf, Instagram, größer auf der Website · ab 500 € Hauptsponsor.
       </p>
       <ul className="mt-4 rounded-2xl border border-border bg-card px-4">
         {SACHSPENDEN_SICHTBAR.map((f) => (

@@ -28,9 +28,12 @@ test("Stufen aus selbst genanntem Wert", () => {
 test("Werbeleistung", () => {
   assert.match(werbeleistungKurz("unter100"), /Website/);
   assert.match(werbeleistungKurz("unterstuetzer"), /Bauzaun/);
-  assert.match(werbeleistungKurz("unterstuetzer"), /Zieleinlauf/);
-  assert.match(werbeleistungKurz("sponsor"), /250|Mittleres|100/);
+  assert.equal(werbeleistungKurz("unterstuetzer").includes("Instagram"), false);
+  assert.equal(werbeleistungKurz("unterstuetzer").includes("Zieleinlauf"), false);
+  assert.match(werbeleistungKurz("sponsor"), /Zieleinlauf/);
+  assert.match(werbeleistungKurz("sponsor"), /Instagram/);
   assert.match(werbeleistungKurz("hauptsponsor"), /Siegerehrung/);
+  assert.equal(werbeleistungKurz("hauptsponsor").includes("Großes Banner"), false);
 });
 
 test("Alte Links und Sachspenden ohne Preis", () => {
@@ -39,7 +42,12 @@ test("Alte Links und Sachspenden ohne Preis", () => {
   assert.equal(normalizeStufe("buehne"), "hauptsponsor");
   assert.equal(bandAusQuery("sponsor"), "sponsor");
   assert.equal(isSachspendeFlaeche(getFlaeche("bauzaun")), true);
-  assert.equal(isBeitragsartGueltig(getFlaeche("ziel-bier"), "geld"), false);
+  assert.equal(isSachspendeFlaeche(getFlaeche("zielbogen")), true);
+  assert.equal(isBeitragsartGueltig(getFlaeche("ziel-bier"), "geld"), true);
+  assert.equal(getFlaeche("zielverpflegung")?.id, "verpflegung");
+  assert.equal(getFlaeche("strecke")?.id, "verpflegung");
+  assert.match(getFlaeche("medaillen")?.kurz ?? "", /Medaillenband/);
+  assert.match(getFlaeche("startnummern")?.kurz ?? "", /Name/);
   assert.equal(SACHSPENDEN_SICHTBAR.some((f) => f.halfteVon), false);
   const json = JSON.stringify(SACHSPENDEN_SICHTBAR);
   assert.equal(json.includes("festpreis"), false);
