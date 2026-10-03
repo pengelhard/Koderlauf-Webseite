@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { EVENT } from "@/lib/event-config";
@@ -46,43 +45,12 @@ export function SponsorWerdenContent() {
               Drei Tage Fest, 50 Jahre SV. Eure Werbung ist alle drei Tage da.
             </p>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Unterstützer 100 €, Sponsor 250 €, Hauptsponsor ab 500 €. Unter 100 € und bei 100 €:
-              kleines Logo und Name auf der Website, wie 2026. Bei 250 € etwas größer. Ab 500 € ganz oben.
-            </p>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Sachspende heißt: ihr bringt eine Sache. Wir sagen, ob der Wert stimmt. Dann fallt ihr in
-              die Stufe. Auf Zielbogen, Medaillenband oder Startnummer seid ihr zusätzlich noch einmal
-              drauf. Zur Orientierung: etwa 600 bis 1000 Leute.
+              Sachspende heißt: ihr bringt eine Sache. Wir sagen, ob der Wert stimmt. Dann gilt die
+              passende Stufe. Zur Orientierung: etwa 600 bis 1000 Leute.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               {EVENT.datumKurz} · {EVENT.ortDetail}
             </p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <Link
-                href="/sponsor-werden?stufe=unterstuetzer#anfrage"
-                className="rounded-xl bg-koder-orange px-4 py-2.5 text-sm font-bold text-white hover:bg-koder-orange/90"
-              >
-                100 €
-              </Link>
-              <Link
-                href="/sponsor-werden?stufe=sponsor#anfrage"
-                className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
-              >
-                250 €
-              </Link>
-              <Link
-                href="/sponsor-werden?stufe=hauptsponsor#anfrage"
-                className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
-              >
-                500 €
-              </Link>
-              <Link
-                href="#sachen"
-                className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
-              >
-                Sachen
-              </Link>
-            </div>
           </motion.section>
 
           <SponsorStufen />
