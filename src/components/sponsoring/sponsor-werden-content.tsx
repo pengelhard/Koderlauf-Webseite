@@ -45,11 +45,7 @@ export function SponsorWerdenContent() {
               Drei Tage Fest, 50 Jahre SV. Eure Werbung ist alle drei Tage da.
             </p>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Sachspende heißt: ihr bringt eine Sache. Wir sagen, ob der Wert stimmt. Dann gilt die
-              passende Stufe. Zur Orientierung: etwa 600 bis 1000 Leute.
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              {EVENT.datumKurz} · {EVENT.ortDetail}
+              Zur Orientierung: etwa 600 bis 1000 Leute.
             </p>
           </motion.section>
 
@@ -60,9 +56,7 @@ export function SponsorWerdenContent() {
             <h2 id="anfrage-titel" className="text-2xl font-extrabold tracking-tight">
               Kurz Bescheid sagen
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Keine Online-Zahlung. Antwort von {kontaktEmail}.
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground">Antwort von {kontaktEmail}.</p>
             <div className="mt-6 rounded-3xl border border-border bg-card p-6 sm:p-8">
               <SponsorAnfrageFormular />
             </div>

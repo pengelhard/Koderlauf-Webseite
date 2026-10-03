@@ -12,7 +12,8 @@ export const SPONSORING_2027 = {
   sponsorAb: 250,
   hauptsponsorAb: 500,
   kontaktEmail: "info@koderlauf.de",
-  zuordnungSatz: "Ihr sagt, was die Sache wert ist. Daraus seht ihr die Stufe.",
+  wertHinweis:
+    "Die Zahl legt die Stufe fest. Unter 100 € nur eine Erwähnung auf der Website. Ab 100 € Unterstützer. Ab 250 € Sponsor. Ab 500 € Hauptsponsor.",
   premiere2026: {
     anmeldungen: 400,
     finisher: 378,
@@ -71,36 +72,36 @@ export const SPONSOR_STUFEN: {
     id: "unterstuetzer",
     name: "Unterstützer",
     preisLabel: "100 €",
-    info: "Kleine Spenden sind willkommen. Dann kleines Logo und Name auf der Website, wie 2026.",
+    info: "Unter 100 € seid ihr herzlich willkommen. Dafür gibt es nur eine Erwähnung auf der Website. Ein Bannerfeld am Bauzaun gibt es ab 100 €.",
     leistungen: ["Banner am Bauzaun", "Kleines Logo und Name auf der Website"],
-    ctaHref: "/sponsor-werden?stufe=unterstuetzer#anfrage",
+    ctaHref: "/sponsor-werden#anfrage",
     ctaLabel: "Unterstützer anfragen",
   },
   {
     id: "sponsor",
     name: "Sponsor",
     preisLabel: "250 €",
-    info: "Ab 250 €: Banner am Zieleinlauf, etwas größeres Logo, Instagram. Plus alles aus 100 €.",
+    info: "",
     leistungen: [
       "Alles aus 100 €",
       "Banner am Gitter Zieleinlauf",
       "Etwas größeres Logo auf der Website",
       "Instagram",
     ],
-    ctaHref: "/sponsor-werden?stufe=sponsor#anfrage",
+    ctaHref: "/sponsor-werden#anfrage",
     ctaLabel: "Sponsor anfragen",
   },
   {
     id: "hauptsponsor",
     name: "Hauptsponsor",
     preisLabel: "ab 500 €",
-    info: "Ab 500 € steht ihr ganz oben und sehr präsent. Das Banner am Zaun ist dasselbe wie bei den anderen Stufen. Dazu Dank bei der Siegerehrung.",
+    info: "Das Banner am Zaun ist genauso groß wie bei den anderen Stufen.",
     leistungen: [
       "Alles aus 250 €",
       "Logo ganz oben, sehr präsent",
       "Dank bei der Siegerehrung",
     ],
-    ctaHref: "/sponsor-werden?stufe=hauptsponsor#anfrage",
+    ctaHref: "/sponsor-werden#anfrage",
     ctaLabel: "Hauptsponsor anfragen",
   },
 ];
@@ -123,7 +124,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "bauzaun",
     titel: "Bauzaun stellen",
-    kurz: "",
+    kurz: "Bauzaun zum Absperren und Absperrung für den Zieleinlauf.",
     typ: "sachspende",
     status: "offen",
     aktionLabel: "Zaun stellen",
@@ -147,7 +148,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "medaillen",
     titel: "Medaillen",
-    kurz: "Logo auf dem Medaillenband.",
+    kurz: "Logo auf dem Medaillenband. Beim Design helfen wir gerne.",
     typ: "geld_oder_sache",
     komplettHaelften: ["medaillen-a", "medaillen-b"],
     status: "offen",
@@ -172,6 +173,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     id: "preise",
     titel: "Siegerpreise",
     kurz: "Zum Beispiel Gutscheine oder etwas aus eurem Sortiment.",
+    beschreibung: "Vorschläge stimmen wir mit euch ab. Wir kommen auf euch zurück.",
     typ: "geld_oder_sache",
     komplettHaelften: ["preise-1", "preise-2"],
     status: "offen",
@@ -196,6 +198,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     id: "verpflegung",
     titel: "Verpflegung",
     kurz: "Ziel und Strecke. Schreibt, was ihr bieten könnt.",
+    beschreibung: "Wir kommen auf euch zurück und stimmen das mit euch ab.",
     typ: "geld_oder_sache",
     status: "offen",
   },
@@ -233,6 +236,13 @@ export function stufeAusWert(wert: number): Sichtbarkeit {
   if (wert < SPONSORING_2027.sponsorAb) return "unterstuetzer";
   if (wert < SPONSORING_2027.hauptsponsorAb) return "sponsor";
   return "hauptsponsor";
+}
+
+export function stufeHinweis(wert: number): string {
+  const stufe = stufeAusWert(wert);
+  const betrag = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 2 }).format(wert);
+  if (stufe === "unter100") return `Bei ${betrag} € gibt es die Erwähnung auf der Website.`;
+  return `Bei ${betrag} € seid ihr ${BAND_LABEL[stufe]}.`;
 }
 
 export function getFlaeche(id: string | null | undefined): SponsorFlaeche | undefined {
