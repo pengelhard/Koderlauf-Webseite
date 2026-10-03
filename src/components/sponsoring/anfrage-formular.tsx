@@ -247,7 +247,13 @@ export function SponsorAnfrageFormular() {
             inputMode="decimal"
             required
             value={wert}
-            onChange={(e) => setWert(e.target.value)}
+            onChange={(e) => {
+              setWert(e.target.value);
+              if (status === "error") {
+                setStatus("idle");
+                setErrorMsg(null);
+              }
+            }}
             placeholder="z. B. 250"
           />
         </div>
