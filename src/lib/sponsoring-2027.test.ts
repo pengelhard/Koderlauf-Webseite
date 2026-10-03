@@ -32,8 +32,11 @@ test("Werbeleistung", () => {
   assert.equal(werbeleistungKurz("unterstuetzer").includes("Zieleinlauf"), false);
   assert.match(werbeleistungKurz("sponsor"), /Zieleinlauf/);
   assert.match(werbeleistungKurz("sponsor"), /Instagram/);
+  assert.match(werbeleistungKurz("unter100"), /Logo/);
   assert.match(werbeleistungKurz("hauptsponsor"), /Siegerehrung/);
-  assert.equal(werbeleistungKurz("hauptsponsor").includes("Großes Banner"), false);
+  assert.equal(werbeleistungKurz("hauptsponsor").includes("Eigene Erwähnung"), false);
+  assert.equal(getFlaeche("bauzaun")?.status, "offen");
+  assert.equal(getFlaeche("medaillen")?.status, "offen");
 });
 
 test("Alte Links und Sachspenden ohne Preis", () => {

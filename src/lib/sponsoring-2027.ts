@@ -71,8 +71,8 @@ export const SPONSOR_STUFEN: {
     id: "unterstuetzer",
     name: "Unterstützer",
     preisLabel: "100 €",
-    info: "Kleine Spenden sind willkommen. Dann steht nur der Name auf der Website.",
-    leistungen: ["Banner am Bauzaun", "Website"],
+    info: "Kleine Spenden sind willkommen. Dann kleines Logo und Name auf der Website, wie 2026.",
+    leistungen: ["Banner am Bauzaun", "Kleines Logo und Name auf der Website"],
     ctaHref: "/sponsor-werden?stufe=unterstuetzer#anfrage",
     ctaLabel: "Unterstützer anfragen",
   },
@@ -80,11 +80,11 @@ export const SPONSOR_STUFEN: {
     id: "sponsor",
     name: "Sponsor",
     preisLabel: "250 €",
-    info: "Ab 250 €: Banner am Zieleinlauf, größer auf der Website, Instagram. Plus alles aus 100 €.",
+    info: "Ab 250 €: Banner am Zieleinlauf, etwas größeres Logo, Instagram. Plus alles aus 100 €.",
     leistungen: [
       "Alles aus 100 €",
       "Banner am Gitter Zieleinlauf",
-      "Größer auf der Website",
+      "Etwas größeres Logo auf der Website",
       "Instagram",
     ],
     ctaHref: "/sponsor-werden?stufe=sponsor#anfrage",
@@ -94,10 +94,10 @@ export const SPONSOR_STUFEN: {
     id: "hauptsponsor",
     name: "Hauptsponsor",
     preisLabel: "ab 500 €",
-    info: "Ab 500 €: eigene Erwähnung auf der Website und Dank bei der Siegerehrung. Das Banner ist dasselbe wie bei den anderen Stufen.",
+    info: "Ab 500 € steht ihr ganz oben und sehr präsent. Das Banner am Zaun ist dasselbe wie bei den anderen Stufen. Dazu Dank bei der Siegerehrung.",
     leistungen: [
       "Alles aus 250 €",
-      "Eigene Erwähnung auf der Website",
+      "Logo ganz oben, sehr präsent",
       "Dank bei der Siegerehrung",
     ],
     ctaHref: "/sponsor-werden?stufe=hauptsponsor#anfrage",
@@ -125,7 +125,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Bauzaun stellen",
     kurz: "",
     typ: "sachspende",
-    status: "reserviert",
+    status: "offen",
     aktionLabel: "Zaun stellen",
   },
   {
@@ -149,9 +149,8 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Medaillen",
     kurz: "Logo auf dem Medaillenband.",
     typ: "geld_oder_sache",
-    hinweis: "Im Gespräch, noch nicht fest.",
     komplettHaelften: ["medaillen-a", "medaillen-b"],
-    status: "reserviert",
+    status: "offen",
   },
   {
     id: "medaillen-a",
@@ -159,7 +158,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     kurz: "Logo auf dem Band.",
     typ: "geld_oder_sache",
     halfteVon: "medaillen",
-    status: "reserviert",
+    status: "offen",
   },
   {
     id: "medaillen-b",
@@ -167,12 +166,12 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     kurz: "Logo auf dem Aufkleber.",
     typ: "geld_oder_sache",
     halfteVon: "medaillen",
-    status: "reserviert",
+    status: "offen",
   },
   {
     id: "preise",
     titel: "Siegerpreise",
-    kurz: "Noch offen. Idee gerne ins Formular.",
+    kurz: "Zum Beispiel Gutscheine oder etwas aus eurem Sortiment.",
     typ: "geld_oder_sache",
     komplettHaelften: ["preise-1", "preise-2"],
     status: "offen",
@@ -215,14 +214,18 @@ export const SACHSPENDEN_SICHTBAR = SPONSOR_FLAECHEN.filter((f) => !f.halfteVon)
 export function werbeleistungKurz(stufe: Sichtbarkeit): string {
   switch (stufe) {
     case "unter100":
-      return "Kleine Spenden sind willkommen. Dann nur der Name auf der Website.";
+      return "Kleines Logo und Name auf der Website, wie 2026.";
     case "unterstuetzer":
-      return "Banner am Bauzaun und Website.";
+      return "Banner am Bauzaun. Kleines Logo und Name auf der Website.";
     case "sponsor":
-      return "Banner am Zieleinlauf, größer auf der Website, Instagram, plus alles ab 100 €.";
+      return "Banner am Zieleinlauf, etwas größeres Logo, Instagram, plus alles ab 100 €.";
     case "hauptsponsor":
-      return "Eigene Erwähnung auf der Website, Dank bei der Siegerehrung, plus alles ab 250 €.";
+      return "Logo ganz oben und sehr präsent, Dank bei der Siegerehrung, plus alles ab 250 €.";
   }
+}
+
+export function brauchtAngebot(id: string | null | undefined): boolean {
+  return id === "preise" || id === "verpflegung";
 }
 
 export function stufeAusWert(wert: number): Sichtbarkeit {
