@@ -23,11 +23,10 @@ export function SponsoringPromo() {
                 Sponsoring {EVENT.jahr}
               </p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
-                Liste, Banner oder Bühne
+                Unterstützer 100 €, Sponsor 250 €, Hauptsponsor ab 500 €
               </h2>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                Auch eine Kiste Äpfel oder 50 €. Sache ordnen wir im Gespräch zu. Anfrage ohne
-                Online-Zahlung.
+                Darunter nur die Website. Sache ohne festgesetzten Preis. Anfrage ohne Online-Zahlung.
               </p>
             </div>
           </div>
