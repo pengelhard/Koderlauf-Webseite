@@ -8,7 +8,6 @@ import {
   getFlaeche,
   isBeitragsart,
   stufeAusWert,
-  isBeitragsband,
   isBeitragsartGueltig,
   isFlaecheBuchbar,
   isSachspendeFlaeche,
@@ -17,7 +16,6 @@ import {
   TYP_LABEL,
   type AnfrageWeg,
   type Beitragsart,
-  type Beitragsband,
 } from "@/lib/sponsoring-2027";
 
 const PROD_TO = "info@koderlauf.de";
@@ -128,15 +126,87 @@ function parseWert(v: unknown): number | null {
   return null;
 }
 
-function resolveBand(rec: Record<string, unknown>): Beitragsband {
-  if (isBeitragsband(rec.band)) return rec.band;
-  const fromBand = normalizeStufe(typeof rec.band === "string" ? rec.band : null);
-  if (fromBand) return fromBand;
-  const stufe = normalizeStufe(typeof rec.stufe === "string" ? rec.stufe : null);
-  if (stufe) return stufe;
-  const wert = parseWert(rec.wert);
-  if (wert !== null) return stufeAusWert(wert);
-  return "unterstuetzer";
+const DATEI_MAX = 4 * 1024 * 1024;
+const DATEI_TYPEN = new Set(["image/png", "image/jpeg", "image/webp", "application/pdf"]);
+
+type UploadedFile = { filename: string; contentType: string; content: Buffer };
+
+function isUpload(v: FormDataEntryValue | null): v is File {
+  return typeof v === "object" && v !== null && "arrayBuffer" in v && "size" in v && "name" in v && "type" in v;
+}
+
+function dateiTyp(file: { type: string; name: string }): string | null {
+  const type = file.type.toLowerCase();
+  if (DATEI_TYPEN.has(type)) return type;
+  const name = file.name.toLowerCase();
+  if (name.endsWith(".png")) return "image/png";
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+  if (name.endsWith(".webp")) return "image/webp";
+  if (name.endsWith(".pdf")) return "application/pdf";
+  return null;
+}
+
+function safeFilename(name: string, type: string): string {
+  const ext = type === "application/pdf" ? ".pdf" : type === "image/png" ? ".png" : type === "image/webp" ? ".webp" : ".jpg";
+  const base = (name.split(/[/\\]/).pop() ?? "datei").replace(/[^\w.\-]+/g, "_").replace(/^\.+/, "").slice(0, 80);
+  if (!base) return `datei${ext}`;
+  return base.toLowerCase().endsWith(ext) ? base : `${base}${ext}`;
+}
+
+async function readIncoming(
+  request: Request,
+): Promise<
+  | { ok: true; rec: Record<string, unknown>; file: UploadedFile | null }
+  | { ok: false; error: string; status: number }
+> {
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.includes("multipart/form-data")) {
+    try {
+      const body = await request.json();
+      if (!body || typeof body !== "object") {
+        return { ok: false, error: "Ungültige Anfrage.", status: 400 };
+      }
+      return { ok: true, rec: body as Record<string, unknown>, file: null };
+    } catch {
+      return { ok: false, error: "Ungültige Anfrage.", status: 400 };
+    }
+  }
+
+  const length = Number(request.headers.get("content-length") ?? "0");
+  if (Number.isFinite(length) && length > DATEI_MAX + 200_000) {
+    return { ok: false, error: "Die Datei ist zu groß. Maximal 4 MB.", status: 400 };
+  }
+
+  let form: FormData;
+  try {
+    form = await request.formData();
+  } catch {
+    return { ok: false, error: "Ungültige Anfrage.", status: 400 };
+  }
+
+  const rec: Record<string, unknown> = {};
+  for (const [key, value] of form.entries()) {
+    if (typeof value === "string") rec[key] = value;
+  }
+
+  const raw = form.get("datei");
+  if (!isUpload(raw) || raw.size === 0) return { ok: true, rec, file: null };
+  if (raw.size > DATEI_MAX) {
+    return { ok: false, error: "Die Datei ist zu groß. Maximal 4 MB.", status: 400 };
+  }
+  const type = dateiTyp(raw);
+  if (!type) {
+    return { ok: false, error: "Bitte PNG, JPG, WEBP oder PDF.", status: 400 };
+  }
+  return {
+    ok: true,
+    rec,
+    file: {
+      filename: safeFilename(raw.name, type),
+      contentType: type,
+      content: Buffer.from(await raw.arrayBuffer()),
+    },
+  };
 }
 
 export async function POST(request: Request) {
@@ -155,18 +225,12 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
+  const incoming = await readIncoming(request);
+  if (!incoming.ok) {
+    return NextResponse.json({ error: incoming.error }, { status: incoming.status });
   }
-
-  if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
-  }
-
-  const rec = body as Record<string, unknown>;
+  const rec = incoming.rec;
+  const datei = incoming.file;
   if (isNonEmptyString(rec.fax_number) || isNonEmptyString(rec.company_url_hp)) {
     return NextResponse.json({ ok: true });
   }
@@ -179,7 +243,11 @@ export async function POST(request: Request) {
     );
   }
 
-  const band = resolveBand(rec);
+  const wert = parseWert(rec.wert);
+  if (wert === null || wert < 0) {
+    return NextResponse.json({ error: "Bitte einen Wert in Euro angeben." }, { status: 400 });
+  }
+  const band = stufeAusWert(wert);
   const firma = clip(rec.firma, MAX_SHORT);
   const ansprechpartner = clip(rec.ansprechpartner, MAX_SHORT);
   const email = clip(rec.email, MAX_SHORT);
@@ -252,7 +320,6 @@ export async function POST(request: Request) {
         ? "Sachspende"
         : `${BAND_LABEL[band]} + Fläche`
       : BAND_LABEL[band];
-  const wert = parseWert(rec.wert);
   const beitragLabel =
     beitragsart === "geld"
       ? "Geld"
@@ -273,6 +340,7 @@ export async function POST(request: Request) {
     beitragLabel ? `Beitrag: ${beitragLabel}` : "",
     wert !== null ? `Genannter Wert: ${wert} €` : "",
     angebot ? `Angebot: ${angebot}` : "",
+    datei ? `Datei: ${datei.filename}` : "",
     "",
     `Firma: ${firma}`,
     `Ansprechpartner: ${ansprechpartner}`,
@@ -294,6 +362,9 @@ export async function POST(request: Request) {
       replyTo: email,
       subject: `[Koderlauf Sponsor 2027] ${wegLabel} – ${firma}`.slice(0, 250),
       text,
+      ...(datei
+        ? { attachments: [{ filename: datei.filename, content: datei.content, contentType: datei.contentType }] }
+        : {}),
     });
     return NextResponse.json({ ok: true });
   } catch (e) {

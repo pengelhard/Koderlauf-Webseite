@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { CheckCircle2, Loader2, Send, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { InfoButton } from "@/components/sponsoring/sponsor-werden-sections";
 import {
-  bandAusQuery,
-  BAND_LABEL,
   beitragsartWarnung,
   defaultBeitragsart,
   flaecheOptionLabel,
@@ -19,31 +17,37 @@ import {
   isFlaecheBuchbar,
   isSachspendeFlaeche,
   brauchtAngebot,
-  isSichtbarkeit,
   SACHSPENDEN_SICHTBAR,
   SPONSORING_2027,
   stufeAusWert,
+  stufeHinweis,
   submitLabel,
-  werbeleistungKurz,
   type Beitragsart,
-  type Sichtbarkeit,
 } from "@/lib/sponsoring-2027";
 
 function isValidEmailFormat(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
-const STUFEN_WAHL: Sichtbarkeit[] = ["unter100", "unterstuetzer", "sponsor", "hauptsponsor"];
+const DATEI_TYPEN = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+const DATEI_ENDUNGEN = [".png", ".jpg", ".jpeg", ".webp", ".pdf"];
+const DATEI_MAX = 4 * 1024 * 1024;
+
+function dateiErlaubt(file: File): boolean {
+  if (DATEI_TYPEN.includes(file.type)) return true;
+  const name = file.name.toLowerCase();
+  return DATEI_ENDUNGEN.some((ext) => name.endsWith(ext));
+}
 
 export function SponsorAnfrageFormular() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const stufeParam = searchParams.get("stufe");
   const flaecheParam = flaecheParamAusSearch(searchParams.get("flaeche"), searchParams.get("posten"));
+  const dateiRef = useRef<HTMLInputElement>(null);
 
-  const [band, setBand] = useState<Sichtbarkeit>(bandAusQuery(stufeParam));
   const [flaecheId, setFlaecheId] = useState(getFlaeche(flaecheParam)?.id ?? "");
   const [wert, setWert] = useState("");
+  const [wertInfo, setWertInfo] = useState(false);
   const [beitragsart, setBeitragsart] = useState<Beitragsart>(defaultBeitragsart(getFlaeche(flaecheParam)));
   const [firma, setFirma] = useState("");
   const [ansprechpartner, setAnsprechpartner] = useState("");
@@ -51,7 +55,7 @@ export function SponsorAnfrageFormular() {
   const [telefon, setTelefon] = useState("");
   const [nachricht, setNachricht] = useState("");
   const [angebot, setAngebot] = useState("");
-  const [bestaetigt, setBestaetigt] = useState(false);
+  const [datei, setDatei] = useState<File | null>(null);
   const [honeypot, setHoneypot] = useState("");
   const [honeypotReady, setHoneypotReady] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
@@ -60,7 +64,7 @@ export function SponsorAnfrageFormular() {
   const gewaehlteFlaeche = getFlaeche(flaecheId);
   const wertZahl = wert.trim() === "" ? null : Number(wert.replace(",", "."));
   const wertGueltig = wertZahl !== null && Number.isFinite(wertZahl) && wertZahl >= 0;
-  const stufeAusSache = wertGueltig ? stufeAusWert(wertZahl) : null;
+  const band = wertGueltig ? stufeAusWert(wertZahl) : null;
   const artWarnung = beitragsartWarnung(gewaehlteFlaeche, beitragsart);
 
   useEffect(() => {
@@ -72,30 +76,47 @@ export function SponsorAnfrageFormular() {
     const resolved = flaecheParamAusSearch(searchParams.get("flaeche"), searchParams.get("posten"));
     const nextFlaeche = getFlaeche(resolved);
     if (nextFlaeche) setFlaecheId(nextFlaeche.id);
-    if (stufeParam) setBand(bandAusQuery(stufeParam));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stufeParam, searchParams]);
+  }, [searchParams]);
 
-  function syncQuery(nextBand: Sichtbarkeit, nextFlaeche: string) {
+  function syncFlaeche(nextFlaeche: string) {
     const q = new URLSearchParams();
-    q.set("stufe", nextBand);
     if (nextFlaeche) q.set("flaeche", nextFlaeche);
-    router.replace(`/sponsor-werden?${q.toString()}#anfrage`, { scroll: false });
+    const qs = q.toString();
+    router.replace(qs ? `/sponsor-werden?${qs}#anfrage` : "/sponsor-werden#anfrage", { scroll: false });
   }
 
-  function onWertChange(raw: string) {
-    setWert(raw);
-    const n = Number(raw.replace(",", "."));
-    if (raw.trim() !== "" && Number.isFinite(n) && n >= 0) {
-      const next = stufeAusWert(n);
-      setBand(next);
-      syncQuery(next, flaecheId);
+  function onDatei(file: File | null) {
+    if (!file) {
+      setDatei(null);
+      return;
     }
+    if (file.size > DATEI_MAX) {
+      setDatei(null);
+      if (dateiRef.current) dateiRef.current.value = "";
+      setStatus("error");
+      setErrorMsg("Die Datei ist zu groß. Maximal 4 MB.");
+      return;
+    }
+    if (!dateiErlaubt(file)) {
+      setDatei(null);
+      if (dateiRef.current) dateiRef.current.value = "";
+      setStatus("error");
+      setErrorMsg("Bitte PNG, JPG, WEBP oder PDF.");
+      return;
+    }
+    setDatei(file);
+    setStatus("idle");
+    setErrorMsg(null);
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrorMsg(null);
+    if (!wertGueltig || wertZahl === null || band === null) {
+      setStatus("error");
+      setErrorMsg("Bitte einen Wert in Euro angeben.");
+      return;
+    }
     if (!firma.trim()) {
       setStatus("error");
       setErrorMsg("Bitte Firma oder Name angeben.");
@@ -126,32 +147,35 @@ export function SponsorAnfrageFormular() {
       setErrorMsg("Diese Sache muss geliefert werden. Geld allein ersetzt sie nicht.");
       return;
     }
-    if (!bestaetigt) {
+    if (datei && (datei.size > DATEI_MAX || !dateiErlaubt(datei))) {
       setStatus("error");
-      setErrorMsg("Bitte bestätigt die unverbindliche Anfrage.");
+      setErrorMsg("Bitte PNG, JPG, WEBP oder PDF, maximal 4 MB.");
       return;
     }
 
     setStatus("sending");
     try {
-      const res = await fetch("/api/sponsor-anfrage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          anfrageWeg: flaecheId ? "flaeche" : "stufe",
-          band,
-          flaecheId: flaecheId || undefined,
-          beitragsart: flaecheId ? beitragsart : undefined,
-          wert: wertGueltig ? wertZahl : undefined,
-          firma,
-          ansprechpartner,
-          email,
-          telefon,
-          angebot: brauchtAngebot(flaecheId) ? angebot : undefined,
-          nachricht,
-          fax_number: honeypot,
-        }),
-      });
+      const payload = {
+        anfrageWeg: flaecheId ? "flaeche" : "stufe",
+        band,
+        flaecheId: flaecheId || undefined,
+        beitragsart: flaecheId ? beitragsart : undefined,
+        wert: wertZahl,
+        firma,
+        ansprechpartner,
+        email,
+        telefon,
+        angebot: brauchtAngebot(flaecheId) ? angebot : undefined,
+        nachricht,
+        fax_number: honeypot,
+      };
+      const res = datei
+        ? await fetch("/api/sponsor-anfrage", { method: "POST", body: toFormData(payload, datei) })
+        : await fetch("/api/sponsor-anfrage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
       const data = await res.json();
       if (!res.ok) {
         setStatus("error");
@@ -175,7 +199,7 @@ export function SponsorAnfrageFormular() {
           <a href={`mailto:${SPONSORING_2027.kontaktEmail}`} className="text-koder-orange hover:underline">
             {SPONSORING_2027.kontaktEmail}
           </a>
-          . Keine Zahlung über die Website.
+          .
         </p>
         <Button type="button" variant="outline" className="mt-2" onClick={() => setStatus("idle")}>
           Weitere Anfrage
@@ -186,35 +210,6 @@ export function SponsorAnfrageFormular() {
 
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-6">
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-semibold">Stufe</legend>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {STUFEN_WAHL.map((id) => (
-            <label
-              key={id}
-              className={`cursor-pointer rounded-xl border p-3 text-sm ${
-                band === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
-              }`}
-            >
-              <input
-                type="radio"
-                name="stufe"
-                value={id}
-                checked={band === id}
-                onChange={() => {
-                  if (!isSichtbarkeit(id)) return;
-                  setBand(id);
-                  syncQuery(id, flaecheId);
-                }}
-                className="sr-only"
-              />
-              <span className="font-bold">{BAND_LABEL[id]}</span>
-              <p className="mt-1 text-xs text-muted-foreground">{werbeleistungKurz(id)}</p>
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="sponsor-sache">Sache (optional)</Label>
@@ -226,7 +221,7 @@ export function SponsorAnfrageFormular() {
               setFlaecheId(id);
               const f = getFlaeche(id);
               setBeitragsart(defaultBeitragsart(f));
-              syncQuery(band, id);
+              syncFlaeche(id);
             }}
             className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
           >
@@ -239,15 +234,34 @@ export function SponsorAnfrageFormular() {
           </select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="sponsor-wert">Wert der Sache in € (optional)</Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="sponsor-wert">Wert in € *</Label>
+            <InfoButton
+              label="Info zum Wert"
+              open={wertInfo}
+              onToggle={() => setWertInfo((v) => !v)}
+            />
+          </div>
           <Input
             id="sponsor-wert"
             inputMode="decimal"
+            required
             value={wert}
-            onChange={(e) => onWertChange(e.target.value)}
-            placeholder="z. B. 400"
+            onChange={(e) => {
+              setWert(e.target.value);
+              if (status === "error") {
+                setStatus("idle");
+                setErrorMsg(null);
+              }
+            }}
+            placeholder="z. B. 250"
           />
         </div>
+        {wertInfo && (
+          <p className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground sm:col-span-2">
+            {SPONSORING_2027.wertHinweis}
+          </p>
+        )}
       </div>
 
       {brauchtAngebot(flaecheId) && (
@@ -264,9 +278,9 @@ export function SponsorAnfrageFormular() {
         </div>
       )}
 
-      {stufeAusSache && (
+      {wertGueltig && wertZahl !== null && (
         <p className="rounded-lg border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm">
-          Bei {wertZahl} € seid ihr <strong>{BAND_LABEL[stufeAusSache]}</strong>. {werbeleistungKurz(stufeAusSache)}
+          {stufeHinweis(wertZahl)}
         </p>
       )}
 
@@ -313,15 +327,39 @@ export function SponsorAnfrageFormular() {
         />
       </div>
 
-      <label className="flex items-start gap-2 text-sm">
-        <input type="checkbox" required checked={bestaetigt} onChange={(e) => setBestaetigt(e.target.checked)} className="mt-1" />
-        <span>
-          Unverbindliche Anfrage, keine Online-Zahlung.{" "}
-          <Link href="/datenschutz" className="text-koder-orange hover:underline">
-            Datenschutz
-          </Link>
-        </span>
-      </label>
+      <div className="space-y-2">
+        <input
+          ref={dateiRef}
+          id="sponsor-datei"
+          type="file"
+          accept="image/png,image/jpeg,image/webp,application/pdf"
+          className="sr-only"
+          onChange={(e) => onDatei(e.target.files?.[0] ?? null)}
+        />
+        <label
+          htmlFor="sponsor-datei"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:border-koder-orange hover:text-koder-orange"
+        >
+          <Upload className="size-4" aria-hidden />
+          Logo oder PDF hochladen
+        </label>
+        <p className="text-xs text-muted-foreground">PNG, JPG, WEBP oder PDF, maximal 4 MB.</p>
+        {datei && (
+          <p className="flex items-center gap-3 text-sm">
+            <span>{datei.name}</span>
+            <button
+              type="button"
+              className="text-xs text-muted-foreground underline"
+              onClick={() => {
+                setDatei(null);
+                if (dateiRef.current) dateiRef.current.value = "";
+              }}
+            >
+              Entfernen
+            </button>
+          </p>
+        )}
+      </div>
 
       {honeypotReady ? (
         <div className="hidden" aria-hidden="true">
@@ -343,10 +381,44 @@ export function SponsorAnfrageFormular() {
         ) : (
           <>
             <Send className="size-4" />
-            {submitLabel(band)}
+            {band ? submitLabel(band) : "Anfragen"}
           </>
         )}
       </Button>
     </form>
   );
+}
+
+function toFormData(
+  payload: {
+    anfrageWeg: string;
+    band: string;
+    flaecheId?: string;
+    beitragsart?: string;
+    wert: number;
+    firma: string;
+    ansprechpartner: string;
+    email: string;
+    telefon: string;
+    angebot?: string;
+    nachricht: string;
+    fax_number: string;
+  },
+  datei: File,
+): FormData {
+  const fd = new FormData();
+  fd.set("anfrageWeg", payload.anfrageWeg);
+  fd.set("band", payload.band);
+  if (payload.flaecheId) fd.set("flaecheId", payload.flaecheId);
+  if (payload.beitragsart) fd.set("beitragsart", payload.beitragsart);
+  fd.set("wert", String(payload.wert));
+  fd.set("firma", payload.firma);
+  fd.set("ansprechpartner", payload.ansprechpartner);
+  fd.set("email", payload.email);
+  if (payload.telefon) fd.set("telefon", payload.telefon);
+  if (payload.angebot) fd.set("angebot", payload.angebot);
+  if (payload.nachricht) fd.set("nachricht", payload.nachricht);
+  if (payload.fax_number) fd.set("fax_number", payload.fax_number);
+  fd.set("datei", datei);
+  return fd;
 }

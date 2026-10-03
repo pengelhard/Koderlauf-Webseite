@@ -7,7 +7,6 @@ import {
   getEffectiveStatus,
   SACHSPENDEN_SICHTBAR,
   SPONSOR_STUFEN,
-  SPONSORING_2027,
   type SponsorFlaeche,
 } from "@/lib/sponsoring-2027";
 
@@ -59,9 +58,11 @@ function StufenKarte({
         <p className="text-xs font-semibold uppercase tracking-widest text-koder-orange">
           {stufe.preisLabel}
         </p>
-        <InfoButton label={`Info ${stufe.name}`} open={open} onToggle={() => setOpen((v) => !v)} />
+        {stufe.info ? (
+          <InfoButton label={`Info ${stufe.name}`} open={open} onToggle={() => setOpen((v) => !v)} />
+        ) : null}
       </div>
-      {open && <InfoNote text={stufe.info} />}
+      {open && stufe.info ? <InfoNote text={stufe.info} /> : null}
       <h3 className="mt-1 text-lg font-extrabold">{stufe.name}</h3>
       <ul className="mt-3 flex-1 space-y-1.5 text-sm">
         {stufe.leistungen.map((item) => (
@@ -121,17 +122,9 @@ function SacheZeile({ flaeche }: { flaeche: SponsorFlaeche }) {
 }
 
 export function SponsorSachen() {
-  const [offen, setOffen] = useState(false);
   return (
     <section id="sachen" className="mt-12 scroll-mt-28">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-2xl font-extrabold tracking-tight">Diese Sachen brauchen wir</h2>
-        <InfoButton label="Info Sachspenden" open={offen} onToggle={() => setOffen((v) => !v)} />
-      </div>
-      {offen && <InfoNote text={SPONSORING_2027.zuordnungSatz} />}
-      <p className="mt-2 text-sm text-muted-foreground">
-        Kein Preis von uns. Wir bestätigen den Wert, danach gilt die Stufe.
-      </p>
+      <h2 className="text-2xl font-extrabold tracking-tight">Diese Sachen brauchen wir</h2>
       <p className="mt-3 rounded-xl border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm">
         Liegt euer Logo auf der Sache, seid ihr dort noch einmal sichtbar: Zielbogen, Medaillenband, Startnummer. Zusätzlich zur Stufe.
       </p>
