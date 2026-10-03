@@ -90,9 +90,6 @@ export function SponsorStufen() {
           <StufenKarte key={stufe.id} stufe={stufe} />
         ))}
       </div>
-      <p className="mt-4 text-sm text-muted-foreground">
-        Unter 100 €: kleines Logo und Name auf der Website, wie 2026.
-      </p>
     </section>
   );
 }
@@ -133,7 +130,7 @@ export function SponsorSachen() {
       </div>
       {offen && <InfoNote text={SPONSORING_2027.zuordnungSatz} />}
       <p className="mt-2 text-sm text-muted-foreground">
-        Kein Preis von uns. Wir bestätigen den Wert, danach gilt die Stufe. Unter 100 € kleines Logo · ab 100 € Banner am Bauzaun · ab 250 € Zieleinlauf und Instagram · ab 500 € ganz oben.
+        Kein Preis von uns. Wir bestätigen den Wert, danach gilt die Stufe.
       </p>
       <p className="mt-3 rounded-xl border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm">
         Liegt euer Logo auf der Sache, seid ihr dort noch einmal sichtbar: Zielbogen, Medaillenband, Startnummer. Zusätzlich zur Stufe.
