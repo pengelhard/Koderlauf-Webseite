@@ -126,7 +126,7 @@ export function SponsorSachen() {
     <section id="sachen" className="mt-12 scroll-mt-28">
       <h2 className="text-2xl font-extrabold tracking-tight">Diese Sachen brauchen wir</h2>
       <p className="mt-3 rounded-xl border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm">
-        Liegt euer Logo auf der Sache, seid ihr dort noch einmal sichtbar: Zielbogen, Medaillenband, Startnummer. Zusätzlich zur Stufe.
+        Liegt euer Logo auf der Sache, seid ihr dort noch einmal sichtbar, zusätzlich zur Stufe.
       </p>
       <ul className="mt-4 rounded-2xl border border-border bg-card px-4">
         {SACHSPENDEN_SICHTBAR.map((f) => (

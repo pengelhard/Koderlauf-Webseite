@@ -42,10 +42,10 @@ export function SponsorWerdenContent() {
               Sponsor werden
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-foreground">
-              Drei Tage Fest, 50 Jahre SV. Eure Werbung ist alle drei Tage da.
+              Drei Tage Feiern, 50 Jahre SVO. Eure Werbung ist alle drei Tage präsent.
             </p>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Zur Orientierung: etwa 600 bis 1000 Leute.
+              Zur Orientierung: Wir rechnen mit etwa 600 bis 1000 Leute.
             </p>
           </motion.section>
 

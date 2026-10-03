@@ -36,6 +36,7 @@ test("Werbeleistung", () => {
   assert.match(werbeleistungKurz("sponsor"), /Instagram/);
   assert.match(werbeleistungKurz("unter100"), /Logo/);
   assert.match(werbeleistungKurz("hauptsponsor"), /Siegerehrung/);
+  assert.match(werbeleistungKurz("hauptsponsor"), /Bühne/);
   assert.equal(werbeleistungKurz("hauptsponsor").includes("Eigene Erwähnung"), false);
   assert.equal(getFlaeche("bauzaun")?.status, "offen");
   assert.equal(getFlaeche("medaillen")?.status, "offen");
@@ -51,7 +52,8 @@ test("Alte Links und Sachspenden ohne Preis", () => {
   assert.equal(isBeitragsartGueltig(getFlaeche("ziel-bier"), "geld"), true);
   assert.equal(getFlaeche("zielverpflegung")?.id, "verpflegung");
   assert.equal(getFlaeche("strecke")?.id, "verpflegung");
-  assert.match(getFlaeche("medaillen")?.kurz ?? "", /Medaillenband/);
+  assert.match(getFlaeche("medaillen")?.kurz ?? "", /Medaille/);
+  assert.match(getFlaeche("medaillen")?.kurz ?? "", /Band/);
   assert.match(getFlaeche("startnummern")?.kurz ?? "", /Name/);
   assert.equal(SACHSPENDEN_SICHTBAR.some((f) => f.halfteVon), false);
   const json = JSON.stringify(SACHSPENDEN_SICHTBAR);
@@ -61,15 +63,17 @@ test("Alte Links und Sachspenden ohne Preis", () => {
   assert.equal(submitLabel("unter100"), "Anfragen");
   assert.match(getFlaeche("bauzaun")?.kurz ?? "", /Absperren/);
   assert.match(getFlaeche("bauzaun")?.kurz ?? "", /Zieleinlauf/);
-  assert.match(getFlaeche("medaillen")?.kurz ?? "", /Design/);
+  assert.match(getFlaeche("medaillen")?.beschreibung ?? "", /Design/);
+  assert.match(getFlaeche("ziel-bier")?.kurz ?? "", /Brauerei/);
+  assert.match(SPONSOR_STUFEN.find((s) => s.id === "hauptsponsor")?.leistungen.join(" ") ?? "", /Bühne/);
   assert.match(getFlaeche("preise")?.beschreibung ?? "", /euch/);
   assert.match(getFlaeche("verpflegung")?.beschreibung ?? "", /euch/);
   assert.match(SPONSOR_STUFEN.find((s) => s.id === "unterstuetzer")?.info ?? "", /Unter 100/);
   assert.match(SPONSOR_STUFEN.find((s) => s.id === "unterstuetzer")?.info ?? "", /Bauzaun/);
   assert.equal(SPONSOR_STUFEN.find((s) => s.id === "sponsor")?.info, "");
-  assert.match(SPONSOR_STUFEN.find((s) => s.id === "hauptsponsor")?.info ?? "", /genauso groß/);
-  assert.equal(SPONSOR_STUFEN.find((s) => s.id === "hauptsponsor")?.info.includes("Siegerehrung"), false);
+  assert.equal(SPONSOR_STUFEN.find((s) => s.id === "hauptsponsor")?.info, "");
   assert.match(stufeHinweis(80), /Website/);
   assert.match(stufeHinweis(250), /Sponsor/);
   assert.match(SPONSORING_2027.wertHinweis, /legt die Stufe fest/);
+  assert.match(SPONSORING_2027.wertHinweis, /schätzt/);
 });

@@ -13,7 +13,7 @@ export const SPONSORING_2027 = {
   hauptsponsorAb: 500,
   kontaktEmail: "info@koderlauf.de",
   wertHinweis:
-    "Die Zahl legt die Stufe fest. Unter 100 € nur eine Erwähnung auf der Website. Ab 100 € Unterstützer. Ab 250 € Sponsor. Ab 500 € Hauptsponsor.",
+    "Bei einer Geldspende ist es der Betrag. Bei einer Sachspende schätzt ihr den Wert. Die Zahl legt die Stufe fest. Unter 100 € nur eine Erwähnung auf der Website. Ab 100 € Unterstützer. Ab 250 € Sponsor. Ab 500 € Hauptsponsor.",
   premiere2026: {
     anmeldungen: 400,
     finisher: 378,
@@ -95,9 +95,10 @@ export const SPONSOR_STUFEN: {
     id: "hauptsponsor",
     name: "Hauptsponsor",
     preisLabel: "ab 500 €",
-    info: "Das Banner am Zaun ist genauso groß wie bei den anderen Stufen.",
+    info: "",
     leistungen: [
       "Alles aus 250 €",
+      "Banner an der Bühne",
       "Logo ganz oben, sehr präsent",
       "Dank bei der Siegerehrung",
     ],
@@ -124,7 +125,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "bauzaun",
     titel: "Bauzaun stellen",
-    kurz: "Bauzaun zum Absperren und Absperrung für den Zieleinlauf.",
+    kurz: "Zum Absperren und als Absperrung am Zieleinlauf.",
     typ: "sachspende",
     status: "offen",
     aktionLabel: "Zaun stellen",
@@ -132,7 +133,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "zielbogen",
     titel: "Zielbogen stellen",
-    kurz: "Die Firma darf einen Zielbogen mit eigenem Logo stellen.",
+    kurz: "Ihr stellt einen Zielbogen mit eigenem Logo.",
     typ: "sachspende",
     status: "offen",
     aktionLabel: "Bogen stellen",
@@ -140,7 +141,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "ziel-bier",
     titel: "Bier für Finisher",
-    kurz: "Ein Bier für jeden Finisher, ohne Kinderlauf. Das zahlt der Sponsor.",
+    kurz: "Ein Bier für jeden Finisher. Ideal für eine Brauerei: Das Bier ist die Werbung.",
     typ: "geld_oder_sache",
     status: "offen",
     aktionLabel: "Bier stellen",
@@ -148,7 +149,8 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "medaillen",
     titel: "Medaillen",
-    kurz: "Logo auf dem Medaillenband. Beim Design helfen wir gerne.",
+    kurz: "Wir gestalten die Medaille. Werbung kann auf dem Band präsentiert werden.",
+    beschreibung: "Beim Design helfen wir gerne.",
     typ: "geld_oder_sache",
     komplettHaelften: ["medaillen-a", "medaillen-b"],
     status: "offen",
@@ -223,7 +225,7 @@ export function werbeleistungKurz(stufe: Sichtbarkeit): string {
     case "sponsor":
       return "Banner am Zieleinlauf, etwas größeres Logo, Instagram, plus alles ab 100 €.";
     case "hauptsponsor":
-      return "Logo ganz oben und sehr präsent, Dank bei der Siegerehrung, plus alles ab 250 €.";
+      return "Banner an der Bühne, Logo ganz oben und sehr präsent, Dank bei der Siegerehrung, plus alles ab 250 €.";
   }
 }
 
