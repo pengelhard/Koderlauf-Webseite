@@ -44,7 +44,9 @@ const FLAECHE_ID_ALIASES: Record<string, string> = {
   "bauzaun-buendel": "bauzaun",
   "bauzaun-stellen": "bauzaun",
   siegerpreise: "preise",
-  streckenverpflegung: "strecke",
+  streckenverpflegung: "verpflegung",
+  strecke: "verpflegung",
+  zielverpflegung: "verpflegung",
 };
 
 const STUFE_ALIASES: Record<string, Sichtbarkeit> = {
@@ -69,13 +71,8 @@ export const SPONSOR_STUFEN: {
     id: "unterstuetzer",
     name: "Unterstützer",
     preisLabel: "100 €",
-    info: "Ab 100 €. Darunter steht nur der Name auf der Website.",
-    leistungen: [
-      "Banner am Bauzaun",
-      "Banner am Gitter Zieleinlauf",
-      "Instagram",
-      "Website",
-    ],
+    info: "Kleine Spenden sind willkommen. Dann steht nur der Name auf der Website.",
+    leistungen: ["Banner am Bauzaun", "Website"],
     ctaHref: "/sponsor-werden?stufe=unterstuetzer#anfrage",
     ctaLabel: "Unterstützer anfragen",
   },
@@ -83,11 +80,12 @@ export const SPONSOR_STUFEN: {
     id: "sponsor",
     name: "Sponsor",
     preisLabel: "250 €",
-    info: "Ab 250 €. Mittleres Banner und größeres Logo, plus alles aus 100 €.",
+    info: "Ab 250 €: Banner am Zieleinlauf, größer auf der Website, Instagram. Plus alles aus 100 €.",
     leistungen: [
       "Alles aus 100 €",
-      "Mittleres Banner am Bauzaun",
-      "Größeres Logo auf der Website",
+      "Banner am Gitter Zieleinlauf",
+      "Größer auf der Website",
+      "Instagram",
     ],
     ctaHref: "/sponsor-werden?stufe=sponsor#anfrage",
     ctaLabel: "Sponsor anfragen",
@@ -96,11 +94,10 @@ export const SPONSOR_STUFEN: {
     id: "hauptsponsor",
     name: "Hauptsponsor",
     preisLabel: "ab 500 €",
-    info: "Ab 500 €. Großes Banner und Dank bei der Siegerehrung, plus alles aus 250 €.",
+    info: "Ab 500 €: eigene Erwähnung auf der Website und Dank bei der Siegerehrung. Das Banner ist dasselbe wie bei den anderen Stufen.",
     leistungen: [
       "Alles aus 250 €",
-      "Großes Banner",
-      "Logo oben auf der Website",
+      "Eigene Erwähnung auf der Website",
       "Dank bei der Siegerehrung",
     ],
     ctaHref: "/sponsor-werden?stufe=hauptsponsor#anfrage",
@@ -126,34 +123,31 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "bauzaun",
     titel: "Bauzaun stellen",
-    kurz: "Gestell, Transport und Aufbau.",
+    kurz: "",
     typ: "sachspende",
-    beschreibung: "Bitte den Zaun stellen. Eine Überweisung ersetzt das nicht.",
     status: "reserviert",
     aktionLabel: "Zaun stellen",
   },
   {
     id: "zielbogen",
     titel: "Zielbogen stellen",
-    kurz: "Eigener Bogen mit Logo.",
+    kurz: "Die Firma darf einen Zielbogen mit eigenem Logo stellen.",
     typ: "sachspende",
-    beschreibung: "Ein geliehener Neutralbogen hat kein eigenes Logo.",
     status: "offen",
     aktionLabel: "Bogen stellen",
   },
   {
     id: "ziel-bier",
-    titel: "Ziel-Bier stellen",
-    kurz: "Für erwachsene Finisher.",
-    typ: "sachspende",
-    beschreibung: "Ohne Bier ist es diese Sache nicht.",
+    titel: "Bier für Finisher",
+    kurz: "Ein Bier für jeden Finisher, ohne Kinderlauf. Das zahlt der Sponsor.",
+    typ: "geld_oder_sache",
     status: "offen",
     aktionLabel: "Bier stellen",
   },
   {
     id: "medaillen",
     titel: "Medaillen",
-    kurz: "Band und Aufkleber, oder getrennt.",
+    kurz: "Logo auf dem Medaillenband.",
     typ: "geld_oder_sache",
     hinweis: "Im Gespräch, noch nicht fest.",
     komplettHaelften: ["medaillen-a", "medaillen-b"],
@@ -178,7 +172,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "preise",
     titel: "Siegerpreise",
-    kurz: "6 Läufe, oder zwei Pakete.",
+    kurz: "Noch offen. Idee gerne ins Formular.",
     typ: "geld_oder_sache",
     komplettHaelften: ["preise-1", "preise-2"],
     status: "offen",
@@ -200,23 +194,16 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     status: "offen",
   },
   {
-    id: "zielverpflegung",
-    titel: "Zielverpflegung",
-    kurz: "Getränk und Kleinigkeit, ohne Bier.",
+    id: "verpflegung",
+    titel: "Verpflegung",
+    kurz: "Ziel und Strecke. Schreibt, was ihr bieten könnt.",
     typ: "geld_oder_sache",
     status: "offen",
   },
   {
     id: "startnummern",
     titel: "Startnummern",
-    kurz: "Logo unten auf der Nummer.",
-    typ: "geld_oder_sache",
-    status: "offen",
-  },
-  {
-    id: "strecke",
-    titel: "Streckenverpflegung",
-    kurz: "Wasser, Iso, Obst.",
+    kurz: "Logo und Name auf der Startnummer.",
     typ: "geld_oder_sache",
     status: "offen",
   },
@@ -228,13 +215,13 @@ export const SACHSPENDEN_SICHTBAR = SPONSOR_FLAECHEN.filter((f) => !f.halfteVon)
 export function werbeleistungKurz(stufe: Sichtbarkeit): string {
   switch (stufe) {
     case "unter100":
-      return "Nur Name auf der Website.";
+      return "Kleine Spenden sind willkommen. Dann nur der Name auf der Website.";
     case "unterstuetzer":
-      return "Banner am Bauzaun und am Gitter Zieleinlauf, Instagram, Website.";
+      return "Banner am Bauzaun und Website.";
     case "sponsor":
-      return "Mittleres Banner, größeres Logo, plus alles ab 100 €.";
+      return "Banner am Zieleinlauf, größer auf der Website, Instagram, plus alles ab 100 €.";
     case "hauptsponsor":
-      return "Großes Banner, Dank bei der Siegerehrung, plus alles ab 250 €.";
+      return "Eigene Erwähnung auf der Website, Dank bei der Siegerehrung, plus alles ab 250 €.";
   }
 }
 

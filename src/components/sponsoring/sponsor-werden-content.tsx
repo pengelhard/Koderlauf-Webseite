@@ -42,7 +42,10 @@ export function SponsorWerdenContent() {
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
               Sponsor werden
             </h1>
-            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-lg text-foreground">
+              Drei Tage Fest, 50 Jahre SV. Der Koderlauf am Samstag ist das Herzstück.
+            </p>
+            <p className="mt-2 max-w-2xl text-muted-foreground">
               100 €, 250 € oder ab 500 €. Auch eine Kiste Äpfel.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
