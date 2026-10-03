@@ -8,59 +8,46 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  anfrageWegAusQuery,
   bandAusQuery,
-  bandWarnung,
-  beitragsartWarnung,
   BAND_LABEL,
+  beitragsartWarnung,
   defaultBeitragsart,
   flaecheOptionLabel,
   flaecheParamAusSearch,
   getFlaeche,
-  isBeitragsart,
   isBeitragsartGueltig,
-  isBeitragsband,
   isFlaecheBuchbar,
   isSachspendeFlaeche,
-  SPONSOR_FLAECHEN,
-  SPONSOR_STUFEN,
+  isSichtbarkeit,
+  SACHSPENDEN_SICHTBAR,
   SPONSORING_2027,
+  stufeAusWert,
   submitLabel,
-  vorschlagBand,
-  type AnfrageWeg,
+  werbeleistungKurz,
   type Beitragsart,
-  type Beitragsband,
+  type Sichtbarkeit,
 } from "@/lib/sponsoring-2027";
 
 function isValidEmailFormat(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
+const STUFEN_WAHL: Sichtbarkeit[] = ["unter100", "unterstuetzer", "sponsor", "hauptsponsor"];
+
 export function SponsorAnfrageFormular() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const stufeParam = searchParams.get("stufe");
-  const flaecheParam = flaecheParamAusSearch(
-    searchParams.get("flaeche"),
-    searchParams.get("posten"),
-  );
+  const flaecheParam = flaecheParamAusSearch(searchParams.get("flaeche"), searchParams.get("posten"));
 
-  const [anfrageWeg, setAnfrageWeg] = useState<AnfrageWeg>(
-    anfrageWegAusQuery(stufeParam, searchParams.get("flaeche"), searchParams.get("posten")),
-  );
-  const [band, setBand] = useState<Beitragsband>(
-    bandAusQuery(stufeParam, getFlaeche(flaecheParam)),
-  );
+  const [band, setBand] = useState<Sichtbarkeit>(bandAusQuery(stufeParam));
   const [flaecheId, setFlaecheId] = useState(getFlaeche(flaecheParam)?.id ?? "");
-  const [beitragsart, setBeitragsart] = useState<Beitragsart>(
-    defaultBeitragsart(getFlaeche(flaecheParam)),
-  );
+  const [wert, setWert] = useState("");
+  const [beitragsart, setBeitragsart] = useState<Beitragsart>(defaultBeitragsart(getFlaeche(flaecheParam)));
   const [firma, setFirma] = useState("");
   const [ansprechpartner, setAnsprechpartner] = useState("");
   const [email, setEmail] = useState("");
   const [telefon, setTelefon] = useState("");
-  const [web, setWeb] = useState("");
-  const [instagram, setInstagram] = useState("");
   const [nachricht, setNachricht] = useState("");
   const [bestaetigt, setBestaetigt] = useState(false);
   const [honeypot, setHoneypot] = useState("");
@@ -69,9 +56,10 @@ export function SponsorAnfrageFormular() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const gewaehlteFlaeche = getFlaeche(flaecheId);
-  const bandHinweis = bandWarnung(gewaehlteFlaeche, band);
+  const wertZahl = wert.trim() === "" ? null : Number(wert.replace(",", "."));
+  const wertGueltig = wertZahl !== null && Number.isFinite(wertZahl) && wertZahl >= 0;
+  const stufeAusSache = wertGueltig ? stufeAusWert(wertZahl) : null;
   const artWarnung = beitragsartWarnung(gewaehlteFlaeche, beitragsart);
-  const istSachspende = isSachspendeFlaeche(gewaehlteFlaeche);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setHoneypotReady(true));
@@ -79,42 +67,33 @@ export function SponsorAnfrageFormular() {
   }, []);
 
   useEffect(() => {
-    const resolved = flaecheParamAusSearch(
-      searchParams.get("flaeche"),
-      searchParams.get("posten"),
-    );
-    const nextWeg = anfrageWegAusQuery(stufeParam, searchParams.get("flaeche"), searchParams.get("posten"));
-    setAnfrageWeg(nextWeg);
+    const resolved = flaecheParamAusSearch(searchParams.get("flaeche"), searchParams.get("posten"));
     const nextFlaeche = getFlaeche(resolved);
-    if (nextFlaeche) {
-      setFlaecheId(nextFlaeche.id);
-      setBand(vorschlagBand(nextFlaeche));
-      setBeitragsart(defaultBeitragsart(nextFlaeche));
-    } else {
-      setBand(bandAusQuery(stufeParam, undefined));
-      setFlaecheId("");
-    }
+    if (nextFlaeche) setFlaecheId(nextFlaeche.id);
+    if (stufeParam) setBand(bandAusQuery(stufeParam));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stufeParam, searchParams]);
 
-  function updateQuery(nextWeg: AnfrageWeg, nextBand: Beitragsband, nextFlaeche: string) {
+  function syncQuery(nextBand: Sichtbarkeit, nextFlaeche: string) {
     const q = new URLSearchParams();
-    if (nextWeg === "flaeche" && nextFlaeche) {
-      q.set("stufe", nextBand);
-      q.set("flaeche", nextFlaeche);
-    } else {
-      q.set("stufe", nextBand);
-    }
+    q.set("stufe", nextBand);
+    if (nextFlaeche) q.set("flaeche", nextFlaeche);
     router.replace(`/sponsor-werden?${q.toString()}#anfrage`, { scroll: false });
-    requestAnimationFrame(() => {
-      document.getElementById("anfrage")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+  }
+
+  function onWertChange(raw: string) {
+    setWert(raw);
+    const n = Number(raw.replace(",", "."));
+    if (raw.trim() !== "" && Number.isFinite(n) && n >= 0) {
+      const next = stufeAusWert(n);
+      setBand(next);
+      syncQuery(next, flaecheId);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrorMsg(null);
-
     if (!firma.trim()) {
       setStatus("error");
       setErrorMsg("Bitte Firma oder Name angeben.");
@@ -130,24 +109,19 @@ export function SponsorAnfrageFormular() {
       setErrorMsg("Bitte eine gültige E-Mail-Adresse angeben.");
       return;
     }
-    if (anfrageWeg === "flaeche" && !getFlaeche(flaecheId)) {
-      setStatus("error");
-      setErrorMsg("Bitte eine Fläche wählen.");
-      return;
-    }
     if (flaecheId && !isFlaecheBuchbar(flaecheId)) {
       setStatus("error");
-      setErrorMsg("Diese Fläche ist gerade nicht buchbar.");
+      setErrorMsg("Diese Sache ist gerade nicht frei.");
       return;
     }
-    if (anfrageWeg === "flaeche" && !isBeitragsartGueltig(gewaehlteFlaeche, beitragsart)) {
+    if (gewaehlteFlaeche && !isBeitragsartGueltig(gewaehlteFlaeche, beitragsart)) {
       setStatus("error");
-      setErrorMsg("Diese Fläche ist eine Sachspende. Geld allein bucht sie nicht.");
+      setErrorMsg("Diese Sache muss geliefert werden. Geld allein ersetzt sie nicht.");
       return;
     }
     if (!bestaetigt) {
       setStatus("error");
-      setErrorMsg("Bitte bestätigt, dass ihr eine unverbindliche Anfrage senden wollt.");
+      setErrorMsg("Bitte bestätigt die unverbindliche Anfrage.");
       return;
     }
 
@@ -157,16 +131,15 @@ export function SponsorAnfrageFormular() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          anfrageWeg,
+          anfrageWeg: flaecheId ? "flaeche" : "stufe",
           band,
-          flaecheId: anfrageWeg === "flaeche" ? flaecheId : undefined,
-          beitragsart: anfrageWeg === "flaeche" ? beitragsart : undefined,
+          flaecheId: flaecheId || undefined,
+          beitragsart: flaecheId ? beitragsart : undefined,
+          wert: wertGueltig ? wertZahl : undefined,
           firma,
           ansprechpartner,
           email,
           telefon,
-          web,
-          instagram,
           nachricht,
           fax_number: honeypot,
         }),
@@ -188,13 +161,13 @@ export function SponsorAnfrageFormular() {
     return (
       <div className="flex flex-col items-center gap-4 py-8 text-center">
         <CheckCircle2 className="h-14 w-14 text-koder-orange" aria-hidden />
-        <p className="text-lg font-semibold">Danke – eure Anfrage ist raus.</p>
+        <p className="text-lg font-semibold">Danke. Wir melden uns.</p>
         <p className="max-w-md text-sm text-muted-foreground">
-          Ihr hört von{" "}
+          Antwort von{" "}
           <a href={`mailto:${SPONSORING_2027.kontaktEmail}`} className="text-koder-orange hover:underline">
             {SPONSORING_2027.kontaktEmail}
           </a>
-          . Wir ordnen Liste, Banner oder Bühne zu. Keine Zahlung über die Website.
+          . Keine Zahlung über die Website.
         </p>
         <Button type="button" variant="outline" className="mt-2" onClick={() => setStatus("idle")}>
           Weitere Anfrage
@@ -203,222 +176,105 @@ export function SponsorAnfrageFormular() {
     );
   }
 
-  const flaecheOptions = SPONSOR_FLAECHEN.filter((f) => isFlaecheBuchbar(f.id) || f.mehrereMoeglich);
-
   return (
-    <form noValidate onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <fieldset
-          className={`rounded-2xl border p-5 transition-colors ${
-            anfrageWeg === "stufe" ? "border-koder-orange bg-koder-orange/5" : "border-border"
-          }`}
-        >
-          <legend className="px-1 text-sm font-bold">Stufe</legend>
-          <p className="mt-1 text-sm text-muted-foreground">Liste, Banner oder Bühne – ohne konkrete Fläche.</p>
-          <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
-            <input
-              type="radio"
-              name="anfrageWeg"
-              checked={anfrageWeg === "stufe"}
-              onChange={() => {
-                setAnfrageWeg("stufe");
-                setFlaecheId("");
-                setBand("liste");
-                updateQuery("stufe", "liste", "");
-              }}
-              className="mt-1"
-            />
-            <span>Stufe wählen</span>
-          </label>
-          {anfrageWeg === "stufe" && (
-            <div className="mt-4 grid gap-2">
-              {SPONSOR_STUFEN.map((stufe) => (
-                <label
-                  key={stufe.id}
-                  className={`cursor-pointer rounded-xl border p-3 text-sm ${
-                    band === stufe.id ? "border-koder-orange bg-koder-orange/10" : "border-border"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="stufe"
-                    value={stufe.id}
-                    checked={band === stufe.id}
-                    onChange={() => {
-                      if (!isBeitragsband(stufe.id)) return;
-                      setBand(stufe.id);
-                      updateQuery("stufe", stufe.id, "");
-                    }}
-                    className="sr-only"
-                  />
-                  <span className="font-bold">{BAND_LABEL[stufe.id]}</span>
-                  <span className="text-muted-foreground"> · {stufe.preisLabel}</span>
-                  <p className="mt-1 text-xs text-muted-foreground">{stufe.kurz}</p>
-                </label>
-              ))}
-            </div>
-          )}
-        </fieldset>
+    <form noValidate onSubmit={handleSubmit} className="space-y-6">
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-semibold">Stufe</legend>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {STUFEN_WAHL.map((id) => (
+            <label
+              key={id}
+              className={`cursor-pointer rounded-xl border p-3 text-sm ${
+                band === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
+              }`}
+            >
+              <input
+                type="radio"
+                name="stufe"
+                value={id}
+                checked={band === id}
+                onChange={() => {
+                  if (!isSichtbarkeit(id)) return;
+                  setBand(id);
+                  syncQuery(id, flaecheId);
+                }}
+                className="sr-only"
+              />
+              <span className="font-bold">{BAND_LABEL[id]}</span>
+              <p className="mt-1 text-xs text-muted-foreground">{werbeleistungKurz(id)}</p>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
-        <fieldset
-          className={`rounded-2xl border p-5 transition-colors ${
-            anfrageWeg === "flaeche" ? "border-koder-orange bg-koder-orange/5" : "border-border"
-          }`}
-        >
-          <legend className="px-1 text-sm font-bold">Eine Fläche wählen</legend>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Wer eine Fläche übernimmt, kommt auf die Bühne. Den Wert der Sache klären wir zusammen.
-          </p>
-          <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
-            <input
-              type="radio"
-              name="anfrageWeg"
-              checked={anfrageWeg === "flaeche"}
-              onChange={() => {
-                setAnfrageWeg("flaeche");
-                const first = flaecheOptions[0];
-                if (first) {
-                  setFlaecheId(first.id);
-                  setBand(vorschlagBand(first));
-                  setBeitragsart(defaultBeitragsart(first));
-                  updateQuery("flaeche", vorschlagBand(first), first.id);
-                }
-              }}
-              className="mt-1"
-            />
-            <span>Konkrete Fläche übernehmen</span>
-          </label>
-        </fieldset>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="sponsor-sache">Sache (optional)</Label>
+          <select
+            id="sponsor-sache"
+            value={flaecheId}
+            onChange={(e) => {
+              const id = e.target.value;
+              setFlaecheId(id);
+              const f = getFlaeche(id);
+              setBeitragsart(defaultBeitragsart(f));
+              syncQuery(band, id);
+            }}
+            className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
+          >
+            <option value="">Keine Sache</option>
+            {SACHSPENDEN_SICHTBAR.map((f) => (
+              <option key={f.id} value={f.id} disabled={!isFlaecheBuchbar(f.id)}>
+                {flaecheOptionLabel(f)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="sponsor-wert">Wert der Sache in € (optional)</Label>
+          <Input
+            id="sponsor-wert"
+            inputMode="decimal"
+            value={wert}
+            onChange={(e) => onWertChange(e.target.value)}
+            placeholder="z. B. 400"
+          />
+        </div>
       </div>
 
-      {anfrageWeg === "flaeche" && (
-        <div className="space-y-5 rounded-2xl border border-border bg-muted/20 p-5">
-          <div className="space-y-2">
-            <Label htmlFor="sponsor-flaeche">Fläche (Pflicht)</Label>
-            <select
-              id="sponsor-flaeche"
-              name="flaeche"
-              required
-              value={flaecheId}
-              onChange={(e) => {
-                const id = e.target.value;
-                const f = getFlaeche(id);
-                setFlaecheId(id);
-                const nextBand = vorschlagBand(f);
-                setBand(nextBand);
-                setBeitragsart(defaultBeitragsart(f));
-                updateQuery("flaeche", nextBand, id);
-              }}
-              className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
-            >
-              <option value="">Bitte wählen …</option>
-              {flaecheOptions.map((f) => (
-                <option key={f.id} value={f.id} disabled={!isFlaecheBuchbar(f.id)}>
-                  {flaecheOptionLabel(f)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {gewaehlteFlaeche && (
-            <p className="text-sm text-muted-foreground">
-              Stufe: <strong>{BAND_LABEL[band]}</strong>. Umfang der Sache klären wir im Gespräch.
-            </p>
-          )}
-
-          {istSachspende && (
-            <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">
-              Sachspende: Bitte die Sache stellen. Eine Überweisung ersetzt das nicht.
-            </p>
-          )}
-
-          <BeitragsartFeld
-            beitragsart={beitragsart}
-            setBeitragsart={setBeitragsart}
-            sachspende={istSachspende}
-          />
-
-          {bandHinweis && (
-            <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-100">
-              {bandHinweis}
-            </p>
-          )}
-          {artWarnung && (
-            <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-              {artWarnung}
-            </p>
-          )}
-        </div>
+      {stufeAusSache && (
+        <p className="rounded-lg border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm">
+          Bei {wertZahl} € seid ihr <strong>{BAND_LABEL[stufeAusSache]}</strong>. {werbeleistungKurz(stufeAusSache)}
+        </p>
       )}
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      {isSachspendeFlaeche(gewaehlteFlaeche) && (
+        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">
+          Bitte die Sache stellen. Eine Überweisung ersetzt das nicht.
+        </p>
+      )}
+      {artWarnung && (
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          {artWarnung}
+        </p>
+      )}
+
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="sponsor-firma">Firma / Name *</Label>
-          <Input
-            id="sponsor-firma"
-            name="firma"
-            required
-            value={firma}
-            onChange={(e) => setFirma(e.target.value)}
-            maxLength={180}
-            autoComplete="organization"
-          />
+          <Input id="sponsor-firma" required value={firma} onChange={(e) => setFirma(e.target.value)} maxLength={180} autoComplete="organization" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="sponsor-person">Ansprechpartner *</Label>
-          <Input
-            id="sponsor-person"
-            name="ansprechpartner"
-            required
-            value={ansprechpartner}
-            onChange={(e) => setAnsprechpartner(e.target.value)}
-            maxLength={180}
-            autoComplete="name"
-          />
+          <Input id="sponsor-person" required value={ansprechpartner} onChange={(e) => setAnsprechpartner(e.target.value)} maxLength={180} autoComplete="name" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="sponsor-email">E-Mail *</Label>
-          <Input
-            id="sponsor-email"
-            name="email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
+          <Input id="sponsor-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="sponsor-tel">Telefon (optional)</Label>
-          <Input
-            id="sponsor-tel"
-            name="telefon"
-            type="tel"
-            value={telefon}
-            onChange={(e) => setTelefon(e.target.value)}
-            autoComplete="tel"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="sponsor-web">Website (optional)</Label>
-          <Input
-            id="sponsor-web"
-            name="web"
-            value={web}
-            onChange={(e) => setWeb(e.target.value)}
-            placeholder="https://"
-            autoComplete="url"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="sponsor-ig">Instagram (optional)</Label>
-          <Input
-            id="sponsor-ig"
-            name="instagram"
-            value={instagram}
-            onChange={(e) => setInstagram(e.target.value)}
-            placeholder="@…"
-          />
+          <Input id="sponsor-tel" type="tel" value={telefon} onChange={(e) => setTelefon(e.target.value)} autoComplete="tel" />
         </div>
       </div>
 
@@ -426,26 +282,19 @@ export function SponsorAnfrageFormular() {
         <Label htmlFor="sponsor-msg">Nachricht (optional)</Label>
         <textarea
           id="sponsor-msg"
-          name="nachricht"
-          rows={4}
+          rows={3}
           value={nachricht}
           onChange={(e) => setNachricht(e.target.value)}
           maxLength={8000}
-          placeholder="Zum Beispiel eine Kiste Äpfel, Riegel, 50 € oder eine Frage …"
-          className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex min-h-[100px] w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:ring-[3px] md:text-sm"
+          placeholder="Was ihr mitbringt …"
+          className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex min-h-[80px] w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:ring-[3px] md:text-sm"
         />
       </div>
 
       <label className="flex items-start gap-2 text-sm">
-        <input
-          type="checkbox"
-          required
-          checked={bestaetigt}
-          onChange={(e) => setBestaetigt(e.target.checked)}
-          className="mt-1"
-        />
+        <input type="checkbox" required checked={bestaetigt} onChange={(e) => setBestaetigt(e.target.checked)} className="mt-1" />
         <span>
-          Unverbindliche Anfrage, keine Online-Zahlung. Der Verein meldet sich.{" "}
+          Unverbindliche Anfrage, keine Online-Zahlung.{" "}
           <Link href="/datenschutz" className="text-koder-orange hover:underline">
             Datenschutz
           </Link>
@@ -455,22 +304,12 @@ export function SponsorAnfrageFormular() {
       {honeypotReady ? (
         <div className="hidden" aria-hidden="true">
           <label htmlFor="sponsor-fax">Fax</label>
-          <input
-            id="sponsor-fax"
-            name="fax_number"
-            type="text"
-            tabIndex={-1}
-            autoComplete="off"
-            value={honeypot}
-            onChange={(e) => setHoneypot(e.target.value)}
-          />
+          <input id="sponsor-fax" name="fax_number" type="text" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
         </div>
       ) : null}
 
       {status === "error" && errorMsg && (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {errorMsg}
-        </p>
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{errorMsg}</p>
       )}
 
       <Button type="submit" disabled={status === "sending"} size="lg" className="w-full sm:w-auto">
@@ -482,70 +321,10 @@ export function SponsorAnfrageFormular() {
         ) : (
           <>
             <Send className="size-4" />
-            {submitLabel(anfrageWeg, band, gewaehlteFlaeche)}
+            {submitLabel(band)}
           </>
         )}
       </Button>
     </form>
-  );
-}
-
-function BeitragsartFeld({
-  beitragsart,
-  setBeitragsart,
-  sachspende,
-}: {
-  beitragsart: Beitragsart;
-  setBeitragsart: (v: Beitragsart) => void;
-  sachspende: boolean;
-}) {
-  const options: { id: Beitragsart; label: string; disabled?: boolean }[] = sachspende
-    ? [
-        { id: "sach", label: "Sachspende" },
-        { id: "beides", label: "Sache + Zuschuss" },
-        { id: "geld", label: "Nur Geld", disabled: true },
-      ]
-    : [
-        { id: "geld", label: "Geld" },
-        { id: "sach", label: "Sache" },
-        { id: "beides", label: "Beides" },
-      ];
-
-  return (
-    <fieldset className="space-y-3">
-      <legend className="text-sm font-semibold">Art des Beitrags</legend>
-      <div className="grid gap-2 sm:grid-cols-3">
-        {options.map(({ id, label, disabled }) => (
-          <label
-            key={id}
-            className={`rounded-xl border p-3 text-sm ${
-              disabled
-                ? "cursor-not-allowed border-border opacity-50"
-                : beitragsart === id
-                  ? "cursor-pointer border-koder-orange bg-koder-orange/10"
-                  : "cursor-pointer border-border"
-            }`}
-          >
-            <input
-              type="radio"
-              name="beitragsart"
-              value={id}
-              checked={beitragsart === id}
-              disabled={disabled}
-              onChange={() => {
-                if (isBeitragsart(id) && !disabled) setBeitragsart(id);
-              }}
-              className="sr-only"
-            />
-            <span className="font-semibold">{label}</span>
-          </label>
-        ))}
-      </div>
-      {!sachspende && (
-        <p className="text-xs text-muted-foreground">
-          Wer die Sache stellt, zahlt nicht bar nach.
-        </p>
-      )}
-    </fieldset>
   );
 }

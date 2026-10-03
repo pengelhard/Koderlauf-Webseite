@@ -5,8 +5,8 @@ import { allowRequest, clientIp } from "@/lib/rate-limit";
 import {
   BAND_LABEL,
   getFlaeche,
-  bandWarnung,
   isBeitragsart,
+  stufeAusWert,
   isBeitragsband,
   isBeitragsartGueltig,
   isFlaecheBuchbar,
@@ -14,7 +14,6 @@ import {
   normalizeAnfrageWeg,
   normalizeStufe,
   TYP_LABEL,
-  SPONSORING_2027,
   type AnfrageWeg,
   type Beitragsart,
   type Beitragsband,
@@ -119,11 +118,24 @@ function resolveAnfrageWeg(rec: Record<string, unknown>): AnfrageWeg | null {
   return null;
 }
 
+function parseWert(v: unknown): number | null {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  if (typeof v === "string" && v.trim() !== "") {
+    const n = Number(v.replace(",", "."));
+    if (Number.isFinite(n)) return n;
+  }
+  return null;
+}
+
 function resolveBand(rec: Record<string, unknown>): Beitragsband {
   if (isBeitragsband(rec.band)) return rec.band;
+  const fromBand = normalizeStufe(typeof rec.band === "string" ? rec.band : null);
+  if (fromBand) return fromBand;
   const stufe = normalizeStufe(typeof rec.stufe === "string" ? rec.stufe : null);
   if (stufe) return stufe;
-  return "liste";
+  const wert = parseWert(rec.wert);
+  if (wert !== null) return stufeAusWert(wert);
+  return "unterstuetzer";
 }
 
 export async function POST(request: Request) {
@@ -232,7 +244,7 @@ export async function POST(request: Request) {
         ? "Sachspende"
         : `${BAND_LABEL[band]} + Fläche`
       : BAND_LABEL[band];
-  const stufenHinweis = bandWarnung(flaeche, band);
+  const wert = parseWert(rec.wert);
   const beitragLabel =
     beitragsart === "geld"
       ? "Geld"
@@ -251,7 +263,7 @@ export async function POST(request: Request) {
     flaeche ? `Fläche: ${flaeche.titel} (${flaeche.id})` : "Fläche: —",
     flaeche ? `Typ: ${TYP_LABEL[flaeche.typ]}` : "",
     beitragLabel ? `Beitrag: ${beitragLabel}` : "",
-    stufenHinweis ? `Hinweis: ${stufenHinweis}` : flaeche ? "Wert der Sache: im Gespräch klären" : "",
+    wert !== null ? `Genannter Wert: ${wert} €` : "",
     "",
     `Firma: ${firma}`,
     `Ansprechpartner: ${ansprechpartner}`,

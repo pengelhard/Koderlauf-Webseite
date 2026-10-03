@@ -1,7 +1,6 @@
-/** Sponsoring Koderlauf 2027 – Sichtbarkeit statt Preispakete. */
+/** Sponsoring Koderlauf 2027 – drei Stufen, Sache ohne festgesetzten Preis. */
 
-export type Sichtbarkeit = "liste" | "banner" | "buehne";
-/** Alter Name im Formular und in der API. */
+export type Sichtbarkeit = "unter100" | "unterstuetzer" | "sponsor" | "hauptsponsor";
 export type Beitragsband = Sichtbarkeit;
 export type AnfrageWeg = "stufe" | "flaeche";
 export type FlaecheStatus = "offen" | "reserviert" | "vergeben";
@@ -9,11 +8,11 @@ export type FlaecheTyp = "sachspende" | "geld_oder_sache";
 export type Beitragsart = "geld" | "sach" | "beides";
 
 export const SPONSORING_2027 = {
-  bannerAb: 150,
-  buehneAb: 500,
+  unterstuetzerAb: 100,
+  sponsorAb: 250,
+  hauptsponsorAb: 500,
   kontaktEmail: "info@koderlauf.de",
-  zuordnungSatz: "Geld hat einen Betrag. Sache ordnen wir im Gespräch zu.",
-  starterKalkulation: 500,
+  zuordnungSatz: "Ihr sagt, was die Sache wert ist. Daraus seht ihr die Stufe.",
   premiere2026: {
     anmeldungen: 400,
     finisher: 378,
@@ -22,9 +21,10 @@ export const SPONSORING_2027 = {
 } as const;
 
 export const BAND_LABEL: Record<Sichtbarkeit, string> = {
-  liste: "Liste",
-  banner: "Banner",
-  buehne: "Bühne",
+  unter100: "Unter 100 €",
+  unterstuetzer: "Unterstützer",
+  sponsor: "Sponsor",
+  hauptsponsor: "Hauptsponsor",
 };
 
 export const STATUS_LABEL: Record<FlaecheStatus, string> = {
@@ -48,53 +48,63 @@ const FLAECHE_ID_ALIASES: Record<string, string> = {
 };
 
 const STUFE_ALIASES: Record<string, Sichtbarkeit> = {
-  foerderer: "banner",
-  sachpartner: "banner",
-  partner: "banner",
-  sponsor: "banner",
-  hauptsponsor: "buehne",
+  foerderer: "sponsor",
+  sachpartner: "sponsor",
+  partner: "unterstuetzer",
+  liste: "unter100",
+  banner: "unterstuetzer",
+  buehne: "hauptsponsor",
 };
 
 export const SPONSOR_STUFEN: {
   id: Sichtbarkeit;
   name: string;
   preisLabel: string;
-  kurz: string;
+  info: string;
   leistungen: string[];
   ctaHref: string;
   ctaLabel: string;
 }[] = [
   {
-    id: "liste",
-    name: "Liste",
-    preisLabel: "klein",
-    kurz: "Äpfel, Riegel, 50 €, kleine Gutscheine.",
-    leistungen: ["Name auf der Dankesliste", "Kein Banner"],
-    ctaHref: "/sponsor-werden?stufe=liste#anfrage",
-    ctaLabel: "Liste anfragen",
-  },
-  {
-    id: "banner",
-    name: "Banner",
-    preisLabel: "ab etwa 150 €",
-    kurz: "Geld ab etwa 150 € – oder Ware und Gutscheine in der Größenordnung.",
+    id: "unterstuetzer",
+    name: "Unterstützer",
+    preisLabel: "100 €",
+    info: "Ab 100 €. Darunter steht nur der Name auf der Website.",
     leistungen: [
-      "Banner am Zaun",
-      "Logo auf der Website",
+      "Banner am Bauzaun",
+      "Banner am Gitter Zieleinlauf",
       "Instagram",
-      "Mehr Umfang, größeres Banner",
+      "Website",
     ],
-    ctaHref: "/sponsor-werden?stufe=banner#anfrage",
-    ctaLabel: "Banner anfragen",
+    ctaHref: "/sponsor-werden?stufe=unterstuetzer#anfrage",
+    ctaLabel: "Unterstützer anfragen",
   },
   {
-    id: "buehne",
-    name: "Bühne",
-    preisLabel: "ab etwa 500 €",
-    kurz: "Geld ab etwa 500 € – oder eine Sache, die den Lauf trägt.",
-    leistungen: ["Großes Banner", "Prominente Nennung", "Dank bei der Siegerehrung"],
-    ctaHref: "/sponsor-werden?stufe=buehne#anfrage",
-    ctaLabel: "Bühne anfragen",
+    id: "sponsor",
+    name: "Sponsor",
+    preisLabel: "250 €",
+    info: "Ab 250 €. Mittleres Banner und größeres Logo, plus alles aus 100 €.",
+    leistungen: [
+      "Alles aus 100 €",
+      "Mittleres Banner am Bauzaun",
+      "Größeres Logo auf der Website",
+    ],
+    ctaHref: "/sponsor-werden?stufe=sponsor#anfrage",
+    ctaLabel: "Sponsor anfragen",
+  },
+  {
+    id: "hauptsponsor",
+    name: "Hauptsponsor",
+    preisLabel: "ab 500 €",
+    info: "Ab 500 €. Großes Banner und Dank bei der Siegerehrung, plus alles aus 250 €.",
+    leistungen: [
+      "Alles aus 250 €",
+      "Großes Banner",
+      "Logo oben auf der Website",
+      "Dank bei der Siegerehrung",
+    ],
+    ctaHref: "/sponsor-werden?stufe=hauptsponsor#anfrage",
+    ctaLabel: "Hauptsponsor anfragen",
   },
 ];
 
@@ -102,109 +112,74 @@ export interface SponsorFlaeche {
   id: string;
   titel: string;
   kurz: string;
-  werbungKurz: string;
   typ: FlaecheTyp;
-  vorgeschlagenesBand: Sichtbarkeit;
-  minBand: Sichtbarkeit;
-  beschreibung: string;
-  hinweis?: string;
-  aufteilbar?: string;
   status: FlaecheStatus;
+  beschreibung?: string;
+  hinweis?: string;
   komplettHaelften?: [string, string];
   halfteVon?: string;
   mehrereMoeglich?: boolean;
-  /** CTA-Text z. B. „Zaun stellen“ */
   aktionLabel?: string;
 }
 
-/** Alle buchbaren Slots (Formular). Ohne Euro-Preise: Sache wird im Gespräch eingeordnet. */
 export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "bauzaun",
     titel: "Bauzaun stellen",
-    kurz: "Ca. 60 Bauzaunfelder und 70 Absperrgitter stellen. Transport und Aufbau nach Absprache.",
-    werbungKurz: "Hauptmotiv und „Bauzaun von …“. Alle anderen bekommen trotzdem Platz für ihr Banner.",
+    kurz: "Gestell, Transport und Aufbau.",
     typ: "sachspende",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung:
-      "Wir brauchen den Zaun, keine Überweisung an seiner Stelle. Im Gespräch, noch nicht fest.",
-    aktionLabel: "Zaun stellen",
+    beschreibung: "Bitte den Zaun stellen. Eine Überweisung ersetzt das nicht.",
     status: "reserviert",
+    aktionLabel: "Zaun stellen",
   },
   {
     id: "zielbogen",
     titel: "Zielbogen stellen",
-    kurz: "Eigenen Start- und Zielbogen mit Branding stellen, bekleben oder produzieren.",
-    werbungKurz: "Großes Logo auf dem Bogen.",
+    kurz: "Eigener Bogen mit Logo.",
     typ: "sachspende",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung:
-      "Ein geliehener Neutralbogen hat kein eigenes Logo. Den ordnen wir anders ein.",
-    aktionLabel: "Bogen stellen",
+    beschreibung: "Ein geliehener Neutralbogen hat kein eigenes Logo.",
     status: "offen",
+    aktionLabel: "Bogen stellen",
   },
   {
     id: "ziel-bier",
     titel: "Ziel-Bier stellen",
-    kurz: "Fässer oder Gebinde und nach Absprache Ausschank für erwachsene Finisher. Kinderlauf ausgenommen.",
-    werbungKurz: "Zapfstelle oder Schild „Zielbier präsentiert von …“.",
+    kurz: "Für erwachsene Finisher.",
     typ: "sachspende",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung: "Ohne Bier ist es keine Fläche. Alkohol nur für Erwachsene.",
-    aktionLabel: "Bier stellen",
+    beschreibung: "Ohne Bier ist es diese Sache nicht.",
     status: "offen",
+    aktionLabel: "Bier stellen",
   },
   {
     id: "medaillen",
-    titel: "Medaillen (Komplett)",
-    kurz: "Finisher-Medaille inklusive Band und Aufkleber, plus Reserve.",
-    werbungKurz: "Logo auf Band und Aufkleber.",
+    titel: "Medaillen",
+    kurz: "Band und Aufkleber, oder getrennt.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung:
-      "Komplett schließt die beiden Hälften. Eine Firma darf beides nehmen, zwei Firmen je eine Hälfte.",
+    hinweis: "Im Gespräch, noch nicht fest.",
     komplettHaelften: ["medaillen-a", "medaillen-b"],
-    hinweis: "Im Gespräch, noch nicht fest. Name nennen wir erst, wenn es zu ist.",
     status: "reserviert",
   },
   {
     id: "medaillen-a",
-    titel: "Medaillen – Hälfte A (Band)",
-    kurz: "Logo auf dem Medaillenband.",
-    werbungKurz: "Logo auf dem Band.",
+    titel: "Medaillen – Band",
+    kurz: "Logo auf dem Band.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung: "Hälfte A. Wer die Medaillen herstellt oder bezahlt, kommt auf die Bühne.",
     halfteVon: "medaillen",
     status: "reserviert",
   },
   {
     id: "medaillen-b",
-    titel: "Medaillen – Hälfte B (Aufkleber)",
-    kurz: "Logo auf dem Medaillen-Aufkleber.",
-    werbungKurz: "Logo auf dem Aufkleber.",
+    titel: "Medaillen – Aufkleber",
+    kurz: "Logo auf dem Aufkleber.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung: "Hälfte B. Wer die Medaillen herstellt oder bezahlt, kommt auf die Bühne.",
     halfteVon: "medaillen",
     status: "reserviert",
   },
   {
     id: "preise",
-    titel: "Siegerpreise (Komplett)",
-    kurz: "6 Läufe, Platz 1 bis 3.",
-    werbungKurz: "Übergabe, Nennung, Foto.",
+    titel: "Siegerpreise",
+    kurz: "6 Läufe, oder zwei Pakete.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung:
-      "Spielerei, Kinderlauf, Trailrun, Koderrunde Lauf, Koderrunde Walking, Kurz und knackig.",
     komplettHaelften: ["preise-1", "preise-2"],
     status: "offen",
   },
@@ -212,11 +187,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     id: "preise-1",
     titel: "Siegerpreise – Paket 1",
     kurz: "Spielerei, Trailrun, Koderrunde Lauf.",
-    werbungKurz: "Übergabe, Nennung, Foto.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung: "Paket 1. Umfang der Preise klären wir zusammen.",
     halfteVon: "preise",
     status: "offen",
   },
@@ -224,115 +195,61 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     id: "preise-2",
     titel: "Siegerpreise – Paket 2",
     kurz: "Kinderlauf, Koderrunde Walking, Kurz und knackig.",
-    werbungKurz: "Übergabe, Nennung, Foto.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung: "Paket 2. Umfang der Preise klären wir zusammen.",
     halfteVon: "preise",
     status: "offen",
   },
   {
     id: "zielverpflegung",
     titel: "Zielverpflegung",
-    kurz: "Getränk und eine Kleinigkeit am Ziel, ohne Bier.",
-    werbungKurz: "Schild oder Theke am Ziel.",
+    kurz: "Getränk und Kleinigkeit, ohne Bier.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung: "Nicht teilen. Verein kann einkaufen, oder ihr liefert.",
     status: "offen",
   },
   {
     id: "startnummern",
     titel: "Startnummern",
-    kurz: "Druck plus Reserve. Logo unten, exklusiv.",
-    werbungKurz: "Logo unten auf der Startnummer.",
+    kurz: "Logo unten auf der Nummer.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung: "Ohne Timing-Chip. Verein kann bestellen, oder ihr liefert.",
     status: "offen",
   },
   {
     id: "strecke",
     titel: "Streckenverpflegung",
-    kurz: "Wasser, Iso, Obst, Becher an der Station.",
-    werbungKurz: "Schild an der Station.",
+    kurz: "Wasser, Iso, Obst.",
     typ: "geld_oder_sache",
-    vorgeschlagenesBand: "buehne",
-    minBand: "buehne",
-    beschreibung: "Verein kann einkaufen, oder ihr stellt die Verpflegung.",
-    aufteilbar: "Zwei Stationen gehen auch getrennt. Eine einzelne Station kann Banner sein – sagen wir im Gespräch.",
     status: "offen",
   },
 ];
 
-/** UI-Gruppen für Flächen-Sektion. */
-export const FLAECHEN_UI = {
-  sachspendeIds: ["bauzaun", "zielbogen", "ziel-bier"] as const,
-  gruppen: [
-    {
-      id: "medaillen",
-      titel: "Medaillen",
-      zeile: "Komplett, oder Band und Aufkleber getrennt.",
-      slotIds: ["medaillen", "medaillen-a", "medaillen-b"],
-    },
-    {
-      id: "preise",
-      titel: "Siegerpreise",
-      zeile: "Alle 6 Läufe, oder zwei Pakete.",
-      slotIds: ["preise", "preise-1", "preise-2"],
-    },
-  ],
-  kurzIds: ["zielverpflegung", "startnummern", "strecke"] as const,
-};
+/** Sichtbare Sachspenden, ohne Aufteilungs-Slots. */
+export const SACHSPENDEN_SICHTBAR = SPONSOR_FLAECHEN.filter((f) => !f.halfteVon);
 
-export const SPONSOR_FAQ: { frage: string; antwort: string }[] = [
-  {
-    frage: "Wie ordnet ihr Äpfel, Riegel oder Gutscheine ein?",
-    antwort:
-      "Das machen wir im Gespräch. Eine Kiste oder 50 € ist Liste. Gutscheine über ein paar hundert Euro sind meist Banner. Ihr müsst keinen Preis festlegen.",
-  },
-  {
-    frage: "Warum Zaun, Bogen und Bier nur als Sache?",
-    antwort: "Weil wir die Sache brauchen. Geld ohne Gestell, Bogen oder Fässer ist eine andere Stufe, kein Logo auf dem Gegenstand.",
-  },
-  {
-    frage: "Muss ich nachzahlen, wenn ich die Sache stelle?",
-    antwort: "Nein.",
-  },
-  {
-    frage: "Können zwei Firmen eine Fläche teilen?",
-    antwort: "Bei Medaillen und Siegerpreisen ja. Sonst eine Firma pro Fläche.",
-  },
-  {
-    frage: "Banner ohne Fläche?",
-    antwort: "Ja. Geld ab etwa 150 € oder eine vergleichbare Sache. Kein Logo auf Zaun, Medaille oder Bogen.",
-  },
-  {
-    frage: "Was heißt „im Gespräch“?",
-    antwort: "Wir reden schon mit jemandem, es ist noch nicht fest. Namen stehen hier erst, wenn es zu ist. Du kannst dich trotzdem melden.",
-  },
-  {
-    frage: "Neutraler Leihbogen?",
-    antwort: "Kein eigenes Logo. Das ist nicht die Fläche Zielbogen.",
-  },
-  {
-    frage: "Wer hängt Banner an den Zaun?",
-    antwort: "Banner und Bühne. Die Firma, die den Zaun stellt, hat das Hauptmotiv.",
-  },
-  {
-    frage: "Gibt es Fotos?",
-    antwort: "Von eurer Fläche, soweit vorhanden.",
-  },
-];
+export function werbeleistungKurz(stufe: Sichtbarkeit): string {
+  switch (stufe) {
+    case "unter100":
+      return "Nur Name auf der Website.";
+    case "unterstuetzer":
+      return "Banner am Bauzaun und am Gitter Zieleinlauf, Instagram, Website.";
+    case "sponsor":
+      return "Mittleres Banner, größeres Logo, plus alles ab 100 €.";
+    case "hauptsponsor":
+      return "Großes Banner, Dank bei der Siegerehrung, plus alles ab 250 €.";
+  }
+}
 
-const BAND_RANK: Record<Sichtbarkeit, number> = {
-  liste: 1,
-  banner: 2,
-  buehne: 3,
-};
+export function stufeAusWert(wert: number): Sichtbarkeit {
+  if (!Number.isFinite(wert) || wert < SPONSORING_2027.unterstuetzerAb) return "unter100";
+  if (wert < SPONSORING_2027.sponsorAb) return "unterstuetzer";
+  if (wert < SPONSORING_2027.hauptsponsorAb) return "sponsor";
+  return "hauptsponsor";
+}
+
+export function getFlaeche(id: string | null | undefined): SponsorFlaeche | undefined {
+  const normalized = normalizeFlaecheId(id);
+  if (!normalized) return undefined;
+  return SPONSOR_FLAECHEN.find((f) => f.id === normalized);
+}
 
 export function normalizeFlaecheId(id: string | null | undefined): string | undefined {
   if (!id) return undefined;
@@ -346,18 +263,10 @@ export function normalizePostenId(id: string | null | undefined): string | undef
 export function normalizeStufe(stufe: string | null | undefined): Sichtbarkeit | undefined {
   if (!stufe) return undefined;
   if (stufe in STUFE_ALIASES) return STUFE_ALIASES[stufe];
-  if (stufe === "liste" || stufe === "banner" || stufe === "buehne") return stufe;
+  if (stufe === "unter100" || stufe === "unterstuetzer" || stufe === "sponsor" || stufe === "hauptsponsor") {
+    return stufe;
+  }
   return undefined;
-}
-
-export function getFlaeche(id: string | null | undefined): SponsorFlaeche | undefined {
-  const normalized = normalizeFlaecheId(id);
-  if (!normalized) return undefined;
-  return SPONSOR_FLAECHEN.find((f) => f.id === normalized);
-}
-
-export function getKostenposten(id: string | null | undefined): SponsorFlaeche | undefined {
-  return getFlaeche(id);
 }
 
 export function flaecheParamAusSearch(flaeche: string | null, posten: string | null): string | null {
@@ -370,19 +279,14 @@ export function isSachspendeFlaeche(f: SponsorFlaeche | undefined): boolean {
 
 export function getEffectiveStatus(flaeche: SponsorFlaeche): FlaecheStatus {
   if (flaeche.status === "vergeben") return "vergeben";
-
   if (flaeche.halfteVon) {
     const parent = getFlaeche(flaeche.halfteVon);
     if (parent && getEffectiveStatus(parent) === "vergeben") return "vergeben";
   }
-
   if (flaeche.komplettHaelften) {
     const [a, b] = flaeche.komplettHaelften;
-    if (getFlaeche(a)?.status === "vergeben" || getFlaeche(b)?.status === "vergeben") {
-      return "vergeben";
-    }
+    if (getFlaeche(a)?.status === "vergeben" || getFlaeche(b)?.status === "vergeben") return "vergeben";
   }
-
   return flaeche.status;
 }
 
@@ -390,33 +294,25 @@ export function isFlaecheBuchbar(id: string): boolean {
   const f = getFlaeche(id);
   if (!f) return false;
   if (getEffectiveStatus(f) === "vergeben") return false;
-
   if (f.komplettHaelften) {
     const [a, b] = f.komplettHaelften;
-    if (getFlaeche(a)?.status === "vergeben" || getFlaeche(b)?.status === "vergeben") {
-      return false;
-    }
+    if (getFlaeche(a)?.status === "vergeben" || getFlaeche(b)?.status === "vergeben") return false;
   }
-
   if (f.halfteVon && getFlaeche(f.halfteVon)?.status === "vergeben") return false;
-
   return true;
 }
 
 export function flaecheOptionLabel(f: SponsorFlaeche): string {
   const status = getEffectiveStatus(f);
-  const suffix = status !== "offen" ? ` (${STATUS_LABEL[status]})` : "";
-  return `${f.titel}${suffix}`;
+  return status === "offen" ? f.titel : `${f.titel} (${STATUS_LABEL[status]})`;
 }
 
-export function vorschlagBand(flaeche: SponsorFlaeche | undefined): Sichtbarkeit {
-  if (!flaeche) return "liste";
-  return flaeche.vorgeschlagenesBand;
+export function vorschlagBand(): Sichtbarkeit {
+  return "unterstuetzer";
 }
 
-export function bandAusQuery(stufe: string | null, flaeche: SponsorFlaeche | undefined): Sichtbarkeit {
-  if (flaeche) return vorschlagBand(flaeche);
-  return normalizeStufe(stufe) ?? "liste";
+export function bandAusQuery(stufe: string | null): Sichtbarkeit {
+  return normalizeStufe(stufe) ?? "unterstuetzer";
 }
 
 export function anfrageWegAusQuery(
@@ -424,17 +320,9 @@ export function anfrageWegAusQuery(
   flaecheId: string | null,
   postenId: string | null = null,
 ): AnfrageWeg {
-  const flaeche = getFlaeche(flaecheParamAusSearch(flaecheId, postenId));
-  if (flaeche) return "flaeche";
+  if (getFlaeche(flaecheParamAusSearch(flaecheId, postenId))) return "flaeche";
+  if (normalizeStufe(stufe)) return "stufe";
   return "stufe";
-}
-
-export function bandWarnung(flaeche: SponsorFlaeche | undefined, band: Sichtbarkeit): string | null {
-  if (!flaeche) return null;
-  if (BAND_RANK[band] < BAND_RANK[flaeche.minBand]) {
-    return `Wer diese Fläche übernimmt, kommt auf die ${BAND_LABEL[flaeche.minBand]}. Kleiner nur nach Absprache.`;
-  }
-  return null;
 }
 
 export function beitragsartWarnung(
@@ -443,36 +331,27 @@ export function beitragsartWarnung(
 ): string | null {
   if (!flaeche || !isSachspendeFlaeche(flaeche)) return null;
   if (beitragsart === "geld") {
-    return "Diese Fläche ist eine Sachspende. Geld allein bucht sie nicht.";
+    return "Diese Sache muss geliefert werden. Geld allein ersetzt sie nicht.";
   }
   return null;
 }
 
-export function isBeitragsartGueltig(
-  flaeche: SponsorFlaeche | undefined,
-  beitragsart: Beitragsart,
-): boolean {
+export function isBeitragsartGueltig(flaeche: SponsorFlaeche | undefined, beitragsart: Beitragsart): boolean {
   if (!flaeche) return true;
   if (isSachspendeFlaeche(flaeche) && beitragsart === "geld") return false;
   return true;
 }
 
 export function defaultBeitragsart(flaeche: SponsorFlaeche | undefined): Beitragsart {
-  if (isSachspendeFlaeche(flaeche)) return "sach";
+  if (flaeche) return "sach";
   return "geld";
 }
 
 export function ctaFuerFlaeche(flaeche: SponsorFlaeche): { href: string; label: string } {
-  const band = vorschlagBand(flaeche);
-  const label = flaeche.aktionLabel ? `${flaeche.aktionLabel} anfragen` : "Diese Fläche anfragen";
   return {
-    href: `/sponsor-werden?stufe=${band}&flaeche=${flaeche.id}#anfrage`,
-    label,
+    href: `/sponsor-werden?flaeche=${flaeche.id}#anfrage`,
+    label: "Wert nennen",
   };
-}
-
-export function ctaFuerPosten(flaeche: SponsorFlaeche): { href: string; label: string } {
-  return ctaFuerFlaeche(flaeche);
 }
 
 export function normalizeAnfrageWeg(v: unknown): AnfrageWeg | null {
@@ -485,12 +364,8 @@ export function isAnfrageWeg(v: unknown): v is AnfrageWeg {
   return normalizeAnfrageWeg(v) !== null;
 }
 
-export function isAnfrageArt(v: unknown): v is AnfrageWeg {
-  return isAnfrageWeg(v);
-}
-
 export function isSichtbarkeit(v: unknown): v is Sichtbarkeit {
-  return v === "liste" || v === "banner" || v === "buehne";
+  return v === "unter100" || v === "unterstuetzer" || v === "sponsor" || v === "hauptsponsor";
 }
 
 export function isBeitragsband(v: unknown): v is Beitragsband {
@@ -501,14 +376,10 @@ export function isBeitragsart(v: unknown): v is Beitragsart {
   return v === "geld" || v === "sach" || v === "beides";
 }
 
-export function submitLabel(
-  weg: AnfrageWeg,
-  band: Sichtbarkeit,
-  flaeche?: SponsorFlaeche,
-): string {
-  if (weg === "flaeche" && flaeche && isSachspendeFlaeche(flaeche)) return "Sachspende anfragen";
-  if (band === "liste") return "Liste anfragen";
-  if (band === "banner") return "Banner anfragen";
-  if (band === "buehne") return "Bühne anfragen";
-  return "Anfrage senden";
+export function submitLabel(band: Sichtbarkeit): string {
+  if (band === "unter100") return "Anfragen";
+  if (band === "unterstuetzer") return "Unterstützer anfragen";
+  if (band === "sponsor") return "Sponsor anfragen";
+  if (band === "hauptsponsor") return "Hauptsponsor anfragen";
+  return "Anfragen";
 }

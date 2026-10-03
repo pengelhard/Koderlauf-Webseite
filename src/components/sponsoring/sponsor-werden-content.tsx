@@ -7,12 +7,7 @@ import { EVENT } from "@/lib/event-config";
 import { SPONSORING_2027 } from "@/lib/sponsoring-2027";
 import { SponsorAnfrageFormular } from "@/components/sponsoring/anfrage-formular";
 import { SponsorStickyAnfrage } from "@/components/sponsoring/sponsor-sticky-anfrage";
-import {
-  SponsorFaq,
-  SponsorHeroBilder,
-  SponsorOffeneFlaechen,
-  SponsorStufen,
-} from "@/components/sponsoring/sponsor-werden-sections";
+import { SponsorSachen, SponsorStufen } from "@/components/sponsoring/sponsor-werden-sections";
 
 export function SponsorWerdenContent() {
   const { kontaktEmail } = SPONSORING_2027;
@@ -47,60 +42,49 @@ export function SponsorWerdenContent() {
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
               Sponsor werden
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              Auch eine Kiste Äpfel oder 50 € sind willkommen. Kurz Bescheid sagen – wir fragen auch persönlich nach.
+            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+              100 €, 250 € oder ab 500 €. Auch eine Kiste Äpfel.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
-              {EVENT.datumKurz} · {EVENT.ortDetail} · {EVENT.veranstalter}
+              {EVENT.datumKurz} · {EVENT.ortDetail}
             </p>
-
             <div className="mt-6 flex flex-wrap gap-2">
               <Link
-                href="/sponsor-werden?stufe=liste#anfrage"
+                href="/sponsor-werden?stufe=unterstuetzer#anfrage"
                 className="rounded-xl bg-koder-orange px-4 py-2.5 text-sm font-bold text-white hover:bg-koder-orange/90"
               >
-                Liste
+                100 €
               </Link>
               <Link
-                href="/sponsor-werden?stufe=banner#anfrage"
+                href="/sponsor-werden?stufe=sponsor#anfrage"
                 className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
               >
-                Banner
+                250 €
               </Link>
               <Link
-                href="/sponsor-werden?stufe=buehne#anfrage"
+                href="/sponsor-werden?stufe=hauptsponsor#anfrage"
                 className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
               >
-                Bühne
+                500 €
               </Link>
               <Link
-                href="#flaechen"
+                href="#sachen"
                 className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:border-koder-orange/40"
               >
-                Flächen
+                Sachen
               </Link>
             </div>
-
-            <p className="mt-4 text-sm text-muted-foreground">
-              {SPONSORING_2027.zuordnungSatz} Unverbindlich, keine Online-Zahlung.{" "}
-              <a href={`mailto:${kontaktEmail}`} className="text-koder-orange hover:underline">
-                {kontaktEmail}
-              </a>
-            </p>
-
-            <SponsorHeroBilder />
           </motion.section>
 
           <SponsorStufen />
-          <SponsorOffeneFlaechen />
-          <SponsorFaq />
+          <SponsorSachen />
 
           <section id="anfrage" className="mt-12 scroll-mt-28" aria-labelledby="anfrage-titel">
             <h2 id="anfrage-titel" className="text-2xl font-extrabold tracking-tight">
               Kurz Bescheid sagen
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Kein Checkout. Wir melden uns von {kontaktEmail} und ordnen den Umfang zu.
+              Keine Online-Zahlung. Antwort von {kontaktEmail}.
             </p>
             <div className="mt-6 rounded-3xl border border-border bg-card p-6 sm:p-8">
               <SponsorAnfrageFormular />
