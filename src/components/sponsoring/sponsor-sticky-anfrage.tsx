@@ -28,7 +28,7 @@ export function SponsorStickyAnfrage({ heroId = "sponsor-hero" }: { heroId?: str
         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-koder-orange px-6 py-3 text-sm font-bold uppercase tracking-widest text-white"
       >
         <Send size={16} aria-hidden />
-        Anfrage
+        Kurz Bescheid sagen
       </Link>
     </div>
   );

@@ -23,6 +23,7 @@ import {
   isFlaecheBuchbar,
   isSachspendeFlaeche,
   SPONSOR_FLAECHEN,
+  SPONSOR_STUFEN,
   SPONSORING_2027,
   submitLabel,
   vorschlagBand,
@@ -89,7 +90,7 @@ export function SponsorAnfrageFormular() {
       setFlaecheId(nextFlaeche.id);
       setBand(vorschlagBand(nextFlaeche));
       setBeitragsart(defaultBeitragsart(nextFlaeche));
-    } else if (nextWeg === "paket") {
+    } else {
       setBand(bandAusQuery(stufeParam, undefined));
       setFlaecheId("");
     }
@@ -193,7 +194,7 @@ export function SponsorAnfrageFormular() {
           <a href={`mailto:${SPONSORING_2027.kontaktEmail}`} className="text-koder-orange hover:underline">
             {SPONSORING_2027.kontaktEmail}
           </a>
-          . Als Nächstes: Paket bestätigen, Fläche ja/nein, Logo-Formate, Rechnungsadresse.
+          . Wir ordnen Liste, Banner oder Bühne zu. Keine Zahlung über die Website.
         </p>
         <Button type="button" variant="outline" className="mt-2" onClick={() => setStatus("idle")}>
           Weitere Anfrage
@@ -209,57 +210,50 @@ export function SponsorAnfrageFormular() {
       <div className="grid gap-4 sm:grid-cols-2">
         <fieldset
           className={`rounded-2xl border p-5 transition-colors ${
-            anfrageWeg === "paket" ? "border-koder-orange bg-koder-orange/5" : "border-border"
+            anfrageWeg === "stufe" ? "border-koder-orange bg-koder-orange/5" : "border-border"
           }`}
         >
-          <legend className="px-1 text-sm font-bold">Nur Paket</legend>
-          <p className="mt-1 text-sm text-muted-foreground">Partner 150 € · Sponsor 300 € · Hauptsponsor 500 €</p>
+          <legend className="px-1 text-sm font-bold">Stufe</legend>
+          <p className="mt-1 text-sm text-muted-foreground">Liste, Banner oder Bühne – ohne konkrete Fläche.</p>
           <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
               type="radio"
               name="anfrageWeg"
-              checked={anfrageWeg === "paket"}
+              checked={anfrageWeg === "stufe"}
               onChange={() => {
-                setAnfrageWeg("paket");
+                setAnfrageWeg("stufe");
                 setFlaecheId("");
-                setBand("partner");
-                updateQuery("paket", "partner", "");
+                setBand("liste");
+                updateQuery("stufe", "liste", "");
               }}
               className="mt-1"
             />
-            <span>Paket wählen (ohne Fläche)</span>
+            <span>Stufe wählen</span>
           </label>
-          {anfrageWeg === "paket" && (
+          {anfrageWeg === "stufe" && (
             <div className="mt-4 grid gap-2">
-              {(["partner", "sponsor", "hauptsponsor"] as const).map((id) => (
+              {SPONSOR_STUFEN.map((stufe) => (
                 <label
-                  key={id}
+                  key={stufe.id}
                   className={`cursor-pointer rounded-xl border p-3 text-sm ${
-                    band === id ? "border-koder-orange bg-koder-orange/10" : "border-border"
+                    band === stufe.id ? "border-koder-orange bg-koder-orange/10" : "border-border"
                   }`}
                 >
                   <input
                     type="radio"
-                    name="paket"
-                    value={id}
-                    checked={band === id}
+                    name="stufe"
+                    value={stufe.id}
+                    checked={band === stufe.id}
                     onChange={() => {
-                      if (!isBeitragsband(id)) return;
-                      setBand(id);
-                      updateQuery("paket", id, "");
+                      if (!isBeitragsband(stufe.id)) return;
+                      setBand(stufe.id);
+                      updateQuery("stufe", stufe.id, "");
                     }}
                     className="sr-only"
                   />
-                  <span className="font-bold">{BAND_LABEL[id]}</span>
-                  <span className="text-muted-foreground">
-                    {" "}
-                    ·{" "}
-                    {id === "partner"
-                      ? `${SPONSORING_2027.partnerPreis} €`
-                      : id === "sponsor"
-                        ? `ab ${SPONSORING_2027.sponsorAb} €`
-                        : `ab ${SPONSORING_2027.hauptsponsorAb} €`}
-                  </span>
+                  <span className="font-bold">{BAND_LABEL[stufe.id]}</span>
+                  <span className="text-muted-foreground"> · {stufe.preisLabel}</span>
+                  <p className="mt-1 text-xs text-muted-foreground">{stufe.kurz}</p>
                 </label>
               ))}
             </div>
@@ -273,7 +267,7 @@ export function SponsorAnfrageFormular() {
         >
           <legend className="px-1 text-sm font-bold">Eine Fläche wählen</legend>
           <p className="mt-1 text-sm text-muted-foreground">
-            Paket folgt aus dem Gegenwert. Art des Beitrags aus Flächentyp.
+            Wer eine Fläche übernimmt, kommt auf die Bühne. Den Wert der Sache klären wir zusammen.
           </p>
           <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
             <input
@@ -328,7 +322,7 @@ export function SponsorAnfrageFormular() {
 
           {gewaehlteFlaeche && (
             <p className="text-sm text-muted-foreground">
-              Vorgeschlagenes Paket: <strong>{BAND_LABEL[band]}</strong> ({gewaehlteFlaeche.festpreis} €)
+              Stufe: <strong>{BAND_LABEL[band]}</strong>. Umfang der Sache klären wir im Gespräch.
             </p>
           )}
 
@@ -437,7 +431,7 @@ export function SponsorAnfrageFormular() {
           value={nachricht}
           onChange={(e) => setNachricht(e.target.value)}
           maxLength={8000}
-          placeholder="Was euch wichtig ist, Fragen …"
+          placeholder="Zum Beispiel eine Kiste Äpfel, Riegel, 50 € oder eine Frage …"
           className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex min-h-[100px] w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:ring-[3px] md:text-sm"
         />
       </div>
