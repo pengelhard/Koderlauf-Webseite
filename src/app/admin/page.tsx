@@ -13,6 +13,7 @@ import {
   Handshake,
 } from "lucide-react";
 import type { OrgaAdminPayload } from "@/lib/orga/types";
+import { SachspendenAdmin } from "@/components/sponsoring/sachspenden-admin";
 
 function pdfHref(kind: string, strecke?: string, year?: string): string {
   const params = new URLSearchParams({ kind });
@@ -148,6 +149,8 @@ export default function OrgaAdminPage() {
           </Link>
         </div>
       </div>
+
+      <SachspendenAdmin />
 
       {error && <p className="text-sm text-destructive">{error}</p>}
       {data?.error && (

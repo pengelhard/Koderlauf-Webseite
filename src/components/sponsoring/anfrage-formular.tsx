@@ -38,13 +38,15 @@ function dateiErlaubt(file: File): boolean {
   return DATEI_ENDUNGEN.some((ext) => name.endsWith(ext));
 }
 
-export function SponsorAnfrageFormular() {
+export function SponsorAnfrageFormular({ vergebenIds = [] }: { vergebenIds?: string[] }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const flaecheParam = flaecheParamAusSearch(searchParams.get("flaeche"), searchParams.get("posten"));
+  const vergeben = new Set(vergebenIds);
   const dateiRef = useRef<HTMLInputElement>(null);
+  const startFlaeche = getFlaeche(flaecheParam)?.id ?? "";
 
-  const [flaecheId, setFlaecheId] = useState(getFlaeche(flaecheParam)?.id ?? "");
+  const [flaecheId, setFlaecheId] = useState(vergeben.has(startFlaeche) ? "" : startFlaeche);
   const [wert, setWert] = useState("");
   const [wertInfo, setWertInfo] = useState(false);
   const [beitragsart, setBeitragsart] = useState<Beitragsart>(defaultBeitragsart(getFlaeche(flaecheParam)));
@@ -74,8 +76,8 @@ export function SponsorAnfrageFormular() {
   useEffect(() => {
     const resolved = flaecheParamAusSearch(searchParams.get("flaeche"), searchParams.get("posten"));
     const nextFlaeche = getFlaeche(resolved);
-    if (nextFlaeche) setFlaecheId(nextFlaeche.id);
-  }, [searchParams]);
+    if (nextFlaeche && !vergebenIds.includes(nextFlaeche.id)) setFlaecheId(nextFlaeche.id);
+  }, [searchParams, vergebenIds]);
 
   function syncFlaeche(nextFlaeche: string) {
     const q = new URLSearchParams();
@@ -225,7 +227,7 @@ export function SponsorAnfrageFormular() {
             className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
           >
             <option value="">Reine Geldspende</option>
-            {SACHSPENDEN_SICHTBAR.map((f) => (
+            {SACHSPENDEN_SICHTBAR.filter((f) => !vergeben.has(f.id)).map((f) => (
               <option key={f.id} value={f.id} disabled={!isFlaecheBuchbar(f.id)}>
                 {flaecheOptionLabel(f)}
               </option>

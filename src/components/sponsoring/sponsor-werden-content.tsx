@@ -8,7 +8,7 @@ import { SponsorAnfrageFormular } from "@/components/sponsoring/anfrage-formular
 import { SponsorStickyAnfrage } from "@/components/sponsoring/sponsor-sticky-anfrage";
 import { SponsorSachen, SponsorStufen } from "@/components/sponsoring/sponsor-werden-sections";
 
-export function SponsorWerdenContent() {
+export function SponsorWerdenContent({ vergebenIds = [] }: { vergebenIds?: string[] }) {
   const { kontaktEmail } = SPONSORING_2027;
 
   useEffect(() => {
@@ -42,15 +42,12 @@ export function SponsorWerdenContent() {
               Sponsor werden
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-foreground">
-              Drei Tage Feiern, 50 Jahre SVO. Eure Werbung ist alle drei Tage präsent.
-            </p>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Zur Orientierung: Wir rechnen mit etwa 600 bis 1000 Leute.
+              Präsentiert eure Firma und zeigt, dass ihr Unterstützer des Koderlauf 2027 seid.
             </p>
           </motion.section>
 
           <SponsorStufen />
-          <SponsorSachen />
+          <SponsorSachen vergebenIds={vergebenIds} />
 
           <section id="anfrage" className="mt-12 scroll-mt-28" aria-labelledby="anfrage-titel">
             <h2 id="anfrage-titel" className="text-2xl font-extrabold tracking-tight">
@@ -58,7 +55,7 @@ export function SponsorWerdenContent() {
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">Antwort von {kontaktEmail}.</p>
             <div className="mt-6 rounded-3xl border border-border bg-card p-6 sm:p-8">
-              <SponsorAnfrageFormular />
+              <SponsorAnfrageFormular vergebenIds={vergebenIds} />
             </div>
           </section>
         </div>
