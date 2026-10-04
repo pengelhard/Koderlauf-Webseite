@@ -98,11 +98,10 @@ function WebsiteMuster({ stufe }: { stufe: "unterstuetzer" | "sponsor" | "haupts
           <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
             {stufe === "hauptsponsor" ? "Weitere Sponsoren" : "Sponsoren"}
           </p>
-          <div className={`mt-1.5 grid gap-1.5 ${stufe === "unterstuetzer" ? "grid-cols-3" : "grid-cols-2"}`}>
+          <div className="mt-1.5 grid gap-1.5">
             {stufe === "unterstuetzer" && <LogoPlatte size="klein" name="Eure Firma" hervor />}
             {stufe === "sponsor" && <LogoPlatte size="mittel" name="Eure Firma" hervor />}
-            <LogoPlatte size="klein" name="Firma" />
-            {stufe === "unterstuetzer" && <LogoPlatte size="klein" name="Firma" />}
+            {stufe !== "unterstuetzer" && <LogoPlatte size="klein" name="Andere Firma" />}
           </div>
         </div>
       </div>
