@@ -41,13 +41,8 @@ function InfoNote({ text }: { text: string }) {
       </p>
     );
   }
-  const compact = lines.every((line) => line.length < 48);
   return (
-    <ul
-      className={`mt-2 list-disc rounded-xl border border-border bg-muted/40 px-3 py-2 pl-7 text-xs leading-relaxed text-muted-foreground ${
-        compact ? "grid gap-x-6 gap-y-1 sm:grid-cols-2" : "space-y-1"
-      }`}
-    >
+    <ul className="mt-2 list-disc space-y-1 rounded-xl border border-border bg-muted/40 px-3 py-2 pl-7 text-xs leading-relaxed text-muted-foreground">
       {lines.map((line) => (
         <li key={line}>{line}</li>
       ))}
