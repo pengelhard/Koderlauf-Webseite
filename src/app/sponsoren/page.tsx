@@ -67,78 +67,84 @@ function SponsorCard({ sponsor, gross = false }: { sponsor: PublicSponsor; gross
   return <div className={cardClasses}>{inner}</div>;
 }
 
-function MusterLogo({ size }: { size: "klein" | "mittel" | "gross" }) {
-  const box =
-    size === "gross" ? "h-32 w-32 text-lg" : size === "mittel" ? "h-28 w-28 text-base" : "h-24 w-24 text-sm";
-  return (
-    <div
-      className={`flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-white to-zinc-200 font-black tracking-tight text-zinc-900 ${box}`}
-    >
-      Logo
-    </div>
-  );
-}
-
-function MusterKarte({
-  size,
-  firma,
-  zeile,
-}: {
-  size: "klein" | "mittel" | "gross";
-  firma: string;
-  zeile: string;
-}) {
-  const card =
-    size === "gross"
-      ? "flex items-center gap-5 rounded-3xl border-2 border-koder-orange/30 bg-gradient-to-br from-koder-orange/10 to-transparent p-6"
-      : "flex items-center gap-4 rounded-2xl border border-border bg-card p-4";
-  return (
-    <div className={card}>
-      <MusterLogo size={size} />
-      <div className="min-w-0">
-        <h3 className={`font-bold leading-relaxed ${size === "gross" ? "text-lg" : ""}`}>{firma}</h3>
-        <p className="text-xs text-muted-foreground">{zeile}</p>
-      </div>
-    </div>
-  );
-}
-
 function SponsorenAufbau({ jahr }: { jahr: string }) {
   return (
-    <div className="mt-10">
-      <p className="mx-auto max-w-xl text-center text-sm text-muted-foreground">
-        So steht ihr auf dieser Seite. Die echten Logos kommen, sobald die Partnerschaften feststehen.
-      </p>
-
-      <section className="mt-10">
-        <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
-          Hauptsponsoren {jahr}
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">Ab 500 €, ganz oben und sehr präsent.</p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <MusterKarte size="gross" firma="Eure Firma" zeile="Name und Ort" />
-        </div>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">Sponsoren {jahr}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">250 €, etwas größeres Logo.</p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <MusterKarte size="mittel" firma="Eure Firma" zeile="Name und Ort" />
-        </div>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
-          Unterstützer {jahr}
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          100 € und darunter: kleines Logo und Name.
+    <div className="mt-14">
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-xl font-bold tracking-tight sm:text-2xl">
+          Eure Werbung ist das ganze Festwochenende zu sehen.
         </p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <MusterKarte size="klein" firma="Eure Firma" zeile="Name und Ort" />
-          <MusterKarte size="klein" firma="Weitere Firma" zeile="Name und Ort" />
+        <p className="mt-3 text-sm text-muted-foreground">
+          So steht ihr auf dieser Seite. Die echten Logos kommen, sobald die Partnerschaften feststehen.
+        </p>
+      </div>
+
+      <section className="relative mt-12 overflow-hidden rounded-[2rem] border-2 border-koder-orange/70 bg-gradient-to-br from-koder-orange/30 via-koder-orange/10 to-transparent px-5 py-8 shadow-[0_30px_90px_-36px_rgba(255,107,0,0.9)] sm:px-10 sm:py-12">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-3xl font-extrabold tracking-tight sm:text-5xl">Hauptsponsor</h2>
+          <span className="rounded-full bg-koder-orange px-4 py-2 text-base font-bold text-white">ab 500 €</span>
         </div>
+        <p className="mt-2 text-base text-muted-foreground">Ganz oben. Das größte Logo auf der Seite.</p>
+        <div className="mt-8 flex flex-col items-center gap-6 rounded-3xl bg-background/75 p-6 ring-1 ring-koder-orange/40 sm:flex-row sm:gap-10 sm:p-10">
+          <div className="flex h-44 w-44 shrink-0 items-center justify-center rounded-[1.75rem] bg-gradient-to-br from-white to-zinc-200 text-3xl font-black tracking-tight text-zinc-900 shadow-2xl sm:h-60 sm:w-60 sm:text-4xl">
+            Logo
+          </div>
+          <div className="text-center sm:text-left">
+            <h3 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Eure Firma</h3>
+            <p className="mt-2 text-lg text-muted-foreground">Name und Ort</p>
+            <p className="mt-4 text-sm font-semibold uppercase tracking-[0.2em] text-koder-orange">
+              Hauptsponsoren {jahr}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-8 max-w-3xl rounded-3xl border border-foreground/15 bg-card px-5 py-6 sm:px-8 sm:py-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-2xl font-extrabold tracking-tight">Sponsor</h2>
+          <span className="rounded-full border border-koder-orange/50 px-3 py-1 text-sm font-bold text-koder-orange">
+            250 €
+          </span>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">Etwas größeres Logo, klar unter dem Hauptsponsor.</p>
+        <div className="mt-6 flex items-center gap-5 rounded-2xl border border-border bg-background/50 p-5">
+          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-white to-zinc-200 text-lg font-black text-zinc-900">
+            Logo
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-2xl font-bold">Eure Firma</h3>
+            <p className="text-sm text-muted-foreground">Name und Ort</p>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-koder-orange">
+              Sponsoren {jahr}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-2xl border border-border/80 bg-muted/20 px-4 py-5 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-bold">Unterstützer</h2>
+          <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+            100 € und darunter
+          </span>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">Kleines Logo und Name.</p>
+        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          {["Eure Firma", "Weitere Firma", "Noch eine Firma"].map((firma) => (
+            <div key={firma} className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-white to-zinc-200 text-[10px] font-black text-zinc-900">
+                Logo
+              </div>
+              <div className="min-w-0">
+                <h3 className="truncate text-sm font-semibold">{firma}</h3>
+                <p className="text-[11px] text-muted-foreground">Name und Ort</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          Unterstützer {jahr}
+        </p>
       </section>
     </div>
   );

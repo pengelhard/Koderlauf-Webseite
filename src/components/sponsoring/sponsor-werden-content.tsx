@@ -44,6 +44,9 @@ export function SponsorWerdenContent({ vergebenIds = [] }: { vergebenIds?: strin
             <p className="mt-4 max-w-2xl text-lg text-foreground">
               Präsentiert eure Firma und zeigt, dass ihr Unterstützer des Koderlauf 2027 seid.
             </p>
+            <p className="mt-3 max-w-2xl text-lg font-semibold text-foreground">
+              Eure Werbung ist das ganze Festwochenende zu sehen.
+            </p>
           </motion.section>
 
           <SponsorStufen />

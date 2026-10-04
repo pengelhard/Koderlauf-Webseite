@@ -54,12 +54,12 @@ test("Alte Links und Sachspenden ohne Preis", () => {
   assert.equal(getFlaeche("zielverpflegung")?.id, "verpflegung");
   assert.equal(getFlaeche("strecke")?.id, "verpflegung");
   assert.match(getFlaeche("medaillen")?.kurz ?? "", /Kodermedaille/);
-  assert.match(getFlaeche("medaillen")?.kurz ?? "", /Leinenband/);
+  assert.match(getFlaeche("medaillen")?.kurz ?? "", /Lanyard/);
   assert.match(getFlaeche("startnummern")?.kurz ?? "", /Name/);
   assert.equal(SACHSPENDEN_SICHTBAR.some((f) => f.halfteVon), false);
   const json = JSON.stringify(SACHSPENDEN_SICHTBAR);
   assert.equal(json.includes("festpreis"), false);
-  assert.equal(json.includes("300"), false);
+  assert.equal(json.includes("€"), false);
   assert.equal(submitLabel("hauptsponsor"), "Hauptsponsor anfragen");
   assert.equal(submitLabel("unter100"), "Anfragen");
   assert.match(getFlaeche("bauzaun")?.kurz ?? "", /Absperren/);
@@ -67,7 +67,10 @@ test("Alte Links und Sachspenden ohne Preis", () => {
   assert.match(getFlaeche("medaillen")?.beschreibung ?? "", /wie 2026/);
   assert.match(getFlaeche("ziel-bier")?.beschreibung ?? "", /Partnerbrauerei/);
   assert.match(getFlaeche("preise")?.beschreibung ?? "", /36 Platzierungspreise/);
-  assert.match(getFlaeche("verpflegung")?.beschreibung ?? "", /600 Liter/);
+  assert.match(getFlaeche("verpflegung")?.beschreibung ?? "", /300 Liter/);
+  assert.match(getFlaeche("verpflegung")?.beschreibung ?? "", /60 Liter/);
+  assert.equal((getFlaeche("verpflegung")?.beschreibung ?? "").includes("Orangen"), false);
+  assert.equal((getFlaeche("verpflegung")?.beschreibung ?? "").includes("600 Liter"), false);
   assert.equal(sacheMehrfach("preise"), true);
   assert.equal(sacheMehrfach("verpflegung"), true);
   assert.equal(sacheMehrfach("bauzaun"), false);
@@ -79,6 +82,7 @@ test("Alte Links und Sachspenden ohne Preis", () => {
   assert.match(SPONSOR_STUFEN.find((s) => s.id === "unterstuetzer")?.info ?? "", /3,40 m/);
   assert.match(SPONSOR_STUFEN.find((s) => s.id === "sponsor")?.info ?? "", /2,33 m/);
   assert.match(SPONSOR_STUFEN.find((s) => s.id === "hauptsponsor")?.info ?? "", /Zeltwand/);
+  assert.match(SPONSOR_STUFEN.find((s) => s.id === "hauptsponsor")?.info ?? "", /verschiedene Größen/);
   assert.match(SPONSOR_STUFEN.find((s) => s.id === "hauptsponsor")?.leistungen.join(" ") ?? "", /Zeltwand/);
   assert.match(stufeHinweis(80), /Website/);
   assert.match(stufeHinweis(250), /Sponsor/);

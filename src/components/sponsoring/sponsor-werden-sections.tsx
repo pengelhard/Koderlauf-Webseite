@@ -33,10 +33,25 @@ export function InfoButton({
 }
 
 function InfoNote({ text }: { text: string }) {
+  const lines = text.split("\n").map((line) => line.trim()).filter(Boolean);
+  if (lines.length <= 1) {
+    return (
+      <p className="mt-2 rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+        {lines[0] ?? text}
+      </p>
+    );
+  }
+  const compact = lines.every((line) => line.length < 48);
   return (
-    <p className="mt-2 whitespace-pre-line rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-      {text}
-    </p>
+    <ul
+      className={`mt-2 list-disc rounded-xl border border-border bg-muted/40 px-3 py-2 pl-7 text-xs leading-relaxed text-muted-foreground ${
+        compact ? "grid gap-x-6 gap-y-1 sm:grid-cols-2" : "space-y-1"
+      }`}
+    >
+      {lines.map((line) => (
+        <li key={line}>{line}</li>
+      ))}
+    </ul>
   );
 }
 
@@ -127,7 +142,7 @@ export function SponsorSachen({ vergebenIds = [] }: { vergebenIds?: string[] }) 
     <section id="sachen" className="mt-12 scroll-mt-28">
       <h2 className="text-2xl font-extrabold tracking-tight">Diese Sachen brauchen wir</h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Zur Orientierung: Wir rechnen mit etwa 600 bis 1000 Leute.
+        Zur Orientierung: Wir rechnen mit etwa 600 bis 1000 Läufern.
       </p>
       <p className="mt-3 rounded-xl border border-koder-orange/30 bg-koder-orange/10 px-3 py-2 text-sm">
         Liegt euer Logo auf der Sache, seid ihr dort noch einmal sichtbar, zusätzlich zur Stufe.
