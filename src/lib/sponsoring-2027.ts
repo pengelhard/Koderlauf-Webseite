@@ -65,8 +65,6 @@ export const SPONSOR_STUFEN: {
   preisLabel: string;
   info: string;
   leistungen: string[];
-  ctaHref: string;
-  ctaLabel: string;
 }[] = [
   {
     id: "unterstuetzer",
@@ -74,8 +72,6 @@ export const SPONSOR_STUFEN: {
     preisLabel: "100 €",
     info: "Auch Spenden unter 100 € sind herzlich willkommen.\nDafür gibt es nur eine Erwähnung auf der Website.\nEin Bannerfeld am Bauzaun gibt es ab 100 €.\nBanner am Bauzaun: 3,40 m × 1,73 m.",
     leistungen: ["Banner am Bauzaun", "Kleines Logo und Name auf der Website"],
-    ctaHref: "/sponsor-werden#anfrage",
-    ctaLabel: "Unterstützer anfragen",
   },
   {
     id: "sponsor",
@@ -88,8 +84,6 @@ export const SPONSOR_STUFEN: {
       "Etwas größeres Logo auf der Website",
       "Instagram",
     ],
-    ctaHref: "/sponsor-werden#anfrage",
-    ctaLabel: "Sponsor anfragen",
   },
   {
     id: "hauptsponsor",
@@ -102,8 +96,6 @@ export const SPONSOR_STUFEN: {
       "Logo ganz oben, sehr präsent",
       "Dank bei der Siegerehrung",
     ],
-    ctaHref: "/sponsor-werden#anfrage",
-    ctaLabel: "Hauptsponsor anfragen",
   },
 ];
 
