@@ -80,11 +80,7 @@ function SponsorenAufbau({ jahr }: { jahr: string }) {
       </div>
 
       <section className="relative mt-12 overflow-hidden rounded-[2rem] border-2 border-koder-orange/70 bg-gradient-to-br from-koder-orange/30 via-koder-orange/10 to-transparent px-5 py-8 shadow-[0_30px_90px_-36px_rgba(255,107,0,0.9)] sm:px-10 sm:py-12">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-5xl">Hauptsponsor</h2>
-          <span className="rounded-full bg-koder-orange px-4 py-2 text-base font-bold text-white">ab 500 €</span>
-        </div>
-        <p className="mt-2 text-base text-muted-foreground">Ganz oben. Das größte Logo auf der Seite.</p>
+        <h2 className="text-3xl font-extrabold tracking-tight sm:text-5xl">Hauptsponsor</h2>
         <div className="mt-8 flex flex-col items-center gap-6 rounded-3xl bg-background/75 p-6 ring-1 ring-koder-orange/40 sm:flex-row sm:gap-10 sm:p-10">
           <div className="flex h-44 w-44 shrink-0 items-center justify-center rounded-[1.75rem] bg-gradient-to-br from-white to-zinc-200 text-3xl font-black tracking-tight text-zinc-900 shadow-2xl sm:h-60 sm:w-60 sm:text-4xl">
             Logo
@@ -100,13 +96,7 @@ function SponsorenAufbau({ jahr }: { jahr: string }) {
       </section>
 
       <section className="mx-auto mt-8 max-w-3xl rounded-3xl border border-foreground/15 bg-card px-5 py-6 sm:px-8 sm:py-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-2xl font-extrabold tracking-tight">Sponsor</h2>
-          <span className="rounded-full border border-koder-orange/50 px-3 py-1 text-sm font-bold text-koder-orange">
-            250 €
-          </span>
-        </div>
-        <p className="mt-1 text-sm text-muted-foreground">Etwas größeres Logo, klar unter dem Hauptsponsor.</p>
+        <h2 className="text-2xl font-extrabold tracking-tight">Sponsor</h2>
         <div className="mt-6 flex items-center gap-5 rounded-2xl border border-border bg-background/50 p-5">
           <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-white to-zinc-200 text-lg font-black text-zinc-900">
             Logo
@@ -122,13 +112,7 @@ function SponsorenAufbau({ jahr }: { jahr: string }) {
       </section>
 
       <section className="mt-6 rounded-2xl border border-border/80 bg-muted/20 px-4 py-5 sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-bold">Unterstützer</h2>
-          <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
-            100 € und darunter
-          </span>
-        </div>
-        <p className="mt-1 text-sm text-muted-foreground">Kleines Logo und Name.</p>
+        <h2 className="text-lg font-bold">Unterstützer</h2>
         <div className="mt-4 grid gap-2 sm:grid-cols-3">
           {["Eure Firma", "Weitere Firma", "Noch eine Firma"].map((firma) => (
             <div key={firma} className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5">

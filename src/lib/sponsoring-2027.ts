@@ -141,7 +141,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "ziel-bier",
     titel: "Bier für Finisher",
-    kurz: "Ein Bier für jeden Finisher. Ideal für eine Brauerei: Das Bier ist die Werbung.",
+    kurz: "Ein Bier für jeden Finisher.",
     beschreibung: "Wir suchen eine Partnerbrauerei.",
     typ: "geld_oder_sache",
     status: "offen",
