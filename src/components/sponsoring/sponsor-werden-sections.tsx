@@ -82,12 +82,6 @@ function StufenKarte({
           </li>
         ))}
       </ul>
-      <Link
-        href={stufe.ctaHref}
-        className="mt-4 inline-flex justify-center rounded-xl bg-koder-orange px-3 py-2 text-sm font-bold text-white hover:bg-koder-orange/90"
-      >
-        {stufe.ctaLabel}
-      </Link>
     </article>
   );
 }
@@ -100,6 +94,14 @@ export function SponsorStufen() {
         {SPONSOR_STUFEN.map((stufe) => (
           <StufenKarte key={stufe.id} stufe={stufe} />
         ))}
+      </div>
+      <div className="mt-6 text-center">
+        <Link
+          href="#anfrage"
+          className="inline-flex rounded-xl bg-koder-orange px-6 py-3 text-sm font-bold uppercase tracking-widest text-white hover:bg-koder-orange/90"
+        >
+          Sponsor anfragen
+        </Link>
       </div>
     </section>
   );
