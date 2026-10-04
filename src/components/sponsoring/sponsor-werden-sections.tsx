@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { Check } from "lucide-react";
 import {
   getEffectiveStatus,
@@ -9,6 +8,15 @@ import {
   SPONSOR_STUFEN,
   type SponsorFlaeche,
 } from "@/lib/sponsoring-2027";
+
+export function springeZurAnfrage(event: MouseEvent<HTMLAnchorElement>) {
+  event.preventDefault();
+  document.getElementById("anfrage")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const next = `${window.location.pathname}${window.location.search}#anfrage`;
+  if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== next) {
+    window.history.pushState(null, "", next);
+  }
+}
 
 export function InfoButton({
   label,
@@ -96,12 +104,13 @@ export function SponsorStufen() {
         ))}
       </div>
       <div className="mt-6 text-center">
-        <Link
+        <a
           href="#anfrage"
+          onClick={springeZurAnfrage}
           className="inline-flex rounded-xl bg-koder-orange px-6 py-3 text-sm font-bold uppercase tracking-widest text-white hover:bg-koder-orange/90"
         >
           Sponsor anfragen
-        </Link>
+        </a>
       </div>
     </section>
   );
