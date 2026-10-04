@@ -72,7 +72,7 @@ export const SPONSOR_STUFEN: {
     id: "unterstuetzer",
     name: "Unterstützer",
     preisLabel: "100 €",
-    info: "Auch Spenden unter 100 € sind herzlich willkommen. Dafür gibt es nur eine Erwähnung auf der Website. Ein Bannerfeld am Bauzaun gibt es ab 100 €. Banner am Bauzaun: 3,40 m × 1,73 m.",
+    info: "Auch Spenden unter 100 € sind herzlich willkommen.\nDafür gibt es nur eine Erwähnung auf der Website.\nEin Bannerfeld am Bauzaun gibt es ab 100 €.\nBanner am Bauzaun: 3,40 m × 1,73 m.",
     leistungen: ["Banner am Bauzaun", "Kleines Logo und Name auf der Website"],
     ctaHref: "/sponsor-werden#anfrage",
     ctaLabel: "Unterstützer anfragen",
@@ -81,7 +81,7 @@ export const SPONSOR_STUFEN: {
     id: "sponsor",
     name: "Sponsor",
     preisLabel: "250 €",
-    info: "Banner am Bauzaun: 3,40 m × 1,73 m. Banner am Gitter Zieleinlauf: 2,33 m × 0,75 m.",
+    info: "Banner am Bauzaun: 3,40 m × 1,73 m.\nBanner am Gitter Zieleinlauf: 2,33 m × 0,75 m.",
     leistungen: [
       "Alles aus 100 €",
       "Banner am Gitter Zieleinlauf",
@@ -95,10 +95,10 @@ export const SPONSOR_STUFEN: {
     id: "hauptsponsor",
     name: "Hauptsponsor",
     preisLabel: "ab 500 €",
-    info: "Banner am Bauzaun: 3,40 m × 1,73 m. Banner am Gitter Zieleinlauf: 2,33 m × 0,75 m. Das Banner an der Bühne hängen wir hinten an die Zeltwand.",
+    info: "Banner am Bauzaun: 3,40 m × 1,73 m.\nBanner am Gitter Zieleinlauf: 2,33 m × 0,75 m.\nDas Banner an der Bühne hängen wir hinten an die Zeltwand.\nAn der Zeltwand sind verschiedene Größen möglich.",
     leistungen: [
       "Alles aus 250 €",
-      "Banner an der Bühne, hinten an der Zeltwand",
+      "Banner an der Bühne, hinten an der Zeltwand, verschiedene Größen",
       "Logo ganz oben, sehr präsent",
       "Dank bei der Siegerehrung",
     ],
@@ -150,7 +150,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "medaillen",
     titel: "Medaillen",
-    kurz: "Kodermedaille, Label „Koderlauf 2027“. Logo der Firma auf dem Leinenband.",
+    kurz: "Kodermedaille, Label „Koderlauf 2027“. Logo der Firma auf dem Lanyard.",
     beschreibung: "Das Design kommt von uns, wie 2026.",
     typ: "geld_oder_sache",
     komplettHaelften: ["medaillen-a", "medaillen-b"],
@@ -159,7 +159,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
   {
     id: "medaillen-a",
     titel: "Medaillen – Band",
-    kurz: "Logo auf dem Band.",
+    kurz: "Logo auf dem Lanyard.",
     typ: "geld_oder_sache",
     halfteVon: "medaillen",
     status: "offen",
@@ -177,7 +177,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Siegerpreise",
     kurz: "Zum Beispiel Gutscheine oder etwas aus eurem Sortiment.",
     beschreibung:
-      "36 Platzierungspreise: bei Spielerei, Trailrun, Koderrunde Lauf, Koderrunde Walking und Kurz und knackig jeweils Platz 1–3 der Frauen und der Männer. Beim Kinderlauf Platz 1–3 der Mädchen und der Jungen. Jedes Kind bekommt dazu einen kleinen Preis. Vorschläge stimmen wir mit euch ab.",
+      "36 Platzierungspreise.\nSpielerei, Trailrun, Koderrunde Lauf, Koderrunde Walking und Kurz und knackig: jeweils Platz 1–3 der Frauen und der Männer.\nKinderlauf: Platz 1–3 der Mädchen und der Jungen.\nJedes Kind bekommt dazu einen kleinen Preis.\nVorschläge stimmen wir mit euch ab.",
     mehrereMoeglich: true,
     typ: "geld_oder_sache",
     komplettHaelften: ["preise-1", "preise-2"],
@@ -204,7 +204,7 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Verpflegung",
     kurz: "Ziel und Strecke. Schreibt, was ihr bieten könnt.",
     beschreibung:
-      "Grob für etwa 1000 Läufer. Nicht jeder nimmt von allem.\nWasser etwa 600 Liter. Cola, Schorle und Iso etwa 200 Liter. Tee etwa 40 Liter.\nBecher etwa 2000 Stück. Müsliriegel etwa 1000 Stück. Gummibären etwa 20 kg. Traubenzucker etwa 10 kg.\nÄpfel etwa 75 kg. Bananen etwa 80 kg. Orangen etwa 40 kg. Wassermelone etwa 50 kg.\nBrezeln etwa 1000 Stück. Salzstangen etwa 10 kg. Gekochte Kartoffeln etwa 75 kg. Gurken etwa 20 kg. Kuchen etwa 40 Bleche.\nWir stimmen das mit euch ab.",
+      "Grob für etwa 1000 Läufer.\nAnpassung kurz vor Event.\nCa. 300 Liter Wasser.\nCa. 60 Liter Cola.\nBecher etwa 2000 Stück.\nMüsliriegel etwa 300 Stück.\nGummibären etwa 10 kg.\nTraubenzucker etwa 3 kg.\nÄpfel etwa 75 kg.\nBananen etwa 80 kg.\nWassermelone etwa 30 kg.\nSalzstangen etwa 5 kg.\nGekochte Kartoffeln etwa 20 kg.\nGurken etwa 10 kg.\nWir stimmen das mit euch ab.",
     mehrereMoeglich: true,
     typ: "geld_oder_sache",
     status: "offen",
@@ -230,7 +230,7 @@ export function werbeleistungKurz(stufe: Sichtbarkeit): string {
     case "sponsor":
       return "Banner am Zieleinlauf, etwas größeres Logo, Instagram, plus alles ab 100 €.";
     case "hauptsponsor":
-      return "Banner an der Bühne, hinten an der Zeltwand, Logo ganz oben und sehr präsent, Dank bei der Siegerehrung, plus alles ab 250 €.";
+      return "Banner an der Bühne, hinten an der Zeltwand, verschiedene Größen möglich, Logo ganz oben und sehr präsent, Dank bei der Siegerehrung, plus alles ab 250 €.";
   }
 }
 
