@@ -21,8 +21,6 @@ const navLinks = [
   { href: "/feedback", label: "Feedback" },
 ] as const;
 
-const sponsorLink = { href: "/sponsor-werden", label: "Sponsor 2027" };
-
 function navLinkClass(active: boolean) {
   return cn(
     "whitespace-nowrap transition-colors hover:text-koder-orange",
@@ -36,8 +34,6 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  const sponsorActive = pathname === sponsorLink.href || pathname.startsWith(`${sponsorLink.href}/`);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
@@ -88,9 +84,6 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link href={sponsorLink.href} className={navLinkClass(sponsorActive)}>
-              {sponsorLink.label}
-            </Link>
           </div>
 
           <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
@@ -105,18 +98,6 @@ export function Navbar() {
                 {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
               </button>
             )}
-
-            <Link
-              href={sponsorLink.href}
-              className={cn(
-                "hidden rounded-xl border px-3 py-2 text-[10px] font-semibold uppercase tracking-wide transition md:inline-flex xl:hidden",
-                sponsorActive
-                  ? "border-koder-orange bg-koder-orange/15 text-koder-orange"
-                  : "border-white/40 text-white hover:border-koder-orange hover:text-koder-orange",
-              )}
-            >
-              Sponsor
-            </Link>
 
             <AnmeldeLink
               className="hidden md:inline-flex rounded-xl bg-koder-orange px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-koder-orange/90 xl:px-5 xl:text-sm"
@@ -167,16 +148,6 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
-                <Link
-                  href={sponsorLink.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    "text-lg font-semibold uppercase tracking-widest transition-colors hover:text-koder-orange",
-                    sponsorActive ? "text-koder-orange" : "text-white",
-                  )}
-                >
-                  Sponsor 2027 werden
-                </Link>
                 <AnmeldeLink
                   onClick={() => setMobileOpen(false)}
                   className="rounded-2xl bg-koder-orange px-6 py-3 text-center text-sm font-semibold uppercase tracking-widest text-white"

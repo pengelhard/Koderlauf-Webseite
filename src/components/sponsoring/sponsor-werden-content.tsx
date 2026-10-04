@@ -33,7 +33,7 @@ export function SponsorWerdenContent({ vergebenIds = [] }: { vergebenIds?: strin
             id="sponsor-hero"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="scroll-mt-28"
+            className="scroll-mt-28 text-center"
           >
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-koder-orange">
               Koderlauf {EVENT.jahr}
@@ -41,10 +41,10 @@ export function SponsorWerdenContent({ vergebenIds = [] }: { vergebenIds?: strin
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
               Sponsor werden
             </h1>
-            <p className="mt-4 max-w-2xl text-lg text-foreground">
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-foreground">
               Präsentiert eure Firma und zeigt, dass ihr Unterstützer des Koderlauf 2027 seid.
             </p>
-            <p className="mt-3 max-w-2xl text-lg font-semibold text-foreground">
+            <p className="mx-auto mt-3 max-w-2xl text-lg font-semibold text-foreground">
               Eure Werbung ist das ganze Festwochenende zu sehen.
             </p>
           </motion.section>
