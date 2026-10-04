@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { getPublicDomainLabel, getSiteUrl } from "@/lib/site-url";
+import {
+  listVergebeneSachen,
+  sacheDarfAutomatischSchliessen,
+  setSacheVergeben,
+} from "@/lib/sponsor-sachen-status";
 import { allowRequest, clientIp } from "@/lib/rate-limit";
 import {
   BAND_LABEL,
@@ -307,6 +312,12 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+  if (flaeche && (await listVergebeneSachen()).includes(flaeche.id)) {
+    return NextResponse.json(
+      { error: "Diese Sache ist schon vergeben." },
+      { status: 400 },
+    );
+  }
 
   const smtp = getSmtpConfig();
   if (!smtp.ok) {
@@ -366,6 +377,10 @@ export async function POST(request: Request) {
         ? { attachments: [{ filename: datei.filename, content: datei.content, contentType: datei.contentType }] }
         : {}),
     });
+    if (flaeche && sacheDarfAutomatischSchliessen(flaeche.id)) {
+      const saved = await setSacheVergeben(flaeche.id, true);
+      if (!saved) console.error("Sponsor-Sache konnte nicht als vergeben gespeichert werden:", flaeche.id);
+    }
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
