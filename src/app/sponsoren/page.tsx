@@ -67,6 +67,83 @@ function SponsorCard({ sponsor, gross = false }: { sponsor: PublicSponsor; gross
   return <div className={cardClasses}>{inner}</div>;
 }
 
+function MusterLogo({ size }: { size: "klein" | "mittel" | "gross" }) {
+  const box =
+    size === "gross" ? "h-32 w-32 text-lg" : size === "mittel" ? "h-28 w-28 text-base" : "h-24 w-24 text-sm";
+  return (
+    <div
+      className={`flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-white to-zinc-200 font-black tracking-tight text-zinc-900 ${box}`}
+    >
+      Logo
+    </div>
+  );
+}
+
+function MusterKarte({
+  size,
+  firma,
+  zeile,
+}: {
+  size: "klein" | "mittel" | "gross";
+  firma: string;
+  zeile: string;
+}) {
+  const card =
+    size === "gross"
+      ? "flex items-center gap-5 rounded-3xl border-2 border-koder-orange/30 bg-gradient-to-br from-koder-orange/10 to-transparent p-6"
+      : "flex items-center gap-4 rounded-2xl border border-border bg-card p-4";
+  return (
+    <div className={card}>
+      <MusterLogo size={size} />
+      <div className="min-w-0">
+        <h3 className={`font-bold leading-relaxed ${size === "gross" ? "text-lg" : ""}`}>{firma}</h3>
+        <p className="text-xs text-muted-foreground">{zeile}</p>
+      </div>
+    </div>
+  );
+}
+
+function SponsorenAufbau({ jahr }: { jahr: string }) {
+  return (
+    <div className="mt-10">
+      <p className="mx-auto max-w-xl text-center text-sm text-muted-foreground">
+        So steht ihr auf dieser Seite. Die echten Logos kommen, sobald die Partnerschaften feststehen.
+      </p>
+
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
+          Hauptsponsoren {jahr}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">Ab 500 €, ganz oben und sehr präsent.</p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <MusterKarte size="gross" firma="Eure Firma" zeile="Name und Ort" />
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">Sponsoren {jahr}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">250 €, etwas größeres Logo.</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <MusterKarte size="mittel" firma="Eure Firma" zeile="Name und Ort" />
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-koder-orange">
+          Unterstützer {jahr}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          100 € und darunter: kleines Logo und Name.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <MusterKarte size="klein" firma="Eure Firma" zeile="Name und Ort" />
+          <MusterKarte size="klein" firma="Weitere Firma" zeile="Name und Ort" />
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function SponsorenPage() {
   const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
   const year = Number(yearTab) as SponsorYear;
@@ -94,25 +171,7 @@ export default function SponsorenPage() {
         </motion.div>
 
         {list.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mt-10 rounded-3xl border border-border bg-card p-6 text-center sm:p-10"
-          >
-            <Heart className="mx-auto h-8 w-8 text-koder-orange" />
-            <h2 className="mt-3 text-2xl font-extrabold">Sponsoring Koderlauf {yearTab}</h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Die Sponsoren und Unterstützer für den Koderlauf {yearTab} werden wir hier bekannt geben, sobald
-              die Partnerschaften feststehen.
-            </p>
-            <Link
-              href="/sponsor-werden"
-              className="mt-6 inline-flex rounded-xl bg-koder-orange px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-white hover:bg-koder-orange/90"
-            >
-              Sponsor werden
-            </Link>
-          </motion.div>
+          <SponsorenAufbau jahr={yearTab} />
         ) : (
           <>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}
