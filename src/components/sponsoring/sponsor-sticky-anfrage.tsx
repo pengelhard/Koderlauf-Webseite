@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Send } from "lucide-react";
+import { springeZurAnfrage } from "@/components/sponsoring/sponsor-werden-sections";
 
 /** Sticky CTA nur auf /sponsor-werden, sichtbar nach dem Hero. */
 export function SponsorStickyAnfrage({ heroId = "sponsor-hero" }: { heroId?: string }) {
@@ -23,13 +23,14 @@ export function SponsorStickyAnfrage({ heroId = "sponsor-hero" }: { heroId?: str
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-koder-orange/20 bg-background/95 p-3 backdrop-blur-sm md:hidden">
-      <Link
+      <a
         href="#anfrage"
+        onClick={springeZurAnfrage}
         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-koder-orange px-6 py-3 text-sm font-bold uppercase tracking-widest text-white"
       >
         <Send size={16} aria-hidden />
         Kurz Bescheid sagen
-      </Link>
+      </a>
     </div>
   );
 }

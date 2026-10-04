@@ -52,7 +52,7 @@ export function SponsorWerdenContent({ vergebenIds = [] }: { vergebenIds?: strin
           <SponsorStufen />
           <SponsorSachen vergebenIds={vergebenIds} />
 
-          <section id="anfrage" className="mt-12 scroll-mt-28" aria-labelledby="anfrage-titel">
+          <section id="anfrage" className="mt-12 scroll-mt-36" aria-labelledby="anfrage-titel">
             <h2 id="anfrage-titel" className="text-2xl font-extrabold tracking-tight">
               Kurz Bescheid sagen
             </h2>
