@@ -40,76 +40,6 @@ function InfoNote({ text }: { text: string }) {
   );
 }
 
-function LogoPlatte({
-  size,
-  name,
-  hervor,
-}: {
-  size: "klein" | "mittel" | "gross";
-  name: string;
-  hervor?: boolean;
-}) {
-  const box =
-    size === "gross" ? "h-16 w-16 text-xs" : size === "mittel" ? "h-11 w-11 text-[10px]" : "h-7 w-7 text-[8px]";
-  return (
-    <div
-      className={`flex min-w-0 items-center gap-2 rounded-xl border p-2 ${
-        hervor
-          ? "border-koder-orange/50 bg-koder-orange/15 shadow-[0_0_24px_-12px] shadow-koder-orange"
-          : "border-white/10 bg-white/5"
-      } ${size === "gross" ? "p-3" : ""}`}
-    >
-      <div
-        className={`flex shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-white to-zinc-200 font-black tracking-tight text-zinc-900 ${box}`}
-      >
-        Logo
-      </div>
-      <div className="min-w-0">
-        <p className={`truncate font-bold leading-tight ${size === "gross" ? "text-sm" : "text-[11px]"}`}>{name}</p>
-        <p className="truncate text-[9px] text-zinc-400">{size === "gross" ? "ganz oben" : "Name"}</p>
-      </div>
-    </div>
-  );
-}
-
-function WebsiteMuster({ stufe }: { stufe: "unterstuetzer" | "sponsor" | "hauptsponsor" }) {
-  const caption =
-    stufe === "hauptsponsor"
-      ? "Ganz oben, sehr präsent"
-      : stufe === "sponsor"
-        ? "Etwas größeres Logo"
-        : "Kleines Logo, wie die weiteren Sponsoren";
-  return (
-    <div className="mt-3 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 text-zinc-100 shadow-inner">
-      <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-1.5">
-        <span className="h-1.5 w-1.5 rounded-full bg-koder-orange" />
-        <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-400">Sponsoren</span>
-      </div>
-      <div className="space-y-2 p-3">
-        {stufe === "hauptsponsor" && (
-          <div>
-            <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-koder-orange">Hauptsponsoren</p>
-            <div className="mt-1.5">
-              <LogoPlatte size="gross" name="Eure Firma" hervor />
-            </div>
-          </div>
-        )}
-        <div>
-          <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
-            {stufe === "hauptsponsor" ? "Weitere Sponsoren" : "Sponsoren"}
-          </p>
-          <div className="mt-1.5 grid gap-1.5">
-            {stufe === "unterstuetzer" && <LogoPlatte size="klein" name="Eure Firma" hervor />}
-            {stufe === "sponsor" && <LogoPlatte size="mittel" name="Eure Firma" hervor />}
-            {stufe !== "unterstuetzer" && <LogoPlatte size="klein" name="Andere Firma" />}
-          </div>
-        </div>
-      </div>
-      <p className="border-t border-white/10 px-3 py-1.5 text-[10px] text-zinc-400">{caption}</p>
-    </div>
-  );
-}
-
 function StufenKarte({
   stufe,
 }: {
@@ -134,9 +64,6 @@ function StufenKarte({
       </div>
       {open && stufe.info ? <InfoNote text={stufe.info} /> : null}
       <h3 className="mt-1 text-lg font-extrabold">{stufe.name}</h3>
-      {stufe.id === "unterstuetzer" || stufe.id === "sponsor" || stufe.id === "hauptsponsor" ? (
-        <WebsiteMuster stufe={stufe.id} />
-      ) : null}
       <ul className="mt-3 flex-1 space-y-1.5 text-sm">
         {stufe.leistungen.map((item) => (
           <li key={item} className="flex gap-2">
