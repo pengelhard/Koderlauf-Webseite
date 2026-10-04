@@ -74,7 +74,8 @@ test("Alte Links und Sachspenden ohne Preis", () => {
   assert.equal(sacheMehrfach("preise"), true);
   assert.equal(sacheMehrfach("verpflegung"), true);
   assert.equal(sacheMehrfach("bauzaun"), false);
-  assert.match(getFlaeche("ziel-bier")?.kurz ?? "", /Brauerei/);
+  assert.match(getFlaeche("ziel-bier")?.kurz ?? "", /Finisher/);
+  assert.equal((getFlaeche("ziel-bier")?.kurz ?? "").includes("Brauerei"), false);
   assert.match(SPONSOR_STUFEN.find((s) => s.id === "hauptsponsor")?.leistungen.join(" ") ?? "", /Bühne/);
   assert.match(getFlaeche("preise")?.beschreibung ?? "", /euch/);
   assert.match(getFlaeche("verpflegung")?.beschreibung ?? "", /euch/);
