@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isOrgaAdmin } from "@/lib/admin/auth";
-import { listVergebeneSachen, setSacheVergeben } from "@/lib/sponsor-sachen-status";
+import { listVergebeneSachen, saveSacheVergeben } from "@/lib/sponsor-sachen-status";
 import { SACHSPENDEN_SICHTBAR, sacheMehrfach } from "@/lib/sponsoring-2027";
 
 export const runtime = "nodejs";
@@ -26,12 +26,9 @@ export async function POST(request: Request) {
   if (!body?.id || typeof body.vergeben !== "boolean") {
     return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
   }
-  const ok = await setSacheVergeben(body.id, body.vergeben);
-  if (!ok) {
-    return NextResponse.json(
-      { error: "Speichern klappt gerade nicht. Ist die Datenbank erreichbar?" },
-      { status: 503 },
-    );
+  const saved = await saveSacheVergeben(body.id, body.vergeben);
+  if (!saved.ok) {
+    return NextResponse.json({ error: saved.error, sql: saved.sql }, { status: 503 });
   }
   return NextResponse.json({ ok: true });
 }
