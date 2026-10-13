@@ -42,7 +42,18 @@ function SponsorCard({ sponsor, gross = false }: { sponsor: PublicSponsor; gross
         <SponsorInitials name={sponsor.firma} />
       )}
       <div className="min-w-0 flex-1 space-y-1">
-        <h3 className={`break-words font-bold leading-relaxed ${gross ? "text-2xl" : ""}`}>{sponsor.firma}</h3>
+        <h3 
+          className={`font-bold leading-tight ${gross ? "" : "text-base"}`}
+          style={{
+            hyphens: "none",
+            wordBreak: "normal",
+            overflowWrap: "normal",
+            fontSize: gross ? "clamp(1.125rem, 2vw + 0.5rem, 1.5rem)" : undefined,
+          }}
+          title={sponsor.firma}
+        >
+          {sponsor.firma}
+        </h3>
         <p className={`${gross ? "text-sm" : "text-xs"} text-muted-foreground`}>{sponsor.ort}</p>
         {sponsor.website && (
           <p className="flex items-center gap-1 pt-0.5 text-[10px] text-koder-orange opacity-0 transition-opacity group-hover:opacity-100">
