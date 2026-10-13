@@ -26,15 +26,15 @@ function SponsorInitials({ name }: { name: string }) {
 }
 
 function SponsorCard({ sponsor, gross = false }: { sponsor: PublicSponsor; gross?: boolean }) {
-  const logoSize = gross ? "h-32 w-32" : "h-24 w-24";
+  const logoSize = gross ? "h-40 w-40" : "h-24 w-24";
   const inner = (
     <>
       {sponsor.logo ? (
         <Image
           src={sponsor.logo}
           alt={sponsor.firma}
-          width={gross ? 128 : 96}
-          height={gross ? 128 : 96}
+          width={gross ? 160 : 96}
+          height={gross ? 160 : 96}
           className={`${logoSize} rounded-xl object-contain ${sponsor.invertInLightMode ? "invert dark:invert-0" : ""}`}
           unoptimized
         />
@@ -42,8 +42,19 @@ function SponsorCard({ sponsor, gross = false }: { sponsor: PublicSponsor; gross
         <SponsorInitials name={sponsor.firma} />
       )}
       <div className="min-w-0 flex-1 space-y-1">
-        <h3 className={`break-words font-bold leading-relaxed ${gross ? "text-lg" : ""}`}>{sponsor.firma}</h3>
-        <p className="text-xs text-muted-foreground">{sponsor.ort}</p>
+        <h3 
+          className={`font-bold leading-tight ${gross ? "" : "text-base"}`}
+          style={{
+            hyphens: "none",
+            wordBreak: "normal",
+            overflowWrap: "normal",
+            fontSize: gross ? "clamp(1.125rem, 2vw + 0.5rem, 1.5rem)" : undefined,
+          }}
+          title={sponsor.firma}
+        >
+          {sponsor.firma}
+        </h3>
+        <p className={`${gross ? "text-sm" : "text-xs"} text-muted-foreground`}>{sponsor.ort}</p>
         {sponsor.website && (
           <p className="flex items-center gap-1 pt-0.5 text-[10px] text-koder-orange opacity-0 transition-opacity group-hover:opacity-100">
             <ExternalLink size={10} /> Website besuchen
@@ -54,7 +65,7 @@ function SponsorCard({ sponsor, gross = false }: { sponsor: PublicSponsor; gross
   );
 
   const cardClasses = gross
-    ? "group flex items-center gap-5 rounded-3xl border-2 border-koder-orange/30 bg-gradient-to-br from-koder-orange/10 to-transparent p-6 transition-all hover:border-koder-orange/60 hover:shadow-xl hover:shadow-koder-orange/10"
+    ? "group flex items-center gap-6 rounded-3xl border-2 border-koder-orange/40 bg-gradient-to-br from-koder-orange/15 to-transparent p-8 transition-all hover:border-koder-orange/70 hover:shadow-2xl hover:shadow-koder-orange/20"
     : "group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-koder-orange/30 hover:shadow-lg hover:shadow-koder-orange/5";
 
   if (sponsor.website) {
@@ -135,7 +146,7 @@ function SponsorenAufbau({ jahr }: { jahr: string }) {
 }
 
 export default function SponsorenPage() {
-  const [yearTab, setYearTab] = useState<"2026" | "2027">("2026");
+  const [yearTab, setYearTab] = useState<"2026" | "2027">("2027");
   const year = Number(yearTab) as SponsorYear;
   const list = getPublicSponsors(year);
   const hauptsponsoren = list.filter((s) => s.hauptsponsor);
