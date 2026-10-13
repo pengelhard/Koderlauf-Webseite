@@ -41,6 +41,34 @@ export async function setSacheVergeben(id: string, vergeben: boolean): Promise<b
   return result.ok;
 }
 
+/** Liest die Zeile und schreibt denselben Inhalt zurück. Ändert keine Haken. */
+export async function probeSacheSpeichern(): Promise<SacheSaveResult> {
+  const supabase = createAdminSupabaseClient();
+  if (!supabase) {
+    return {
+      ok: false,
+      error:
+        "Auf dem Server fehlt der Datenbank-Schlüssel (SUPABASE_SECRET_KEY). Deshalb bleibt der Haken nicht gespeichert.",
+    };
+  }
+  const { data, error } = await supabase
+    .from("fassjagd_state")
+    .select("overrides")
+    .eq("id", STATE_ID)
+    .maybeSingle();
+  if (error) return fehlerAusDatenbank(error.code, error.message);
+  const existing =
+    data?.overrides && typeof data.overrides === "object" && !Array.isArray(data.overrides)
+      ? { ...(data.overrides as Record<string, unknown>) }
+      : {};
+  const { error: writeError } = await supabase.from("fassjagd_state").upsert(
+    { id: STATE_ID, overrides: existing, updated_at: new Date().toISOString() },
+    { onConflict: "id" },
+  );
+  if (writeError) return fehlerAusDatenbank(writeError.code, writeError.message);
+  return { ok: true };
+}
+
 export async function saveSacheVergeben(id: string, vergeben: boolean): Promise<SacheSaveResult> {
   if (!SACHSPENDEN_SICHTBAR.some((f) => f.id === id)) {
     return { ok: false, error: "Diese Sache gibt es nicht." };
