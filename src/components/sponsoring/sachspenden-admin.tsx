@@ -8,6 +8,7 @@ type Sache = { id: string; titel: string; mehrfach: boolean; vergeben: boolean }
 export function SachspendenAdmin() {
   const [sachen, setSachen] = useState<Sache[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [sql, setSql] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -30,6 +31,7 @@ export function SachspendenAdmin() {
   async function toggle(sache: Sache) {
     setBusyId(sache.id);
     setError(null);
+    setSql(null);
     const next = !sache.vergeben;
     setSachen((list) => list.map((s) => (s.id === sache.id ? { ...s, vergeben: next } : s)));
     try {
@@ -38,9 +40,10 @@ export function SachspendenAdmin() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: sache.id, vergeben: next }),
       });
-      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      const json = (await res.json().catch(() => ({}))) as { error?: string; sql?: string };
       if (!res.ok) {
         setError(json.error || "Speichern fehlgeschlagen.");
+        setSql(json.sql ?? null);
         setSachen((list) => list.map((s) => (s.id === sache.id ? { ...s, vergeben: sache.vergeben } : s)));
       }
     } finally {
@@ -63,7 +66,16 @@ export function SachspendenAdmin() {
           </p>
         </div>
       </div>
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <div className="space-y-2 text-sm text-destructive">
+          <p>{error}</p>
+          {sql && (
+            <pre className="overflow-x-auto rounded-lg border border-border bg-muted p-3 text-xs text-foreground">
+              {sql}
+            </pre>
+          )}
+        </div>
+      )}
       <ul className="divide-y divide-border rounded-xl border border-border">
         {sachen.map((sache) => (
           <li key={sache.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
