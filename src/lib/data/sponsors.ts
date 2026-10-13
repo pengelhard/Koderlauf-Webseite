@@ -133,6 +133,13 @@ export const SPONSOR_CONTACTS: Record<string, SponsorContact> = {
     email: "info@bauzaun-mieten.net",
     telefon: "09082 921777",
   },
+  "amk-engelhardt-2027": {
+    adresse: "Oberer Kesselweg 2, 86744 Hainsfarth",
+    ansprechpartner: "Michael Engelhardt",
+    email: "info@bauzaun-mieten.net",
+    telefon: "09082 921777",
+    notes: "Hauptsponsor 2027: Bauzaun als Sachspende (Wert über 500 €) zum Absperren und als Absperrung am Zieleinlauf.",
+  },
   "baywa-bau-garten-2026": {
     adresse: "Weißenburger Str. 110, 91710 Gunzenhausen",
     email: "bm224@baywa-baumarkt.de",

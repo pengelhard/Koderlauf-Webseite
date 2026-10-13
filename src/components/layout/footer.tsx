@@ -58,6 +58,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/sponsor-werden" className="transition-colors hover:text-white">
+                  Sponsor 2027 werden
+                </Link>
+              </li>
+              <li>
                 <Link href="/feedback" className="transition-colors hover:text-white">
                   Feedback
                 </Link>

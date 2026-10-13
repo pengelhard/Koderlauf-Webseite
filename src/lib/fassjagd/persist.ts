@@ -74,9 +74,14 @@ export async function persistFassjagdToDb(): Promise<boolean> {
   const supabase = createAdminSupabaseClient();
   if (!supabase) return false;
   try {
+    const { data } = await supabase.from("fassjagd_state").select("overrides").eq("id", STATE_ID).maybeSingle();
+    const existing =
+      data?.overrides && typeof data.overrides === "object" && !Array.isArray(data.overrides)
+        ? (data.overrides as Record<string, unknown>)
+        : {};
     const { error } = await supabase.from("fassjagd_state").upsert({
       id: STATE_ID,
-      overrides: exportOverrides(),
+      overrides: { ...existing, ...exportOverrides() },
       updated_at: new Date().toISOString(),
     });
     return !error;

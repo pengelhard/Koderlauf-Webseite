@@ -99,7 +99,7 @@ export function Hero() {
 
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-forest-deep/90 via-forest-deep/50 to-forest-deep/30" />
 
-      <motion.div className="relative z-20 flex h-full flex-col items-center justify-center px-4 text-center">
+      <motion.div className="relative z-20 flex h-full flex-col items-center justify-center px-4 pb-16 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -190,7 +190,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.75 }}
-          className="mt-5"
+          className="mt-6"
         >
           <Link
             href="/fassjagd"
