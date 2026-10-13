@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { isOrgaAdmin } from "@/lib/admin/auth";
-import { listVergebeneSachen, saveSacheVergeben } from "@/lib/sponsor-sachen-status";
+import { listVergebeneSachen, probeSacheSpeichern, saveSacheVergeben } from "@/lib/sponsor-sachen-status";
 import { SACHSPENDEN_SICHTBAR, sacheMehrfach } from "@/lib/sponsoring-2027";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (new URL(request.url).searchParams.get("probe") === "1") {
+    const result = await probeSacheSpeichern();
+    if (!result.ok) return NextResponse.json({ ok: false, error: result.error }, { status: 503 });
+    return NextResponse.json({ ok: true });
+  }
   const vergeben = await listVergebeneSachen();
   return NextResponse.json({
     sachen: SACHSPENDEN_SICHTBAR.map((f) => ({
