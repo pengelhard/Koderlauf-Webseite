@@ -190,8 +190,32 @@ export const PUBLIC_SPONSORS_2026: PublicSponsor[] = [
   }),
 ];
 
-/** Koderlauf 2027 – noch keine Einträge; PDF und Seite zeigen den Hinweis. */
-export const PUBLIC_SPONSORS_2027: PublicSponsor[] = [];
+/**
+ * Koderlauf 2027 – Hauptsponsor AMK Engelhardt (Bauzaun als Sachspende, Wert über 500 €).
+ * Weitere Sponsoren folgen im Laufe der Saison.
+ */
+function s2027(
+  firma: string,
+  ort: string,
+  extra: Partial<Omit<PublicSponsor, "id" | "year" | "firma" | "ort">> = {},
+): PublicSponsor {
+  const year: SponsorYear = 2027;
+  return {
+    id: slugId(firma, year),
+    year,
+    firma,
+    ort,
+    ...extra,
+  };
+}
+
+export const PUBLIC_SPONSORS_2027: PublicSponsor[] = [
+  s2027("AMK Engelhardt", "Hainsfarth", {
+    logo: "/sponsors/amk-engelhardt.png",
+    website: "https://bauzaun-mieten.net/",
+    hauptsponsor: true,
+  }),
+];
 
 export const PUBLIC_SPONSORS: PublicSponsor[] = [
   ...PUBLIC_SPONSORS_2026,
