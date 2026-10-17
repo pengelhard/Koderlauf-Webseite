@@ -1,4 +1,4 @@
-import { EVENT } from "@/lib/event-config";
+import { EVENT, parseDistanzKm } from "@/lib/event-config";
 
 /**
  * Teamnamen normalisieren + Wertung (Fass Bier).
@@ -21,11 +21,12 @@ export const VEREINS_WERTUNG = {
   punkte: [
     "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe.",
     "1 Person = 1 Stimme, auch Kinderlauf und Walking.",
+    "Bei Gleichstand zählen die gelaufenen Kilometer der Gruppe, danach wer zuerst angemeldet hat.",
     `Zählt bis zum Online-Anmeldeschluss (${EVENT.onlineAnmeldeschlussAnzeige}) – danach bleibt der Stand stehen.`,
     "SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
   ],
   hinweis:
-    "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe. 1 Person = 1 Stimme, auch Kinderlauf und Walking. Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht. SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
+    "Das Team mit den meisten Startern gewinnt ein Fass Bier. Verein, Firma oder Gruppe. 1 Person = 1 Stimme, auch Kinderlauf und Walking. Bei Gleichstand zählen die gelaufenen Kilometer der Gruppe, danach wer zuerst angemeldet hat. Bei der Anmeldung denselben Namen angeben, sonst zählt es nicht. SV Obermögersheim ist Ausrichter und nicht in der Wertung.",
 } as const;
 
 /** Kanonische Vereinsnamen → bekannte Schreibweisen (kleingeschrieben, normalisiert). */
@@ -113,19 +114,53 @@ export function resolveVerein(
 export type VereinRankEntry = {
   name: string;
   total: number;
+  /** Summe der Kilometer aller Starter (für Gleichstand-Regelung) */
+  totalKm: number;
+  /** Niedrigste Startnummer/rrId (für Gleichstand-Regelung) */
+  firstReg: number;
   /** true = Ausrichter, nicht in der Fass-Bier-Wertung */
   ausgeschlossen: boolean;
 };
 
+function calculateTotalKmForVerein(participants: { strecke?: string }[]): number {
+  let total = 0;
+  for (const p of participants) {
+    if (!p.strecke) continue;
+    const km = parseDistanzKm(getDistanzForStrecke(p.strecke));
+    total += km;
+  }
+  return total;
+}
+
+function getDistanzForStrecke(strecke: string): string {
+  const normalized = strecke.toLowerCase().trim();
+  if (normalized.includes("spielerei")) return "25 km";
+  if (normalized.includes("trail")) return "10,5 km";
+  if (normalized.includes("koderrunde")) return "8,5 km";
+  if (normalized.includes("kurz") || normalized.includes("knackig")) return "4 km";
+  if (normalized.includes("kinder")) return "800 m";
+  return "0 km";
+}
+
+function getFirstRegKey(participants: { bib?: number; rrId?: number }[]): number {
+  let min = Number.POSITIVE_INFINITY;
+  for (const p of participants) {
+    const n = p.bib ?? p.rrId;
+    if (typeof n === "number" && n > 0 && n < min) min = n;
+  }
+  return min;
+}
+
 /**
  * Zählt Teams (Verein, Firma, Gruppe); sortiert Wertung (ohne Ausrichter) nach Teilnehmerzahl.
+ * Bei Gleichstand: erst Kilometer-Summe, dann früheste Anmeldung (niedrigste Startnummer).
  * Ausrichter wird separat zurückgegeben (nur Info).
  */
 export function rankVereine(
-  participants: { verein?: string }[],
+  participants: { verein?: string; strecke?: string; bib?: number; rrId?: number }[],
   extraAliases?: Record<string, string>,
 ): { ranking: VereinRankEntry[]; ausrichter: VereinRankEntry | null; ohneAngabe: number } {
-  const counts = new Map<string, number>();
+  const byName = new Map<string, { verein?: string; strecke?: string; bib?: number; rrId?: number }[]>();
   let ohneAngabe = 0;
 
   for (const p of participants) {
@@ -134,22 +169,34 @@ export function rankVereine(
       ohneAngabe += 1;
       continue;
     }
-    counts.set(r.canonical, (counts.get(r.canonical) ?? 0) + 1);
+    const arr = byName.get(r.canonical) ?? [];
+    arr.push(p);
+    byName.set(r.canonical, arr);
   }
 
   let ausrichter: VereinRankEntry | null = null;
   const ranking: VereinRankEntry[] = [];
 
-  for (const [name, total] of counts) {
+  for (const [name, group] of byName) {
     const entry: VereinRankEntry = {
       name,
-      total,
+      total: group.length,
+      totalKm: calculateTotalKmForVerein(group),
+      firstReg: getFirstRegKey(group),
       ausgeschlossen: name === VEREINS_WERTUNG.ausrichterCanonical,
     };
     if (entry.ausgeschlossen) ausrichter = entry;
     else ranking.push(entry);
   }
 
-  ranking.sort((a, b) => b.total - a.total || a.name.localeCompare(b.name, "de"));
+  ranking.sort((a, b) => {
+    if (b.total !== a.total) return b.total - a.total;
+    if (b.totalKm !== a.totalKm) return b.totalKm - a.totalKm;
+    const fa = Number.isFinite(a.firstReg) ? a.firstReg : Number.MAX_SAFE_INTEGER;
+    const fb = Number.isFinite(b.firstReg) ? b.firstReg : Number.MAX_SAFE_INTEGER;
+    if (fa !== fb) return fa - fb;
+    return a.name.localeCompare(b.name, "de");
+  });
+
   return { ranking, ausrichter, ohneAngabe };
 }

@@ -10,7 +10,7 @@ import type { FassjagdBoard, FassjagdClub } from "@/lib/fassjagd/types";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import { EVENT } from "@/lib/event-config";
 
-function ClubRow({ club, max }: { club: FassjagdClub; max: number }) {
+function ClubRow({ club, max, aboveClub }: { club: FassjagdClub; max: number; aboveClub: FassjagdClub | null }) {
   const pct = max > 0 ? (club.total / max) * 100 : 0;
   return (
     <Link
@@ -25,7 +25,7 @@ function ClubRow({ club, max }: { club: FassjagdClub; max: number }) {
               <span className="truncate font-semibold">{club.name}</span>
               <FassjagdFlame show={club.flaming} />
             </div>
-            <p className="text-xs text-muted-foreground">{gapLine(club)}</p>
+            <p className="text-xs text-muted-foreground">{gapLine(club, aboveClub)}</p>
           </div>
         </div>
         <span className="flex shrink-0 items-center gap-2">
@@ -77,7 +77,14 @@ export function FassjagdTafel({ initial }: { initial: FassjagdBoard }) {
             Noch keine Teams in der Wertung. {VEREINS_WERTUNG.angabe}
           </div>
         ) : (
-          board.ranking.map((club) => <ClubRow key={club.slug} club={club} max={max} />)
+          board.ranking.map((club, i) => (
+            <ClubRow 
+              key={club.slug} 
+              club={club} 
+              max={max} 
+              aboveClub={i > 0 ? board.ranking[i - 1] : null}
+            />
+          ))
         )}
       </div>
 
