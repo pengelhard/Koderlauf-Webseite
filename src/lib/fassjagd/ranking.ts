@@ -10,6 +10,7 @@ import {
   weekAgoCounts,
 } from "@/lib/fassjagd/store";
 import type { FassjagdBoard, FassjagdClub, FassjagdStarter } from "@/lib/fassjagd/types";
+import { parseDistanzKm } from "@/lib/event-config";
 
 const TRAIL_SPIELEREI = new Set(["Trailrun", "Spielerei"]);
 
@@ -20,6 +21,25 @@ function firstRegKey(starters: { bib?: number; rrId?: number }[]): number {
     if (typeof n === "number" && n > 0 && n < min) min = n;
   }
   return min;
+}
+
+function calculateTotalKm(strecken: Record<string, number>): number {
+  let total = 0;
+  for (const [strecke, count] of Object.entries(strecken)) {
+    const km = parseDistanzKm(getDistanzForStrecke(strecke));
+    total += km * count;
+  }
+  return total;
+}
+
+function getDistanzForStrecke(strecke: string): string {
+  const normalized = strecke.toLowerCase().trim();
+  if (normalized.includes("spielerei")) return "25 km";
+  if (normalized.includes("trail")) return "10,5 km";
+  if (normalized.includes("koderrunde")) return "8,5 km";
+  if (normalized.includes("kurz") || normalized.includes("knackig")) return "4 km";
+  if (normalized.includes("kinder")) return "800 m";
+  return "0 km";
 }
 
 function toClub(partial: {
@@ -37,6 +57,7 @@ function toClub(partial: {
     name: partial.name,
     slug: slugifyVerein(partial.name),
     total: partial.total,
+    totalKm: calculateTotalKm(partial.strecken),
     place: null,
     ausgeschlossen: partial.ausgeschlossen,
     hausherr: partial.hausherr,
@@ -55,7 +76,7 @@ function toClub(partial: {
 
 function compareClubs(a: FassjagdClub, b: FassjagdClub): number {
   if (b.total !== a.total) return b.total - a.total;
-  if (b.trailSpielerei !== a.trailSpielerei) return b.trailSpielerei - a.trailSpielerei;
+  if (b.totalKm !== a.totalKm) return b.totalKm - a.totalKm;
   const fa = Number.isFinite(a.firstReg) ? a.firstReg : Number.MAX_SAFE_INTEGER;
   const fb = Number.isFinite(b.firstReg) ? b.firstReg : Number.MAX_SAFE_INTEGER;
   if (fa !== fb) return fa - fb;

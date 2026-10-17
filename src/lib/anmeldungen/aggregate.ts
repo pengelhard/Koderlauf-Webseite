@@ -296,7 +296,12 @@ export function aggregateFromRaceResultJson(
 
   const overrides = getFassjagdOverrides();
   const vereinStats = rankVereine(
-    sorted.map((p) => ({ verein: personVereinRaw(p, overrides.personGroups) })),
+    sorted.map((p) => ({ 
+      verein: personVereinRaw(p, overrides.personGroups),
+      strecke: p.strecke,
+      bib: p.bib,
+      rrId: p.rrId,
+    })),
     overrides.aliases,
   );
 

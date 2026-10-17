@@ -25,8 +25,24 @@ export function gapHeadline(club: FassjagdClub): string {
   return huntGapText(club.gapToLeader);
 }
 
-export function gapLine(club: FassjagdClub): string {
+export function tieExplanation(club: FassjagdClub, aboveClub: FassjagdClub | null): string | null {
+  if (club.hausherr || !aboveClub || club.total !== aboveClub.total) return null;
+  
+  if (club.totalKm < aboveClub.totalKm) {
+    return "gleichauf – vorne wegen mehr Kilometern";
+  }
+  if (club.totalKm === aboveClub.totalKm && club.firstReg > aboveClub.firstReg) {
+    return "gleichauf – früher vollständig angemeldet";
+  }
+  return null;
+}
+
+export function gapLine(club: FassjagdClub, aboveClub: FassjagdClub | null = null): string {
   if (club.hausherr) return `${club.total} Starter, nicht in der Wertung`;
+  
+  const tie = tieExplanation(club, aboveClub);
+  if (tie) return tie;
+  
   if (club.place === 1) {
     const lead = club.leadBy ?? 0;
     return lead > 0 ? `führt mit +${lead}` : "führt die Fassjagd an";

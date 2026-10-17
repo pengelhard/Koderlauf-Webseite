@@ -12,6 +12,7 @@ const club: FassjagdClub = {
   name: "TV 1860 Gunzenhausen",
   slug: "tv-1860-gunzenhausen",
   total: 12,
+  totalKm: 100,
   place: 1,
   ausgeschlossen: false,
   hausherr: false,
@@ -27,7 +28,7 @@ const club: FassjagdClub = {
   starters: [],
 };
 
-const hausherr: FassjagdClub = { ...club, name: "SV Obermögersheim", slug: "sv-obermoegersheim", hausherr: true, place: null, total: 3 };
+const hausherr: FassjagdClub = { ...club, name: "SV Obermögersheim", slug: "sv-obermoegersheim", hausherr: true, place: null, total: 3, totalKm: 25 };
 
 test("WhatsApp-Text hat https-URL in eigener Zeile", () => {
   const url = "https://test.koderlauf.de/fassjagd/tv-1860-gunzenhausen?v=4";
