@@ -19,6 +19,8 @@ export type FassjagdClub = {
   name: string;
   slug: string;
   total: number;
+  /** Summe der Kilometer aller Starter (für Gleichstand-Regelung) */
+  totalKm: number;
   /** Platz in der Wertung, null wenn ausgeschlossen */
   place: number | null;
   ausgeschlossen: boolean;
