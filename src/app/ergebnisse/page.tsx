@@ -22,7 +22,11 @@ import { ErgebnisseResultsPanel } from "@/components/ergebnisse/results-panel";
 import { cn } from "@/lib/utils";
 import { YearSwitcher } from "@/components/ui/year-switcher";
 import { EVENT } from "@/lib/event-config";
-import { getAltersklassenDlv, type AltersklasseMeta } from "@/lib/data/altersklassen";
+import {
+  getAltersklassenDlv,
+  getAltersklassenKinderlauf,
+  type AltersklasseMeta,
+} from "@/lib/data/altersklassen";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import Link from "next/link";
 
@@ -103,6 +107,7 @@ export default function ErgebnissePage() {
   const panelContainerRef = useRef<HTMLDivElement>(null);
   const skipInitialScroll = useRef(true);
   const altersklassen2027 = getAltersklassenDlv(EVENT.jahr);
+  const kinderlaufAk = getAltersklassenKinderlauf(EVENT.jahr);
 
   useEffect(() => {
     if (skipInitialScroll.current) {
@@ -324,8 +329,26 @@ export default function ErgebnissePage() {
               <div className="mb-6 rounded-2xl border border-koder-orange/25 bg-koder-orange/5 p-4 sm:p-5">
                 <p className="font-semibold">Kinderlauf</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Eigene Wertung für Kinder bis maximal <strong className="text-foreground">8 Jahre</strong> –
-                  getrennt von den DLV-Altersklassen der anderen Strecken.
+                  Eigene Wertung für Kinder bis maximal <strong className="text-foreground">10 Jahre</strong> –
+                  in den Altersklassen <strong className="text-foreground">U6, U8 und U10</strong>, maßgeblich
+                  ist das Geburtsjahr.
+                </p>
+                <ul className="mt-3 grid gap-2 sm:grid-cols-3">
+                  {kinderlaufAk.map((ak) => (
+                    <li
+                      key={ak.name}
+                      className="rounded-xl border border-border/80 bg-card/80 px-3 py-2 text-sm"
+                    >
+                      <span className="font-semibold">{ak.name}</span>
+                      <span className="ml-2 tabular-nums text-muted-foreground">
+                        {ak.alterSpan} J. · Jg. {ak.jahrgang}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Kinder mit 10 Jahren (Jahrgang {EVENT.jahr - 10}) werden im Kinderlauf in der U10 gewertet.
+                  Die Tabelle unten gilt für alle anderen Strecken.
                 </p>
               </div>
 
@@ -428,6 +451,11 @@ export default function ErgebnissePage() {
                             Mädchen</strong> und die{" "}
                             <strong className="text-foreground">drei schnellsten Jungen</strong>{" "}
                             werden gesondert geehrt und erhalten einen Platzierungspreis.
+                          </p>
+                          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                            Zusätzlich gibt es eine Wertung in den Altersklassen{" "}
+                            <strong className="text-foreground">U6, U8 und U10</strong>: Die drei
+                            Schnellsten je Altersklasse bekommen eine Urkunde.
                           </p>
                         </div>
                       </div>

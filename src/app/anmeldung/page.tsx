@@ -130,7 +130,7 @@ export default function AnmeldungPage() {
 
           <p className="mt-3 text-xs text-muted-foreground">
             Mindestalter: Kurz und knackig ab 8, Koderrunde ab 12, Trailrun ab 16, Spielerei ab 18.
-            Kinderlauf bis max. 8 Jahre. {EVENT.elternEinverstaendnis} Strecken und Details:{" "}
+            Kinderlauf bis max. 10 Jahre (Wertung in U6, U8 und U10). {EVENT.elternEinverstaendnis} Strecken und Details:{" "}
             <a href="/strecken" className="underline hover:text-foreground">
               Strecken-Seite
             </a>

@@ -77,7 +77,7 @@ export const EVENT = {
   },
   strecken: [
     { id: "spielerei", name: "Spielerei", distanz: "25 km", startzeit: "16:00", farbe: "#7C3AED", gpxFile: "/2027-spielerei.gpx", minAlter: 18 },
-    { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "16:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx", maxAlter: 8 },
+    { id: "kinderlauf", name: "Kinderlauf", distanz: "800 m", startzeit: "16:10", farbe: "#FF6B00", gpxFile: "/2027-kinderlauf.gpx", maxAlter: 10 },
     { id: "trailrun", name: "Trailrun", distanz: "10,5 km", startzeit: "17:20", farbe: "#3B82F6", gpxFile: "/2027-trailrun.gpx", minAlter: 16 },
     { id: "koderrunde", name: "Koderrunde (Lauf)", distanz: "8,5 km", startzeit: "17:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung", minAlter: 12 },
     { id: "koderrunde-walking", name: "Koderrunde (Walking)", distanz: "8,5 km", startzeit: "17:30", farbe: "#EAB308", gpxFile: "/2027-koderrunde.gpx", badge: "eigene Wertung", minAlter: 12 },
@@ -169,7 +169,7 @@ export function getStrecke(id: string): EventStrecke | undefined {
   return EVENT.strecken.find((s) => s.id === id);
 }
 
-/** z. B. „ab 16 Jahre“ / „bis 8 Jahre“ */
+/** z. B. „ab 16 Jahre“ / „bis 10 Jahre“ */
 export function formatAlterHinweis(strecke: EventStrecke): string | null {
   if (strecke.maxAlter != null) return `bis ${strecke.maxAlter} Jahre`;
   if (strecke.minAlter != null) return `ab ${strecke.minAlter} Jahre`;
