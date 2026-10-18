@@ -23,6 +23,7 @@ export function getAltersklassenDlv(wettkampfJahr: number = EVENT.jahr): Altersk
     `${y - toAge} – ${y - fromAge}`;
 
   return [
+    { name: "U6", alterSpan: "bis 5", jahrgang: `${y - 5} und jünger`, gruppe: "kinder" },
     { name: "U8", alterSpan: "6–7", jahrgang: jg(6, 7), gruppe: "kinder" },
     { name: "U10", alterSpan: "8–9", jahrgang: jg(8, 9), gruppe: "kinder" },
     { name: "U12", alterSpan: "10–11", jahrgang: jg(10, 11), gruppe: "kinder" },
@@ -41,29 +42,15 @@ export function getAltersklassenDlv(wettkampfJahr: number = EVENT.jahr): Altersk
   ];
 }
 
-/**
- * Altersklassen im Kinderlauf (800 m), ab 2027: U6, U8, U10.
- * Maßgeblich ist das Geburtsjahr. Der Kinderlauf ist offen bis 10 Jahre;
- * 10-Jährige (eigentlich DLV U12) werden im Kinderlauf in der U10 gewertet.
- */
-export function getAltersklassenKinderlauf(wettkampfJahr: number = EVENT.jahr): AltersklasseMeta[] {
-  const y = wettkampfJahr;
-  return [
-    { name: "U6", alterSpan: "bis 5", jahrgang: `${y - 5} und jünger`, gruppe: "kinder" },
-    { name: "U8", alterSpan: "6–7", jahrgang: `${y - 7} – ${y - 6}`, gruppe: "kinder" },
-    { name: "U10", alterSpan: "8–10", jahrgang: `${y - 10} – ${y - 8}`, gruppe: "kinder" },
-  ];
-}
-
 /** Kurztext Kinderlauf-Wertung für FAQ / Hinweise. */
 export function formatKinderlaufWertungKurz(): string {
-  return "Kinderlauf (bis 10 Jahre): Wertung in U6, U8 und U10, maßgeblich ist das Geburtsjahr.";
+  return "Auch der Kinderlauf (bis 10 Jahre) wird nach Altersklassen gewertet: U6, U8 und U10.";
 }
 
 /** Kompakte Liste für FAQ / Ausschreibungstext. */
 export function formatAltersklassenKurz(wettkampfJahr: number = EVENT.jahr): string {
   return (
-    `Jugend U8–U20, Junioren U23, Männer/Frauen sowie Senioren M/W 30–95 ` +
+    `Kinder und Jugend U6–U20, Junioren U23, Männer/Frauen sowie Senioren M/W 30–95 ` +
     `in 5-Jahres-Schritten (DLV/DLO, Wettkampfjahr ${wettkampfJahr}). ` +
     `Maßgeblich ist das Geburtsjahr.`
   );
