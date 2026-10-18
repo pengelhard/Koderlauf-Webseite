@@ -107,5 +107,6 @@ export function isKidsAgeValid(
     new Date(eventDate.getFullYear(), birthDate.getMonth(), birthDate.getDate())
       ? 1
       : 0);
-  return age <= 8;
+  const maxAlter = EVENT.strecken.find((s) => s.id === "kinderlauf")?.maxAlter ?? 10;
+  return age <= maxAlter;
 }
