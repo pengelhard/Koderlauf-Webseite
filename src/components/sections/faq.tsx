@@ -112,7 +112,7 @@ const FAQS: FaqItem[] = [
       <>
         <p>Das Mindestalter gilt fest – darunter kein Start und keine Ausnahme:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5">
-          <li>Kinderlauf (800 m): bis max. 10 Jahre, Wertung in U6, U8 und U10</li>
+          <li>Kinderlauf (800 m): für alle Kinder bis zur U10 (Jahrgang 2018 und jünger), Wertung in U6, U8 und U10</li>
           <li>Kurz und knackig: ab 8 Jahren</li>
           <li>Koderrunde (Lauf &amp; Walking): ab 12 Jahren</li>
           <li>Trailrun: ab 16 Jahren</li>

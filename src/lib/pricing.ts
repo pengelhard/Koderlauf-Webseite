@@ -100,13 +100,8 @@ export function isKidsAgeValid(
   birthDate: Date,
   eventDate: Date = new Date(EVENT.datum),
 ): boolean {
-  const age =
-    eventDate.getFullYear() -
-    birthDate.getFullYear() -
-    (eventDate <
-    new Date(eventDate.getFullYear(), birthDate.getMonth(), birthDate.getDate())
-      ? 1
-      : 0);
-  const maxAlter = EVENT.strecken.find((s) => s.id === "kinderlauf")?.maxAlter ?? 10;
+  // Nach Jahrgang (DLV): Alter = Wettkampfjahr − Geburtsjahr, unabhängig vom Geburtstag.
+  const age = eventDate.getFullYear() - birthDate.getFullYear();
+  const maxAlter = EVENT.strecken.find((s) => s.id === "kinderlauf")?.maxAlter ?? 9;
   return age <= maxAlter;
 }

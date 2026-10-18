@@ -44,7 +44,7 @@ export function getAltersklassenDlv(wettkampfJahr: number = EVENT.jahr): Altersk
 
 /** Kurztext Kinderlauf-Wertung für FAQ / Hinweise. */
 export function formatKinderlaufWertungKurz(): string {
-  return "Auch der Kinderlauf (bis 10 Jahre) wird nach Altersklassen gewertet: U6, U8 und U10.";
+  return "Auch der Kinderlauf (für alle Kinder bis zur U10, Jahrgang 2018 und jünger) wird nach Altersklassen gewertet: U6, U8 und U10.";
 }
 
 /** Kompakte Liste für FAQ / Ausschreibungstext. */
