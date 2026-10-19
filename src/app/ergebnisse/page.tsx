@@ -321,14 +321,6 @@ export default function ErgebnissePage() {
                 </div>
               </div>
 
-              <div className="mb-6 rounded-2xl border border-koder-orange/25 bg-koder-orange/5 p-4 sm:p-5">
-                <p className="font-semibold">Kinderlauf</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Eigene Wertung für Kinder bis maximal <strong className="text-foreground">8 Jahre</strong> –
-                  getrennt von den DLV-Altersklassen der anderen Strecken.
-                </p>
-              </div>
-
               <div className="space-y-8">
                 {AK_GRUPPEN.map((gruppe) => {
                   const items = altersklassen2027.filter((a) => a.gruppe === gruppe.id);

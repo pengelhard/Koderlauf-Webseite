@@ -112,7 +112,7 @@ const STRECKEN_2027: (Strecke & { startTime: string })[] = [
     startTime: getStrecke("kinderlauf")?.startzeit ?? "16:10",
     difficulty: "leicht",
     description:
-      "Der Kinderlauf (800 m) ist für Kinder bis maximal 8 Jahre – ein echtes Highlight für die ganze Familie!",
+      "Der Kinderlauf (800 m) ist für alle Kinder bis zur U10 (Jahrgang 2018 und jünger) – gewertet wird in den Altersklassen U6, U8 und U10. Ein echtes Highlight für die ganze Familie!",
     icon: Baby,
     color: "#FF6B00",
     gpxFile: "/2027-kinderlauf.gpx",

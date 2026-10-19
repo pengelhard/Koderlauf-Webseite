@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { EVENT, getAbendkarteRabattProzent, getErsterStart } from "@/lib/event-config";
-import { formatAltersklassenKurz } from "@/lib/data/altersklassen";
+import { formatAltersklassenKurz, formatKinderlaufWertungKurz } from "@/lib/data/altersklassen";
 import { VEREINS_WERTUNG } from "@/lib/anmeldungen/vereine";
 import { cn } from "@/lib/utils";
 import { fadeReveal, useStaticReveal } from "@/hooks/use-static-reveal";
@@ -86,7 +86,7 @@ const FAQS: FaqItem[] = [
     frage: "Welche Altersklassen und Ehrungen gibt es?",
     antwort: (
       <>
-        {formatAltersklassenKurz()} Die Zuordnung erfolgt über das Geburtsjahr bei der Anmeldung. Bei
+        {formatAltersklassenKurz()} {formatKinderlaufWertungKurz()} Die Zuordnung erfolgt über das Geburtsjahr bei der Anmeldung. Bei
         der Siegerehrung werden die drei schnellsten Männer und die drei schnellsten Frauen je Strecke
         geehrt. Eine separate Altersklassen-Ehrung gibt es nicht – die drei Schnellsten je
         Altersklasse bekommen aber eine Urkunde. Details:{" "}
@@ -112,7 +112,7 @@ const FAQS: FaqItem[] = [
       <>
         <p>Das Mindestalter gilt fest – darunter kein Start und keine Ausnahme:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5">
-          <li>Kinderlauf: bis max. 8 Jahre</li>
+          <li>Kinderlauf (800 m): für alle Kinder bis zur U10 (Jahrgang 2018 und jünger), Wertung in U6, U8 und U10</li>
           <li>Kurz und knackig: ab 8 Jahren</li>
           <li>Koderrunde (Lauf &amp; Walking): ab 12 Jahren</li>
           <li>Trailrun: ab 16 Jahren</li>

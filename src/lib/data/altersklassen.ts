@@ -23,6 +23,7 @@ export function getAltersklassenDlv(wettkampfJahr: number = EVENT.jahr): Altersk
     `${y - toAge} – ${y - fromAge}`;
 
   return [
+    { name: "U6", alterSpan: "bis 5", jahrgang: `${y - 5} und jünger`, gruppe: "kinder" },
     { name: "U8", alterSpan: "6–7", jahrgang: jg(6, 7), gruppe: "kinder" },
     { name: "U10", alterSpan: "8–9", jahrgang: jg(8, 9), gruppe: "kinder" },
     { name: "U12", alterSpan: "10–11", jahrgang: jg(10, 11), gruppe: "kinder" },
@@ -41,10 +42,15 @@ export function getAltersklassenDlv(wettkampfJahr: number = EVENT.jahr): Altersk
   ];
 }
 
+/** Kurztext Kinderlauf-Wertung für FAQ / Hinweise. */
+export function formatKinderlaufWertungKurz(): string {
+  return "Auch der Kinderlauf (für alle Kinder bis zur U10, Jahrgang 2018 und jünger) wird nach Altersklassen gewertet: U6, U8 und U10.";
+}
+
 /** Kompakte Liste für FAQ / Ausschreibungstext. */
 export function formatAltersklassenKurz(wettkampfJahr: number = EVENT.jahr): string {
   return (
-    `Jugend U8–U20, Junioren U23, Männer/Frauen sowie Senioren M/W 30–95 ` +
+    `Kinder und Jugend U6–U20, Junioren U23, Männer/Frauen sowie Senioren M/W 30–95 ` +
     `in 5-Jahres-Schritten (DLV/DLO, Wettkampfjahr ${wettkampfJahr}). ` +
     `Maßgeblich ist das Geburtsjahr.`
   );
