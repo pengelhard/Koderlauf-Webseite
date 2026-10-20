@@ -111,6 +111,8 @@ export interface SponsorFlaeche {
   halfteVon?: string;
   mehrereMoeglich?: boolean;
   aktionLabel?: string;
+  /** Bei status "vergeben": an wen (wird öffentlich angezeigt) */
+  vergebenAn?: string;
 }
 
 export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
@@ -127,7 +129,8 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Zielbogen stellen",
     kurz: "Ihr stellt einen Zielbogen mit eigenem Logo.",
     typ: "sachspende",
-    status: "offen",
+    status: "vergeben",
+    vergebenAn: "Jeremias",
     aktionLabel: "Bogen stellen",
   },
   {
@@ -146,7 +149,8 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     beschreibung: "Das Design kommt von uns, wie 2026.",
     typ: "geld_oder_sache",
     komplettHaelften: ["medaillen-a", "medaillen-b"],
-    status: "offen",
+    status: "vergeben",
+    vergebenAn: "Jeremias",
   },
   {
     id: "medaillen-a",

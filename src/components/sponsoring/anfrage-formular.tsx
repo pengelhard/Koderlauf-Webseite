@@ -46,7 +46,9 @@ export function SponsorAnfrageFormular({ vergebenIds = [] }: { vergebenIds?: str
   const dateiRef = useRef<HTMLInputElement>(null);
   const startFlaeche = getFlaeche(flaecheParam)?.id ?? "";
 
-  const [flaecheId, setFlaecheId] = useState(vergeben.has(startFlaeche) ? "" : startFlaeche);
+  const [flaecheId, setFlaecheId] = useState(
+    vergeben.has(startFlaeche) || (startFlaeche && !isFlaecheBuchbar(startFlaeche)) ? "" : startFlaeche,
+  );
   const [wert, setWert] = useState("");
   const [wertInfo, setWertInfo] = useState(false);
   const [beitragsart, setBeitragsart] = useState<Beitragsart>(defaultBeitragsart(getFlaeche(flaecheParam)));
@@ -76,7 +78,7 @@ export function SponsorAnfrageFormular({ vergebenIds = [] }: { vergebenIds?: str
   useEffect(() => {
     const resolved = flaecheParamAusSearch(searchParams.get("flaeche"), searchParams.get("posten"));
     const nextFlaeche = getFlaeche(resolved);
-    if (nextFlaeche && !vergebenIds.includes(nextFlaeche.id)) setFlaecheId(nextFlaeche.id);
+    if (nextFlaeche && !vergebenIds.includes(nextFlaeche.id) && isFlaecheBuchbar(nextFlaeche.id)) setFlaecheId(nextFlaeche.id);
   }, [searchParams, vergebenIds]);
 
   function syncFlaeche(nextFlaeche: string) {
@@ -227,7 +229,7 @@ export function SponsorAnfrageFormular({ vergebenIds = [] }: { vergebenIds?: str
             className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
           >
             <option value="">Reine Geldspende</option>
-            {SACHSPENDEN_SICHTBAR.filter((f) => !vergeben.has(f.id)).map((f) => (
+            {SACHSPENDEN_SICHTBAR.filter((f) => !vergeben.has(f.id) && isFlaecheBuchbar(f.id)).map((f) => (
               <option key={f.id} value={f.id} disabled={!isFlaecheBuchbar(f.id)}>
                 {flaecheOptionLabel(f)}
               </option>

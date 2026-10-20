@@ -191,7 +191,8 @@ export const PUBLIC_SPONSORS_2026: PublicSponsor[] = [
 ];
 
 /**
- * Koderlauf 2027 – Hauptsponsor AMK Engelhardt (Bauzaun als Sachspende, Wert über 500 €).
+ * Koderlauf 2027 – Hauptsponsoren AMK Engelhardt (Bauzaun als Sachspende, Wert über 500 €)
+ * und Jeremias Abgastechnik (Zielbogen und Medaillen).
  * Weitere Sponsoren folgen im Laufe der Saison.
  */
 function s2027(
@@ -213,6 +214,11 @@ export const PUBLIC_SPONSORS_2027: PublicSponsor[] = [
   s2027("AMK Engelhardt", "Hainsfarth", {
     logo: "/sponsors/amk-engelhardt.png",
     website: "https://bauzaun-mieten.net/",
+    hauptsponsor: true,
+  }),
+  s2027("Jeremias Abgastechnik", "Wassertrüdingen", {
+    logo: "/sponsors/jeremias.png",
+    website: "https://jeremias.de/",
     hauptsponsor: true,
   }),
 ];

@@ -151,6 +151,13 @@ export const SPONSOR_CONTACTS: Record<string, SponsorContact> = {
     email: "info@medien-schlicker.de",
     telefon: "09836 2529807",
   },
+  "jeremias-abgastechnik-2027": {
+    adresse: "Opfenrieder Str. 12, 91717 Wassertrüdingen",
+    ansprechpartner: "Oliver Trautner (Marketingleiter); Patrick Schweigert",
+    email: "Oliver.Trautner@Jeremias.de",
+    telefon: "09832 6868-624",
+    notes: "Hauptsponsor 2027: Zielbogen und Medaillen (Beteiligung 1000 €, Zusage 20.10.2026).",
+  },
   "jeremias-abgastechnik-2026": {
     adresse: "Opfenrieder Str. 12, 91717 Wassertrüdingen",
     email: "info@jeremias.de",
