@@ -116,8 +116,10 @@ export function SponsorStufen() {
   );
 }
 
-function SacheZeile({ flaeche, vergeben }: { flaeche: SponsorFlaeche; vergeben: boolean }) {
-  const status = vergeben ? "vergeben" : getEffectiveStatus(flaeche);
+function SacheZeile({ flaeche, vergeben: vergebenAdmin }: { flaeche: SponsorFlaeche; vergeben: boolean }) {
+  const status = vergebenAdmin ? "vergeben" : getEffectiveStatus(flaeche);
+  const vergeben = status === "vergeben";
+  const vergebenText = flaeche.vergebenAn ? `Vergeben an ${flaeche.vergebenAn}` : "vergeben";
   const [open, setOpen] = useState(false);
   const hinweis = flaeche.beschreibung;
   return (
@@ -131,10 +133,14 @@ function SacheZeile({ flaeche, vergeben }: { flaeche: SponsorFlaeche; vergeben: 
             </span>
           )}
         </span>
-        <span className={`text-sm text-muted-foreground ${vergeben ? "line-through" : ""}`}>
-          {[flaeche.kurz, status === "reserviert" ? "im Gespräch" : status === "vergeben" ? "vergeben" : ""]
-            .filter(Boolean)
-            .join(" · ")}
+        <span className="text-sm text-muted-foreground">
+          <span className={vergeben ? "line-through" : ""}>{flaeche.kurz}</span>
+          {status === "reserviert" && " · im Gespräch"}
+          {vergeben && (
+            <span className="ml-2 inline-block rounded-full bg-koder-orange/15 px-2 py-0.5 text-xs font-semibold text-koder-orange no-underline">
+              {vergebenText}
+            </span>
+          )}
         </span>
       </div>
       {open && hinweis && <InfoNote text={hinweis} />}

@@ -12,15 +12,17 @@ import {
 import { getPublicSponsors, parseSponsorYear } from "./sponsors-public.ts";
 import { buildSponsorenPdf, renderSponsorenPdf, sponsorenPdfFilename } from "../orga/pdf-sponsoren.ts";
 
-test("2026 hat die Website-Sponsoren, 2027 ist noch leer", () => {
+test("2026 hat die Website-Sponsoren, 2027 die Hauptsponsoren", () => {
   const y26 = getPublicSponsors(2026);
   const y27 = getPublicSponsors(2027);
   assert.equal(y26.length, 37);
-  assert.equal(y27.length, 0);
+  assert.equal(y27.length, 2);
+  assert.ok(y27.every((s) => s.hauptsponsor));
+  assert.ok(y27.some((s) => s.firma === "Jeremias Abgastechnik"));
   assert.ok(y26.some((s) => s.firma === "Bittig IT"));
   assert.ok(y26.some((s) => s.firma === "Stache Fitness"));
   assert.equal(getSponsorsFromCode(2026).length, 37);
-  assert.equal(getSponsorsFromCode(2027).length, 0);
+  assert.equal(getSponsorsFromCode(2027).length, 2);
 });
 
 test("parseSponsorYear akzeptiert nur 2026 und 2027", () => {

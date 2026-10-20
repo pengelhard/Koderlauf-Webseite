@@ -40,7 +40,9 @@ test("Werbeleistung", () => {
   assert.match(werbeleistungKurz("hauptsponsor"), /Bühne/);
   assert.equal(werbeleistungKurz("hauptsponsor").includes("Eigene Erwähnung"), false);
   assert.equal(getFlaeche("bauzaun")?.status, "offen");
-  assert.equal(getFlaeche("medaillen")?.status, "offen");
+  assert.equal(getFlaeche("medaillen")?.status, "vergeben");
+  assert.equal(getFlaeche("zielbogen")?.status, "vergeben");
+  assert.equal(getFlaeche("medaillen")?.vergebenAn, "Jeremias");
 });
 
 test("Alte Links und Sachspenden ohne Preis", () => {
