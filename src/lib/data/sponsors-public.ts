@@ -217,7 +217,7 @@ export const PUBLIC_SPONSORS_2027: PublicSponsor[] = [
     hauptsponsor: true,
   }),
   s2027("Jeremias Abgastechnik", "Wassertrüdingen", {
-    logo: "/sponsors/jeremias.png",
+    logo: "/sponsors/jeremias-2027.png",
     website: "https://jeremias.de/",
     hauptsponsor: true,
   }),
