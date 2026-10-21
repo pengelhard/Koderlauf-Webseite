@@ -1,8 +1,14 @@
 "use client";
 
 import { useRef, useEffect, useCallback, useState, useMemo, useSyncExternalStore } from "react";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+
+// maplibre-gl v6 is ESM-only and loads its worker from a separate file next to
+// the bundle. Next.js hashes that file, so point maplibre at the emitted asset.
+if (typeof window !== "undefined") {
+  maplibregl.setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).href);
+}
 import { Pause, Play, Plane, RotateCcw, X, Download, Maximize2 } from "lucide-react";
 import type { GpxPoint } from "@/lib/gpx";
 import {

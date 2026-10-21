@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import nodemailer, { type Transporter } from "nodemailer";
 import { getPublicDomainLabel, getSiteUrl } from "@/lib/site-url";
 import { allowRequest, clientIp } from "@/lib/rate-limit";
 
@@ -62,7 +62,7 @@ function getFeedbackTo(): string {
 }
 
 function getSmtpConfig():
-  | { ok: true; transporter: nodemailer.Transporter; from: string }
+  | { ok: true; transporter: Transporter; from: string }
   | { ok: false; reason: "missing_host" | "missing_user" | "missing_pass" } {
   const host = process.env.SMTP_HOST?.trim();
   const user = process.env.SMTP_USER?.trim();
