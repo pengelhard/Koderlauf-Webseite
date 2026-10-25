@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Camera, ExternalLink, PlayCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { YearSwitcher } from "@/components/ui/year-switcher";
+import { KoderlaufSong } from "@/components/sections/koderlauf-song";
 
 /**
  * Video-Overlay für eine Galerie-Kachel: lädt das Video erst, wenn die Kachel
@@ -127,8 +128,17 @@ export default function GaleriePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.06 }}
-          className="relative mt-12 overflow-hidden rounded-3xl border border-border/80 bg-card p-4 shadow-xl sm:p-6"
+          transition={{ duration: 0.5, delay: 0.08 }}
+          className="mt-12"
+        >
+          <KoderlaufSong variant="compact" />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.12 }}
+          className="relative mt-8 overflow-hidden rounded-3xl border border-border/80 bg-card p-4 shadow-xl sm:p-6"
         >
           <div
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,var(--color-koder-orange)_0%,transparent_55%)] opacity-[0.12]"
