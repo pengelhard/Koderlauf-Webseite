@@ -1,4 +1,5 @@
 import { Hero } from "@/components/sections/hero";
+import { KoderlaufSong } from "@/components/sections/koderlauf-song";
 import { EventInfo } from "@/components/sections/event-info";
 import { FassjagdPromo } from "@/components/sections/fassjagd-promo";
 import { JubilaeumsProgramm } from "@/components/sections/jubilaeums-programm";
@@ -12,6 +13,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <KoderlaufSong variant="hero" />
       <EventInfo />
       <SponsoringPromo />
       <FassjagdPromo />
