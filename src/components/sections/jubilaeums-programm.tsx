@@ -50,6 +50,7 @@ const RAHMENPROGRAMM = [
       "10 Uhr Gottesdienst",
       "ab 11:30 Uhr Mittagstisch",
       "ab 13 Uhr Ehrungen, danach Kaffee und Kuchen",
+      "ab 13 Uhr Jugendturniere",
     ],
   },
 ];
