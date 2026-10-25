@@ -25,9 +25,6 @@ export function SponsoringPromo() {
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
                 Unterstützer 100 €, Sponsor 250 €, Hauptsponsor ab 500 €
               </h2>
-              <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                Darunter nur die Website. Sache ohne festgesetzten Preis. Anfrage ohne Online-Zahlung.
-              </p>
             </div>
           </div>
           <Link
