@@ -121,7 +121,8 @@ export const SPONSOR_FLAECHEN: SponsorFlaeche[] = [
     titel: "Bauzaun stellen",
     kurz: "Zum Absperren und als Absperrung am Zieleinlauf.",
     typ: "sachspende",
-    status: "offen",
+    status: "vergeben",
+    vergebenAn: "AMK Engelhardt",
     aktionLabel: "Zaun stellen",
   },
   {
