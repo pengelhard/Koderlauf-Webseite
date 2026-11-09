@@ -33,7 +33,7 @@ const RAHMENPROGRAMM = [
     freierEintritt: true,
     punkte: [
       "Freier Eintritt – einfach vorbeikommen",
-      "ab 17 Uhr Elf- & Neunmeterturnier für Kinder",
+      "ab 17 Uhr Elfmeterturnier für Erwachsene und Neunmeterturnier für Kinder",
       "ab 19 Uhr Kinder- und Jugenddisco mit Siegerehrung",
       "Übergang zur Plattenparty",
       "Barbetrieb",

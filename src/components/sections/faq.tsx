@@ -213,7 +213,7 @@ const FAQS: FaqItem[] = [
     antwort: (
       <>
         Ja. Am Freitag, 28. Mai 2027, gilt <strong className="text-foreground">freier Eintritt</strong>{" "}
-        zum Auftakt: Elf- und Neunmeterturnier, Kinder- und Jugenddisco, Plattenparty und
+        zum Auftakt: Elfmeterturnier für Erwachsene, Neunmeterturnier für Kinder, Kinder- und Jugenddisco, Plattenparty und
         Barbetrieb – einfach vorbeikommen. Das Programm steht auf der{" "}
         <FaqLink href="/">Startseite</FaqLink>.
       </>
