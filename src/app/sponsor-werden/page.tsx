@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: `Sponsor ${EVENT.jahr} werden`,
-  description: `Unterstützer 100 €, Sponsor 250 €, Hauptsponsor ab 500 €. Koderlauf ${EVENT.jahr} am ${EVENT.datumFormatiert} in ${EVENT.ort}.`,
+  description: `Unterstützer 50 €, Sponsor 250 €, Hauptsponsor ab 500 €. Koderlauf ${EVENT.jahr} am ${EVENT.datumFormatiert} in ${EVENT.ort}.`,
 };
 
 export default async function SponsorWerdenPage() {
