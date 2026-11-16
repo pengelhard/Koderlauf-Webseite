@@ -8,12 +8,12 @@ export type FlaecheTyp = "sachspende" | "geld_oder_sache";
 export type Beitragsart = "geld" | "sach" | "beides";
 
 export const SPONSORING_2027 = {
-  unterstuetzerAb: 100,
+  unterstuetzerAb: 50,
   sponsorAb: 250,
   hauptsponsorAb: 500,
   kontaktEmail: "info@koderlauf.de",
   wertHinweis:
-    "Bei einer Geldspende ist es der Betrag. Bei einer Sachspende schätzt ihr den Wert. Die Zahl legt die Stufe fest. Unter 100 € nur eine Erwähnung auf der Website. Ab 100 € Unterstützer. Ab 250 € Sponsor. Ab 500 € Hauptsponsor.",
+    "Bei einer Geldspende ist es der Betrag. Bei einer Sachspende schätzt ihr den Wert. Die Zahl legt die Stufe fest. Unter 50 € nur eine Erwähnung auf der Website. Ab 50 € Unterstützer. Ab 250 € Sponsor. Ab 500 € Hauptsponsor.",
   premiere2026: {
     anmeldungen: 400,
     finisher: 378,
@@ -22,7 +22,7 @@ export const SPONSORING_2027 = {
 } as const;
 
 export const BAND_LABEL: Record<Sichtbarkeit, string> = {
-  unter100: "Unter 100 €",
+  unter100: "Unter 50 €",
   unterstuetzer: "Unterstützer",
   sponsor: "Sponsor",
   hauptsponsor: "Hauptsponsor",
@@ -69,8 +69,8 @@ export const SPONSOR_STUFEN: {
   {
     id: "unterstuetzer",
     name: "Unterstützer",
-    preisLabel: "100 €",
-    info: "Auch Spenden unter 100 € sind herzlich willkommen.\nDafür gibt es nur eine Erwähnung auf der Website.\nEin Bannerfeld am Bauzaun gibt es ab 100 €.\nBanner am Bauzaun: 3,40 m × 1,73 m.",
+    preisLabel: "50 €",
+    info: "Auch Spenden unter 50 € sind herzlich willkommen.\nDafür gibt es nur eine Erwähnung auf der Website.\nEin Bannerfeld am Bauzaun gibt es ab 50 €.\nBanner am Bauzaun: 3,40 m × 1,73 m.",
     leistungen: ["Banner am Bauzaun", "Kleines Logo und Name auf der Website"],
   },
   {
@@ -79,7 +79,7 @@ export const SPONSOR_STUFEN: {
     preisLabel: "250 €",
     info: "Banner am Bauzaun: 3,40 m × 1,73 m.\nBanner am Gitter Zieleinlauf: 2,33 m × 0,75 m.",
     leistungen: [
-      "Alles aus 100 €",
+      "Alles aus 50 €",
       "Banner am Gitter Zieleinlauf",
       "Etwas größeres Logo auf der Website",
       "Instagram",
@@ -225,7 +225,7 @@ export function werbeleistungKurz(stufe: Sichtbarkeit): string {
     case "unterstuetzer":
       return "Banner am Bauzaun. Kleines Logo und Name auf der Website.";
     case "sponsor":
-      return "Banner am Zieleinlauf, etwas größeres Logo, Instagram, plus alles ab 100 €.";
+      return "Banner am Zieleinlauf, etwas größeres Logo, Instagram, plus alles ab 50 €.";
     case "hauptsponsor":
       return "Banner an der Bühne, hinten an der Zeltwand, verschiedene Größen möglich, Logo ganz oben und sehr präsent, Dank bei der Siegerehrung, plus alles ab 250 €.";
   }

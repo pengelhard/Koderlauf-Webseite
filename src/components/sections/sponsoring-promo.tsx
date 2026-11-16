@@ -23,7 +23,7 @@ export function SponsoringPromo() {
                 Sponsoring {EVENT.jahr}
               </p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
-                Unterstützer 100 €, Sponsor 250 €, Hauptsponsor ab 500 €
+                Unterstützer 50 €, Sponsor 250 €, Hauptsponsor ab 500 €
               </h2>
             </div>
           </div>
