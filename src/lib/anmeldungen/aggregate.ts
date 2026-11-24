@@ -130,6 +130,24 @@ export function splitAnzeigeName(raw: string): { nachname: string; vorname: stri
   return { nachname: parts[parts.length - 1], vorname: parts.slice(0, -1).join(" ") };
 }
 
+
+/** Admin-Override (Personen-Gruppe, Alias) hat Vorrang vor dem RR-CLUB. */
+export function applyAdminVerein(
+  participants: AnmeldungParticipant[],
+  overrides = getFassjagdOverrides(),
+): AnmeldungParticipant[] {
+  return participants.map((p) => {
+    const original = (p.vereinOriginal ?? p.verein ?? "").trim() || undefined;
+    const raw = personVereinRaw({ ...p, verein: original }, overrides.personGroups);
+    const resolved = resolveVerein(raw, overrides.aliases);
+    return {
+      ...p,
+      vereinOriginal: original,
+      verein: resolved.empty ? undefined : resolved.display,
+    };
+  });
+}
+
 export function mapRaceResultRow(
   row: RaceResultParticipantRaw,
   contestById?: Record<string, string>,
@@ -294,10 +312,14 @@ export function aggregateFromRaceResultJson(
     return a.vorname.localeCompare(b.vorname, "de");
   });
 
+  const displayed = applyAdminVerein(sorted);
   const overrides = getFassjagdOverrides();
   const vereinStats = rankVereine(
-    sorted.map((p) => ({ 
-      verein: personVereinRaw(p, overrides.personGroups),
+    displayed.map((p) => ({
+      verein: personVereinRaw(
+        { ...p, verein: p.vereinOriginal ?? p.verein },
+        overrides.personGroups,
+      ),
       strecke: p.strecke,
       bib: p.bib,
       rrId: p.rrId,
@@ -310,7 +332,7 @@ export function aggregateFromRaceResultJson(
     gender: { m, w },
     strecken,
     lastUpdated: new Date().toISOString(),
-    participants: sorted,
+    participants: displayed,
     source: "race-result",
     vereine: {
       ranking: vereinStats.ranking.map(({ name, total }) => ({ name, total })),
