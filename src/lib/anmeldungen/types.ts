@@ -31,6 +31,8 @@ export interface AnmeldungParticipant {
   strecke: string;
   jahrgang?: string;
   verein?: string;
+  /** Vereinsname aus Race Result, vor Admin-Override */
+  vereinOriginal?: string;
   nation?: string;
   /** Startnummer falls in der Liste, für Gleichstand (frühere Anmeldung) */
   bib?: number;

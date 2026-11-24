@@ -12,7 +12,7 @@ export function listFassjagdPeople(
 ): FassjagdPerson[] {
   return participants
     .map((p) => {
-      const originalGroup = (p.verein ?? "").trim();
+      const originalGroup = (p.vereinOriginal ?? p.verein ?? "").trim();
       const raw = personVereinRaw(p, overrides.personGroups);
       const resolved = resolveVerein(raw, overrides.aliases);
       const currentGroup = resolved.empty ? "" : resolved.canonical;
