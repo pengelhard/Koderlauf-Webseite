@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { FROZEN_ANMELDUNGEN_2026 } from "@/lib/data/anmeldungen-2026";
 import { fetchAnmeldungen2027 } from "@/lib/anmeldungen/fetch-2027";
 import { emptyStats2027 } from "@/lib/anmeldungen/aggregate";
+import { hydrateFassjagdFromDb } from "@/lib/fassjagd/persist";
 
 /**
  * GET /api/anmeldungen?jahr=2027|2026
@@ -20,6 +21,7 @@ export async function GET(request: Request) {
   }
 
   try {
+    await hydrateFassjagdFromDb();
     const stats = await fetchAnmeldungen2027();
     return NextResponse.json(stats, {
       headers: {

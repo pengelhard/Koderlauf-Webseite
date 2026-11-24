@@ -17,6 +17,7 @@ export default function FassjagdAdminPage() {
   const [fromName, setFromName] = useState("");
   const [toName, setToName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [persistInfo, setPersistInfo] = useState<{ ok: boolean; message: string } | null>(null);
 
   const refresh = useCallback(async () => {
     const res = await fetch("/api/fassjagd/admin", { cache: "no-store" });
@@ -56,6 +57,18 @@ export default function FassjagdAdminPage() {
       if (json.board) setBoard(json.board);
       if (Array.isArray(json.people)) setPeople(json.people);
       if (json.overrides) setOverrides(json.overrides);
+      if (body.action !== "login" && body.action !== "logout" && body.action !== "week-image" && "persisted" in json) {
+        if (json.persisted) {
+          setPersistInfo({ ok: true, message: "In der Datenbank gespeichert." });
+        } else {
+          setPersistInfo({
+            ok: false,
+            message:
+              (typeof json.persistError === "string" && json.persistError) ||
+              "Speichern in der Datenbank fehlgeschlagen. Die Änderung kann nach einem Neustart verloren gehen.",
+          });
+        }
+      }
       if (body.action === "login") {
         setAuthed(true);
         await refresh();
@@ -100,6 +113,11 @@ export default function FassjagdAdminPage() {
             Anmelden
           </button>
           {error && <p className="text-sm text-destructive">{error}</p>}
+      {persistInfo && (
+        <p className={persistInfo.ok ? "text-sm text-emerald-700 dark:text-emerald-400" : "text-sm text-destructive"}>
+          {persistInfo.message}
+        </p>
+      )}
         </form>
       </div>
     );

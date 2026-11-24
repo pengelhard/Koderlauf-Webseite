@@ -15,7 +15,11 @@ import {
   setPersonGroup,
   clearPersonGroup,
 } from "@/lib/fassjagd/store";
-import { persistFassjagdToDb } from "@/lib/fassjagd/persist";
+import {
+  hydrateFassjagdFromDb,
+  lastFassjagdPersistError,
+  persistFassjagdToDb,
+} from "@/lib/fassjagd/persist";
 import { normalizeVereinKey } from "@/lib/anmeldungen/vereine";
 
 function unauthorized() {
@@ -29,7 +33,18 @@ async function payload() {
 
 async function savedPayload() {
   const persisted = await persistFassjagdToDb();
-  return { ok: true as const, persisted, ...(await payload()) };
+  return {
+    ok: true as const,
+    persisted,
+    persistError: persisted ? null : lastFassjagdPersistError(),
+    ...(await payload()),
+  };
+}
+
+async function mutateAndSave(fn: () => void) {
+  await hydrateFassjagdFromDb();
+  fn();
+  return NextResponse.json(await savedPayload());
 }
 
 export async function GET() {
@@ -77,40 +92,39 @@ export async function POST(request: Request) {
   }
 
   if (action === "merge") {
-    mergeAlias(body?.from ?? "", body?.to ?? "", normalizeVereinKey);
-    return NextResponse.json(await savedPayload());
+    return mutateAndSave(() =>
+      mergeAlias(body?.from ?? "", body?.to ?? "", normalizeVereinKey),
+    );
   }
 
   if (action === "assign-group") {
-    setPersonGroup(body?.personId ?? "", body?.group ?? "");
-    return NextResponse.json(await savedPayload());
+    return mutateAndSave(() => setPersonGroup(body?.personId ?? "", body?.group ?? ""));
   }
 
   if (action === "reset-group") {
-    clearPersonGroup(body?.personId ?? "");
-    return NextResponse.json(await savedPayload());
+    return mutateAndSave(() => clearPersonGroup(body?.personId ?? ""));
   }
 
   if (action === "exclude" || action === "include") {
-    setExcluded(body?.name ?? "", action === "exclude");
-    return NextResponse.json(await savedPayload());
+    return mutateAndSave(() => setExcluded(body?.name ?? "", action === "exclude"));
   }
 
   if (action === "freeze") {
+    await hydrateFassjagdFromDb();
     const data = await payload();
     setManualFreeze(true, { ...data.board, frozen: true, status: "offiziell" });
     const persisted = await persistFassjagdToDb();
     return NextResponse.json({
       ok: true,
       persisted,
+      persistError: persisted ? null : lastFassjagdPersistError(),
       ...data,
       board: { ...data.board, frozen: true, status: "offiziell" },
     });
   }
 
   if (action === "unfreeze") {
-    setManualFreeze(false, null);
-    return NextResponse.json(await savedPayload());
+    return mutateAndSave(() => setManualFreeze(false, null));
   }
 
   if (action === "week-image") {
